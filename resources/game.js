@@ -5,6 +5,12 @@
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const difference=(a,b)=>Math.atan2(Math.sin(a-b),Math.cos(a-b));
   const PALETTE=['#85f0c4','#ffdc88','#97c6ff','#f3a8d2','#c4afff'];
+  // Fit the actual glyphs (and optional pinyin), with seven pixels on each side.
+  SC.labelWidth=function(c,text,{font=c.font,hint='',hintFont='12px system-ui',padding=7,min=28,max=220}={}){
+    c.save();c.font=font;let width=c.measureText(text).width;
+    if(hint){c.font=hintFont;width=Math.max(width,c.measureText(hint).width);}c.restore();
+    return clamp(Math.ceil(width)+padding*2,min,max);
+  };
   SC.cityGoal=40;
   SC.cityPressure=(progress,elapsed)=>clamp(progress+elapsed/216,0,1);
   SC.citySpawnInterval=(pace,pressure)=>({gentle:4.8,steady:3.2,brave:2.3}[pace])*(1-.63*pressure);
@@ -212,7 +218,7 @@
       for(const t of g.getTargets()){
         const size=g.mode==='chinese'?26:g.width<600?20:23;
         c.font='700 '+size+'px "Trebuchet MS", system-ui, sans-serif';
-        const bw=Math.max(44,c.measureText(t.item.label).width+24),bh=g.mode==='chinese'&&g.hints?62:40;
+        const bw=SC.labelWidth(c,t.item.label,{hint:g.mode==='chinese'&&g.hints?t.item.hint:'',hintFont:'13px system-ui',max:w-16}),bh=g.mode==='chinese'&&g.hints?62:40;
         let box;
         const candidates=[];
         for(const dy of [0,-50,50,-100,100])for(const dx of [0,-bw-8,bw+8,-2*bw,2*bw])candidates.push({x:clamp(t.x+dx-bw/2,8,w-bw-8),y:clamp(t.y+dy-20,122,g.ground-bh-7),w:bw,h:bh});
@@ -262,7 +268,7 @@
       const trail=c.createLinearGradient(0,0,-Math.cos(angle)*55,-Math.sin(angle)*55);trail.addColorStop(0,t.color+'99');trail.addColorStop(1,t.color+'00');
       c.strokeStyle=trail;c.lineCap='round';c.lineWidth=5;c.beginPath();c.moveTo(0,0);c.lineTo(-Math.cos(angle)*55,-Math.sin(angle)*55);c.stroke();c.lineCap='butt';
       const size=g.mode==='chinese'?26:g.width<600?20:23;c.font='700 '+size+'px "Trebuchet MS", system-ui, sans-serif';
-      const label=t.item.label,bw=Math.max(44,c.measureText(label).width+24),bh=g.mode==='chinese'&&g.hints?62:40;
+      const label=t.item.label,bw=t.labelBox.w,bh=t.labelBox.h;
       const labelX=t.labelBox.x+bw/2-t.x,labelY=t.labelBox.y+20-t.y;
       c.lineWidth=1.5;
       if(Math.hypot(labelX,labelY)>8){
@@ -272,8 +278,8 @@
       c.translate(labelX,labelY);
       c.shadowColor=t.color+'33';c.shadowBlur=14;
       this.round(-bw/2,-20,bw,bh,12,'#192841',t.color);c.shadowBlur=0;
-      c.textAlign='center';c.textBaseline='middle';c.fillStyle='#f8f9ff';c.fillText(label,0,1);
-      if(g.mode==='chinese'&&g.hints){c.font='13px system-ui';c.fillStyle=t.color;c.fillText(t.item.hint,0,28);}
+      c.textAlign='center';c.textBaseline='middle';c.fillStyle='#f8f9ff';c.fillText(label,0,1,bw-14);
+      if(g.mode==='chinese'&&g.hints){c.font='13px system-ui';c.fillStyle=t.color;c.fillText(t.item.hint,0,28,bw-14);}
       c.restore();
     }
     crosshair({target,gun}){

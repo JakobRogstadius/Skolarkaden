@@ -1,3 +1,22 @@
+# Bikupan: växter, speltempo och tydligare uppgifter
+
+2026-09-06.
+
+- Ängen använder 24 oregelbundet spridda växtplatser med avstånd mellan plantorna. Ett separat slumpfrö gör placeringen stabil vid storleksändringar utan att förbruka spelets slumpföljd. Även fullvuxna växter får marginal till bildkanterna.
+- Bikupan och Ordträdgården använder samma växtmodell: fyra stamformer, fem bladformer och sex blomformer samt varierad höjd, bredd, färg och blomantal. Torrhet ger slokande stjälkar och blad samt ljusare jord. Näringsbrist minskar färgmättnaden. Infektion ger fler, större kryp som följer stjälkarna. Tillväxt, knoppar, blomning och död fungerar med samtliga former.
+- Första uppgiften kommer efter cirka en sekund. Sommarplantor kan vänta med att blomma till hösten; avlägsna blommor öppnar tidigare för att lämna tid för kö och tur-och-retur-flygning. Besökta blommor lämnar plats för nya plantor. Lagom och Snabb får två respektive tre extra sekunders vanlig blomningstid för den utspridda ängen. Honungsmål, säsongslängder, flyghastighet och poäng är oförändrade.
+- Helt tomma perioder går fyra gånger fortare, bara om inga uppgifter finns, kön är tom och alla bin är hemma. Synliga uppgifter och pågående flygningar behåller normal tid. Paus fryser även detta förlopp. Vintern är fortfarande en strikt leveransgräns.
+- Bina landar nu på den aktuella växtmodellens blomhuvud i stället för på en fast höjd. Varje leverans efter full kupa lägger till en honungsburk bredvid kupan; burkarna finns kvar under vinterfirandet. Nektar som fortfarande flygs hem räknas inte i förväg.
+- Uppgiftsbubblor i samtliga sex spel mäts efter text och eventuell pinyin med mindre sidmarginaler. Trädgårdens verktygsikoner får eget utrymme. Bikupans etiketter undviker varandra, växter och rekvisita när utrymmet tillåter; kömarkeringar ändrar inte deras placering.
+
+**Verifiering:** `npm test` passerar **15 av 15 testsviter**. De sju nya kontrollgrupperna i `tests/beehive-polish.cjs` omfattar spridning, skärmmarginaler, stabil storleksändring, alla växtfamiljer, separata hälsosignaler, tidig vår, höstknoppar, säker tidsacceleration, blomlandning, burkarnas leveransvillkor, vinter/omstart och kompakta etiketter med långa ord och pinyin.
+
+72 kalibrerade omgångar passerar: sex slumpfrön × tre svårigheter × svenska/matte × desktop/smal skärm. En separat simulering med svarstakt efter verklig speltid passerar samma 72 kombinationer med 10 procent felsvar. Första uppgiften kommer efter 1,0–1,1 sekunder i stället för i genomsnitt 6,3–8,8 sekunder i jämförelseversionen. Denna automatiska spelare prioriterar de mest brådskande lediga målen; resultatet är inte ett användartest med barn.
+
+De faktiska Canvas-renderarna har granskats vid 1100 och 370 pixlars bredd samt i separata växt- och hälsoscener. Ingen ny körningsresurs, server eller extern anslutning behövs. **Begränsning:** rendering och speltester kördes i Node/native Canvas; fysisk mikrofon och Chrome på Windows har inte manuellt provats i denna uppdatering.
+
+---
+
 # Skolarkaden: förenklad spelvy och fokus
 
 2026-09-06.

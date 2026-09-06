@@ -15,7 +15,7 @@ class GardenGame{
     this.tools=PROPS.map((property,i)=>({property,x:(i-1)*.36,y:.28}));
     this.pots=Array.from({length:count},(_,i)=>{
       const jitterX=this.random()-.5,jitterY=this.random()-.5;
-      return {id:i+1,x:0,y:0,jitterX,jitterY,growth:0,moisture:1,nutrition:1,infection:0,decay:0,requests:{},bloom:false,dead:false,look:{hue:90+this.random()*65,pot:['#cf8768','#e6b779','#a8b9cc','#ba8ea7'][i%4],petal:['#ffc983','#f5a5d3','#d0afff','#fff3ad'][i%4],phase:this.random()*6.28,flowers:1+Math.floor(this.random()*3)}};
+      return {id:i+1,x:0,y:0,jitterX,jitterY,growth:0,moisture:1,nutrition:1,infection:0,decay:0,requests:{},bloom:false,dead:false,look:SC.makePlantLook(this.random,{pot:['#cf8768','#e6b779','#a8b9cc','#ba8ea7'][i%4]})};
     });this.layoutPots();this.emit('start');
   }
   layoutPots(){
@@ -145,7 +145,7 @@ class GardenRenderer extends SC.SceneRenderer{
       this.round((w-bw)/2,h-69,bw,55,12,'#543f38','#ffb793');c.textAlign='center';c.fillStyle='#fff0db';c.font='bold 17px system-ui';c.fillText('Plantan vissnade',w/2,h-45);c.font='13px system-ui';c.fillText(g.lossReason,w/2,h-25);
     }
     if(g.job?.stage==='think'){
-      const p=this.point(g.gardener),text=g.job.entry.text+' ?',bw=Math.min(200,w-30);this.round(clamp(p.x-bw/2,8,w-bw-8),p.y-145*this.scale,bw,32,10,'#fff0d3','#dbb585');c.fillStyle='#594f44';c.font='bold 16px system-ui';c.textAlign='center';c.fillText(text,clamp(p.x,bw/2+8,w-bw/2-8),p.y-124*this.scale,bw-16);
+      const p=this.point(g.gardener),text=g.job.entry.text+' ?',bw=SC.labelWidth(c,text,{font:'bold 16px system-ui',max:Math.min(200,w-30)});this.round(clamp(p.x-bw/2,8,w-bw-8),p.y-145*this.scale,bw,32,10,'#fff0d3','#dbb585');c.fillStyle='#594f44';c.font='bold 16px system-ui';c.textAlign='center';c.fillText(text,clamp(p.x,bw/2+8,w-bw/2-8),p.y-124*this.scale,bw-16);
     }
   }
   plant(p){
@@ -153,7 +153,7 @@ class GardenRenderer extends SC.SceneRenderer{
     c.save();c.translate(pos.x,pos.y);c.scale(s,s);
     this.circle(0,0,33,'#172e3135');
     c.fillStyle=p.dead?'#7a746b':look.pot;c.beginPath();c.moveTo(-28,-4);c.lineTo(-21,27);c.quadraticCurveTo(0,34,21,27);c.lineTo(28,-4);c.fill();
-    c.fillStyle=look.pot;c.beginPath();c.ellipse(0,-4,30,10,0,0,6.28);c.fill();c.fillStyle=`hsl(28 31% ${38-22*p.moisture}%)`;c.beginPath();c.ellipse(0,-5,25,6,0,0,6.28);c.fill();
+    c.fillStyle=look.pot;c.beginPath();c.ellipse(0,-4,30,10,0,0,6.28);c.fill();c.fillStyle=SC.soilColor(p.moisture,p.dead);c.beginPath();c.ellipse(0,-5,25,6,0,0,6.28);c.fill();
     SC.drawPlant(this,p,g.clock);
     c.font='bold 13px system-ui';c.textAlign='center';c.fillStyle='#fff5db';p.bloom&&c.fillText('✿',0,17);
     this.round(-25,35,50,4,2,'#213f42');if(p.growth)this.round(-25,35,50*p.growth,4,2,p.bloom?'#ffe29e':'#a9e4b1');c.restore();
@@ -168,12 +168,14 @@ class GardenRenderer extends SC.SceneRenderer{
   }
   bubbles(){
     const c=this.ctx,g=this.game,w=g.width,h=g.height,boxes=[],crowded=g.getTargets().length>12,taskStates=g.getTaskStates();
-    const blocked=g.pots.map(p=>{const q=this.point(p);return {x:q.x-27*this.scale,y:q.y-(35+p.growth*75)*this.scale,w:54*this.scale,h:(73+p.growth*75)*this.scale};});
+    const blocked=g.pots.map(p=>{const q=this.point(p);const bounds=SC.plantBounds(p);return {x:q.x-45*this.scale,y:q.y+bounds.top*this.scale,w:90*this.scale,h:(40-bounds.top)*this.scale};});
     const gardener=this.point(g.gardener);blocked.push({x:gardener.x-42*this.scale,y:gardener.y-116*this.scale,w:84*this.scale,h:138*this.scale});
     const overlaps=(a,b)=>a.x<b.x+b.w+5&&a.x+a.w+5>b.x&&a.y<b.y+b.h+5&&a.y+a.h+5>b.y;
     for(const pot of g.pots){
       const reqs=Object.values(pot.requests);if(!reqs.length)continue;
-      const p=this.point(pot),bw=SC.latinMode(g.mode)&&g.mode.endsWith('Long')?(w<500?128:154):(w<500?86:118),row=28,bh=reqs.length*row+8,candidates=[];
+      const font='bold '+(['chinese','bopomofo'].includes(g.mode)?21:16)+'px system-ui';
+      const widths=reqs.map(r=>{const main=SC.labelWidth(c,r.item.label,{font,padding:0,min:0,max:400});if(g.mode==='chinese'&&g.hints)return main+SC.labelWidth(c,r.item.hint||'',{font:'10px system-ui',padding:0,min:0,max:400})+43;return main+38;});
+      const p=this.point(pot),bw=clamp(Math.max(...widths),48,w<500?144:180),row=28,bh=reqs.length*row+8,candidates=[];
       const bx=pot.x>=0?p.x+30*this.scale:p.x-bw-30*this.scale;
       for(const [x,y] of [[bx,p.y-bh/2],[p.x-bw/2,p.y-(42+pot.growth*75)*this.scale-bh],[p.x-bw/2,p.y+40*this.scale],[w/2-bw/2,135]])candidates.push({x:clamp(x,7,w-bw-7),y:clamp(y,120,h-bh-9),w:bw,h:bh});
       for(let y=120;y<h-bh-8;y+=16)for(let x=7;x<w-bw;x+=22)candidates.push({x,y,w:bw,h:bh});
@@ -184,7 +186,7 @@ class GardenRenderer extends SC.SceneRenderer{
       for(let i=0;i<reqs.length;i++){
         const r=reqs[i],y=box.y+4+i*row,state=taskStates.get(r);
         if(state)this.round(box.x+3,y,bw-6,row,5,'#62df87',state==='active'?'#17683b':null);
-        SC.drawGardenTool(this,r.property,box.x+16,y+14,.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font='bold '+(g.mode==='chinese'||g.mode==='bopomofo'?21:16)+'px system-ui';if(g.mode==='chinese'&&g.hints){c.fillText(r.item.label,box.x+39,y+21,24);c.font='10px system-ui';c.fillText(r.item.hint||'',box.x+55+(bw-61)/2,y+18,bw-61);}else c.fillText(r.item.label,box.x+32+(bw-38)/2,y+20,bw-38);
+        SC.drawGardenTool(this,r.property,box.x+16,y+14,.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font='bold '+(g.mode==='chinese'||g.mode==='bopomofo'?21:16)+'px system-ui';if(g.mode==='chinese'&&g.hints){c.fillText(r.item.label,box.x+40,y+21,24);c.font='10px system-ui';c.fillText(r.item.hint||'',box.x+51+(bw-57)/2,y+18,bw-57);}else c.fillText(r.item.label,box.x+30+(bw-36)/2,y+20,bw-36);
       }
     }
     this.bubbleBoxes=boxes;

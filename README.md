@@ -41,6 +41,16 @@ Mandarin har valbar pinyin-hjälp. Tal jämförs som pinyin utan toner; till exe
 
 Svenskt tal kan delas upp när tjänsten skriver ihop två eller tre aktuella mål, exempelvis `hundmat`. Detta gäller inte matte. Vanliga engelska homofoner har uttryckliga talalias, exempelvis `see / sea / c`. Tangentbordsläget kräver korrekt stavning.
 
+## Bikupans äng
+
+Blommorna står utspridda på en ny, oregelbunden äng varje omgång. Växterna delar modell med Ordträdgården: fyra stamformer, fem bladformer och sex blomformer kombineras med olika höjd, färg, bredd och antal blommor. Torr jord blir ljusare och plantan slokar, näringsbrist bleker bladverket och ohyra syns som allt fler och större kryp.
+
+De första blommorna öppnar efter ungefär en sekund. En del sommarplantor håller kvar knoppar för en senare höstblomning; avlägsna höstblommor öppnar tidigare så att bina hinner tur och retur. När inga svar finns att ge, kön är tom och alla fem bin är hemma går årstiden fyra gånger fortare. Så snart en blomma öppnar återgår tiden till normal takt. Synliga uppgifters livslängd och pågående flygningar snabbas aldrig upp. Matte behåller sin längre speltid och blomningstid.
+
+Varje leverans efter att kupan blivit full ger en synlig honungsburk. Burkarna staplas bredvid kupan och finns kvar under vinterfirandet. Poängregeln är oförändrad: 100 poäng per leverans. Nektar som fortfarande är ute när vintern börjar räknas inte.
+
+Uppgiftsbubblorna anpassar bredden efter ordet, tecknet och eventuell pinyin i samtliga spel. Bikupan behåller placeringen när en uppgift bara byter köstatus och söker fria platser runt växterna om etiketter annars skulle överlappa.
+
 ## Mikrofon
 
 Två tallägen finns:
