@@ -1,3 +1,15 @@
+# Marshmallows: perspektiv, händer och grillning utan mätare
+
+2026-09-07.
+
+Växterna blir större närmare bildens nederkant och ritas i avståndsordning. Förgrundsträdens stammar är dubbelt så tjocka. Armarna har avsmalnande ärm, manschett, handled och ett spegelvänt grepp med böjda fingrar och en tumme. Vid inspektion roterar underarm, hand och pinne tillsammans runt en fast armbåge; rotationsvinkeln begränsas i låga fönster så att marshmallowen stannar nedanför poängfältet.
+
+Etiketterna har mörk bakgrund, ljus text och en tydligare färdigkant. Marshmallows visar ingen tidsmätare eller liten månsymbol i HUD, och ordetiketternas grillmätare är borttagna. Färdighalor och färdigstjärnor är borttagna från pinnarna. Marshmallows sväller, blir tydligt gyllene med rostade fläckar och får därefter en svartnad, krympande och sprucken yta. Grillgränser, poäng, inmatning och ljud är oförändrade.
+
+**Verifiering:** `npm test` passerar **18 av 18 testsviter**. Marshmallows har nu 13 kontrollgrupper, inklusive fast armbåge, oförändrade längder på underarm och pinne, synlig inspektion och mjuk övergång till uttag vid gryning. Geometri och etiketter kontrolleras vid 320×540, 370×740, 1100×540 och 1100×740. Appintegration kontrollerar att HUD-delen döljs i Marshmallows och återkommer i övriga spel. Natt, sex pinnar, inspektion och gryning har granskats med native Canvas i bred och smal layout. Chrome på Windows har inte manuellt provats.
+
+---
+
 # Marshmallows: lägereld från natt till morgon
 
 2026-09-07.

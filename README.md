@@ -54,13 +54,13 @@ Uppgiftsbubblorna anpassar bredden efter ordet, tecknet och eventuell pinyin i s
 
 ## Marshmallows
 
-En omgång varar i två minuter, följt av sex sekunders soluppgång. Svårigheten styr bara antalet samtidiga pinnar: 2, 4 eller 6. Elden svalnar under natten, vilket gör grillningen långsammare. Gyllene marshmallows har en grön markering på ordet och ger 100 poäng var. Den lilla mätaren visar vägen från vit till gyllene och bränd. Nya pinnar slutar komma när det inte finns tid att grilla dem före morgonen.
+En omgång varar i två minuter, följt av sex sekunders soluppgång. Svårigheten styr bara antalet samtidiga pinnar: 2, 4 eller 6. Elden svalnar under natten, vilket gör grillningen långsammare. Gyllene marshmallows har en tydlig grön kant runt ordet och ger 100 poäng var. Marshmallowens egen färg och form visar grillningen: först blek och mjuk, sedan gyllene med rostade fläckar, till sist svartnad och sprucken. Etiketterna har mörk bakgrund. Inga grillmätare, färdighalor eller tidsmätare visas. Nya pinnar slutar komma när det inte finns tid att grilla dem före morgonen.
 
-Ett för tidigt svar lyfter pinnen för en titt och återför den med ett nytt ord. Grillningen står still under denna rörelse. Brända marshmallows kan börja brinna och kastas sedan tillbaka på marken, där de ligger kvar. Felmatchade svar ger en kort frågebubbla och hindrar inte andra pinnar. Omgången kan inte förloras.
+Ett för tidigt svar vrider underarmen och pinnen runt armbågen för en titt och återför pinnen med ett nytt ord. Grillningen står still under denna rörelse. Brända marshmallows kan börja brinna och kastas sedan tillbaka på marken, där de ligger kvar. Felmatchade svar ger en kort frågebubbla och hindrar inte andra pinnar. Omgången kan inte förloras.
 
 Alla övningar fungerar, inklusive bokstäver utan Enter, kontinuerligt tal och fem sekunders fördröjd pinyin. Den gyllene tidsluckan är drygt sju sekunder vid stark eld och blir längre när elden svalnar. Matte förlänger både natten och grillningstiden med 30 procent; avsiktlig väntan på grillningen räknas inte som långsamma mattesvar.
 
-Stjärnor, moln, träd, växter, eldflugor, eld, armar och campingprylar ritas lokalt med Canvas. Sprakande ved, syrsor, antändning och tuppgalning syntetiseras utan inspelningar eller nedladdningar. Eldljudet tonar ned med elden och stängs av vid paus, meny, ljud av eller avslut. Alla nya ljud dämpas vid talinmatning.
+Stjärnor, moln, träd, växter, eldflugor, eld, armar och campingprylar ritas lokalt med Canvas. Växternas storlek följer avståndet i scenen, och förgrundsträden har kraftigare stammar. Sprakande ved, syrsor, antändning och tuppgalning syntetiseras utan inspelningar eller nedladdningar. Eldljudet tonar ned med elden och stängs av vid paus, meny, ljud av eller avslut. Alla nya ljud dämpas vid talinmatning.
 
 ## Mikrofon
 

@@ -51,9 +51,24 @@ test('Full nights finish on all difficulties with silent, timed, early and wrong
   if(strategy==='timed'){assert(g.hits>=8,pace+'/'+mode+' only '+g.hits+' served');assert.equal(g.burnt,0);}if(strategy==='silent'||strategy==='wrong'){assert.equal(g.hits,0);assert(g.waste.length>0);}
  }
 });
+test('Inspection pivots about a fixed elbow, preserves arm and stick lengths, and stays onscreen',()=>{
+ const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+ for(const [width,height] of [[320,540],[370,740],[1100,540],[1100,740]]){
+  const {g}=setup({pace:'brave'});g.resize(width,height);const r=Object.create(SC.MarshmallowRenderer.prototype);r.game=g;
+  for(let slot=0;slot<6;slot++){const p={slot,stage:'roasting',age:0},rest=r.pose(p);
+   for(const age of [0,.2,.85,1.5,1.7]){p.stage='inspecting';p.age=age;const pose=r.pose(p);
+    assert.deepEqual(pose.elbow,rest.elbow);assert.deepEqual(pose.shoulder,rest.shoulder);
+    for(const [a,b] of [['elbow','hand'],['hand','tip'],['elbow','tip']])assert(Math.abs(distance(pose[a],pose[b])-distance(rest[a],rest[b]))<1e-8,'rigid grip stretches');
+    assert(pose.tip.x>16&&pose.tip.x<width-16&&pose.tip.y>=150-1e-8,'inspection leaves the visible play area');
+    if(age===.85){assert(pose.hand.y<rest.hand.y);assert(Math.abs(pose.hand.x-rest.hand.x)>1,'inspection is translating instead of rotating');}
+   }
+   p.age=.6;const before=r.pose(p);p.exitLift=Math.sin(Math.PI*p.age/1.7);p.stage='withdrawing';p.age=0;const after=r.pose(p);assert(distance(before.hand,after.hand)<1e-8);assert(distance(before.tip,after.tip)<1e-8,'dawn snaps a lifted stick');
+  }
+ }
+});
 test('Six labels stay separate with short letters, long words, math and mixed pinyin at narrow and wide sizes',()=>{
  const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
- for(const [width,height] of [[320,540],[370,740],[1100,740]])for(const mode of ['letters','swedishLong','englishLong','math','chinese']){
+ for(const [width,height] of [[320,540],[370,740],[1100,540],[1100,740]])for(const mode of ['letters','swedishLong','englishLong','math','chinese']){
   const {g}=setup({mode,pace:'brave'});g.resize(width,height);while(g.spawn());tick(g,.85);g.clock+=6;g.getTargets().forEach((p,i)=>{p.appearedAt=i%2?g.clock:0;p.roast=.2+i*.25;});
   const c=new Proxy({font:'16px system-ui',measureText(text){const size=Number(this.font.match(/([\d.]+)px/)?.[1]||16);return {width:Array.from(text).reduce((n,ch)=>n+size*(/\p{Script=Han}/u.test(ch)?1:.6),0)};},fillText(text,x,y,max){assert(Number.isFinite(x)&&Number.isFinite(y));if(max!==undefined)assert(max>0);}},{get:(o,k)=>k in o?o[k]:k==='createLinearGradient'||k==='createRadialGradient'?()=>({addColorStop(){}}):()=>{}});
   const r=Object.create(SC.MarshmallowRenderer.prototype);Object.assign(r,{ctx:c,game:g,dpr:1,reduced:false});r.draw();assert.equal(r.labelBoxes.length,6);
