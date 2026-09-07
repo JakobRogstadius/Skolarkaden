@@ -6,9 +6,17 @@ for(const f of ['pinyin','data','speech','input','people','game','plants','garde
 const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;},tick=(g,t)=>{for(let i=0;i<Math.round(t/.05);i++)g.update(.05);};
 let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
 function policy(g){g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,i)=>SC.matches(e.text,i,g.mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,g.mode,g.lang)});}
-function setup(options={}){const events=[],g=new SC.EggGame({random:rng(8),onEvent:e=>events.push(e)});g.start(options);policy(g);g.eggs.forEach(e=>e.crackAt=10000);tick(g,6);return {g,e:g.eggs[0],events};}
+function setup(options={}){const events=[],g=new SC.EggGame({random:rng(8),onEvent:e=>events.push(e)});g.start(options);policy(g);g.eggs.forEach(e=>e.crackAt=10000);tick(g,6);g.eggs.slice(0,2).forEach(e=>{e.x=g.player.x+.07;e.y=g.player.y;e.home={x:e.x,y:e.y};});return {g,e:g.eggs[0],events};}
 function hatch(g,e){g.crack(e);g.hatch(e);}
 function finish(g){for(let i=0;i<80&&['playing','celebrating','mourning'].includes(g.state);i++)g.update(.05);}
+test('Range is 130 scaled pixels: distant targets stay reserved until approached, including across hatching',()=>{
+ const {g,e}=setup({mode:'chinese'});Object.assign(g.player,{x:.1,y:.9,facing:1});Object.assign(e,{x:.85,y:.5,home:{x:.85,y:.5}});g.crack(e);const entry=g.queue.enqueue(e.item.answer),x=g.player.x;g.work(.05);assert.equal(g.flameRange,130);assert(g.player.x>x);assert.equal(g.job.firing,false);assert.equal(e.stage,'cracking');assert(!g.getAvailableTargets().includes(e));assert.equal(g.getTaskStates().get(e),'active');assert.equal(g.queue.enqueue(e.item.answer),undefined);g.clock+=6;assert(!SC.pinyinHints(g).has(e));g.hatch(e);assert.equal(g.job.target,e);assert.equal(g.job.entry,entry);
+ for(let i=0;i<300&&!g.job.firing;i++)g.work(.05);assert(g.job.firing);assert(g.inFlameRange(e));assert.equal(e.stage,'burning');
+ const a=g.flamePose(e),limit=g.flameRange*g.scale();e.x=(a.x+limit+.01)/g.width;e.y=(a.y+12*g.scale())/g.height;assert(!g.inFlameRange(e));e.x-=.02/g.width;assert(g.inFlameRange(e));
+});
+test('Random egg placement is stable on resize and avoids grid rows and close overlaps',()=>{
+ for(let seed=1;seed<=12;seed++){const g=new SC.EggGame({random:rng(seed)});g.start({pace:'brave'});for(const [i,e] of g.eggs.entries()){assert(e.x>=.12&&e.x<=.88&&e.y>=.48&&e.y<=.92);for(const other of g.eggs.slice(i+1))assert(Math.hypot((e.x-other.x)/.14,(e.y-other.y)/.10)>.65);}assert(new Set(g.eggs.map(e=>e.y.toFixed(3))).size>12);const before=JSON.stringify(g.eggs.map(e=>[e.x,e.y]));g.resize(320,540);g.resize(1100,740);assert.equal(JSON.stringify(g.eggs.map(e=>[e.x,e.y])),before);}
+});
 test('Six human crew enter, investigate and keep speed rules; difficulty changes egg counts',()=>{
  for(const [pace,n] of [['gentle',8],['steady',12],['brave',16]]){const g=new SC.EggGame({random:rng(3)});g.start({pace});assert.equal(g.total,n);assert.equal(g.eggs.length,n);assert.equal(g.people.length,6);assert.equal(g.people.filter(p=>p.player).length,1);assert(g.people.every(p=>p.y>1&&p.status==='entering'&&!p.look.exotic));assert.equal(g.alienSpeed/g.runSpeed,2);assert.equal(g.getTargets().length,0);tick(g,7);assert(g.people.every(p=>p.status!=='entering'));assert(g.people.filter(p=>!p.player).some(p=>p.status==='walking'));}
 });
@@ -21,10 +29,10 @@ test('Cracks and opening lobes naturally lead to hatching at each egg’s own ti
  const {g,e}=setup();g.crack(e);tick(g,e.hatchTime*.64-.1);assert.equal(e.stage,'cracking');tick(g,.2);assert.equal(e.stage,'hatching');tick(g,e.hatchTime*.36+.1);assert.equal(e.form,'alien');assert.equal(g.shells.length,1);assert(g.getTargets().includes(e));
 });
 test('Immediate fire stops attackers before a catch and can rescue an attached human',()=>{
- for(const victimIndex of [0,1]){const {g,e}=setup();hatch(g,e);const p=g.people[victimIndex];Object.assign(p,{x:.5,y:.7,status:p.player?'ready':'walking'});Object.assign(e,{x:p.x,y:p.y,stage:'chasing'});
+ for(const victimIndex of [0,1]){const {g,e}=setup();hatch(g,e);const p=g.people[victimIndex];Object.assign(p,{x:.5,y:.7,status:p.player?'ready':'walking'});Object.assign(e,{x:p.x,y:p.y,stage:'chasing'});g.player.x=p.x;g.player.y=p.y;
   g.queue.enqueue(e.item.answer);g.update(.05);assert.equal(e.stage,'burning');assert.notEqual(p.status,'chewing');assert.notEqual(p.status,'dead');tick(g,1);assert.equal(e.stage,'dying');tick(g,.75);assert.equal(e.stage,'dead');assert.equal(g.hits,1);
  }
- for(const victimIndex of [0,1]){const {g,e}=setup();hatch(g,e);const p=g.people[victimIndex];g.catch(e,p);assert.equal(p.status,'chewing');e.age=2.49;g.queue.enqueue(e.item.answer);g.update(.05);assert.equal(e.stage,'burning');assert.equal(p.attacker,null);assert.equal(e.victim,null);assert.notEqual(p.status,'dead');assert.notEqual(p.status,'chewing');}
+ for(const victimIndex of [0,1]){const {g,e}=setup();hatch(g,e);const p=g.people[victimIndex];g.player.x=p.x;g.player.y=p.y;g.catch(e,p);assert.equal(p.status,'chewing');e.age=2.49;g.queue.enqueue(e.item.answer);g.update(.05);assert.equal(e.stage,'burning');assert.equal(p.attacker,null);assert.equal(e.victim,null);assert.notEqual(p.status,'dead');assert.notEqual(p.status,'chewing');}
 });
 test('Bystanders jump then flee; a catch chews, kills one human and releases the alien to wander',()=>{
  const {g,e,events}=setup();hatch(g,e);const p=g.people[1];Object.assign(p,{x:.5,y:.65,status:'walking'});Object.assign(e,{x:.53,y:.65});g.updatePeople(.05);assert.equal(p.status,'startled');tick(g,.1);assert(g.jumpHeight(p)>0);g.updatePeople(.3);assert.equal(p.status,'running');assert.equal(p.fear,1);
@@ -68,7 +76,7 @@ function drawing(g){const stack=[],texts=[],c=new Proxy({font:'16px system-ui',s
 test('Sixteen dark labels fit at minimum height, including delayed hints and long words',()=>{
  const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
  for(const [w,h] of [[320,540],[370,740],[620,540],[700,540],[800,540],[1100,540]])for(const mode of ['letters','swedishLong','chinese']){
-  const {g}=setup({pace:'brave',mode});g.resize(w,h);for(const e of g.eggs){g.crack(e);if(e.id%2)g.hatch(e);}g.clock+=6;const {r,stack}=drawing(g);r.draw();assert.equal(stack.length,0);assert.equal(r.labelBoxes.length,16);
+  const g=new SC.EggGame({random:rng(8)});g.start({pace:'brave',mode});g.resize(w,h);for(const e of g.eggs){g.crack(e);if(e.id%2)g.hatch(e);}g.clock+=6;const {r,stack}=drawing(g);r.draw();assert.equal(stack.length,0);assert.equal(r.labelBoxes.length,16);
   for(const [i,b] of r.labelBoxes.entries()){assert(b.x>=0&&b.y>=120&&b.x+b.w<=w&&b.y+b.h<=h);assert(r.labelBoxes.slice(i+1).every(a=>!overlap(a,b)),[w,h,mode,i].join('/'));if(mode==='letters')assert(b.w<=34);}
   const e=g.eggs[0];g.catch(e,g.people[1]);r.draw();g.killHuman(e);r.draw();g.queue.enqueue(e.item.answer);g.work(.05);r.draw();tick(g,1);r.draw();g.finish(false);tick(g,.5);r.draw();assert.equal(stack.length,0);
  }

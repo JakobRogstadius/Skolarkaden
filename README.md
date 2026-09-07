@@ -71,11 +71,11 @@ En planta kan vissna utan att avsluta omgången. Döda plantor får inga fler up
 
 ## Äggröra
 
-En besättning på sex människor, inklusive spelaren med eldkastare, kommer in i ett mörkt rymdskepp med slemmiga ägg, kåda och våta nät. Vännerna strövar omkring och undersöker rummet. Lugn, Lagom och Utmaning ger 8, 12 respektive 16 ägg. Äggen spricker och kläcks vid olika slumpmässiga tider. Sprickor och öppnade äggflikar visar kläckningen; inga förloppsmätare visas.
+En besättning på sex människor, inklusive spelaren med eldkastare, kommer in i ett mörkt rymdskepp med slemmiga ägg, kåda och våta nät. Vännerna strövar omkring och undersöker rummet. Lugn, Lagom och Utmaning ger 8, 12 respektive 16 ägg. Äggen står slumpmässigt utspridda med avstånd mellan varandra, utan rutnätsrader. De spricker och kläcks vid olika slumpmässiga tider. Sprickor och öppnade äggflikar visar kläckningen; inga förloppsmätare visas.
 
 Äggets första sprickor gör det till ett mål. Ett kläckt kryp behåller exakt samma mål, ord, köreservation och ledtrådstid. Krypen vandrar omkring, jagar människor i närheten med dubbla flykthastigheten och fäster sig vid ansiktet när de kommer ikapp. Människorna hoppar till och flyr, utom spelaren. En oavbruten attack får människan att falla huvudlös i en blodpöl, varefter krypet fortsätter söka.
 
-Ett rätt svar riktar eldkastaren mot målet och stoppar krypet omedelbart, även om det redan sitter på någon. Ägg och kryp brinner kort och blir grå. Döende kryp hoppar en gång och vänder sig på rygg. Varje förstört ägg eller kryp ger 100 poäng; samma ägg kan inte ge poäng en gång till efter kläckning. Brännande mål kan avsluta sin animation medan nästa svar behandlas.
+Ett rätt svar reserverar målet. Spelaren går närmare tills målet är inom eldkastarens räckvidd på 130 skalade pixlar från mynningen, hälften av det tidigare gångavståndet på 260. Först då avfyras elden och stoppar krypet, även om det redan sitter på någon. Målet förblir reserverat under gång och kläckning. Ägg och kryp brinner kort och blir grå. Döende kryp hoppar en gång och vänder sig på rygg. Varje förstört ägg eller kryp ger 100 poäng; samma ägg kan inte ge poäng en gång till efter kläckning. Brännande mål kan avsluta sin animation medan nästa svar behandlas.
 
 Spelet vinns när alla ägg och kryp är döda. Det förloras först när hela besättningen, inklusive spelaren, är död. Om spelaren dör fortsätter övriga människor försöka komma undan, och inmatningen stängs av. Överlevande människor gör tre segerhopp vid vinst; kvarvarande kryp gör det vid förlust. Alla övningar, talmatchning, köregler och fördröjd pinyin används. Matte ger 40 procent längre tider och långsammare rörelser, med samma relativa hastigheter och poäng.
 

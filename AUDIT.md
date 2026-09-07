@@ -270,3 +270,8 @@ Trädgårdstester har uppdaterats för 30 procent högre behovstakt, 80 procent 
 Den här uppdateringen verifieras med Node-simuleringar, koordinatkontroller och DOM/Canvas-ersättningar. Ingen manuell webbläsargranskning eller fysisk mikrofonprovning ingår.
 
 Samtliga 19 testsviter passerade efter uppdateringen. Lokala resursreferenser, JavaScript-syntax och diffens blanksteg kontrollerades också.
+
+
+## Äggröra: kortare eldkastare och slumpmässig spridning
+
+Eldkastaren har nu en verklig gräns på 130 skalade pixlar från mynningen. Den gamla gränsen 260 användes endast för gång; antändning kunde ske oavsett avstånd. Ett reserverat mål antänds nu först inom räckvidd, och elden ritas aldrig längre än räckvidden. Gång, köreservation och pinyin följer med genom kläckning. Äggens jitterrutnät har ersatts med slumpmässiga kandidater med avståndsurval. Kontroller omfattar räckviddsgränser, rörelse före eld, reservationer under kläckning, spridning och stabilitet vid storleksändring.

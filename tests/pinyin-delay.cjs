@@ -8,7 +8,7 @@ const rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4
 let checks=0;const test=(name,fn)=>{fn();checks++;console.log('PASS '+name);};
 function game(name,width=1000){
  const g=new SC[name+'Game']({random:rng(5)});g.start({mode:'chinese',lang:'zh-CN',pace:'gentle'});g.resize(width,name==='Beehive'&&width<600?1200:740);
- if(name==='Egg'){g.eggs.forEach(e=>e.crackAt=10000);tick(g,7);g.crack(g.eggs[0]);g.eggs[0].hatchTime=10000;}
+ if(name==='Egg'){g.eggs.forEach(e=>e.crackAt=10000);tick(g,7);g.eggs[0].x=g.player.x+.07;g.eggs[0].y=g.player.y;g.crack(g.eggs[0]);g.eggs[0].hatchTime=10000;}
  if(name==='Garden'){g.pots[0].moisture=.4;g.syncRequests(g.pots[0]);g.decayPlants=()=>{};}
  for(let i=0;i<100&&!g.getTargets().length;i++)g.update(.05);
  const p=g.getTargets()[0];assert(p,name+' first target missing');assert(Number.isFinite(p.appearedAt),name+' missing appearance time');

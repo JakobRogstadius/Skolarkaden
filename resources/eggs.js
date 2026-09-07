@@ -18,8 +18,9 @@ class EggGame{
   // A human crew, drawn by the shared parameterised cast (adult men and women).
   this.people=Array.from({length:6},(_,i)=>{let first=true;const look=SC.makePerson(()=>{if(first){first=false;return this.random()*.8;}return this.random();});look.hat=false;const goal=i===0?{x:.5,y:.86}:{x:.19+i*.12,y:.55+(i%3)*.12};return {id:i,x:.5+(i%2?.04:-.04),y:1.08+i*.10,status:'entering',age:0,goal,look,fear:0,facing:1,player:i===0,attacker:null,wait:0};});
   this.player=this.people[0];this.player.look.shirt='#e6ac5e';this.player.look.pants='#36444c';
-  const cols=4,rows=Math.ceil(this.total/cols);
-  this.eggs=Array.from({length:this.total},(_,i)=>({id:++this.nextId,form:'egg',stage:'dormant',x:.16+(i%cols)*.225+(this.random()-.5)*.09,y:.48+Math.floor(i/cols)*(.4/Math.max(1,rows-1))+(this.random()-.5)*.035,home:null,age:0,phase:this.random()*TAU,crackAt:(7+i*(40/this.total)+this.random()*7)*this.timeScale,hatchTime:(9+this.random()*6)*this.timeScale,item:null,appearedAt:null,entry:null,victim:null,facing:1,goal:null,stride:0,searchAge:0}));
+  this.flameRange=130;const positions=[];
+  for(let i=0;i<this.total;i++){let best=null,clearance=-1;for(let j=0;j<32;j++){const q={x:.12+this.random()*.76,y:.48+this.random()*.44},d=positions.length?Math.min(...positions.map(p=>Math.hypot((q.x-p.x)/.14,(q.y-p.y)/.10))):1;if(d>clearance){best=q;clearance=d;}}positions.push(best);}
+  this.eggs=Array.from({length:this.total},(_,i)=>({id:++this.nextId,form:'egg',stage:'dormant',...positions[i],home:null,age:0,phase:this.random()*TAU,crackAt:(7+i*(40/this.total)+this.random()*7)*this.timeScale,hatchTime:(9+this.random()*6)*this.timeScale,item:null,appearedAt:null,entry:null,victim:null,facing:1,goal:null,stride:0,searchAge:0}));
   this.eggs.forEach(e=>e.home={x:e.x,y:e.y});
   // Persistent geometry; resizing and drawing never consume gameplay randomness.
   this.resin=Array.from({length:34},()=>({x:this.random(),y:.38+this.random()*.6,size:.45+this.random(),phase:this.random()*TAU}));
@@ -29,9 +30,9 @@ class EggGame{
  resume(){if(this.state==='paused'){this.state='playing';this.emit('resume');}}
  living(){return this.people.filter(p=>p.status!=='dead');}
  getTargets(){return this.eggs.filter(e=>e.item&&!harmless(e)).sort((a,b)=>(b.form==='alien')-(a.form==='alien')||a.crackAt-b.crackAt);}
- getAvailableTargets(){return this.getTargets();}
+ getAvailableTargets(){return this.getTargets().filter(e=>e!==this.job?.target);}
  getActiveEntries(){return [...new Set([this.job?.entry,...this.eggs.filter(e=>e.stage!=='dead').map(e=>e.entry)].filter(Boolean))];}
- getTaskStates(){const states=new Map();for(const entry of this.queue.items){const e=this.getTargets().find(e=>!states.has(e)&&SC.matches(entry.text,e.item,this.mode,this.lang,entry.source));if(e)states.set(e,'queued');}return states;}
+ getTaskStates(){const states=new Map();if(this.job?.target&&!harmless(this.job.target))states.set(this.job.target,'active');for(const entry of this.queue.items){const e=this.getTargets().find(e=>!states.has(e)&&SC.matches(entry.text,e.item,this.mode,this.lang,entry.source));if(e)states.set(e,'queued');}return states;}
  workerStatus(){return this.player?.status==='dead'?'Besättningen försöker komma undan':this.job?'Eldkastaren arbetar':'Väntar på sprickor';}
  crack(e){
   if(e.stage!=='dormant')return;const items=SC.practiceItems(this),used=this.getTargets().map(t=>t.item.answer),pool=items.filter(i=>!used.includes(i.answer)),choices=pool.length?pool:items,base=choices[Math.floor(this.random()*choices.length)];
@@ -44,11 +45,19 @@ class EggGame{
  ignite(e,entry){
   if(harmless(e))return;this.release(e);e.entry=entry;e.stage='burning';e.age=0;e.goal=null;this.emit('egg-flame');
  }
+ flamePose(e){const p=this.player,s=this.scale();return {x:p.x*this.width+p.facing*60*s,y:p.y*this.height-39*s,tx:e.x*this.width,ty:e.y*this.height-(e.stage==='chewing'&&e.victim?(54*e.victim.look.height+26)*SC.personScale(e.victim.look):e.form==='egg'?32:12)*s};}
+ inFlameRange(e){const a=this.flamePose(e);return Math.hypot(a.tx-a.x,a.ty-a.y)<=this.flameRange*this.scale();}
  work(dt){
-  const p=this.player;if(p.status==='dead'||p.status==='entering')return;
-  if(!this.job&&this.queue.length){const entry=this.queue.take();if(entry){const target=this.getTargets().find(e=>SC.matches(entry.text,e.item,this.mode,this.lang,entry.source));this.shots++;this.job={entry,target,age:0};if(target)this.ignite(target,entry);else this.emit('think',{entry});}}
-  const j=this.job;if(!j)return;j.age+=dt;
-  if(j.target){p.facing=j.target.x<p.x?-1:1;const to={x:clamp(j.target.x,.12,.88),y:clamp(j.target.y+.15,.52,.94)};if(this.distance(p,j.target)>260*this.scale()&&p.status!=='chewing')this.move(p,to,this.runSpeed,dt);}
+  const p=this.player;p.moving=false;if(p.status==='dead'||p.status==='entering')return;
+  if(!this.job&&this.queue.length){const entry=this.queue.take();if(entry){const target=this.getAvailableTargets().find(e=>SC.matches(entry.text,e.item,this.mode,this.lang,entry.source));this.shots++;this.job={entry,target,age:0,firing:false};if(!target)this.emit('think',{entry});}}
+  const j=this.job;if(!j)return;
+  if(j.target&&!j.firing){
+   const e=j.target;if(harmless(e)){this.job=null;return;}p.facing=e.x<p.x?-1:1;
+   if(!this.inFlameRange(e)&&p.status!=='chewing'){p.moving=true;this.move(p,e,this.runSpeed,dt);}
+   if(!this.inFlameRange(e))return;
+   this.ignite(e,j.entry);j.firing=true;j.age=0;
+  }
+  j.age+=dt;
   if(j.age>=(j.target?.6:.9)){if(!j.target)this.emit('miss',{entry:j.entry});this.job=null;}
  }
  escapeGoal(p,e){
@@ -73,7 +82,7 @@ class EggGame{
    if(this.move(p,p.goal,this.walkSpeed,dt)){p.wait=1.1+this.random()*2;p.goal=this.point();}
   }
  }
- catch(e,p){e.stage='chewing';e.age=0;e.victim=p;p.status='chewing';p.age=0;p.attacker=e;p.fear=1;this.emit('egg-bite');}
+ catch(e,p){e.x=p.x;e.y=p.y;e.stage='chewing';e.age=0;e.victim=p;p.status='chewing';p.age=0;p.attacker=e;p.fear=1;this.emit('egg-bite');}
  killHuman(e){const p=e.victim;if(!p||p.status==='dead'){e.victim=null;e.stage='wandering';return;}p.status='dead';p.age=0;p.attacker=null;p.fallSide=e.facing;e.victim=null;e.stage='wandering';e.age=0;e.searchAge=0;e.goal=this.point();if(p.player){this.job=null;this.emit('player-down');}this.emit('crew-down');}
  updateEggs(dt){
   for(const e of this.eggs){
@@ -127,7 +136,7 @@ class EggRenderer extends SC.SceneRenderer{
   for(const shell of g.shells)this.shell(shell);
   for(const p of g.people)if(p.status==='dead')this.person(p);
   const actors=[...g.eggs.map(e=>({y:e.y+(e.stage==='chewing'?.001:0),draw:()=>this.enemy(e)})),...g.people.filter(p=>p.status!=='dead').map(p=>({y:p.y,draw:()=>this.person(p)}))];actors.sort((a,b)=>a.y-b.y).forEach(a=>a.draw());
-  if(g.job?.target)this.flame();this.labels();
+  if(g.job?.firing)this.flame();this.labels();
   if(g.job&&!g.job.target&&g.player.status!=='dead'){const p=g.player,text=g.job.entry.text+' ?',bw=SC.labelWidth(c,text,{font:'bold 16px system-ui',max:160});this.round(clamp(p.x*w-bw/2,8,w-bw-8),p.y*h-125*g.scale(),bw,32,8,'#253334','#c4a774');c.fillStyle='#f0dfb3';c.textAlign='center';c.font='bold 16px system-ui';c.fillText(text,clamp(p.x*w,bw/2+8,w-bw/2-8),p.y*h-125*g.scale()+22,bw-12);}
  }
  room(){
@@ -182,7 +191,7 @@ class EggRenderer extends SC.SceneRenderer{
   c.fillStyle=body;c.beginPath();c.ellipse(0,-10,20,10,0,0,TAU);c.fill();c.strokeStyle=joint;c.lineWidth=1.5;for(let i=-2;i<=2;i++){c.beginPath();c.ellipse(i*6,-10,3,8,.2,-1.2,1.2);c.stroke();}this.circle(15,-11,5,gray?'#a3aaa0':'#dacba0');c.restore();
  }
  person(p){
-  const c=this.ctx,g=this.game,s=g.scale(),dead=p.status==='dead',chewing=p.status==='chewing',win=['celebrating','won'].includes(g.state),jump=this.reduced?0:!dead&&win?Math.abs(Math.sin(Math.PI*Math.min(3,g.celebration)))*27*s:g.jumpHeight(p),moving=['entering','walking','running'].includes(p.status)&&p.wait<=0,walk=this.reduced?0:chewing?Math.sin(p.age*37)*6:moving?Math.sin(g.clock*(p.status==='running'?22:9)+p.look.phase)*6:0;
+  const c=this.ctx,g=this.game,s=g.scale(),dead=p.status==='dead',chewing=p.status==='chewing',win=['celebrating','won'].includes(g.state),jump=this.reduced?0:!dead&&win?Math.abs(Math.sin(Math.PI*Math.min(3,g.celebration)))*27*s:g.jumpHeight(p),moving=p.moving||['entering','walking','running'].includes(p.status)&&p.wait<=0,walk=this.reduced?0:chewing?Math.sin(p.age*37)*6:moving?Math.sin(g.clock*(p.status==='running'?22:9)+p.look.phase)*6:0;
   const x=p.x*g.width,y=p.y*g.height;
   if(dead){const spread=clamp(p.age/1.3,0,1);c.fillStyle='#781f2de0';c.beginPath();c.ellipse(x+(p.fallSide||1)*24*s,y+3*s,(19+spread*30)*s,(6+spread*6)*s,.08,0,TAU);c.fill();
    c.save();c.translate(x,y);c.rotate((p.fallSide||1)*Math.PI/2*clamp(p.age/.5,0,1));SC.drawPerson(this,{x:0,feet:0,scale:s,look:p.look,shadow:false,headless:true});c.restore();return;
@@ -194,7 +203,7 @@ class EggRenderer extends SC.SceneRenderer{
   const c=this.ctx;for(let i=0;i<5;i++){const flicker=this.reduced?0:Math.sin(t*19+i*2)*5,xx=x+(i-2)*9,hh=25+(i%2)*13+flicker;c.fillStyle=i%2?'#ffd991dd':'#ed8a41df';c.beginPath();c.moveTo(xx-8,y+8);c.quadraticCurveTo(xx-13,y-12,xx+flicker,y-hh);c.quadraticCurveTo(xx+12,y-13,xx+8,y+8);c.fill();}c.globalAlpha=.2;for(let i=0;i<3;i++)this.circle(x+Math.sin(i*2+t)*10,y-43-age*32-i*11,8+i*4,'#bbc0a8');c.globalAlpha=1;
  }
  flame(){
-  const c=this.ctx,g=this.game,p=g.player,e=g.job.target,s=g.scale(),x=p.x*g.width+p.facing*60*s,y=p.y*g.height-39*s,tx=e.x*g.width,ty=e.y*g.height-(e.form==='egg'?32:12)*s,dx=tx-x,dy=ty-y,d=Math.hypot(dx,dy),angle=Math.atan2(dy,dx),t=this.reduced?0:g.clock;
+  const c=this.ctx,g=this.game,p=g.player,e=g.job.target,s=g.scale(),{x,y,tx,ty}=g.flamePose(e),dx=tx-x,dy=ty-y,d=Math.min(g.flameRange*s,Math.hypot(dx,dy)),angle=Math.atan2(dy,dx),t=this.reduced?0:g.clock;
   c.save();c.translate(x,y);c.rotate(angle);const glow=c.createLinearGradient(0,0,d,0);glow.addColorStop(0,'#effcde');glow.addColorStop(.15,'#ffe4a0d9');glow.addColorStop(.75,'#f78a46ba');glow.addColorStop(1,'#d95b3240');c.fillStyle=glow;c.beginPath();c.moveTo(0,-3*s);
   for(let i=1;i<=12;i++)c.lineTo(d*i/12,-(3+i*1.1+Math.sin(t*35+i)*3)*s);
   for(let i=12;i>=1;i--)c.lineTo(d*i/12,(3+i*1.1+Math.cos(t*29+i)*4)*s);c.lineTo(0,3*s);c.closePath();c.fill();c.strokeStyle='#fff1bd';c.lineWidth=3*s;c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(d*.4,Math.sin(t*28)*6*s,d*.82,0);c.stroke();c.restore();
