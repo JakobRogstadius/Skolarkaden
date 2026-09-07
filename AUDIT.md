@@ -1,3 +1,19 @@
+# Fördröjd pinyin i alla sex spel
+
+2026-09-07.
+
+Pinyinvalet är borttaget ur startmenyn och spelens startalternativ. Varje synlig kinesisk uppgift får i stället en egen femsekundersfördröjning. Kundens ankomst, blommans öppning, ett nytt växtbehov eller figurens inträde på spelplanen startar tiden. Pauser räknas inte, och Bikupans accelererade årstid påverkar inte fördröjningen.
+
+En gemensam regel reserverar ett mål per köat svar med samma matchning som spelen, inklusive tonfri pinyin och talalias. Aktiva jobb och redan köade korrekta svar får ingen ny ledtråd. Felsvar döljer inte ledtrådar. Om ett väntande svar rättas till något annat kan den obesvarade uppgiften visa pinyin. Redan visad pinyin behålls tills uppgiften försvinner, så att kömarkeringar inte krymper bubblor. Omstart och återkommande växtbehov får nya fördröjningar.
+
+Bubblorna mäts efter den pinyin som faktiskt visas, var för sig. Bikupans placeringscache uppdateras när en ledtråd tillkommer. Den dolda textmotsvarigheten för hjälpmedel använder samma regel.
+
+**Verifiering:** `npm test` passerar **16 av 16 testsviter**. `tests/pinyin-delay.cjs` täcker gränsen vid fem sekunder, paus, köer, aktiva jobb, homofoner, felsvar/rättningar, dubbletter, entréer från sidan och nederkanten, blomning, nya växtbehov, samtliga renderare, omstart och övriga övningar. Appintegrationstestet kontrollerar borttaget menyval och att hjälpmedelstexten följer fördröjningen. Befintliga trånga layouttester kontrollerar fortfarande synlig pinyin.
+
+Blandade scener med och utan ledtrådar har granskats i native Canvas vid 1100 och 370 pixlars bredd. Testmiljön saknar kinesiska teckensnitt, så teckeninnehållet verifierades som Unicode-strängar i testerna; bildgranskningen gäller pinyin och bubblornas placering. Chrome på Windows har inte manuellt provats i denna uppdatering.
+
+---
+
 # Bikupan: växter, speltempo och tydligare uppgifter
 
 2026-09-06.

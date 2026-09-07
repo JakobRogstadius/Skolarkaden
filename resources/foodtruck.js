@@ -10,8 +10,8 @@
     emit(type,detail={}){this.onEvent({type,...detail});}
     resize(width,height){this.width=width;this.height=height;}
     menu(){this.state='menu';this.clock=0;this.customers=[];this.effects=[];this.waste=[];this.activeCook=null;this.lock=null;this.previewValue='';this.score=0;this.hits=0;}
-    start({mode='food',pace='gentle',lang='sv-SE',items=null,hints=true,uppercase=Math.random()<.5}={}){
-      this.menu();Object.assign(this,{mode,pace,lang,hints,uppercase});
+    start({mode='food',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
+      this.menu();Object.assign(this,{mode,pace,lang,uppercase});
       this.items=SC.beginPractice(this,items);
       if(!this.items.length)throw new Error('Menyn behöver minst ett svar.');
       this.state='playing';this.lives=5;this.elapsed=0;this.timeLeft=90;this.shots=0;this.streak=0;this.bestStreak=0;this.tips=0;this.lostCustomers=0;this.nextId=0;this.spawnIn=3;
@@ -79,7 +79,7 @@
       for(const e of this.effects)e.age+=dt;this.effects=this.effects.filter(e=>e.age<1.3);
       for(const c of [...this.customers]){
         if(c.status==='arriving'){
-          c.motion+=dt;if(c.motion>=.8){c.status='waiting';this.emit('arrival',{customer:c});if(c.look.exotic)this.emit('rare-arrival',{look:c.look});this.emit('targets');}
+          c.motion+=dt;if(c.motion>=.8){c.status='waiting';c.appearedAt=this.clock;this.emit('arrival',{customer:c});if(c.look.exotic)this.emit('rare-arrival',{look:c.look});this.emit('targets');}
         }else if(c.status==='leaving'){
           c.motion+=dt;if(c.motion>=1.2)this.customers=this.customers.filter(x=>x!==c);
         }else{
@@ -115,7 +115,7 @@
         const preview=[{slot:0,look:{skin:'#c79479',shirt:'#f2a5a3',pants:'#284961',hair:'#463333',height:1,width:1,headRound:true,glasses:false,hat:false,phase:0},status:'waiting',wait:0,patience:1},{slot:2,look:{skin:'#efc49e',shirt:'#f7c86c',pants:'#403752',hair:'#be884e',height:.9,width:1,headRound:false,glasses:true,hat:true,phase:1},status:'waiting',wait:0,patience:1}];
         for(const p of preview)this.person(p,w,h);return;
       }
-      for(const p of g.customers)this.person(p,w,h);
+      const hints=SC.pinyinHints(g);for(const p of g.customers)this.person(p,w,h,hints.has(p));
       const counter=this.cookingPosition(w,h);
       for(const p of g.waste){
         const t=clamp(p.age/.5,0,1),x=counter.x+(p.x*w-counter.x)*t,y=counter.y+(p.y*h-counter.y)*t-Math.sin(t*Math.PI)*50;
@@ -181,7 +181,7 @@
       else{this.round(-18,-9,36,15,4,'#c8dbd2');for(let i=0;i<3;i++)this.circle(-10+i*10,-10,6,['#b2d68f','#edb267','#db7767'][i]);}
       c.restore();
     }
-    person(p,w,h){
+    person(p,w,h,hint=false){
       const c=this.ctx,g=this.game,a=p.look,slotX=[.18,.5,.82][p.slot]*w;
       const entering=p.status==='arriving',leaving=p.status==='leaving',phase=entering?clamp(p.motion/.8,0,1):leaving?clamp(p.motion/1.2,0,1):1;
       const edge=p.slot%2?w+60:-60,x=entering?edge+(slotX-edge)*phase:leaving?slotX+(edge-slotX)*phase:slotX;
@@ -190,7 +190,7 @@
       SC.drawPerson(this,{x,feet,scale,look:a,walk,anger,carry:leaving&&p.happy?(xx,yy)=>this.dish(xx,yy,p.dish,.7):null});
       if(entering||g.state==='menu')return;
       if(leaving)return;
-      const hint=g.mode==='chinese'&&g.hints,font=['chinese','bopomofo'].includes(g.mode)?25:w<500?17:20;
+      const font=['chinese','bopomofo'].includes(g.mode)?25:w<500?17:20;
       const bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',max:Math.min(176,w*.285),min:32}),bh=hint?59:44,bx=slotX-bw/2,by=feet+(headY-45)*visualScale-bh-8,remaining=g.patienceLeft(p);
       c.lineWidth=g.activeCook?.customer===p?2.5:1;
       this.round(bx,by,bw,bh,12,'#fff1d9',g.activeCook?.customer===p||p.look.exotic?'#ffc55e':'#cfb596');

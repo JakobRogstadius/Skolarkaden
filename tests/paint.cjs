@@ -58,7 +58,7 @@ test('Eight labels stay separate and inside the canvas with long words and Manda
  for(const width of [320,368,390,640,1000])for(const mode of ['swedishLong','chinese'])for(let seed=1;seed<=12;seed++){
   const g=new SC.PaintGame({random:rng(seed)});g.start({mode,pace:'brave'});g.resize(width,700);g.people=[];g.spawned=0;
   for(let i=0;i<8;i++){assert(g.spawn());g.people.at(-1).x=.15+i*.10;}
-  const r=Object.create(SC.PaintRenderer.prototype);r.game=g;r.ctx=canvasContext;r.round=()=>{};
+  SC.noteTargetAppearance(g);g.clock+=5;const r=Object.create(SC.PaintRenderer.prototype);r.game=g;r.ctx=canvasContext;r.round=()=>{};
   for(let i=0;i<50;i++){
    r.labels();const boxes=r.labelBoxes;
    for(const [j,a] of boxes.entries()){assert(a.x>=0&&a.x+a.w<=width&&a.y>=0&&a.y+a.h<=700);for(const b of boxes.slice(j+1))assert(!(a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y),`${width}/${mode}/${seed}: overlapping labels`);}

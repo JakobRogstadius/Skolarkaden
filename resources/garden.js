@@ -7,8 +7,8 @@ class GardenGame{
   emit(type,detail={}){this.onEvent({type,...detail});}
   resize(width,height){Object.assign(this,{width,height});this.layoutPots();}
   menu(){this.state='menu';this.clock=0;this.pots=[];this.tools=[];this.effects=[];this.job=null;this.gardener={x:0,y:0,held:null,look:SC.makePerson(this.random)};}
-  start({mode='swedish',pace='gentle',lang='sv-SE',items=null,hints=true,uppercase=Math.random()<.5}={}){
-    this.menu();Object.assign(this,{mode,pace,lang,hints,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Övningen behöver minst ett svar.');
+  start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
+    this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Övningen behöver minst ett svar.');
     this.state='playing';this.elapsed=0;this.score=0;this.hits=0;this.shots=0;this.streak=0;this.bestStreak=0;this.nextId=0;
     const count={gentle:6,steady:9,brave:12}[pace];this.decayInterval=.1;this.decayElapsed=0;this.failedPot=null;this.layoutSeed=this.random()*10000;
     this.gardener.look.hat=true;
@@ -66,7 +66,7 @@ class GardenGame{
       if(p.requests[property])continue;
       const items=SC.practiceItems(this),used=this.getTargets().map(t=>t.item.answer),pool=items.filter(i=>!used.includes(i.answer)),choices=pool.length?pool:items;
       const base=choices[Math.floor(this.random()*choices.length)],item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
-      p.requests[property]={id:++this.nextId,pot:p,property,item};this.emit('need',{pot:p,property});
+      p.requests[property]={id:++this.nextId,pot:p,property,item,appearedAt:this.clock};this.emit('need',{pot:p,property});
     }
   }
   workerStatus(){if(['celebrating','won'].includes(this.state))return 'Alla plantor blommar!';if(this.failedPot)return 'Kruka '+this.failedPot.id+' vissnade · '+this.lossReason;const j=this.job;if(!j)return 'Trädgårdsmästaren väntar på nästa svar';if(j.stage==='think')return j.entry.text+' ?';return `${j.entry.text} · ${j.stage==='fetch'?'hämtar '+NAMES[j.request.property].toLowerCase():j.stage==='run'?'springer till kruka '+j.request.pot.id:'sköter kruka '+j.request.pot.id}`;}
@@ -167,14 +167,14 @@ class GardenRenderer extends SC.SceneRenderer{
     }
   }
   bubbles(){
-    const c=this.ctx,g=this.game,w=g.width,h=g.height,boxes=[],crowded=g.getTargets().length>12,taskStates=g.getTaskStates();
+    const c=this.ctx,g=this.game,w=g.width,h=g.height,boxes=[],crowded=g.getTargets().length>12,taskStates=g.getTaskStates(),hints=SC.pinyinHints(g);
     const blocked=g.pots.map(p=>{const q=this.point(p);const bounds=SC.plantBounds(p);return {x:q.x-45*this.scale,y:q.y+bounds.top*this.scale,w:90*this.scale,h:(40-bounds.top)*this.scale};});
     const gardener=this.point(g.gardener);blocked.push({x:gardener.x-42*this.scale,y:gardener.y-116*this.scale,w:84*this.scale,h:138*this.scale});
     const overlaps=(a,b)=>a.x<b.x+b.w+5&&a.x+a.w+5>b.x&&a.y<b.y+b.h+5&&a.y+a.h+5>b.y;
     for(const pot of g.pots){
       const reqs=Object.values(pot.requests);if(!reqs.length)continue;
       const font='bold '+(['chinese','bopomofo'].includes(g.mode)?21:16)+'px system-ui';
-      const widths=reqs.map(r=>{const main=SC.labelWidth(c,r.item.label,{font,padding:0,min:0,max:400});if(g.mode==='chinese'&&g.hints)return main+SC.labelWidth(c,r.item.hint||'',{font:'10px system-ui',padding:0,min:0,max:400})+43;return main+38;});
+      const widths=reqs.map(r=>{const main=SC.labelWidth(c,r.item.label,{font,padding:0,min:0,max:400});if(hints.has(r))return main+SC.labelWidth(c,r.item.hint||'',{font:'10px system-ui',padding:0,min:0,max:400})+43;return main+38;});
       const p=this.point(pot),bw=clamp(Math.max(...widths),48,w<500?144:180),row=28,bh=reqs.length*row+8,candidates=[];
       const bx=pot.x>=0?p.x+30*this.scale:p.x-bw-30*this.scale;
       for(const [x,y] of [[bx,p.y-bh/2],[p.x-bw/2,p.y-(42+pot.growth*75)*this.scale-bh],[p.x-bw/2,p.y+40*this.scale],[w/2-bw/2,135]])candidates.push({x:clamp(x,7,w-bw-7),y:clamp(y,120,h-bh-9),w:bw,h:bh});
@@ -186,7 +186,7 @@ class GardenRenderer extends SC.SceneRenderer{
       for(let i=0;i<reqs.length;i++){
         const r=reqs[i],y=box.y+4+i*row,state=taskStates.get(r);
         if(state)this.round(box.x+3,y,bw-6,row,5,'#62df87',state==='active'?'#17683b':null);
-        SC.drawGardenTool(this,r.property,box.x+16,y+14,.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font='bold '+(g.mode==='chinese'||g.mode==='bopomofo'?21:16)+'px system-ui';if(g.mode==='chinese'&&g.hints){c.fillText(r.item.label,box.x+40,y+21,24);c.font='10px system-ui';c.fillText(r.item.hint||'',box.x+51+(bw-57)/2,y+18,bw-57);}else c.fillText(r.item.label,box.x+30+(bw-36)/2,y+20,bw-36);
+        SC.drawGardenTool(this,r.property,box.x+16,y+14,.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font='bold '+(g.mode==='chinese'||g.mode==='bopomofo'?21:16)+'px system-ui';if(hints.has(r)){c.fillText(r.item.label,box.x+40,y+21,24);c.font='10px system-ui';c.fillText(r.item.hint||'',box.x+51+(bw-57)/2,y+18,bw-57);}else c.fillText(r.item.label,box.x+30+(bw-36)/2,y+20,bw-36);
       }
     }
     this.bubbleBoxes=boxes;

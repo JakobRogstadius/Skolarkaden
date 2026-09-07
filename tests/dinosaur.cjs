@@ -71,7 +71,7 @@ test('Eight compact labels fit without overlap at narrow and desktop widths, inc
  const canvasContext=new Proxy({},{get:(_,key)=>key==='measureText'?text=>({width:[...text].length*9}):()=>{}});
  for(const width of [320,370,640,1000])for(const mode of ['letters','swedishLong','chinese'])for(let seed=1;seed<=6;seed++){
   const g=new SC.DinosaurGame({random:rng(seed)});g.start({mode,pace:'brave'});g.resize(width,700);g.people=[];g.spawned=0;for(let i=0;i<8;i++){assert(g.spawn());g.people.at(-1).x=.12+i*.10;g.people.at(-1).y=.55+(i%3)*.115;}
-  const r=Object.create(SC.DinosaurRenderer.prototype);r.game=g;r.ctx=canvasContext;r.round=()=>{};
+  SC.noteTargetAppearance(g);g.clock+=5;const r=Object.create(SC.DinosaurRenderer.prototype);r.game=g;r.ctx=canvasContext;r.round=()=>{};
   for(let i=0;i<25;i++){r.labels();const boxes=r.labelBoxes;for(const [j,a] of boxes.entries()){assert(a.x>=0&&a.x+a.w<=width&&a.y>=150&&a.y+a.h<=700);if(mode==='letters')assert(a.w<=45);for(const b of boxes.slice(j+1))assert(!(a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y),`${width}/${mode}: overlap`);}g.update(.05);}
  }
 });

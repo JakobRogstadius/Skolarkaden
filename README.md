@@ -37,7 +37,7 @@ Svenska och engelska har korta och längre ord. Bokstavsövningen väljer ett sl
 
 Matte börjar med addition inom 0–5. Svårigheten höjs gradvis efter lyckade svar och sänks vid upprepade fel, långsammare svar eller för många obesvarade uppgifter. Högsta nivån är addition och subtraktion inom 0–20. Anpassningen återställs varje omgång och påverkar inte poängen.
 
-Mandarin har valbar pinyin-hjälp. Tal jämförs som pinyin utan toner; till exempel kan 是 eller 事 matcha 十. Olika stavelser som `si` och `shi` skiljs åt. I kinesiska teckenövningar kan en transkription som `38` bli två svar, medan `10` hålls ihop. Mattesvar delas inte på det sättet. Bopomofo har tangentkonvertering och en tangenthjälp under **Så spelar du**.
+I kinesiska teckenövningar visas pinyin automatiskt efter fem sekunder om tecknet ännu inte har besvarats. Tiden räknas från att uppgiften syns, och paus räknas inte. Köade och pågående korrekta svar behöver ingen ny ledtråd; en redan visad ledtråd ligger kvar tills uppgiften försvinner. Tal jämförs som pinyin utan toner; till exempel kan 是 eller 事 matcha 十. Olika stavelser som `si` och `shi` skiljs åt. I kinesiska teckenövningar kan en transkription som `38` bli två svar, medan `10` hålls ihop. Mattesvar delas inte på det sättet. Bopomofo har tangentkonvertering och en tangenthjälp under **Så spelar du**.
 
 Svenskt tal kan delas upp när tjänsten skriver ihop två eller tre aktuella mål, exempelvis `hundmat`. Detta gäller inte matte. Vanliga engelska homofoner har uttryckliga talalias, exempelvis `see / sea / c`. Tangentbordsläget kräver korrekt stavning.
 

@@ -11,6 +11,20 @@
     if(hint){c.font=hintFont;width=Math.max(width,c.measureText(hint).width);}c.restore();
     return clamp(Math.ceil(width)+padding*2,min,max);
   };
+  // The label's first appearance starts the clock, including walkers entering onscreen.
+  SC.noteTargetAppearance=function(game){for(const target of game.getTargets())target.appearedAt??=game.clock;};
+  SC.pinyinHints=function(game){
+    const hints=new Set();if(game.mode!=='chinese')return hints;
+    const targets=game.getTargets(),available=new Set(game.getAvailableTargets()),handled=new Set(targets.filter(t=>!available.has(t)));
+    // Reserve exactly one remaining target per queued answer, using the speech aliases too.
+    for(const entry of game.queue.items){const target=targets.find(t=>!handled.has(t)&&SC.matches(entry.text,t.item,game.mode,game.lang,entry.source));if(target)handled.add(target);}
+    for(const target of targets){
+      if(!target.item.hint)continue;
+      if(game.state==='playing'&&target.appearedAt!==undefined&&game.clock-target.appearedAt>=5-1e-8&&!handled.has(target))target.pinyinRevealed=true;
+      // Keep a revealed hint until the task disappears; queue changes must not resize it.
+      if(target.pinyinRevealed)hints.add(target);
+    }return hints;
+  };
   SC.cityGoal=40;
   SC.cityPressure=(progress,elapsed)=>clamp(progress+elapsed/216,0,1);
   SC.citySpawnInterval=(pace,pressure)=>({gentle:4.8,steady:3.2,brave:2.3}[pace])*(1-.63*pressure);
@@ -38,8 +52,8 @@
         this.position(t);
       }
     }
-    start({mode='letters',pace='gentle',lang='sv-SE',items=null,hints=true,uppercase=Math.random()<.5}={}){
-      this.uppercase=uppercase;this.mode=mode;this.pace=pace;this.lang=lang;this.hints=hints;
+    start({mode='letters',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
+      this.uppercase=uppercase;this.mode=mode;this.pace=pace;this.lang=lang;
       this.items=SC.beginPractice(this,items);
       if(!this.items.length)throw new Error('En övning behöver minst ett svar.');
       this.resetCity();this.threats=[];this.effects=[];this.lasers=[];
@@ -127,7 +141,7 @@
       const startX=best[Math.floor(this.random()*best.length)];
       const baseDuration={gentle:25,steady:18,brave:13}[this.pace];
       const duration=baseDuration*(1-.38*this.pressure())*(.95+.1*this.random());
-      const t={id:++this.nextId,item,destination,startX,progress:0,duration,color:PALETTE[this.nextId%5],x:startX,y:145};
+      const t={id:++this.nextId,item,appearedAt:this.clock,destination,startX,progress:0,duration,color:PALETTE[this.nextId%5],x:startX,y:145};
       this.threats.push(t);this.position(t);this.emit('targets');
     }
     position(t){
@@ -214,16 +228,16 @@
       c.fillStyle='#213a4e';c.fillRect(0,g.ground,w,5);
       for(const b of g.buildings)this.building(b);
       for(const t of g.turrets)this.turret(t);
-      const labels=[];
+      const labels=[],hints=SC.pinyinHints(g);
       for(const t of g.getTargets()){
         const size=g.mode==='chinese'?26:g.width<600?20:23;
         c.font='700 '+size+'px "Trebuchet MS", system-ui, sans-serif';
-        const bw=SC.labelWidth(c,t.item.label,{hint:g.mode==='chinese'&&g.hints?t.item.hint:'',hintFont:'13px system-ui',max:w-16}),bh=g.mode==='chinese'&&g.hints?62:40;
+        const hint=hints.has(t),bw=SC.labelWidth(c,t.item.label,{hint:hint?t.item.hint:'',hintFont:'13px system-ui',max:w-16}),bh=hint?62:40;
         let box;
         const candidates=[];
         for(const dy of [0,-50,50,-100,100])for(const dx of [0,-bw-8,bw+8,-2*bw,2*bw])candidates.push({x:clamp(t.x+dx-bw/2,8,w-bw-8),y:clamp(t.y+dy-20,122,g.ground-bh-7),w:bw,h:bh});
         box=candidates.find(b=>labels.every(o=>b.x+b.w+5<o.x||o.x+o.w+5<b.x||b.y+b.h+5<o.y||o.y+o.h+5<b.y))||candidates[0];
-        t.labelBox=box;labels.push(box);this.comet(t);
+        t.labelBox=box;labels.push(box);this.comet(t,hint);
       }
       if(g.state==='playing')for(const gun of g.turrets)if(gun.alive&&gun.job?.target)this.crosshair({gun,target:gun.job.target});
       for(const beam of g.lasers){
@@ -261,7 +275,7 @@
       c.fillStyle=color;c.beginPath();c.arc(t.x,t.y,10,0,Math.PI*2);c.fill();c.fillStyle='#27435a';c.beginPath();c.arc(t.x,t.y,5,0,Math.PI*2);c.fill();
       c.font='700 10px system-ui';c.textAlign='center';c.fillStyle='#adcedb';if(t.job)c.fillText(t.job.entry.text,t.x,g.ground+22,Math.min(150,g.width*.24));
     }
-    comet(t){
+    comet(t,hint=false){
       const c=this.ctx,g=this.game;
       const angle=Math.atan2(t.destination.y-145,t.destination.x-t.startX);
       c.save();c.translate(t.x,t.y);
@@ -279,7 +293,7 @@
       c.shadowColor=t.color+'33';c.shadowBlur=14;
       this.round(-bw/2,-20,bw,bh,12,'#192841',t.color);c.shadowBlur=0;
       c.textAlign='center';c.textBaseline='middle';c.fillStyle='#f8f9ff';c.fillText(label,0,1,bw-14);
-      if(g.mode==='chinese'&&g.hints){c.font='13px system-ui';c.fillStyle=t.color;c.fillText(t.item.hint,0,28,bw-14);}
+      if(hint){c.font='13px system-ui';c.fillStyle=t.color;c.fillText(t.item.hint,0,28,bw-14);}
       c.restore();
     }
     crosshair({target,gun}){

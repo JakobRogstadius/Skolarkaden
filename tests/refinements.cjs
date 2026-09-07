@@ -52,6 +52,6 @@ test('Normal bee flights are slower than before, bend away from a straight path 
 });
 test('Balloon labels fit short text, reserve room for hints and keep existing width limits',()=>{
  const g=new SC.PaintGame();g.start();g.spawnIn=10000;const p=g.people[0];p.x=.5;const context=new Proxy({},{get:(_,key)=>key==='measureText'?text=>({width:[...text].length*10}):()=>{}});const r=Object.create(SC.PaintRenderer.prototype);r.game=g;r.ctx=context;r.round=()=>{};
- p.item={answer:'a',label:'A'};r.labels();const single=r.labelBoxes[0].w;p.item.label='ko';r.labels();const short=r.labelBoxes[0].w;p.item.label='vattenkanna';r.labels();const long=r.labelBoxes[0].w;assert(single<=40);assert(short<=44);assert(long>short*2);assert(long<=154);g.mode='chinese';g.hints=true;p.item.label='一';p.item.hint='yi';r.labels();assert(r.labelBoxes[0].w>=34&&r.labelBoxes[0].w<40);
+ p.item={answer:'a',label:'A'};r.labels();const single=r.labelBoxes[0].w;p.item.label='ko';r.labels();const short=r.labelBoxes[0].w;p.item.label='vattenkanna';r.labels();const long=r.labelBoxes[0].w;assert(single<=40);assert(short<=44);assert(long>short*2);assert(long<=154);g.mode='chinese';g.clock=p.appearedAt+5;p.item.label='一';p.item.hint='yi';r.labels();assert(r.labelBoxes[0].w>=34&&r.labelBoxes[0].w<40);
 });
 console.log(checks+' input and visual-refinement checks passed.');

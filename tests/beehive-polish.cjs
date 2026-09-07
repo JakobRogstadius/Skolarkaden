@@ -56,7 +56,7 @@ test('Every surplus delivery makes exactly one jar; in-flight nectar does not co
 });
 test('All target boxes fit short words and pinyin, with no overlaps in a crowded meadow',()=>{
  for(const [width,height] of [[355,1200],[620,620],[1100,740]])for(const mode of ['letters','swedishLong','chinese']){
-  const {game:g,r}=renderer(SC.BeehiveGame,SC.BeehiveRenderer,width,height,mode);while(g.plants.length<24)g.spawn();for(const p of g.plants){g.bloom(p);p.flowerAge=2;}r.labels();assert.equal(r.labelBoxes.length,g.getTargets().length);
+  const {game:g,r}=renderer(SC.BeehiveGame,SC.BeehiveRenderer,width,height,mode);while(g.plants.length<24)g.spawn();for(const p of g.plants){g.bloom(p);p.flowerAge=2;}g.clock+=5;r.labels();assert.equal(r.labelBoxes.length,g.getTargets().length);
   for(const [i,b] of r.labelBoxes.entries()){assert(b.x>=0&&b.y>=112&&b.x+b.w<=width&&b.y+b.h<=height);assert(r.labelBoxes.slice(i+1).every(o=>!overlap(b,o)),width+'/'+mode+' overlapping labels');if(mode==='letters')assert(b.w<=32);}
   const positions=JSON.stringify(r.labelBoxes);g.queue.enqueue(g.getTargets()[0].item.answer);r.labels();assert.equal(JSON.stringify(r.labelBoxes),positions,'queue highlighting must not move labels');
  }

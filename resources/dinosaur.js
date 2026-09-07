@@ -4,8 +4,8 @@ class DinosaurGame{
  constructor({queue=new SC.AnswerQueue(),onEvent=()=>{},random=Math.random}={}){Object.assign(this,{queue,onEvent,random,width:1000,height:700});this.menu();}
  emit(type,detail={}){this.onEvent({type,...detail});}
  menu(){Object.assign(this,{state:'menu',clock:0,elapsed:0,people:[],groups:[],effects:[],job:null,score:0,hits:0,passed:0,escaped:0,spawned:0,total:40,shots:0,streak:0,bestStreak:0});this.dino={x:.5,y:.77,facing:1,stride:0,moving:false};}
- start({mode='swedish',pace='gentle',lang='sv-SE',items=null,hints=true,uppercase=Math.random()<.5}={}){
-  this.menu();Object.assign(this,{mode,pace,lang,hints,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Gläntan behöver minst ett svar.');
+ start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
+  this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Gläntan behöver minst ett svar.');
   this.timeScale=mode==='math'?1.3:1;this.maxPeople={gentle:4,steady:6,brave:8}[pace];this.runSpeed={gentle:100,steady:122,brave:145}[pace]/this.timeScale;this.walkSpeed=this.runSpeed*.58;this.dinoSpeed=this.runSpeed*2;
   this.spawnInterval={gentle:4.5,steady:2.8,brave:1.8}[pace]*this.timeScale;this.spawnIn=1.6;this.nextId=0;this.nextGroupId=0;this.startleSoundAt=-10;this.footstepIn=0;
   this.decor=Array.from({length:18},(_,i)=>({x:.03+this.random()*.94,y:i<10?.39+this.random()*.055:.93+this.random()*.06,size:.35+this.random()*.22,growth:.5+this.random()*.5,moisture:1,nutrition:1,infection:0,bloom:i%4===0,look:{hue:100+this.random()*40,phase:this.random()*TAU,flowers:1+i%3,petal:['#f9ce78','#e7acc4','#c8b4ef'][i%3]}}));
@@ -42,7 +42,7 @@ class DinosaurGame{
   const gates=this.entrances(initial);if(!gates.length)return false;const gate=gates[Math.floor(this.random()*gates.length)],direction=gate.direction||(this.random()<.5?1:-1);
   const base=pool[Math.floor(this.random()*pool.length)],item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
   const p={id:++this.nextId,item,...gate.from,entrance:gate.edge,entryGoal:gate.edge==='bottom'?{...gate.to}:null,direction,status:'walking',age:0,stateAge:0,cooldown:0,chatCooldown:1,chats:0,group:null,flee:null,fear:0,look:SC.makePerson(this.random)};
-  this.people.push(p);this.spawned++;if(p.look.exotic)this.emit('rare-arrival',{look:p.look});this.emit('targets');return true;
+  this.people.push(p);this.spawned++;SC.noteTargetAppearance(this);if(p.look.exotic)this.emit('rare-arrival',{look:p.look});this.emit('targets');return true;
  }
  getTargets(){return this.people.filter(p=>p.status!=='eaten'&&p.x>=.045&&p.x<=.955&&p.y<=.96).sort((a,b)=>(a.direction===1?1-a.x:a.x)-(b.direction===1?1-b.x:b.x)||a.id-b.id);}
  getAvailableTargets(){return this.getTargets().filter(p=>this.job?.target!==p);}
@@ -90,7 +90,7 @@ class DinosaurGame{
   }
   for(const group of [...this.groups]){group.age+=dt;if(group.members.every(p=>p.status==='talking'))group.talkAge+=dt;if(group.talkAge>=group.duration||group.age>8*this.timeScale)this.dissolve(group);}
   for(const p of [...this.people])if(p.status!=='eaten'&&p!==this.job?.target&&(p.x<-.12||p.x>1.12)){this.dissolve(p.group);this.people=this.people.filter(q=>q!==p);this.passed++;this.escaped++;this.emit('departure');}
-  this.findConversations();
+  this.findConversations();SC.noteTargetAppearance(this);
  }
  chaseGoal(p){
   const s=this.scale(),d=this.dino;let facing=Math.abs(p.x-d.x)*this.width>30*s?Math.sign(p.x-d.x):d.facing;
@@ -182,12 +182,12 @@ class DinosaurRenderer extends SC.SceneRenderer{
   c.restore();
  }
  labels(){
-  const c=this.ctx,g=this.game,w=g.width,h=g.height,s=g.scale(),states=g.getTaskStates(),boxes=[],blocked=[],targets=g.getTargets().sort((a,b)=>a.y-b.y||a.x-b.x),gap=5;
+  const c=this.ctx,g=this.game,w=g.width,h=g.height,s=g.scale(),states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],blocked=[],targets=g.getTargets().sort((a,b)=>a.y-b.y||a.x-b.x),gap=5;
   const overlaps=(a,b)=>a.x<b.x+b.w+gap&&a.x+a.w+gap>b.x&&a.y<b.y+b.h+gap&&a.y+a.h+gap>b.y;
   for(const p of g.people)if(p.status!=='eaten'){const ps=s*SC.personScale(p.look);blocked.push({x:p.x*w-29*ps,y:p.y*h-(54*p.look.height+56)*ps,w:58*ps,h:(54*p.look.height+60)*ps});}
   blocked.push({x:g.dino.x*w-70*s,y:g.dino.y*h-196*s,w:190*s,h:202*s});
   for(const p of targets){
-   const font=['chinese','bopomofo'].includes(g.mode)?22:w<600?14:18,maxWidth=w<600?120:170;const bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:g.mode==='chinese'&&g.hints?p.item.hint:'',max:maxWidth}),bh=g.mode==='chinese'&&g.hints?48:34,ps=s*SC.personScale(p.look),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+59)*ps-g.jumpHeight(p)},candidates=[];
+   const font=['chinese','bopomofo'].includes(g.mode)?22:w<600?14:18,maxWidth=w<600?120:170,hint=hints.has(p);const bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',max:maxWidth}),bh=hint?48:34,ps=s*SC.personScale(p.look),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+59)*ps-g.jumpHeight(p)},candidates=[];
    const top=154,bottom=h-38-bh,cols=Math.max(1,Math.floor((w-16+8)/(maxWidth+8))),dx=cols>1?(w-16-maxWidth)/(cols-1):0;
    // Fallback slots guarantee room for eight labels even on a narrow screen.
    for(let yy=top;yy<=bottom;yy+=bh+9)for(let col=0;col<cols;col++)candidates.push({x:8+col*dx+(maxWidth-bw)/2,y:yy,w:bw,h:bh});
@@ -196,7 +196,7 @@ class DinosaurRenderer extends SC.SceneRenderer{
    const box=candidates.find(b=>[...boxes,...blocked].every(a=>!overlaps(a,b)))||candidates.find(b=>boxes.every(a=>!overlaps(a,b)))||candidates[0];boxes.push({...box,id:p.id});
    c.strokeStyle='#54725da0';c.lineWidth=1.5;c.beginPath();c.moveTo(anchor.x,anchor.y+4);c.lineTo(box.x+bw/2,box.y+bh);c.stroke();
    const state=states.get(p);c.lineWidth=state==='active'?3:1;this.round(box.x,box.y,bw,bh,10,state?'#a8ed9d':'#fff3d5',state==='active'?'#2f7953':p.look.exotic?'#c5953c':'#a5a473');c.lineWidth=1;
-   c.fillStyle='#365749';c.font='bold '+font+'px system-ui';c.textAlign='center';c.fillText(p.item.label,box.x+bw/2,box.y+23,bw-12);if(g.mode==='chinese'&&g.hints){c.font='12px system-ui';c.fillText(p.item.hint||'',box.x+bw/2,box.y+40,bw-12);}
+   c.fillStyle='#365749';c.font='bold '+font+'px system-ui';c.textAlign='center';c.fillText(p.item.label,box.x+bw/2,box.y+23,bw-12);if(hint){c.font='12px system-ui';c.fillText(p.item.hint||'',box.x+bw/2,box.y+40,bw-12);}
   }
   this.labelBoxes=boxes;
  }

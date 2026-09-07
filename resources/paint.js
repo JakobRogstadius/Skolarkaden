@@ -8,8 +8,8 @@ class PaintGame{
   this.buildings=[{x:.03,right:.315,y:.46,color:'#d3a36f',trim:'#ffe1ad',name:'BOKHÖRNAN'},{x:.355,right:.64,y:.40,color:'#83b3af',trim:'#d4eee1',name:'BAGERIET'},{x:.68,right:.97,y:.48,color:'#ca8f87',trim:'#f8d1bd',name:'ATELJÉN'}];
   this.child={x:.49,y:.40,roof:1,jump:null,facing:1,look:null};
  }
- start({mode='swedish',pace='gentle',lang='sv-SE',items=null,hints=true,uppercase=Math.random()<.5}={}){
-  this.menu();Object.assign(this,{mode,pace,lang,hints,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Gatan behöver minst ett svar.');
+ start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
+  this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Gatan behöver minst ett svar.');
   this.child.look=SC.makeChild(this.random);this.state='playing';this.shots=0;this.streak=0;this.bestStreak=0;this.nextId=0;this.spawnIn=.3;this.timeScale=mode==='math'?1.3:1;
   this.maxPeople={gentle:4,steady:6,brave:8}[pace];this.walkSpeed={gentle:.061,steady:.082,brave:.105}[pace]/this.timeScale;this.spawnInterval={gentle:4.5,steady:2.8,brave:1.8}[pace]*this.timeScale;
   this.spawn(true);this.emit('start');
@@ -24,7 +24,7 @@ class PaintGame{
   const lane=lanes.find(l=>!this.people.some(p=>p.lane===l&&(dir===1?p.x<.17:p.x>.83)));if(lane===undefined)return false;
   const base=pool[Math.floor(this.random()*pool.length)],item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
   const p={id:++this.nextId,item,lane,x:initial?(dir===1?.13:.87):(dir===1?-.09:1.09),y:[.80,.865,.93][lane],direction:dir,speed:this.walkSpeed*(.9+this.random()*.2),status:'walking',age:0,reactionAge:0,jumps:0,paint:null,look:SC.makePerson(this.random)};
-  this.people.push(p);this.spawned++;this.emit('targets');return true;
+  this.people.push(p);this.spawned++;SC.noteTargetAppearance(this);this.emit('targets');return true;
  }
  getAvailableTargets(){return this.getTargets().filter(p=>p.status==='walking');}
  getActiveEntries(){return this.job?[this.job.entry]:[];}
@@ -90,6 +90,7 @@ class PaintGame{
    }
   }
   const departed=this.people.filter(p=>p.x<-.12||p.x>1.12);if(departed.length){this.people=this.people.filter(p=>!departed.includes(p));this.passed+=departed.length;this.emit('targets');}
+  SC.noteTargetAppearance(this);
  }
  finish(){if(this.state!=='playing')return;this.state='celebrating';this.celebrationLeft=2;this.emit('celebrate');}
  update(dt){
@@ -139,13 +140,13 @@ class PaintRenderer extends SC.SceneRenderer{
   if(p.paint){c.save();c.translate(x,feet);c.scale(visual,visual);c.translate(0,-54*p.look.height+18);this.splatter(p.paint,11);c.translate(-14,-44);this.circle(0,0,4,p.paint.color);c.restore();}
  }
  labels(){
-  const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),boxes=[],targets=g.getTargets().sort((a,b)=>a.y-b.y||a.x-b.x),gap=4;
+  const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],targets=g.getTargets().sort((a,b)=>a.y-b.y||a.x-b.x),gap=4;
   const overlaps=(a,b)=>a.x<b.x+b.w+gap&&a.x+a.w+gap>b.x&&a.y<b.y+b.h+gap&&a.y+a.h+gap>b.y;
   const child=g.child,blocked=[{x:child.x*w-38,y:child.y*h-100*g.childScale(),w:76,h:100*g.childScale()+12}];
   for(const person of g.people){const s=g.personScale(person);blocked.push({x:person.x*w-28*s,y:person.y*h-(54*person.look.height+52)*s,w:56*s,h:(54*person.look.height+54)*s});}
   for(const p of targets){
    const maxWidth=Math.min(w<600?110:154,w-16),font=['chinese','bopomofo'].includes(g.mode)?22:w<600?13:17;
-   const bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:g.mode==='chinese'&&g.hints?p.item.hint:'',hintFont:'11px system-ui',max:maxWidth}),bh=g.mode==='chinese'&&g.hints?47:33,s=g.personScale(p),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+54)*s},candidates=[];
+   const hint=hints.has(p),bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',hintFont:'11px system-ui',max:maxWidth}),bh=hint?47:33,s=g.personScale(p),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+54)*s},candidates=[];
    const top=Math.max(178,h*.50),bottom=h*.92-bh;
    // On narrow streets, aligned slots prevent eight moving labels from trapping
    // one another in the gaps left by greedy free placement.
@@ -157,7 +158,7 @@ class PaintRenderer extends SC.SceneRenderer{
    const box=candidates.find(b=>[...boxes,...blocked].every(a=>!overlaps(a,b)))||candidates.find(b=>boxes.every(a=>!overlaps(a,b)))||candidates[0];boxes.push(box);
    c.strokeStyle='#735f5480';c.lineWidth=1;c.beginPath();c.moveTo(anchor.x,anchor.y+3);c.lineTo(box.x+bw/2,box.y+bh);c.stroke();
    const state=states.get(p);this.round(box.x,box.y,bw,bh,9,state?'#b7ecd7':'#fff4dc',state==='active'?'#408f7d':p.look.exotic?'#bc9047':'#b89a77');c.fillStyle='#405553';c.font='bold '+font+'px system-ui';c.textAlign='center';c.fillText(p.item.label,box.x+bw/2,box.y+22,bw-12);
-   if(g.mode==='chinese'&&g.hints){c.font='11px system-ui';c.fillText(p.item.hint||'',box.x+bw/2,box.y+38,bw-12);}
+   if(hint){c.font='11px system-ui';c.fillText(p.item.hint||'',box.x+bw/2,box.y+38,bw-12);}
   }
   this.labelBoxes=boxes;
  }

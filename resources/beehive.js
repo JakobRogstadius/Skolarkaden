@@ -4,8 +4,8 @@ class BeehiveGame{
  constructor({queue=new SC.AnswerQueue(),onEvent=()=>{},random=Math.random}={}){Object.assign(this,{queue,onEvent,random,width:1000,height:720});this.menu();}
  emit(type,detail={}){this.onEvent({type,...detail});}
  menu(){this.state='menu';this.clock=0;this.elapsed=0;this.plants=[];this.bees=[];this.effects=[];this.hive={x:.83,y:.32};this.honey=0;this.score=0;this.hits=0;this.timeRate=1;this.lastJarAt=-10;this.meadow=[];}
- start({mode='swedish',pace='gentle',lang='sv-SE',items=null,hints=true,uppercase=Math.random()<.5}={}){
-  this.menu();Object.assign(this,{mode,pace,lang,hints,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Ängen behöver minst ett svar.');
+ start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
+  this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Ängen behöver minst ett svar.');
   this.timeScale=mode==='math'?1.4:1;this.duration={gentle:150,steady:130,brave:115}[pace]*this.timeScale;this.honeyGoal={gentle:24,steady:30,brave:36}[pace];this.plantBudget={gentle:44,steady:56,brave:66}[pace];
   this.state='playing';this.shots=0;this.streak=0;this.bestStreak=0;this.nextId=0;this.spawned=0;this.nextSpawn=1.4;this.lastSeason='Vår';this.fullAnnounced=false;this.keeperLook=SC.makePerson(this.random);
   this.bees=Array.from({length:5},(_,i)=>({id:i+1,x:this.hive.x,y:this.hive.y,stage:'idle',job:null,nectar:0,age:0,phase:i*1.8}));
@@ -52,7 +52,7 @@ class BeehiveGame{
  }
  bloom(p){
   const used=this.getTargets().map(t=>t.item.answer),available=SC.practiceItems(this).filter(i=>!used.includes(i.answer));if(!available.length)return false;
-  const base=available[Math.floor(this.random()*available.length)],item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);Object.assign(p,{status:'flower',item,flowerAge:0,growth:1});
+  const base=available[Math.floor(this.random()*available.length)],item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);Object.assign(p,{status:'flower',item,appearedAt:this.clock,pinyinRevealed:false,flowerAge:0,growth:1});
   // Late-summer flowers remain available through autumn, until winter or a visit.
   if(this.progress()>=.50){p.lateSeason=true;p.bloomFor=Math.max(p.bloomFor,this.timeLeft()/this.timeScale+.1);}this.emit('bloom',{target:p});return true;
  }
@@ -187,15 +187,15 @@ class BeehiveRenderer extends SC.SceneRenderer{
  }
  labels(){
   const c=this.ctx,g=this.game,w=g.width,h=g.height,s=this.plantScale();if(g.progress()>=1){this.labelBoxes=[];return;}
-  const targets=g.getTargets().sort((a,b)=>a.id-b.id),hint=g.mode==='chinese'&&g.hints,font=['chinese','bopomofo'].includes(g.mode)?22:w<600?14:17,bh=hint?45:31;
-  const key=[w,h,g.mode,hint,...g.plants.map(p=>p.id+':'+p.status+':'+p.harvested+':'+p.item?.label+':'+p.item?.hint)].join('|');
+  const targets=g.getTargets().sort((a,b)=>a.id-b.id),hints=SC.pinyinHints(g),font=['chinese','bopomofo'].includes(g.mode)?22:w<600?14:17;
+  const key=[w,h,g.mode,...g.plants.map(p=>p.id+':'+p.status+':'+p.harvested+':'+p.item?.label+':'+p.item?.hint+':'+hints.has(p))].join('|');
   if(key!==this.labelKey){
    const previous=new Map((this.labelBoxes||[]).map(b=>[b.id,b])),boxes=[],top=Math.max(132,h*.43);
    const bodies=g.plants.map(p=>{const q=this.point(p),bounds=SC.plantBounds({...p,growth:1});return {x:q.x-32*s,y:q.y+bounds.top*s,w:64*s,h:-bounds.top*s+8};});
    const hs=Math.min(w/700,.86),jars=this.jarLayout(),props=[{x:w*.17-85*hs,y:h*.435-185*hs,w:170*hs,h:195*hs},{x:w*g.hive.x-74*hs,y:h*g.hive.y-90*hs,w:148*hs,h:193*hs},{x:jars.x-40,y:h*.445-100,w:40+jars.columns*jars.pitch,h:110}];
    const overlaps=(a,b)=>a.x<b.x+b.w+4&&a.x+a.w+4>b.x&&a.y<b.y+b.h+4&&a.y+a.h+4>b.y;
    for(const p of targets){
-    const q=this.point(p),bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',hintFont:'11px system-ui',max:w<600?116:166}),anchor={x:q.x,y:q.y+SC.plantBounds(p).top*s-2},candidates=[];
+    const hint=hints.has(p),bh=hint?45:31,q=this.point(p),bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',hintFont:'11px system-ui',max:w<600?116:166}),anchor={x:q.x,y:q.y+SC.plantBounds(p).top*s-2},candidates=[];
     const add=(x,y)=>candidates.push({id:p.id,x:clamp(x,7,w-bw-7),y:clamp(y,top,h-bh-10),w:bw,h:bh});
     add(anchor.x-bw/2,anchor.y-bh);add(q.x-33*s-bw,q.y-45*s-bh/2);add(q.x+33*s,q.y-45*s-bh/2);add(q.x-bw/2,q.y+8);
     for(let yy=top;yy<=h-bh-10;yy+=18)for(let xx=7;xx<=w-bw-7;xx+=18)add(xx,yy);
@@ -208,7 +208,7 @@ class BeehiveRenderer extends SC.SceneRenderer{
    this.labelBoxes=boxes;this.labelKey=key;
   }
   const states=g.getTaskStates(),byId=new Map(targets.map(p=>[p.id,p]));
-  for(const box of this.labelBoxes){const p=byId.get(box.id);if(!p)continue;const q=this.point(p),state=states.get(p),{x,y,w:bw}=box;
+  for(const box of this.labelBoxes){const p=byId.get(box.id);if(!p)continue;const q=this.point(p),state=states.get(p),hint=hints.has(p),{x,y,w:bw,h:bh}=box;
    c.strokeStyle='#75865b90';c.lineWidth=1;c.beginPath();c.moveTo(q.x,q.y-35*s);c.lineTo(x+bw/2,y+bh/2);c.stroke();
    c.lineWidth=state==='active'?2:1;this.round(x,y,bw,bh,8,state?'#ffe176':'#fff9e1',state==='active'?'#b77a2c':'#b5a577');c.lineWidth=1;c.fillStyle='#50432d';c.font='bold '+font+'px system-ui';c.textAlign='center';c.fillText(p.item.label,x+bw/2,y+22,bw-14);
    if(hint){c.font='11px system-ui';c.fillText(p.item.hint||'',x+bw/2,y+36,bw-14);}

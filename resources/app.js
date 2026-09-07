@@ -11,12 +11,12 @@ try{localStorage.removeItem('starlight-friends-v1');}catch(_){}
 function notice(text){$('discovery-notice').textContent=text;$('discovery-notice').hidden=false;noticeUntil=performance.now()+6000;}
 for(const [value,m] of Object.entries(SC.modes))$('lesson').add(new Option(m.name,value));$('lesson').value='swedish';
 for(const [key,glyph] of Object.entries(SC.bopomofoKeys)){const el=document.createElement('span');el.textContent=glyph+' ';const small=document.createElement('small');small.textContent=key.toUpperCase();el.append(small);$('keyboard-grid').append(el);}
-function options(){return {mode:$('lesson').value,pace:$('pace').value,lang:$('language').value,hints:$('hints').checked,uppercase:Math.random()<.5};}
+function options(){return {mode:$('lesson').value,pace:$('pace').value,lang:$('language').value,uppercase:Math.random()<.5};}
 function speechOptions(){return {enabled:$('input-kind').value!=='typing',kind:$('input-kind').value,language:$('language').value,lesson:$('lesson').value};}
 function typingHint(){return ['letters','bopomofo'].includes($('lesson').value)?'Tryck på en bokstav.':'Skriv ett svar och tryck Enter.';}
 function menuUpdate(){
   const voice=$('input-kind').value!=='typing';$('setup-note').textContent=voice?'Säg svaren efter varandra.':typingHint();
-  $('mode-description').textContent=SC.modes[$('lesson').value].description;$('hints').closest('label').hidden=$('lesson').value!=='chinese';$('keyboard').hidden=$('lesson').value!=='bopomofo';
+  $('mode-description').textContent=SC.modes[$('lesson').value].description;$('keyboard').hidden=$('lesson').value!=='bopomofo';
   [...$('pace').options].forEach((o,i)=>o.textContent=['Lugn','Lagom','Utmaning'][i]);
 }
 $('lesson').addEventListener('change',()=>{$('language').value=SC.modes[$('lesson').value].lang;menuUpdate();});$('input-kind').addEventListener('change',menuUpdate);
@@ -79,7 +79,7 @@ $('start').addEventListener('click',start);$('again').addEventListener('click',s
 root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){
   // Canvas labels are primary. Keep a compact alternative for assistive technology.
-  const text=game.getTargets().map(t=>t.item.label+(game.mode==='chinese'&&game.hints?' · '+t.item.hint:'')).join(', ');
+  const hints=SC.pinyinHints(game),text=game.getTargets().map(t=>t.item.label+(hints.has(t)?' · '+t.item.hint:'')).join(', ');
   if(text!==lastTargetKey){lastTargetKey=text;$('targets').textContent=text;}
 }
 function renderUi(){
