@@ -71,7 +71,7 @@ En planta kan vissna utan att avsluta omgången. Döda plantor får inga fler up
 
 ## Äggröra
 
-En besättning på sex människor, inklusive spelaren med eldkastare, kommer in i ett mörkt rymdskepp med slemmiga ägg, kåda och våta nät. Vännerna strövar omkring och undersöker rummet. Lugn, Lagom och Utmaning ger 8, 12 respektive 16 ägg. Äggen står slumpmässigt utspridda med avstånd mellan varandra, utan rutnätsrader. De spricker och kläcks vid olika slumpmässiga tider. Sprickor och öppnade äggflikar visar kläckningen; inga förloppsmätare visas.
+En besättning på sex människor, inklusive spelaren med eldkastare, kommer in i ett mörkt rymdskepp med slemmiga ägg, kåda och våta nät. Vännerna strövar omkring och undersöker rummet. Lugn, Lagom och Utmaning ger 10, 16 respektive 21 ägg (cirka 30 procent fler). Äggen står slumpmässigt utspridda med avstånd mellan varandra, utan rutnätsrader. De spricker vid olika slumpmässiga tider och kläcks 15 procent snabbare: tiden från första sprickan till kläckning är 9–15 sekunder delat med 1,15. Sprickor och öppnade äggflikar visar kläckningen; inga förloppsmätare visas.
 
 Äggets första sprickor gör det till ett mål. Ett kläckt kryp behåller exakt samma mål, ord, köreservation och ledtrådstid. Krypen vandrar omkring, jagar människor i närheten med dubbla flykthastigheten och fäster sig vid ansiktet när de kommer ikapp. Människorna hoppar till och flyr, utom spelaren. En oavbruten attack får människan att falla huvudlös i en blodpöl, varefter krypet fortsätter söka.
 

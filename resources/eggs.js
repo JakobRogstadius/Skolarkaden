@@ -14,13 +14,13 @@ class EggGame{
  point(){return {x:.1+this.random()*.8,y:.47+this.random()*.45};}
  start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
   this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Välj en övning med minst ett svar.');
-  this.timeScale=mode==='math'?1.4:1;this.total={gentle:8,steady:12,brave:16}[pace];this.walkSpeed=34/this.timeScale;this.runSpeed=88/this.timeScale;this.alienSpeed=this.runSpeed*2;
+  this.timeScale=mode==='math'?1.4:1;this.total={gentle:10,steady:16,brave:21}[pace];this.walkSpeed=34/this.timeScale;this.runSpeed=88/this.timeScale;this.alienSpeed=this.runSpeed*2;
   // A human crew, drawn by the shared parameterised cast (adult men and women).
   this.people=Array.from({length:6},(_,i)=>{let first=true;const look=SC.makePerson(()=>{if(first){first=false;return this.random()*.8;}return this.random();});look.hat=false;const goal=i===0?{x:.5,y:.86}:{x:.19+i*.12,y:.55+(i%3)*.12};return {id:i,x:.5+(i%2?.04:-.04),y:1.08+i*.10,status:'entering',age:0,goal,look,fear:0,facing:1,player:i===0,attacker:null,wait:0};});
   this.player=this.people[0];this.player.look.shirt='#e6ac5e';this.player.look.pants='#36444c';
   this.flameRange=130;const positions=[];
   for(let i=0;i<this.total;i++){let best=null,clearance=-1;for(let j=0;j<32;j++){const q={x:.12+this.random()*.76,y:.48+this.random()*.44},d=positions.length?Math.min(...positions.map(p=>Math.hypot((q.x-p.x)/.14,(q.y-p.y)/.10))):1;if(d>clearance){best=q;clearance=d;}}positions.push(best);}
-  this.eggs=Array.from({length:this.total},(_,i)=>({id:++this.nextId,form:'egg',stage:'dormant',...positions[i],home:null,age:0,phase:this.random()*TAU,crackAt:(7+i*(40/this.total)+this.random()*7)*this.timeScale,hatchTime:(9+this.random()*6)*this.timeScale,item:null,appearedAt:null,entry:null,victim:null,facing:1,goal:null,stride:0,searchAge:0}));
+  this.eggs=Array.from({length:this.total},(_,i)=>({id:++this.nextId,form:'egg',stage:'dormant',...positions[i],home:null,age:0,phase:this.random()*TAU,crackAt:(7+i*(40/this.total)+this.random()*7)*this.timeScale,hatchTime:(9+this.random()*6)*this.timeScale/1.15,item:null,appearedAt:null,entry:null,victim:null,facing:1,goal:null,stride:0,searchAge:0}));
   this.eggs.forEach(e=>e.home={x:e.x,y:e.y});
   // Persistent geometry; resizing and drawing never consume gameplay randomness.
   this.resin=Array.from({length:34},()=>({x:this.random(),y:.38+this.random()*.6,size:.45+this.random(),phase:this.random()*TAU}));
@@ -209,14 +209,13 @@ class EggRenderer extends SC.SceneRenderer{
   for(let i=12;i>=1;i--)c.lineTo(d*i/12,(3+i*1.1+Math.cos(t*29+i)*4)*s);c.lineTo(0,3*s);c.closePath();c.fill();c.strokeStyle='#fff1bd';c.lineWidth=3*s;c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(d*.4,Math.sin(t*28)*6*s,d*.82,0);c.stroke();c.restore();
  }
  labels(){
-  const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],targets=g.getTargets(),narrow=w<700,maxWidth=narrow?Math.min(134,(w-28)/2):180,top=122;
+  const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],targets=g.getTargets(),narrow=w<700,top=122,slotH=50,rows=Math.max(1,Math.floor((h-top-8)/slotH)),cols=Math.max(narrow?2:Math.max(3,Math.floor((w-16)/188)),Math.ceil(targets.length/rows)),maxWidth=Math.min(narrow?134:180,(w-16)/cols-8);
   const overlaps=(a,b)=>a.x<b.x+b.w+4&&a.x+a.w+4>b.x&&a.y<b.y+b.h+4&&a.y+a.h+4>b.y;
   for(const e of targets){const hint=hints.has(e),font=['chinese','bopomofo'].includes(g.mode)?22:narrow?14:18,bw=SC.labelWidth(c,e.item.label,{font:'bold '+font+'px system-ui',hint:hint?e.item.hint:'',hintFont:'12px system-ui',max:maxWidth}),bh=hint?44:31,anchor={x:e.x*w,y:e.y*h-(e.form==='egg'?66:35)*g.scale()},candidates=[];
    // Use fixed-height lanes so delayed hints cannot close off the last slots.
-   const cols=narrow?2:Math.max(3,Math.floor((w-16)/(maxWidth+8))),gap=6,slotH=50,rows=Math.max(1,Math.floor((h-top-8)/slotH));
    for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){const cell=(w-16)/cols;candidates.push({x:8+col*cell+(cell-bw)/2,y:top+row*slotH,w:bw,h:bh});}
    candidates.sort((a,b)=>Math.hypot(a.x+bw/2-anchor.x,a.y+bh-anchor.y)-Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y));
-   if(!narrow)candidates.unshift({x:clamp(anchor.x-bw/2,8,w-bw-8),y:clamp(anchor.y-bh-6,top,h-bh-8),w:bw,h:bh});
+   if(!narrow&&targets.length<=rows*(cols-1))candidates.unshift({x:clamp(anchor.x-bw/2,8,w-bw-8),y:clamp(anchor.y-bh-6,top,h-bh-8),w:bw,h:bh});
    const box=candidates.find(b=>boxes.every(a=>!overlaps(a,b)))||candidates[0];if(!box)continue;boxes.push({...box,id:e.id});
    c.strokeStyle='#a9b98a85';c.lineWidth=1;c.beginPath();c.moveTo(anchor.x,anchor.y);c.lineTo(box.x+bw/2,box.y+bh);c.stroke();c.lineWidth=states.has(e)?2:1;this.round(box.x,box.y,bw,bh,7,states.has(e)?'#314e44':'#15282b',states.has(e)?'#97e9b7':e.form==='alien'?'#c7a178':'#819178');
    c.fillStyle='#ecedce';c.font='bold '+font+'px system-ui';c.textAlign='center';c.fillText(e.item.label,box.x+bw/2,box.y+22,bw-12);if(hint){c.font='12px system-ui';c.fillStyle='#b7c89b';c.fillText(e.item.hint||'',box.x+bw/2,box.y+38,bw-12);}c.lineWidth=1;
