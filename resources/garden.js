@@ -15,7 +15,7 @@ class GardenGame{
     this.tools=PROPS.map((property,i)=>({property,x:(i-1)*.36,y:.28}));
     this.pots=Array.from({length:count},(_,i)=>{
       const jitterX=this.random()-.5,jitterY=this.random()-.5;
-      return {id:i+1,x:0,y:0,jitterX,jitterY,growth:0,moisture:1,nutrition:1,infection:0,decay:0,requests:{},bloom:false,dead:false,look:SC.makePlantLook(this.random,{pot:['#cf8768','#e6b779','#a8b9cc','#ba8ea7'][i%4]})};
+      return {id:i+1,x:0,y:0,jitterX,jitterY,growth:0,moisture:.65+this.random()*.25,nutrition:.65+this.random()*.25,infection:.1+this.random()*.25,decay:0,requests:{},bloom:false,dead:false,look:SC.makePlantLook(this.random,{pot:['#cf8768','#e6b779','#a8b9cc','#ba8ea7'][i%4]})};
     });this.layoutPots();this.emit('start');
   }
   layoutPots(){
@@ -32,10 +32,10 @@ class GardenGame{
   averageHealth(){return this.pots.length?this.pots.reduce((sum,p)=>sum+(p.bloom?1:p.dead?0:(p.moisture+p.nutrition+1-p.infection)/3),0)/this.pots.length:1;}
   gardenerAnger(){return ['celebrating','won'].includes(this.state)?0:1-this.averageHealth();}
   requestInterval(){
-    // Match City's base rate and time ramp, without its extra acceleration per hit.
+    // 30% more care traffic than City's base rate, with the same time ramp.
     // Finished pots retire their share of the traffic instead of overloading the last plant.
     const active=this.pots.filter(p=>!p.bloom&&!p.dead).length/this.pots.length;
-    return active?SC.citySpawnInterval(this.pace,SC.cityPressure(0,this.elapsed))*(this.mode==='math'?2:1)/active:Infinity;
+    return active?SC.citySpawnInterval(this.pace,SC.cityPressure(0,this.elapsed))*(this.mode==='math'?2:1)/(active*1.3):Infinity;
   }
   decayProbability(){
     // Two 0.2 changes create a 0.4 request after care. One global trial, not one per pot.
@@ -69,7 +69,7 @@ class GardenGame{
       p.requests[property]={id:++this.nextId,pot:p,property,item,appearedAt:this.clock};this.emit('need',{pot:p,property});
     }
   }
-  workerStatus(){if(['celebrating','won'].includes(this.state))return 'Alla plantor blommar!';if(this.failedPot)return 'Kruka '+this.failedPot.id+' vissnade · '+this.lossReason;const j=this.job;if(!j)return 'Trädgårdsmästaren väntar på nästa svar';if(j.stage==='think')return j.entry.text+' ?';return `${j.entry.text} · ${j.stage==='fetch'?'hämtar '+NAMES[j.request.property].toLowerCase():j.stage==='run'?'springer till kruka '+j.request.pot.id:'sköter kruka '+j.request.pot.id}`;}
+  workerStatus(){if(['celebrating','won'].includes(this.state))return this.pots.filter(p=>p.bloom).length+' plantor blommar!';if(['mourning','lost'].includes(this.state))return 'Alla plantor vissnade';const j=this.job;if(!j)return 'Trädgårdsmästaren väntar på nästa svar';if(j.stage==='think')return j.entry.text+' ?';return `${j.entry.text} · ${j.stage==='fetch'?'hämtar '+NAMES[j.request.property].toLowerCase():j.stage==='run'?'springer till kruka '+j.request.pot.id:'sköter kruka '+j.request.pot.id}`;}
   beginJob(){
     if(this.job||!this.queue.length)return;
     const entry=this.queue.take();if(!entry)return;
@@ -79,13 +79,13 @@ class GardenGame{
     this.job={entry,request,tool,age:0,stage:g.held===tool?'run':'fetch'};
     if(g.held&&g.held!==tool){g.held.x=g.x;g.held.y=g.y;g.held=null;this.emit('drop');}
   }
-  moveTo(target,dt){const g=this.gardener,dx=target.x-g.x,dy=target.y-g.y,d=Math.hypot(dx,dy),step=2.8*dt;
+  moveTo(target,dt){const g=this.gardener,dx=target.x-g.x,dy=target.y-g.y,d=Math.hypot(dx,dy),step=2.8*.2*dt;
     if(d<=step){g.x=target.x;g.y=target.y;return true;}g.x+=dx/d*step;g.y+=dy/d*step;return false;
   }
   work(dt){
     this.beginJob();const j=this.job;if(!j)return;j.age+=dt;
     if(j.stage==='think'){if(j.age>=1.9)this.job=null;return;}
-    if(j.request.pot.bloom){this.job=null;return;}
+    if(j.request.pot.bloom||j.request.pot.dead||j.request.pot.requests[j.request.property]!==j.request){this.job=null;return;}
     if(j.stage==='fetch'){
       if(this.moveTo(j.tool,dt)){this.gardener.held=j.tool;j.stage='run';j.age=0;this.emit('pickup');}
     }else if(j.stage==='run'){
@@ -95,7 +95,7 @@ class GardenGame{
       const {pot,property}=j.request;pot[property]=property==='infection'?0:1;this.syncRequests(pot);this.score+=100;this.hits++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.effects.push({pot,property,age:0});this.emit('hit',{entry:j.entry,target:j.request,points:100});this.job=null;
     }
   }
-  endResult(won){this.emit('end',{won,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,flowers:this.pots.filter(p=>p.bloom).length});}
+  endResult(won){this.emit('end',{won,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,flowers:this.pots.filter(p=>p.bloom).length,dead:this.pots.filter(p=>p.dead).length});}
   finish(won){
     if(this.state!=='playing')return;this.job=null;
     if(won){if(this.gardener.look.exotic)this.emit('rare-earned',{look:this.gardener.look,bonus:0});this.state='celebrating';this.celebrationLeft=4;this.emit('celebrate');}
@@ -110,11 +110,11 @@ class GardenGame{
     this.decayElapsed+=dt;if(this.decayElapsed>=this.decayInterval-1e-8){this.decayElapsed-=this.decayInterval;this.decayPlants();}
     for(const p of this.pots){
       if(p.bloom||p.dead)continue;
-      if(p.moisture<=0||p.nutrition<=0||p.infection>=1){p.dead=true;p.requests={};this.failedPot=p;this.lossReason=p.moisture<=0?'Vattnet tog slut':p.nutrition<=0?'Näringen tog slut':'För mycket ohyra';this.emit('plant-dead',{pot:p});this.finish(false);return;}
+      if(p.moisture<=0||p.nutrition<=0||p.infection>=1){p.dead=true;p.requests={};this.failedPot=p;this.lossReason=p.moisture<=0?'Vattnet tog slut':p.nutrition<=0?'Näringen tog slut':'För mycket ohyra';this.emit('plant-dead',{pot:p});if(this.job?.request?.pot===p)this.job=null;continue;}
       if(p.moisture>=.4&&p.nutrition>=.4&&p.infection<=.6)p.growth=clamp(p.growth+dt*.021*p.moisture*p.nutrition*(1-p.infection),0,1);
       if(p.growth>=1){p.bloom=true;p.requests={};this.score+=500;this.emit('flower',{pot:p});}
     }
-    if(this.pots.every(p=>p.bloom)){this.finish(true);return;}
+    if(this.pots.every(p=>p.bloom||p.dead)){this.finish(this.pots.some(p=>p.bloom));return;}
     this.work(dt);
   }
 }
@@ -142,7 +142,7 @@ class GardenRenderer extends SC.SceneRenderer{
     this.bubbles();
     if(g.state==='mourning'){
       const p=this.point(g.failedPot),bw=Math.min(340,w-24);c.strokeStyle='#ffb793';c.lineWidth=3;c.beginPath();c.ellipse(p.x,p.y-35*this.scale,63*this.scale,100*this.scale,0,0,Math.PI*2);c.stroke();
-      this.round((w-bw)/2,h-69,bw,55,12,'#543f38','#ffb793');c.textAlign='center';c.fillStyle='#fff0db';c.font='bold 17px system-ui';c.fillText('Plantan vissnade',w/2,h-45);c.font='13px system-ui';c.fillText(g.lossReason,w/2,h-25);
+      this.round((w-bw)/2,h-69,bw,55,12,'#543f38','#ffb793');c.textAlign='center';c.fillStyle='#fff0db';c.font='bold 17px system-ui';c.fillText('Alla plantor vissnade',w/2,h-45);c.font='13px system-ui';c.fillText(g.lossReason,w/2,h-25);
     }
     if(g.job?.stage==='think'){
       const p=this.point(g.gardener),text=g.job.entry.text+' ?',bw=SC.labelWidth(c,text,{font:'bold 16px system-ui',max:Math.min(200,w-30)});this.round(clamp(p.x-bw/2,8,w-bw-8),p.y-145*this.scale,bw,32,10,'#fff0d3','#dbb585');c.fillStyle='#594f44';c.font='bold 16px system-ui';c.textAlign='center';c.fillText(text,clamp(p.x,bw/2+8,w-bw/2-8),p.y-124*this.scale,bw-16);

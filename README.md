@@ -1,6 +1,6 @@
 # Skolarkaden
 
-Sju små lärspel för tangentbord eller mikrofon. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
+Åtta små lärspel för tangentbord eller mikrofon. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
 
 **Öppna `index.html` i Chrome.** Behåll `resources` bredvid HTML-filen. Ingen installation, byggprocess eller webbserver behövs. Om du laddar ned projektet som ZIP: packa upp hela filen först.
 
@@ -17,6 +17,7 @@ All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och
 | Färgballonger | Träffa så många av de 40 förbipasserande som möjligt. |
 | Hungrig dinosaurie | Fånga så många av de 40 små figurerna som möjligt. |
 | Marshmallows | Ta in gyllene marshmallows innan solen går upp. |
+| Äggröra | Bränn spruckna rymdägg och rymdkryp för att skydda besättningen. |
 
 Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övning eller valt språk. Matövningen innehåller 70 svenska matord och väljs precis som övriga övningar.
 
@@ -28,7 +29,7 @@ Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övnin
 
 Under spel visas bara svarsfältet under spelplanen; i talläge visas inget svarsfält. Köade och påbörjade uppgifter markeras i själva spelen. Matbilens väntande tallrikar är tomma och står bredvid rätten som lagas.
 
-Svar behandlas i ordning. Upprepningar hoppas över om det inte finns ytterligare lediga mål med samma svar. Högst två olika felsvar får vänta samtidigt. I de sex tidigare spelen kostar fel svar arbetstid; de har ingen tidslucka att tajma. I Marshmallows reagerar varje pinne direkt när svaret hämtas ur kön, och marshmallowen ska vara gyllene då.
+Svar behandlas i ordning. Upprepningar hoppas över om det inte finns ytterligare lediga mål med samma svar. Högst två olika felsvar får vänta samtidigt. I övriga spel kostar fel svar arbetstid; de har ingen tidslucka att tajma. I Marshmallows reagerar varje pinne direkt när svaret hämtas ur kön, och marshmallowen ska vara gyllene då.
 
 Tangentbordsfokus hålls i svarsfältet under aktivt spel. Tab och Shift+Tab flyttar inte fokus, och oavsiktliga klick utanför fältet tar inte fokus. Paus- och verktygsknappar går fortfarande att klicka på. Menyer, dialoger, webbläsargenvägar, markörflyttning och IME behåller sina vanliga funktioner.
 
@@ -60,7 +61,23 @@ Ett för tidigt svar vrider underarmen och pinnen runt armbågen för en titt oc
 
 Alla övningar fungerar, inklusive bokstäver utan Enter, kontinuerligt tal och fem sekunders fördröjd pinyin. Den gyllene tidsluckan är drygt sju sekunder vid stark eld och blir längre när elden svalnar. Matte förlänger både natten och grillningstiden med 30 procent; avsiktlig väntan på grillningen räknas inte som långsamma mattesvar.
 
-Stjärnor, moln, träd, växter, eldflugor, eld, armar och campingprylar ritas lokalt med Canvas. Växternas storlek följer avståndet i scenen, och förgrundsträden har kraftigare stammar. Sprakande ved, syrsor, antändning och tuppgalning syntetiseras utan inspelningar eller nedladdningar. Eldljudet tonar ned med elden och stängs av vid paus, meny, ljud av eller avslut. Alla nya ljud dämpas vid talinmatning.
+Stjärnor, moln, träd, växter, eldflugor, eld, armar och campingprylar ritas lokalt med Canvas. Växternas storlek följer avståndet i scenen, och förgrundsträden har kraftigare stammar utan lodräta ljusstreck. Sprakande ved, syrsor, antändning och tuppgalning syntetiseras utan inspelningar eller nedladdningar. Eldljudet tonar ned med elden och stängs av vid paus, meny, ljud av eller avslut. Alla nya ljud dämpas vid talinmatning.
+
+## Ordträdgården
+
+Trädgårdsmästaren går med 20 procent av sin tidigare hastighet. Varje planta börjar med oberoende slumpmässiga hälsoavdrag på 10–35 procent för vatten, näring och ohyra, fortfarande på den friska sidan av uppgiftströskeln på 40 procent. Nya behov uppstår därför tidigare. Behovstakten har ökats med 30 procent; färdiga eller döda plantor behåller inte sin andel av nya behov.
+
+En planta kan vissna utan att avsluta omgången. Döda plantor får inga fler uppgifter och kan inte återupplivas; påbörjad skötsel av dem avbryts. Omgången slutar när varje planta antingen blommar eller är död. Resultatet visar båda antalen. Finns minst en blommande planta firas resultatet, annars slutar spelet med en förlust.
+
+## Äggröra
+
+En besättning på sex människor, inklusive spelaren med eldkastare, kommer in i ett mörkt rymdskepp med slemmiga ägg, kåda och våta nät. Vännerna strövar omkring och undersöker rummet. Lugn, Lagom och Utmaning ger 8, 12 respektive 16 ägg. Äggen spricker och kläcks vid olika slumpmässiga tider. Sprickor och öppnade äggflikar visar kläckningen; inga förloppsmätare visas.
+
+Äggets första sprickor gör det till ett mål. Ett kläckt kryp behåller exakt samma mål, ord, köreservation och ledtrådstid. Krypen vandrar omkring, jagar människor i närheten med dubbla flykthastigheten och fäster sig vid ansiktet när de kommer ikapp. Människorna hoppar till och flyr, utom spelaren. En oavbruten attack får människan att falla huvudlös i en blodpöl, varefter krypet fortsätter söka.
+
+Ett rätt svar riktar eldkastaren mot målet och stoppar krypet omedelbart, även om det redan sitter på någon. Ägg och kryp brinner kort och blir grå. Döende kryp hoppar en gång och vänder sig på rygg. Varje förstört ägg eller kryp ger 100 poäng; samma ägg kan inte ge poäng en gång till efter kläckning. Brännande mål kan avsluta sin animation medan nästa svar behandlas.
+
+Spelet vinns när alla ägg och kryp är döda. Det förloras först när hela besättningen, inklusive spelaren, är död. Om spelaren dör fortsätter övriga människor försöka komma undan, och inmatningen stängs av. Överlevande människor gör tre segerhopp vid vinst; kvarvarande kryp gör det vid förlust. Alla övningar, talmatchning, köregler och fördröjd pinyin används. Matte ger 40 procent längre tider och långsammare rörelser, med samma relativa hastigheter och poäng.
 
 ## Mikrofon
 
@@ -85,7 +102,7 @@ Klassiska skript används så att `file://` fungerar utan modulladdare, externa 
 | `resources/speech.js` | Tidig köning, rättningar, orddelning och deduplicering av tal. |
 | `resources/voice.js` | Mikrofonens livscykel och lokala språkpaket. |
 | `resources/data.js`, `pinyin.js` | Övningar, ordböcker, matteanpassning och svarsmatchning. |
-| `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js`, `marshmallows.js` | Sju separata simuleringar och canvas-renderare. |
+| `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js`, `marshmallows.js`, `eggs.js` | Åtta separata simuleringar och canvas-renderare. |
 | `resources/people.js`, `plants.js`, `sounds.js` | Gemensamma figurer, växter och syntetiska ljud. |
 | `resources/app.js` | Menyer, paus, HUD och anslutning av modulerna. |
 

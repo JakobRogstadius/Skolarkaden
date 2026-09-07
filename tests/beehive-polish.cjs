@@ -22,7 +22,7 @@ test('Scatter stays inside the meadow at full growth, has no rows, and resizes d
 test('Both games use all stalk, leaf and flower families; health stays separate from appearance',()=>{
  const random=rng(50),sets=[new Set(),new Set(),new Set()];for(let i=0;i<600;i++){const look=SC.makePlantLook(random);[look.stalk,look.leaf,look.flower].forEach((v,j)=>sets[j].add(v));}
  assert.deepEqual(sets.map(s=>s.size),[4,5,6]);
- for(const Game of [SC.BeehiveGame,SC.GardenGame]){const g=new Game({random:rng(4)});g.start();for(const p of g.plants||g.pots){assert(Number.isInteger(p.look.stalk));assert(Number.isInteger(p.look.leaf));assert(Number.isInteger(p.look.flower));assert.equal(p.moisture,1);assert.equal(p.nutrition,1);assert.equal(p.infection,0);}}
+ for(const Game of [SC.BeehiveGame,SC.GardenGame]){const g=new Game({random:rng(4)});g.start();for(const p of g.plants||g.pots){assert(Number.isInteger(p.look.stalk));assert(Number.isInteger(p.look.leaf));assert(Number.isInteger(p.look.flower));if(Game===SC.BeehiveGame){assert.equal(p.moisture,1);assert.equal(p.nutrition,1);assert.equal(p.infection,0);}else{assert(p.moisture>.6&&p.moisture<1);assert(p.nutrition>.6&&p.nutrition<1);assert(p.infection>0&&p.infection<.4);}}}
  for(let stalk=0;stalk<4;stalk++){
   const look=SC.makePlantLook(random,{stalk}),p={look,growth:.9,moisture:1,nutrition:1,infection:0};const healthy=SC.plantShape(p),dry=SC.plantShape({...p,moisture:.05}),pale=SC.plantShape({...p,nutrition:.05}),bugs=SC.plantShape({...p,infection:.8});
   assert(Math.min(...dry.tips.map(t=>t.y))>Math.min(...healthy.tips.map(t=>t.y))+15);assert(dry.leaves.every((l,i)=>l.angle>healthy.leaves[i].angle));assert.equal(dry.health.leaf,healthy.health.leaf);

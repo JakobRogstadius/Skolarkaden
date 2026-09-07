@@ -2,12 +2,13 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 const ctx=vm.createContext({Event,EventTarget,CustomEvent,console});
-for(const file of ['pinyin','data','input','people','game','foodtruck','plants','garden','beehive','paint','dinosaur','marshmallows'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
-const SC=ctx.Starlight,names=['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow'];
+for(const file of ['pinyin','data','input','people','game','foodtruck','plants','garden','beehive','paint','dinosaur','marshmallows','eggs'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
+const SC=ctx.Starlight,names=['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg'];
 const rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;},tick=(g,t)=>{for(let i=0;i<Math.round(t/.05);i++)g.update(.05);};
 let checks=0;const test=(name,fn)=>{fn();checks++;console.log('PASS '+name);};
 function game(name,width=1000){
  const g=new SC[name+'Game']({random:rng(5)});g.start({mode:'chinese',lang:'zh-CN',pace:'gentle'});g.resize(width,name==='Beehive'&&width<600?1200:740);
+ if(name==='Egg'){g.eggs.forEach(e=>e.crackAt=10000);tick(g,7);g.crack(g.eggs[0]);g.eggs[0].hatchTime=10000;}
  if(name==='Garden'){g.pots[0].moisture=.4;g.syncRequests(g.pots[0]);g.decayPlants=()=>{};}
  for(let i=0;i<100&&!g.getTargets().length;i++)g.update(.05);
  const p=g.getTargets()[0];assert(p,name+' first target missing');assert(Number.isFinite(p.appearedAt),name+' missing appearance time');
@@ -69,4 +70,4 @@ test('Restart clears revealed hints, and other exercises never show pinyin',()=>
  }
  const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8'),app=fs.readFileSync(path.join(__dirname,'../resources/app.js'),'utf8');assert.doesNotMatch(html,/id="hints"|Visa pinyin/);assert.doesNotMatch(app,/\$\('hints'\)/);
 });
-console.log(checks+' delayed-pinyin checks passed across seven games.');
+console.log(checks+' delayed-pinyin checks passed across eight games.');

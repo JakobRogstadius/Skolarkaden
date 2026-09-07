@@ -21,7 +21,7 @@ SC.makePerson=function(random=Math.random){
 };
 SC.makeChild=function(random=Math.random){let first=true;return SC.makePerson(()=>{if(first){first=false;return .8+random()*.19;}return random();});};
 SC.personScale=a=>a.child?.77:1;
-SC.drawPerson=function(r,{x,feet,scale=1,look:a,walk=0,anger=0,fear=0,shadow=true,carry=null,wave=0,chef=false}){
+SC.drawPerson=function(r,{x,feet,scale=1,look:a,walk=0,anger=0,fear=0,shadow=true,carry=null,wave=0,chef=false,headless=false}){
  const c=r.ctx,B=54*a.height,Y=-B-26,e=a.exotic,skin=a.skin;
  c.save();c.translate(x,feet);c.scale(scale*SC.personScale(a),scale*SC.personScale(a));c.lineCap='round';
  const line=(points,color,width=3)=>{c.strokeStyle=color;c.lineWidth=width;c.beginPath();points.forEach(([xx,yy],i)=>i?c.lineTo(xx,yy):c.moveTo(xx,yy));c.stroke();};
@@ -30,7 +30,7 @@ SC.drawPerson=function(r,{x,feet,scale=1,look:a,walk=0,anger=0,fear=0,shadow=tru
  if(e==='dragon'){poly([[-15,-B+10],[-47,-B-16],[-42,-B+24],[-19,-25]],'#73a88d');poly([[15,-B+10],[47,-B-16],[42,-B+24],[19,-25]],'#73a88d');line([[13,-20],[37,-7],[44,-21]],skin,9);}
  if(e==='wizard'){poly([[-20,-B],[-33,-7],[32,-7],[19,-B]],'#6f69a5');}
  if(e==='axolotl')line([[8,-19],[32,-12],[40,-27]],'#e59ebf',10);
- if(a.feminine){r.round(-25,Y-24,50,51,12,a.hair);if(a.hairStyle===1){r.circle(-29,Y+5,10,a.hair);r.circle(29,Y+5,10,a.hair);}}
+ if(a.feminine&&!headless){r.round(-25,Y-24,50,51,12,a.hair);if(a.hairStyle===1){r.circle(-29,Y+5,10,a.hair);r.circle(29,Y+5,10,a.hair);}}
  line([[-9,-26],[-11+walk,0]],a.pants,10);line([[9,-26],[11-walk,0]],a.pants,10);
  r.round(-22*a.width,-B,44*a.width,B-19,9,a.shirt);
  if(a.child){r.circle(0,-B+17,6,'#fff2ba');line([[-9,-B+6],[9,-B+6]],'#ffffff80',2);}
@@ -39,6 +39,7 @@ SC.drawPerson=function(r,{x,feet,scale=1,look:a,walk=0,anger=0,fear=0,shadow=tru
  line([[-20*a.width,-B+9],[-29*a.width,-28+walk]],a.shirt,9);r.circle(-29*a.width,-24+walk,5,skin);
  const hand=wave?{x:31+Math.sin(wave)*8,y:-B-17}:{x:29*a.width,y:-24-walk};line([[20*a.width,-B+9],wave?[30,-B+4]:[hand.x,hand.y-4],[hand.x,hand.y]],a.shirt,9);r.circle(hand.x,hand.y,5,skin);
  if(wave)for(let i=-1;i<=1;i++)line([[hand.x+i*3,hand.y],[hand.x+i*4,hand.y-8]],skin,2);
+ if(!headless){
  r.round(-5,-B-10,10,15,3,skin);
  if(e==='axolotl')for(const side of [-1,1])for(let i=-1;i<=1;i++){line([[side*18,Y],[side*34,Y+i*15]],'#df729f',4);r.circle(side*34,Y+i*15,4,'#f2a0c6');}
  if(e==='robot')r.round(-22,Y-21,44,42,7,skin);else if(a.headRound||e)r.circle(0,Y,21,skin);else r.round(-21,Y-20,42,41,8,skin);
@@ -65,6 +66,7 @@ SC.drawPerson=function(r,{x,feet,scale=1,look:a,walk=0,anger=0,fear=0,shadow=tru
  if(a.glasses){c.lineWidth=1.5;for(const xx of [-9,9]){c.beginPath();c.arc(xx,Y-3,7,0,6.28);c.stroke();}line([[-2,Y-3],[2,Y-3]],'#3b3435',1.5);}
  c.globalAlpha=anger*.55;r.circle(-15,Y+6,4,'#e66960');r.circle(15,Y+6,4,'#e66960');c.globalAlpha=1;
  if(chef){r.round(-22,Y-34,44,18,5,'#fff6e3');for(const xx of [-17,0,17])r.circle(xx,Y-36,12,'#fff6e3');}
+ }
  if(carry)carry(0,-B+16);c.restore();
 };
 })(globalThis);

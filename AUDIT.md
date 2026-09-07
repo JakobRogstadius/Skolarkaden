@@ -257,3 +257,16 @@ Dinosauriesviten passerar nu 18 kontrollgrupper. Nya kontroller omfattar parkera
 De tre grova fyrkantstonsekvenserna ersattes med lokal röstsyntes: en tonkälla med övertoner formas av rörliga vokalresonanser, mjuka ljudförlopp och lågmäld andnings-/halsstruktur. Rytandet får låg grundton och ojämn halsklang, skriket får en högre ah-vokal med vibrato, och tuggningen får tre avrundade nom-stavelser med mjuka läppljud. Grundlängderna är 0,74/0,46/0,86 sekunder. Rytande och skrik varierar lite i tonhöjd mellan uppspelningar. De genererade 24 kHz-buffertarna sparas i minnet efter första användningen. De distribueras inte som inspelningar eller ljudresurser och kräver ingen server. Spelregler och ljudhändelser är oförändrade.
 
 `tests/dinosaur-sounds.cjs` kontrollerar verkligt genererade ljuddata: ändliga och nivåbegränsade sampel, mjuk början och slut, tre åtskilda stavelser, längd före sväljningen, återanvändning av buffertar, 23 procents ljudvolym i talläge, liten tonhöjdsvariation och frigörande av uppspelningsnoder. `tests/dinosaur-ui.cjs` passerar också. Kontrollen är programmatisk; de nya ljuden har inte provlyssnats i Windows Chrome här.
+
+
+## Äggröra, trädgårdstempo och mörka förgrundsstammar (2026-09-07)
+
+Äggröra är det åttonde spelet, med en obruten målidentitet från första sprickan till kläckt kryp. De nya simuleringskontrollerna omfattar besättningens entré, olika antal ägg, relativa rörelsehastigheter, sprickor och kläckning, tonfri pinyin och kinesiska sifferföljder, kögränser och dubletter, omedelbart skydd när ett kryp besvaras, räddning under en ansiktsattack, enskilda dödsfall, spelarens död, slutvillkor, dödsanimation under förlust, paus, omstart och matteåterställning. 48 hela omgångar med tysta och uppmärksamma spelare körs över tre svårigheter, två övningar och två bildbredder. Uppgiftsrutors gränser och överlappning kontrolleras programmatiskt, även med 16 synliga pinyinledtrådar på 320 × 540 pixlar.
+
+Appkontrollen med DOM/Canvas-ersättningar läser faktisk skriptordning och testar Äggröra med tangentbord och tal, dolt HUD-förlopp, paus, poäng, resultat, omstart och avstängd inmatning efter spelarens död (även efter paus/fortsättning). Gemensamma pinyintester omfattar nu samtliga åtta spel. De nya ljudeffekterna använder befintlig Web Audio-syntes och kontrolleras för genererade sampel och frigörande av noder.
+
+Trädgårdstester har uppdaterats för 30 procent högre behovstakt, 80 procent lägre gånghastighet, friska men slumpmässigt nedsatta startvärden och slut först när alla plantor blommar eller är döda. En pågående skötseluppgift får aldrig återuppliva eller ge poäng för en död planta. Övriga spel, tal och inmatning behåller sina regressionstester. Förgrundsträdens lodräta ljusstreck i Marshmallows är borttagna.
+
+Den här uppdateringen verifieras med Node-simuleringar, koordinatkontroller och DOM/Canvas-ersättningar. Ingen manuell webbläsargranskning eller fysisk mikrofonprovning ingår.
+
+Samtliga 19 testsviter passerade efter uppdateringen. Lokala resursreferenser, JavaScript-syntax och diffens blanksteg kontrollerades också.

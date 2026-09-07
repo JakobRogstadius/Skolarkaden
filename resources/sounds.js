@@ -125,6 +125,11 @@
         else if(kind==='camp-good'){tone(660,660,.13,0,.013,'sine');tone(990,990,.20,.10,.010,'sine');}
         else if(kind==='camp-check'){tone(320,360,.08,0,.009,'triangle');tone(360,300,.1,.12,.007,'triangle');}
         else if(kind==='camp-toss')tone(115,65,.10,0,.010,'sine');
+        else if(kind==='egg-crack'){noise(.09,1300);tone(150,65,.12,.04,.018,'sine');}
+        else if(kind==='egg-hatch'){noise(.32,1800);tone(220,80,.28,0,.019,'triangle');tone(920,470,.16,.12,.008,'sine');}
+        else if(kind==='egg-flame'){noise(.58,3200);tone(72,46,.48,0,.023,'sine');}
+        else if(kind==='egg-bite'){noise(.1,1600);tone(350,160,.13,0,.018,'triangle');tone(270,115,.12,.16,.012,'sine');}
+        else if(kind==='crew-down'){tone(120,42,.28,0,.028,'sine');noise(.17,650,.08);}
         else if(kind==='dino-step')tone(85,44,.09,0,.018,'sine');
         else if(['dino-roar','dino-startle','dino-chomp'].includes(kind))this.dinosaurVoice(kind,scale);
         else if(kind==='dino-gulp'){tone(220,105,.15,0,.027,'sine');tone(320,520,.13,.12,.017,'sine');}

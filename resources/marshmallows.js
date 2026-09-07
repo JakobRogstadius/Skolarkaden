@@ -144,7 +144,7 @@ class MarshmallowRenderer extends SC.SceneRenderer{
   c.save();c.translate(x,y);c.strokeStyle=wood;c.lineWidth=Math.max(3,W*.19)*(far?1:2);c.lineCap='round';c.beginPath();c.moveTo(0,0);c.lineTo(Math.sin(p.phase)*W*.15,-H);c.stroke();
   if(p.kind===0){for(let j=0;j<5;j++){const top=-H+j*H*.16,span=W*(.45+j*.18);c.fillStyle=leaf;c.beginPath();c.moveTo(0,top);c.quadraticCurveTo(-span*.35,top+H*.13,-span,top+H*.29);c.quadraticCurveTo(0,top+H*.23,span,top+H*.29);c.quadraticCurveTo(span*.35,top+H*.13,0,top);c.fill();}}
   else{for(let j=0;j<5;j++){const side=j%2?1:-1,yy=-H*(.45+j*.10),xx=side*W*(.45+j*.1);c.lineWidth=Math.max(2,W*.09);c.beginPath();c.moveTo(0,yy+H*.14);c.lineTo(xx,yy);c.stroke();c.fillStyle=leaf;c.beginPath();c.ellipse(xx,yy,W*(p.kind===1?.85:.56),H*.15,side*.3,0,TAU);c.fill();}c.beginPath();c.ellipse(0,-H*.92,W*.78,H*.14,0,0,TAU);c.fill();}
-  if(!far){c.strokeStyle='#ed9a4b18';c.lineWidth=2;c.beginPath();c.moveTo(x<g.width/2?3:-3,0);c.lineTo(x<g.width/2?3:-3,-H*.45);c.stroke();}c.restore();
+  c.restore();
  }
  camping(day){
   const c=this.ctx,g=this.game,w=g.width,h=g.height,{s}=this.geometry(),t=this.reduced?0:g.clock;

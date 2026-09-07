@@ -4,9 +4,10 @@ const sources=[],gains=[],buffers=[];
 const param=()=>({value:0,setValueAtTime(v){this.value=v;},setTargetAtTime(v){this.value=v;},exponentialRampToValueAtTime(v){assert(v>0);this.value=v;},cancelScheduledValues(){}});
 class AudioContext{
  constructor(){Object.assign(this,{state:'running',currentTime:10,destination:{},sampleRate:48000});}
- createBuffer(ch,length,sampleRate){const b={length,sampleRate,copyToChannel(data){this.samples=new Float32Array(data);}};buffers.push(b);return b;}
+ createBuffer(ch,length,sampleRate){const b={length,sampleRate,getChannelData(){return this.samples||(this.samples=new Float32Array(length));},copyToChannel(data){this.samples=new Float32Array(data);}};buffers.push(b);return b;}
  createBufferSource(){const n={playbackRate:{value:1},connect(){},disconnect(){this.disconnected=true;},start(){this.started=true;},stop(){this.stopped=true;}};sources.push(n);return n;}
  createGain(){const n={gain:param(),connect(){},disconnect(){this.disconnected=true;}};gains.push(n);return n;}
+ createBiquadFilter(){return {frequency:{value:0},connect(){},disconnect(){}};}
  createOscillator(){return {frequency:param(),connect(){},disconnect(){},start(){},stop(){}};}
  async close(){this.state='closed';}
 }
@@ -24,5 +25,6 @@ sound.stopCampfire();assert(loop.source.stopped);loop.source.onended();assert(lo
 for(const kind of ['camp-insects','camp-ignite','daybreak']){sound.play(kind);const full=gains.at(-1).gain.value,source=sources.at(-1);sound.play(kind,.23);assert.equal(sources.at(-1).buffer,source.buffer);assert(Math.abs(gains.at(-1).gain.value/full-.23)<1e-10);}
 const active=[...sound.campVoices];sound.campfire(0);assert.equal(sound.campLoop,null);assert.equal(sound.campVoices.size,0);assert(active.every(v=>v.source.stopped&&v.source.disconnected&&v.gain.disconnected));
 for(const kind of ['camp-good','camp-check','camp-toss'])sound.play(kind);
+for(const kind of ['egg-crack','egg-hatch','egg-flame','egg-bite','crew-down']){const before=sources.length;sound.play(kind);assert(sources.length>before,kind+' must create audible noise');const source=sources.at(-1);assert(source.started&&source.buffer.samples.some(v=>v!==0));assert(source.buffer.samples.every(Number.isFinite));source.onended();assert(source.disconnected);}
 sound.campfire(1);sound.close();assert.equal(sound.campBuffers.size,0);assert.equal(sound.campLoop,null);assert.equal(sound.context,null);
 console.log('PASS single cached fire loop, cooling/voice attenuation, pause/mute/menu cleanup, resumption and context teardown.');
