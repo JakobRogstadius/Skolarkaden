@@ -43,8 +43,33 @@
     const gain=peak?.8/peak:1;for(let i=0;i<data.length;i++)data[i]*=gain;
     data[0]=0;data[data.length-1]=0;return data;
   }
+  function synthesizeCampSound(kind,sampleRate=24000,random=Math.random){
+    const length={'camp-crackle':8,'camp-insects':.78,'camp-ignite':.62,'daybreak':1.95}[kind];if(!length)throw new Error('Okänt lägerljud.');
+    const data=new Float32Array(Math.ceil(length*sampleRate)),tau=Math.PI*2;
+    const crow=[[0,.17,640,850],[.23,.15,890,790],[.45,.18,940,1120],[.70,.17,1060,920],[.96,.85,970,700]];
+    let low=0,air=0,pop=0,phase=0;
+    for(let i=0;i<data.length;i++){
+      const t=i/sampleRate,u=t/length,n=random()*2-1;low+=.04*(n-low);air+=.28*(n-air);let value=0;
+      if(kind==='camp-crackle'){
+        if(random()<7/sampleRate)pop=.18+random()*.62;
+        pop*=Math.exp(-1/(sampleRate*.006));value=low*.30+(n*.8+air*.2)*pop;
+      }else if(kind==='camp-insects'){
+        const local=t<.26?t:t-.40,window=local>=0&&local<.26?Math.sin(Math.PI*local/.26)**2:0,pips=(.5+.5*Math.sin(tau*t*31))**3;
+        value=(Math.sin(tau*t*3450)+.3*Math.sin(tau*t*4970))*.46*window*pips;
+      }else if(kind==='camp-ignite'){
+        const envelope=Math.sin(Math.PI*u)**1.2;value=(air*.80+low*.9+Math.sin(tau*t*110)*.06)*envelope;
+      }else{
+        const part=crow.find(([at,duration])=>t>=at&&t<at+duration);
+        if(part){const [at,duration,start,end]=part,v=(t-at)/duration,f0=(start+(end-start)*v)*(1+.014*Math.sin(tau*t*23));phase+=tau*f0/sampleRate;let voice=0;
+          for(let k=1;k<=9;k++){const resonance=.12+1/(1+((f0*k-1900)/560)**2);voice+=Math.sin(phase*k)*resonance/Math.sqrt(k);}
+          const attack=Math.min(1,(t-at)/.025),release=Math.min(1,(at+duration-t)/.06);value=(voice*.55+air*.08)*Math.sin(attack*Math.PI/2)**2*Math.sin(release*Math.PI/2)**2;
+        }
+      }
+      const edge=Math.min(1,t/.025,(length-t)/.04);data[i]=.8*Math.tanh(value)*Math.max(0,edge);
+    }data[0]=0;data[data.length-1]=0;return data;
+  }
   class GameSounds{
-    constructor(){this.context=null;this.dinosaurBuffers=new Map();}
+    constructor(){this.context=null;this.dinosaurBuffers=new Map();this.campBuffers=new Map();this.campVoices=new Set();this.campLoop=null;}
     unlock(){
       try{const AC=root.AudioContext||root.webkitAudioContext;if(!this.context)this.context=new AC();
         if(this.context.state==='suspended')this.context.resume().catch(()=>{});
@@ -57,6 +82,26 @@
       source.playbackRate.value=kind==='dino-chomp'?1:.97+Math.random()*.06;
       gain.gain.value=(kind==='dino-startle'?.047:.063)*Math.max(0,scale);
       source.connect(gain);gain.connect(c.destination);source.onended=()=>{source.disconnect();gain.disconnect();};source.start();
+    }
+    campBuffer(kind){
+      let buffer=this.campBuffers.get(kind);if(!buffer){const data=synthesizeCampSound(kind);buffer=this.context.createBuffer(1,data.length,24000);buffer.copyToChannel(data,0);this.campBuffers.set(kind,buffer);}return buffer;
+    }
+    campVoice(kind,scale){
+      const c=this.context,source=c.createBufferSource(),gain=c.createGain(),voice={source,gain};source.buffer=this.campBuffer(kind);source.playbackRate.value=kind==='daybreak'?1:.96+Math.random()*.08;
+      gain.gain.value=(kind==='camp-insects'?.038:kind==='daybreak'?.085:.085)*Math.max(0,scale);source.connect(gain);gain.connect(c.destination);this.campVoices.add(voice);
+      source.onended=()=>{source.disconnect();gain.disconnect();this.campVoices.delete(voice);};source.start();
+    }
+    campfire(strength,scale=1){
+      if(strength<=0||scale<=0){this.stopCampfire();return;}this.unlock();const c=this.context;if(!c||c.state==='closed')return;
+      try{
+        if(!this.campLoop){const source=c.createBufferSource(),gain=c.createGain();source.buffer=this.campBuffer('camp-crackle');source.loop=true;gain.gain.value=0;source.connect(gain);gain.connect(c.destination);source.onended=()=>{source.disconnect();gain.disconnect();};source.start();this.campLoop={source,gain};}
+        this.campLoop.gain.gain.setTargetAtTime(.22*Math.min(1,strength)*scale,c.currentTime,.18);
+      }catch(_){this.stopCampfire();}
+    }
+    stopCampfire(){
+      const c=this.context,loop=this.campLoop;this.campLoop=null;
+      if(loop){try{loop.gain.gain.cancelScheduledValues(c.currentTime);loop.gain.gain.setTargetAtTime(.0001,c.currentTime,.012);loop.source.stop(c.currentTime+.06);}catch(_){loop.source.disconnect();loop.gain.disconnect();}}
+      for(const voice of this.campVoices){try{voice.source.stop();}catch(_){}voice.source.disconnect();voice.gain.disconnect();}this.campVoices.clear();
     }
     play(kind,scale=1){
       this.unlock();const c=this.context;if(!c||c.state==='closed')return;
@@ -76,7 +121,11 @@
         n.onended=()=>{n.disconnect();filter.disconnect();v.disconnect();};
       };
       try{
-        if(kind==='dino-step')tone(85,44,.09,0,.018,'sine');
+        if(['camp-insects','camp-ignite','daybreak'].includes(kind))this.campVoice(kind,scale);
+        else if(kind==='camp-good'){tone(660,660,.13,0,.013,'sine');tone(990,990,.20,.10,.010,'sine');}
+        else if(kind==='camp-check'){tone(320,360,.08,0,.009,'triangle');tone(360,300,.1,.12,.007,'triangle');}
+        else if(kind==='camp-toss')tone(115,65,.10,0,.010,'sine');
+        else if(kind==='dino-step')tone(85,44,.09,0,.018,'sine');
         else if(['dino-roar','dino-startle','dino-chomp'].includes(kind))this.dinosaurVoice(kind,scale);
         else if(kind==='dino-gulp'){tone(220,105,.15,0,.027,'sine');tone(320,520,.13,.12,.017,'sine');}
         else if(kind==='dino-puzzle'){tone(270,320,.12,0,.015,'triangle');tone(250,220,.13,.19,.012,'triangle');}
@@ -112,8 +161,9 @@
         else if(kind==='win') [523,659,784,1047].forEach((n,i)=>tone(n,n,.13,i*.09));
       }catch(_){}
     }
-    close(){this.context?.close().catch(()=>{});this.context=null;this.dinosaurBuffers.clear();}
+    close(){this.stopCampfire();this.context?.close().catch(()=>{});this.context=null;this.dinosaurBuffers.clear();this.campBuffers.clear();}
   }
   root.Starlight.synthesizeDinosaurSound=synthesizeDinosaurSound;
+  root.Starlight.synthesizeCampSound=synthesizeCampSound;
   root.Starlight.GameSounds=GameSounds;
 })(globalThis);

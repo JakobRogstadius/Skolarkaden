@@ -1,3 +1,19 @@
+# Marshmallows: lägereld från natt till morgon
+
+2026-09-07.
+
+Det sjunde spelet har två minuters natt, 2/4/6 samtidiga pinnar och sex sekunders soluppgång. Varje pinne reagerar direkt på sitt svar från den gemensamma kön. För tidiga svar lyfter pinnen för en titt, pausar grillningen och ger ett nytt ord vid återkomsten. Gyllene marshmallows ger 100 poäng. Brända marshmallows antänds om de lämnas kvar, dras ut och kastas tillbaka på marken där de ligger kvar hela omgången. Ingen förlustgräns finns.
+
+Elden blir svagare och grillningen långsammare under natten. Nya pinnar slutar komma när återstående tid inte räcker för grillning. Vid gryningen låses inmatningen, solen stiger, himlen ljusnar och elden slocknar innan resultatet visas. Matte får 30 procent längre natt och grillningstid; avsiktlig väntan på en gyllene marshmallow påverkar inte mattens bedömning av svarstakt eller obesvarad arbetsmängd. De andra spelens bedömning är oförändrad.
+
+Skogen, delade växtmodeller, stjärnor, moln, eldflugor, armar, eld, ångande kopp och campingprylar ritas med Canvas. Ett separat scenfrö gör att rendering och storleksändring inte påverkar spelutfallet. Reducerad rörelse dämpar dekorativ animation. Sprakande ved använder en enda återanvänd ljudslinga; syrsor, antändning och tuppgalning syntetiseras lokalt. Paus, meny, ljud av och avslut stänger lägerljuden. Talläget dämpar dem.
+
+**Verifiering:** `npm test` passerar **18 av 18 testsviter**. Tolv nya kontrollgrupper i `tests/marshmallows.cjs` täcker samtidiga pinnar och svar, exakta grillgränser, nya etiketter och pinyintider, antändning, bestående rester, paus, omstart, köpolicy, alla övningar och exakt slutgräns. 48 fullständiga nätter kombinerar tre svårigheter, svenska/matte, två slumpfrön och fyra svarsstrategier. `tests/camp-sounds.cjs` kontrollerar ljudsignaler, tuppens fem fraser, slingåteranvändning, dämpning och städning av ljudnoder. Appintegration täcker tangentbord, tidiga taltranskriptioner, paus, gryning, resultat, omstart och byte mellan alla sju spel. Pinyintesterna omfattar nu också Marshmallows.
+
+Natt, sex samtidiga pinnar, inspektion och gryning har granskats med den faktiska Canvas-renderaren vid 1100 och 370 pixlars bredd. Etiketter kontrolleras även vid 320 pixlars bredd med långa ord och blandad pinyin. Ingen ny körningsresurs eller webbserver krävs. **Begränsning:** testerna kördes i Node/native Canvas och med DOM-/talstand-ins; fysisk mikrofon, faktisk ljudåtergivning och Chrome på Windows har inte manuellt provats i denna uppdatering.
+
+---
+
 # Fördröjd pinyin i alla sex spel
 
 2026-09-07.

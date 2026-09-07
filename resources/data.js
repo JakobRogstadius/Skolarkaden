@@ -148,7 +148,7 @@
     }
     destroy(){this.game.queue.removeEventListener('attempt',this.listener);}
     available(){
-      const g=this.game,available=g.getAvailableTargets().map(t=>t.item);
+      const g=this.game,available=(g.getPracticeTargets?.()||g.getAvailableTargets()).map(t=>t.item);
       for(const entry of g.queue.items){const i=available.findIndex(item=>SC.matches(entry.text,item,g.mode,g.lang,entry.source));if(i>=0)available.splice(i,1);}
       return available;
     }

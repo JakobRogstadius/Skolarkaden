@@ -1,6 +1,6 @@
 # Skolarkaden
 
-Sex små lärspel för tangentbord eller mikrofon. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
+Sju små lärspel för tangentbord eller mikrofon. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
 
 **Öppna `index.html` i Chrome.** Behåll `resources` bredvid HTML-filen. Ingen installation, byggprocess eller webbserver behövs. Om du laddar ned projektet som ZIP: packa upp hela filen först.
 
@@ -16,6 +16,7 @@ All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och
 | Bikupan | Samla tillräckligt med honung före vintern. |
 | Färgballonger | Träffa så många av de 40 förbipasserande som möjligt. |
 | Hungrig dinosaurie | Fånga så många av de 40 små figurerna som möjligt. |
+| Marshmallows | Ta in gyllene marshmallows innan solen går upp. |
 
 Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övning eller valt språk. Matövningen innehåller 70 svenska matord och väljs precis som övriga övningar.
 
@@ -27,7 +28,7 @@ Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övnin
 
 Under spel visas bara svarsfältet under spelplanen; i talläge visas inget svarsfält. Köade och påbörjade uppgifter markeras i själva spelen. Matbilens väntande tallrikar är tomma och står bredvid rätten som lagas.
 
-Svar behandlas i ordning. Upprepningar hoppas över om det inte finns ytterligare lediga mål med samma svar. Högst två olika felsvar får vänta samtidigt. Fel svar kostar arbetstid; inget särskilt ögonblick behöver tajmas.
+Svar behandlas i ordning. Upprepningar hoppas över om det inte finns ytterligare lediga mål med samma svar. Högst två olika felsvar får vänta samtidigt. I de sex tidigare spelen kostar fel svar arbetstid; de har ingen tidslucka att tajma. I Marshmallows reagerar varje pinne direkt när svaret hämtas ur kön, och marshmallowen ska vara gyllene då.
 
 Tangentbordsfokus hålls i svarsfältet under aktivt spel. Tab och Shift+Tab flyttar inte fokus, och oavsiktliga klick utanför fältet tar inte fokus. Paus- och verktygsknappar går fortfarande att klicka på. Menyer, dialoger, webbläsargenvägar, markörflyttning och IME behåller sina vanliga funktioner.
 
@@ -50,6 +51,16 @@ De första blommorna öppnar efter ungefär en sekund. En del sommarplantor hål
 Varje leverans efter att kupan blivit full ger en synlig honungsburk. Burkarna staplas bredvid kupan och finns kvar under vinterfirandet. Poängregeln är oförändrad: 100 poäng per leverans. Nektar som fortfarande är ute när vintern börjar räknas inte.
 
 Uppgiftsbubblorna anpassar bredden efter ordet, tecknet och eventuell pinyin i samtliga spel. Bikupan behåller placeringen när en uppgift bara byter köstatus och söker fria platser runt växterna om etiketter annars skulle överlappa.
+
+## Marshmallows
+
+En omgång varar i två minuter, följt av sex sekunders soluppgång. Svårigheten styr bara antalet samtidiga pinnar: 2, 4 eller 6. Elden svalnar under natten, vilket gör grillningen långsammare. Gyllene marshmallows har en grön markering på ordet och ger 100 poäng var. Den lilla mätaren visar vägen från vit till gyllene och bränd. Nya pinnar slutar komma när det inte finns tid att grilla dem före morgonen.
+
+Ett för tidigt svar lyfter pinnen för en titt och återför den med ett nytt ord. Grillningen står still under denna rörelse. Brända marshmallows kan börja brinna och kastas sedan tillbaka på marken, där de ligger kvar. Felmatchade svar ger en kort frågebubbla och hindrar inte andra pinnar. Omgången kan inte förloras.
+
+Alla övningar fungerar, inklusive bokstäver utan Enter, kontinuerligt tal och fem sekunders fördröjd pinyin. Den gyllene tidsluckan är drygt sju sekunder vid stark eld och blir längre när elden svalnar. Matte förlänger både natten och grillningstiden med 30 procent; avsiktlig väntan på grillningen räknas inte som långsamma mattesvar.
+
+Stjärnor, moln, träd, växter, eldflugor, eld, armar och campingprylar ritas lokalt med Canvas. Sprakande ved, syrsor, antändning och tuppgalning syntetiseras utan inspelningar eller nedladdningar. Eldljudet tonar ned med elden och stängs av vid paus, meny, ljud av eller avslut. Alla nya ljud dämpas vid talinmatning.
 
 ## Mikrofon
 
@@ -74,7 +85,7 @@ Klassiska skript används så att `file://` fungerar utan modulladdare, externa 
 | `resources/speech.js` | Tidig köning, rättningar, orddelning och deduplicering av tal. |
 | `resources/voice.js` | Mikrofonens livscykel och lokala språkpaket. |
 | `resources/data.js`, `pinyin.js` | Övningar, ordböcker, matteanpassning och svarsmatchning. |
-| `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js` | Sex separata simuleringar och canvas-renderare. |
+| `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js`, `marshmallows.js` | Sju separata simuleringar och canvas-renderare. |
 | `resources/people.js`, `plants.js`, `sounds.js` | Gemensamma figurer, växter och syntetiska ljud. |
 | `resources/app.js` | Menyer, paus, HUD och anslutning av modulerna. |
 

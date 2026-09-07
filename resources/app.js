@@ -4,7 +4,7 @@
 const queue=new SC.AnswerQueue(),microphone=new SC.Microphone(),sounds=new SC.GameSounds();
 const input=new SC.AnswerInput({field:$('answer'),form:$('answer-form'),queue,microphone,retainFocus:()=>game?.state==='playing'&&!document.querySelector('dialog[open]'),getCandidates:()=>game?.state==='playing'?game.getTargets().map(t=>t.item):[]});
 let game,renderer,kind='city',busy=false,soundOn=true,lastOptions=null,log=[],lastTargetKey=null,lastUi=0,uiFrame,replaying=null,lifecycle=0;
-const names={city:'Stjärnförsvaret',food:'Stjärnköket',garden:'Ordträdgården',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer]};
+const names={city:'Stjärnförsvaret',food:'Stjärnköket',garden:'Ordträdgården',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer]};
 const safeRead=key=>{try{return Number(localStorage.getItem(key))||0;}catch(_){return 0;}},safeWrite=(key,v)=>{try{localStorage.setItem(key,String(v));}catch(_){}};
 let best=0,noticeUntil=0;
 try{localStorage.removeItem('starlight-friends-v1');}catch(_){}
@@ -15,7 +15,7 @@ function options(){return {mode:$('lesson').value,pace:$('pace').value,lang:$('l
 function speechOptions(){return {enabled:$('input-kind').value!=='typing',kind:$('input-kind').value,language:$('language').value,lesson:$('lesson').value};}
 function typingHint(){return ['letters','bopomofo'].includes($('lesson').value)?'Tryck på en bokstav.':'Skriv ett svar och tryck Enter.';}
 function menuUpdate(){
-  const voice=$('input-kind').value!=='typing';$('setup-note').textContent=voice?'Säg svaren efter varandra.':typingHint();
+  const voice=$('input-kind').value!=='typing';$('setup-note').textContent=kind==='marshmallows'?(voice?'Säg svaret när marshmallowen är gyllene.':['letters','bopomofo'].includes($('lesson').value)?'Tryck på bokstaven när marshmallowen är gyllene.':'Skriv svaret. Tryck Enter när marshmallowen är gyllene.'):voice?'Säg svaren efter varandra.':typingHint();
   $('mode-description').textContent=SC.modes[$('lesson').value].description;$('keyboard').hidden=$('lesson').value!=='bopomofo';
   [...$('pace').options].forEach((o,i)=>o.textContent=['Lugn','Lagom','Utmaning'][i]);
 }
@@ -37,21 +37,22 @@ input.addEventListener('fault',e=>{if(game?.state==='playing'){pause();$('resume
 queue.addEventListener('rejected',e=>{for(const entry of e.detail.entries)record({at:new Date().toISOString(),type:'queue-skipped',text:entry.text});});
 function bestKey(){return 'starlight-queue-v'+(kind==='food'?'1':'2')+':'+kind+':'+game.mode+':'+game.pace;}
 function onGameEvent(e){
-  const mapped={fire:'laser',impact:'crash',hit:kind==='city'?'explosion':kind==='food'?'serve':kind==='hive'?'honey':kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-gulp':null,miss:kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-air':'miss','customer-left':'miss','plant-dead':'crash',need:null,impatient:'tick'};
+  const mapped={early:'camp-check',think:kind==='marshmallows'?'camp-check':'think',fire:'laser',impact:'crash',hit:kind==='city'?'explosion':kind==='food'?'serve':kind==='hive'?'honey':kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-gulp':kind==='marshmallows'?'camp-good':null,miss:kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-air':'miss','customer-left':'miss','plant-dead':'crash',need:null,impatient:'tick'};
   const sound=Object.hasOwn(mapped,e.type)?mapped[e.type]:e.type;
   if(soundOn&&sound&&!(e.type==='end'))sounds.play(sound,input.listening?.23:1);
   if(e.type==='rare-arrival')notice('✦ '+SC.rarePeople.find(r=>r.id===e.look.exotic).name);
   if(e.type==='rare-earned')notice('✦ '+SC.rarePeople.find(r=>r.id===e.look.exotic).name+(e.bonus?' · +'+e.bonus+' poäng':' ✦'));
   if(e.type==='hive-full')notice('🍯 Fullt!');
-  if(e.entry&&['hit','miss','waste','think'].includes(e.type))record({at:new Date().toISOString(),type:'action',text:e.entry.text,result:e.type});
-  if(['celebrate','loss-pause'].includes(e.type)){input.setEnabled(false);$('pause').disabled=true;if(soundOn&&e.type==='celebrate')sounds.play('win');}
+  if(e.entry&&['hit','miss','waste','think','early'].includes(e.type))record({at:new Date().toISOString(),type:'action',text:e.entry.text,result:e.type});
+  if(['celebrate','loss-pause'].includes(e.type)){input.setEnabled(false);$('pause').disabled=true;if(soundOn&&e.type==='celebrate'&&kind!=='marshmallows')sounds.play('win');}
+  if(e.type==='pause'||e.type==='end')sounds.stopCampfire();
   if(e.type==='end'){
     input.setEnabled(false);$('pause').disabled=true;$('end-overlay').hidden=false;$('pause-overlay').hidden=true;
     if(e.score>best){best=e.score;safeWrite(bestKey(),best);}
-    $('result-kicker').textContent=['paint','dinosaur'].includes(kind)?'OMGÅNGEN ÄR KLAR':e.won?'DU KLARADE DET!':'EN NY CHANS VÄNTAR';
-    $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Allt står i blom.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'En planta vissnade.',hive:'Honungen räckte inte.'}[kind]);
+    $('result-kicker').textContent=['paint','dinosaur','marshmallows'].includes(kind)?'OMGÅNGEN ÄR KLAR':e.won?'DU KLARADE DET!':'EN NY CHANS VÄNTAR';
+    $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Allt står i blom.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'En planta vissnade.',hive:'Honungen räckte inte.'}[kind]);
     $('result-score').textContent=e.score.toLocaleString('sv-SE')+' poäng';
-    $('result-detail').textContent=kind==='city'?e.hits+' av '+SC.cityGoal+' kometer stoppade.':kind==='food'?e.hits+(e.hits===1?' glad gäst · ':' glada gäster · ')+e.lostCustomers+' gäster gick hem.':kind==='hive'?e.honey+' av '+e.honeyGoal+' lass nektar hann hem före vintern.':kind==='paint'?e.hits+' träffar · '+e.passed+' förbipasserande.':kind==='dinosaur'?e.hits+' uppätna · '+e.escaped+' gick vidare · '+e.passed+' totalt.':e.flowers+' av '+game.pots.length+' plantor blommade.';
+    $('result-detail').textContent=kind==='marshmallows'?e.hits+' gyllene marshmallows · '+e.burnt+' brända.':kind==='city'?e.hits+' av '+SC.cityGoal+' kometer stoppade.':kind==='food'?e.hits+(e.hits===1?' glad gäst · ':' glada gäster · ')+e.lostCustomers+' gäster gick hem.':kind==='hive'?e.honey+' av '+e.honeyGoal+' lass nektar hann hem före vintern.':kind==='paint'?e.hits+' träffar · '+e.passed+' förbipasserande.':kind==='dinosaur'?e.hits+' uppätna · '+e.escaped+' gick vidare · '+e.passed+' totalt.':e.flowers+' av '+game.pots.length+' plantor blommade.';
     if(soundOn&&!(kind!=='city'&&e.won))sounds.play(e.won?'win':'miss');$('again').focus({preventScroll:true});
   }
   lastTargetKey=null;
@@ -60,7 +61,7 @@ async function start(){
   if(busy)return;const token=++lifecycle;busy=true;$('start').disabled=true;$('again').disabled=true;$('setup-error').textContent='';
   try{
     input.setEnabled(false);input.configure(speechOptions());await input.prepare();if(token!==lifecycle)return;
-    sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
+    sounds.stopCampfire();sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
     const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});lastOptions=options();$('arena').className='arena '+kind;$('play').dataset.game=kind;game.start(lastOptions);queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
     best=safeRead(bestKey());$('game-title').textContent=names[kind];$('answer').placeholder=input.singleLetter()?'…':SC.modes[game.mode].placeholder.replace('…',' ↵');$('answer-hint').textContent=typingHint();$('keyboard').hidden=game.mode!=='bopomofo';$('input-dock').hidden=input.voice.enabled;document.body.classList.add('playing');document.body.classList.toggle('voice-play',input.voice.enabled);
     input.setEnabled(true);if(input.voice.enabled)input.start();
@@ -74,7 +75,7 @@ async function resume(){
   try{await input.prepare();if(token!==lifecycle)return;$('pause-overlay').hidden=true;game.resume();input.setEnabled(true);if(input.voice.enabled)input.start();input.focus();}
   catch(error){$('resume-error').textContent=error.message;}finally{busy=false;$('resume').disabled=false;}
 }
-function menu(){lifecycle++;input.setEnabled(false);game?.menu();renderer?.destroy();renderer=null;queue.clear();$('play').hidden=true;$('menu').hidden=false;document.body.classList.remove('playing','voice-play');menuUpdate();$('start').focus({preventScroll:true});}
+function menu(){sounds.stopCampfire();lifecycle++;input.setEnabled(false);game?.menu();renderer?.destroy();renderer=null;queue.clear();$('play').hidden=true;$('menu').hidden=false;document.body.classList.remove('playing','voice-play');menuUpdate();$('start').focus({preventScroll:true});}
 $('start').addEventListener('click',start);$('again').addEventListener('click',start);$('pause').addEventListener('click',pause);$('resume').addEventListener('click',resume);$('pause-menu').addEventListener('click',menu);$('end-menu').addEventListener('click',menu);
 root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){
@@ -84,18 +85,20 @@ function renderTargets(){
 }
 function renderUi(){
   if(!game||$('play').hidden)return;
+  sounds.campfire(soundOn&&kind==='marshmallows'&&['playing','celebrating'].includes(game.state)?game.fireStrength():0,input.listening?.23:1);
   if(game.state==='playing')queue.reconcile();
   $('score').textContent=game.score.toLocaleString('sv-SE');$('best').textContent='BÄSTA '+best.toLocaleString('sv-SE');$('score').setAttribute('aria-label',game.score+' poäng');
   let objective,secondary,value;
   if(kind==='city'){objective=game.hits+' / '+SC.cityGoal;secondary='';value=game.hits/SC.cityGoal*100;}
   else if(kind==='food'){objective='◷ '+Math.ceil(game.timeLeft);secondary='♥ '.repeat(game.lives)+'♡ '.repeat(Math.max(0,5-game.lives));value=game.elapsed/90*100;}
   else if(kind==='hive'){objective=Math.min(100,Math.floor(game.honey/game.honeyGoal*100))+'% 🍯';secondary=game.season()+' · '+Math.ceil(game.timeLeft())+' s ❄';value=game.honey/game.honeyGoal*100;}
+  else if(kind==='marshmallows'){objective=game.state==='playing'?'☾':'☀';secondary='';value=game.progress()*100;}
   else if(kind==='paint'||kind==='dinosaur'){objective=game.passed+' / '+game.total;secondary='';value=game.passed/game.total*100;}
   else{const flowers=game.pots.filter(p=>p.bloom).length;objective=flowers+' / '+game.pots.length+' ✿';secondary='';value=game.pots.reduce((sum,p)=>sum+p.growth,0)/game.pots.length*100;}
   $('objective').textContent=objective;$('secondary').textContent=secondary;$('progress').value=value;renderTargets();
 }
 function frame(now){if(noticeUntil&&now>=noticeUntil){$('discovery-notice').hidden=true;noticeUntil=0;}if(now-lastUi>100){lastUi=now;renderUi();if($('settings').open)$('mic-level').value=Math.min(1,microphone.level*6);}uiFrame=requestAnimationFrame(frame);}uiFrame=requestAnimationFrame(frame);
-$('sound').addEventListener('click',()=>{soundOn=!soundOn;$('sound').querySelector('span').textContent=soundOn?'♫':'♪̸';$('sound').title=soundOn?'Ljud på':'Ljud av';$('sound').setAttribute('aria-pressed',String(soundOn));if(soundOn){sounds.unlock();sounds.play('lock');}});
+$('sound').addEventListener('click',()=>{soundOn=!soundOn;if(!soundOn)sounds.stopCampfire();$('sound').querySelector('span').textContent=soundOn?'♫':'♪̸';$('sound').title=soundOn?'Ljud på':'Ljud av';$('sound').setAttribute('aria-pressed',String(soundOn));if(soundOn){sounds.unlock();sounds.play('lock');}});
 for(const el of document.querySelectorAll('[data-close]'))el.addEventListener('click',()=>$(el.dataset.close).close());
 $('help-open').addEventListener('click',()=>{pause();$('help').showModal();});
 $('settings-open').addEventListener('click',()=>{pause();$('settings').showModal();if(microphone.ready){microphone.begin(true);$('mic-status').textContent='Mikrofonen är aktiv. Prata för att se ljudnivån.';}refreshDevices();});
