@@ -67,3 +67,16 @@ body.playing.voice-play .arena{height:clamp(540px,calc(100dvh - 82px),900px)}
 
 .board-difficulty{font:11px system-ui,sans-serif;opacity:.8;text-align:center;white-space:nowrap}
 @media(max-width:420px){.arcade-board .board-row{column-gap:4px}.board-name{font-size:16px;letter-spacing:0}.board-difficulty{font-size:10px}.board-points{font-size:12px}}
+
+/* The same uppercase dot-matrix face and column grid for every scoreboard cell. */
+.end-scoreboard{width:min(760px,100%);max-width:760px}
+#leaderboard{max-width:760px}
+.score-table{overflow-x:auto;margin:12px 0;padding:6px 10px;border:1px solid var(--board-accent,#789a94);border-radius:8px;background:var(--board-bg,#142931);color:var(--board-accent,#d2e6c8)}
+.score-table .arcade-board{padding:0;margin:0;border:0;border-radius:0;background:none;min-width:550px}
+.score-table .board-row{display:grid;grid-template-columns:4ch 10ch minmax(14ch,1fr) 5ch 7ch;column-gap:8px;min-width:550px;min-height:30px;align-items:center;text-align:left;font:20px/1.4 SkolarkadenLED,ui-monospace,monospace;font-weight:400;text-transform:uppercase;letter-spacing:0}
+.score-table .board-row>span{font:inherit;letter-spacing:0;white-space:nowrap;min-width:0}
+.score-table .board-heading{opacity:.65;border-bottom:1px solid #ffffff30;padding-bottom:5px;margin-bottom:3px}
+.score-table .board-row>span:first-child,.score-table .board-row>span:last-child{text-align:right}
+.score-table .board-difficulty{text-align:center;opacity:.85}.score-table .board-name{width:10ch;overflow:hidden}.score-table .board-exercise{overflow:hidden;text-overflow:ellipsis}
+.score-table #score-name{font:inherit;height:28px;width:10ch;max-width:100%;letter-spacing:0}.score-table #score-name::placeholder{font:inherit}
+@media(max-width:600px){.end-scoreboard{padding:16px 12px}.score-table{padding:6px 8px}.score-table .board-row{font-size:18px;column-gap:6px;min-width:494px}.score-table .arcade-board{min-width:494px}}

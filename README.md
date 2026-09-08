@@ -8,7 +8,7 @@ All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och
 
 ## Gemensamma topplistor
 
-**Topplista** i menyn visar de 10 högsta resultaten för valt spel och övning, gemensamt för alla svårighetsgrader. Varje rad visar svårighetsgraden.
+**Topplista** i menyn visar de 10 högsta resultaten för valt spel och dess aktuella poängversion, gemensamt för alla övningar och svårighetsgrader. Kolumnerna visar placering, namn, övning, nivå och poäng i samma versala LED-typsnitt. Namnkolumnen rymmer tio tecken; på smala skärmar går tabellen att rulla i sidled.
 Omgångens slut visar samma topplista, med spelarens egen placering på en extra rad om den är lägre än tio. Namnfältet får fokus direkt och behåller text och markör när poängen hämtas. Namnet är valfritt: högst tio bokstäver i versaler, annars ANONYM. Enter i namnfältet sparar; Spela igen och Till menyn sparar innan de fortsätter. Att stänga webbläsaren skickar inget resultat.
 Tangentbord och röst delar topplista. Varje spel har en separat intern poängversion.
 Varje nytt resultat behåller även omgångens inställningar: spel och version, övning, svårighet, tangentbord/röst, valt talspråk och faktiskt övningsspråk, stora/små bokstäver, den lottade bokstavsuppsättningen, ljud och minskad rörelse. Databasens befintliga poängnycklar ändras inte. Inställningarna kräver den extra kolumnen och Worker-uppdateringen i installationsanvisningen; äldre resultat bevaras med tidigare okända inställningar tomma.
@@ -140,7 +140,7 @@ Matönskemål fästs vid en tom dukning på bordet. Burna föremål får ingen u
 
 Kläder, leksaker, disk och matförpackningar är större och färgstarkare. Tvätt och sopor sticker upp tydligare, öppna lådor dras längre ut och disken har synliga matrester. En varm kontur markerar varje stökplats; den blir grön när uppgiften tas om hand. Etiketternas placering undviker själva stöket och ett kort glitter visar när städningen är klar. Minskad rörelse behåller de tydliga markeringarna utan puls eller hopp.
 
-Spelet behåller den lagrade topplistenyckeln `v1:home:<övning>:<svårighet>` under den första intrimningen. Visningen slår samman de tre svårigheterna. Familjerutinerna ändrar inte poängnyckeln; lagring av alla omgångsinställningar kräver den gemensamma Worker-uppdateringen ovan.
+Spelet behåller den lagrade topplistenyckeln `v1:home:<övning>:<svårighet>` under den första intrimningen. Visningen slår samman alla övningar och svårigheter. Familjerutinerna ändrar inte poängnyckeln; lagring av alla omgångsinställningar kräver den gemensamma Worker-uppdateringen ovan.
 
 ## Äggröra
 

@@ -15,13 +15,13 @@ on `v1`. One nullable column stores the settings which were previously omitted:
 2. In **Workers & Pages → skolarkaden-api → Edit code**, replace the code with the
    complete generated [worker.mjs](worker.mjs). Keep the existing **DB** binding
    and deploy. Updating GitHub Pages alone does not deploy this Worker.
-3. `/health` should include `capabilities` with `combined_boards: true`,
+3. `/health` should include `capabilities` with `combined_boards: true`, `game_boards: true`,
    `submission_lookup: true` and `score_settings: 1`.
-   `/scores?leaderboard=v1:home:swedish` should return `scores`, `rank` and `saved`.
+   `/scores?leaderboard=v1:home` should return `scores`, `rank` and `saved`.
 
 The previously deployed Worker accepted only four-part GET keys and did not
 return player ranks or submission identity. The page now loads those older
-endpoints and combines their three top-ten lists if necessary. Exact low ranks
+endpoints and combines their exercise/difficulty top-ten lists if necessary. Exact low ranks
 and identification of an already saved player's row require the updated Worker.
 POST retains its existing fields and adds `settings`; older Workers ignore that
 extra data, so settings preservation requires the deployment above.
@@ -46,7 +46,7 @@ extra data, so settings preservation requires the deployment above.
    `scores` array. Reading the URL directly does not create a test score.
 6. Merge the accompanying frontend change into `main` and let GitHub Pages publish.
    In Skolarkaden, play a game, optionally enter a nickname in your scoreboard row, then press Enter or choose
-   **Spela igen** / **Till menyn** to save. Open **Topplista** in another browser with the same game and exercise to confirm the result is shared.
+   **Spela igen** / **Till menyn** to save. Open **Topplista** in another browser with the same game to confirm the result is shared.
 
 The allowed browser origin is `https://jakobrogstadius.github.io` (no path).
 If the website moves to a custom domain, update `ALLOWED_ORIGIN` in
@@ -58,10 +58,10 @@ available, but that origin cannot submit to the production leaderboard.
 - Stored score keys contain exactly **game version : game : exercise : difficulty**, e.g.
   `v2:city:swedish:gentle`. Input mode and language are not separate key components.
   The exercise still distinguishes Swedish, English and Chinese exercises.
-  Public leaderboard reads use **game version : game : exercise** and combine all
-  three stored difficulty keys. Existing rows remain included without a migration.
-  Older four-part GET keys also return this combined board. Every returned score
-  includes `difficulty` (`gentle`, `steady`, or `brave`). Player ranks use the same
+  Public leaderboard reads use **game version : game** and combine every stored
+  exercise/difficulty key for that game version. Existing rows remain included without a migration.
+  Older three- and four-part GET keys also return this combined board. Every returned score
+  includes `exercise` and `difficulty` (`gentle`, `steady`, or `brave`). Player ranks use the same
   combined set; POST continues to store the difficulty that was actually played.
 - Each new row also stores validated `settings_json`: game version, game,
   exercise, difficulty, keyboard/voice mode, selected spoken language, effective

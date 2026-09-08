@@ -4,14 +4,15 @@
 const SC=root.Starlight, API='https://skolarkaden-api.jakob-rogstadius.workers.dev';
 const $=id=>document.getElementById(id);
 const policy=root.SkolarkadenHighscorePolicy;
-const boardKey=selection=>[policy.versions[selection.kind],selection.kind,selection.mode].join(':');
-const storedKey=selection=>boardKey(selection)+':'+selection.pace;
+const boardKey=selection=>[policy.versions[selection.kind],selection.kind].join(':');
+const storedKey=selection=>boardKey(selection)+':'+selection.mode+':'+selection.pace;
 const scoreSettings=s=>({game_version:policy.versions[s.kind],game:s.kind,exercise:s.mode,difficulty:s.pace,
   input_mode:s.input==='typing'?'keyboard':s.input==='browser'?'voice':null,
   spoken_language:s.spokenLanguage||s.lang||null,exercise_language:s.lang||null,
   uppercase:typeof s.uppercase==='boolean'?s.uppercase:null,letter_keys:s.letterKeys||null,
   sound_enabled:typeof s.soundEnabled==='boolean'?s.soundEnabled:null,reduced_motion:typeof s.reducedMotion==='boolean'?s.reducedMotion:null});
 const difficultyName=pace=>({gentle:'Lätt',steady:'Medel',brave:'Svår'}[pace]||'—');
+const exerciseNames={letters:'BOKSTÄVER',swedish:'SVENSKA KORT',swedishLong:'SVENSKA LÅNG',english:'ENGELSKA KORT',englishLong:'ENGELSKA LÅNG',bopomofo:'BOPOMOFO',chinese:'KINESISKA T1',chineseTrad2:'KINESISKA T2',chineseTrad3:'KINESISKA T3',chineseTrad4:'KINESISKA T4',chineseSimpl1:'KINESISKA S1',chineseSimpl2:'KINESISKA S2',chineseSimpl3:'KINESISKA S3',chineseSimpl4:'KINESISKA S4',math:'MATEMATIK 1',math2:'MATEMATIK 2',math3:'MATEMATIK 3',math4:'MATEMATIK 4',math5:'MATEMATIK 5',math6:'MATEMATIK 6'};
 const displayName=name=>Array.from(String(name).normalize('NFC').toUpperCase()).slice(0,10).join('');
 const validName=name=>/^[\p{L}\p{M} ]{1,10}$/u.test(name);
 async function request(path,options={}){
@@ -32,17 +33,22 @@ async function readBoard(selection,result){
   const group=boardKey(selection),key=storedKey(selection),suffix=result?'&score='+result.score+(result.id?'&submission='+encodeURIComponent(result.id):''):'';
   const read=board=>request('/scores?leaderboard='+encodeURIComponent(board)+suffix);
   const first=await read(key);
-  if(first.leaderboard!==key)return first; // Updated Workers combine all difficulties.
-  // Older deployed Workers only understand the original four-part keys.
-  const paces=['gentle','steady','brave'],boards=await Promise.all(paces.map(p=>p===selection.pace?first:read(group+':'+p)));
-  if(boards.some(b=>!Array.isArray(b.scores)))throw new Error('Invalid response');
-  const rows=boards.flatMap((b,i)=>b.scores.map(r=>({...r,difficulty:r.difficulty||paces[i]})));
-  rows.sort((a,b)=>b.score-a.score||String(a.created_at).localeCompare(String(b.created_at)));
-  // Never invent an exact low rank from a server which only returns ten rows.
-  const complete=result&&boards.every(b=>b.scores.length<10||b.scores.at(-1).score<result.score);
-  const rank=complete&&!result.saved?1+rows.filter(r=>r.score>=result.score).length:null;
-  return {leaderboard:group,scores:rows.slice(0,10),rank,saved:false};
+  if(first.leaderboard===group||!first.leaderboard)return first;
+  // Preserve compatibility during deployment: combine older exercise boards too.
+  const exercises=Object.keys(SC.modes||exerciseNames),paces=['gentle','steady','brave'],parts=[];
+  for(let offset=0;offset<exercises.length;offset+=4){
+    const batch=await Promise.all(exercises.slice(offset,offset+4).map(async exercise=>{
+      const exerciseKey=group+':'+exercise,probe=exercise===selection.mode?first:await read(exerciseKey+':'+selection.pace);
+      const boards=probe.leaderboard===exerciseKey?[probe]:await Promise.all(paces.map(p=>p===selection.pace?probe:read(exerciseKey+':'+p)));
+      return boards.map((board,i)=>({...board,scores:board.scores.map(row=>({...row,exercise:row.exercise||exercise,difficulty:row.difficulty||paces[i]}))}));
+    }));parts.push(...batch.flat());
+  }
+  const rows=parts.flatMap(b=>b.scores);rows.sort((a,b)=>b.score-a.score||String(a.created_at).localeCompare(String(b.created_at)));
+  const complete=result&&parts.every(b=>b.scores.length<10||b.scores.at(-1).score<result.score);
+  const rank=result&&!result.saved?(parts.every(b=>Number.isInteger(b.rank))?1+parts.reduce((n,b)=>n+b.rank-1,0):complete?1+rows.filter(r=>r.score>=result.score).length:null):null;
+  return {leaderboard:group,scores:rows.slice(0,10),rank,saved:parts.some(b=>b.saved)};
 }
+
 class Highscores{
   constructor({getSelection}){
     this.getSelection=getSelection;this.run=null;this.result=null;this.view=0;this.readGeneration=0;
@@ -65,7 +71,7 @@ class Highscores{
   open(selection,result=null){
     this.selection={...selection};this.shownResult=result;this.endView=Boolean(result);this.data=null;
     const token=++this.view;
-    if(!result){$('leaderboard-context').textContent=selection.label.split(' · ').slice(0,2).join(' · ');$('leaderboard').showModal();}
+    if(!result){$('leaderboard-context').textContent=selection.label.split(' · ')[0];$('leaderboard').showModal();}
     else{
       $('score-name').readOnly=Boolean(result.payload);
       if(result.payload)$('score-name').value=result.payload.player_name;
@@ -81,20 +87,21 @@ class Highscores{
     if(this.endView){$('score-form').append($('score-entry'));$('score-entry').hidden=true;}
     list.replaceChildren();
     const savedIndex=rows.findIndex(row=>row.is_player),rank=this.data?.rank??null;
-    const own={player_name:result?.payload?.player_name||'',score:result?.score,difficulty:result?.selection.pace,is_player:true};
+    const own={player_name:result?.payload?.player_name||'',score:result?.score,exercise:result?.selection.mode,difficulty:result?.selection.pace,is_player:true};
     if(result&&savedIndex<0&&rank!==null&&rank<=10){rows.splice(rank-1,0,own);rows.length=Math.min(rows.length,10);}
     for(let i=0;i<10;i++)this.row(list,rows[i],i+1);
     if(result&&!rows.some(row=>row.is_player))this.row(list,own,rank);
     if(focused&&!result?.saved){$('score-name').focus({preventScroll:true});if(Number.isInteger(selection))$('score-name').setSelectionRange(selection,selection);}
   }
   row(list,row,rank){
-    const item=document.createElement('li'),number=document.createElement('span'),name=document.createElement('span'),score=document.createElement('span'),difficulty=document.createElement('span');
+    const item=document.createElement('li'),number=document.createElement('span'),name=document.createElement('span'),score=document.createElement('span'),difficulty=document.createElement('span'),exercise=document.createElement('span');
     item.className='board-row'+(row?.is_player?' player-row':'');
     number.className='board-rank';number.textContent=rank===null?'—':String(rank);name.className='board-name';score.className='board-points';
-    name.textContent=row?displayName(row.player_name):'—';score.textContent=row?Number(row.score).toLocaleString('sv-SE'):'—';
+    name.textContent=row?displayName(row.player_name):'—';score.textContent=row?String(Number(row.score)):'—';
     if(row?.is_player&&this.shownResult&&!this.shownResult.saved){name.textContent='';$('score-entry').hidden=false;name.append($('score-entry'));}
-    difficulty.className='board-difficulty';difficulty.textContent=difficultyName(row?.difficulty);
-    item.append(number,name,difficulty,score);list.append(item);
+    difficulty.className='board-difficulty';difficulty.textContent=difficultyName(row?.difficulty).toUpperCase();
+    exercise.className='board-exercise';exercise.textContent=exerciseNames[row?.exercise]||'—';exercise.title=SC.modes?.[row?.exercise]?.name||exercise.textContent;
+    item.append(number,name,exercise,difficulty,score);list.append(item);
   }
   async load(token){
     const result=this.shownResult,generation=++this.readGeneration,status=$(this.endView?'end-scores-status':'scores-status');
