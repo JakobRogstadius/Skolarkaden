@@ -26,6 +26,15 @@ class MarshmallowGame{
  timeLeft(){return Math.max(0,this.duration-this.elapsed);}
  fireStrength(){return this.state==='won'?0:(1-.48*this.progress())*(1-ease(this.dawnAge/4.7));}
  cookingRate(){return ROAST_RATE*this.fireStrength()/this.timeScale;}
+ timingPoints(p){
+  // The fire cools linearly: convert roast distance to seconds so the peak
+  // follows the middle of the actual time window, even late in the night.
+  const rate=this.cookingRate(),cooling=ROAST_RATE*.48/(this.duration*this.timeScale);
+  const seconds=delta=>2*delta/(rate+Math.sqrt(Math.max(0,rate*rate-2*cooling*delta)));
+  const sinceReady=-seconds(READY-p.roast),untilEnd=Math.min(this.timeLeft(),seconds(BURNT-p.roast));
+  const position=clamp(sinceReady/(sinceReady+untilEnd),0,1);
+  return Math.round(25+25*(1-Math.abs(2*position-1)));
+ }
  readiness(p){return p.roast<BURNT&&p.roast>=READY;}
  getTargets(){return this.sticks.filter(p=>p.stage==='roasting'||p.stage==='flaming').sort((a,b)=>b.roast-a.roast||a.id-b.id);}
  getAvailableTargets(){return this.getTargets();}
@@ -57,7 +66,7 @@ class MarshmallowGame{
    if(!p){this.wrong++;this.thought={entry,age:0};if(this.clock-this.lastWrongAt>.4){this.lastWrongAt=this.clock;this.emit('think',{entry});}continue;}
    p.entry=entry;
    if(p.roast<READY){p.stage='inspecting';p.age=0;this.early++;this.emit('early',{entry});}
-   else if(p.roast<BURNT){this.hits++;this.score+=100;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.effects.push({slot:p.slot,age:0});this.withdraw(p,'good');this.emit('hit',{entry,points:100,target:p});}
+   else if(p.roast<BURNT){const points=this.timingPoints(p);this.hits++;this.score+=points;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.effects.push({slot:p.slot,age:0});this.withdraw(p,'good');this.emit('hit',{entry,points,target:p});}
    else this.withdraw(p,'burnt');
   }
  }

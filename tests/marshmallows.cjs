@@ -6,17 +6,29 @@ const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>
 let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
 function setup(options={}){const events=[],g=new SC.MarshmallowGame({random:rng(5),onEvent:e=>events.push(e)});g.start(options);g.resize(1000,740);g.spawnIn=10000;tick(g,.85);return {g,p:g.getTargets()[0],events};}
 function policy(g){g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(p=>p.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,i)=>SC.matches(e.text,i,g.mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,g.mode,g.lang)});}
+test('Timing scores peak at the time midpoint and fall equally towards both edges as the fire cools',()=>{
+ for(const mode of ['swedish','math'])for(const start of [20,70])for(const [fraction,points] of [[0,25],[.2,35],[.5,50],[.8,35],[.999999,25]]){
+  const {g,p,events}=setup({mode});g.elapsed=start;
+  const rate=g.cookingRate(),cooling=.092*.48/(g.duration*g.timeScale);
+  const window=2*(1.28-.62)/(rate+Math.sqrt(rate*rate-2*cooling*(1.28-.62))),dt=window*fraction;
+  g.elapsed=start+dt;p.roast=.62+rate*dt-.5*cooling*dt*dt;
+  g.queue.enqueue(p.item.answer);g.work();assert.equal(g.score,points,mode+'/'+start+'/'+fraction);assert.equal(events.find(e=>e.type==='hit').points,points);
+  g.work();assert.equal(g.score,points);
+ }
+ const {g,p}=setup();const start=g.duration-4;g.elapsed=start;const rate=g.cookingRate(),cooling=.092*.48/(g.duration*g.timeScale);
+ g.elapsed=start+2;p.roast=.62+rate*2-.5*cooling*4;g.queue.enqueue(p.item.answer);g.work();assert.equal(g.score,50,'dawn truncates the accepted window');
+});
 test('Difficulty changes capacity to 2/4/6 with the same cooking, night length and score rules',()=>{
  for(const [pace,max] of [['gentle',2],['steady',4],['brave',6]]){const {g}=setup({pace});while(g.spawn());assert.equal(g.sticks.length,max);assert.equal(g.maxSticks,max);assert.equal(g.duration,120);assert.equal(g.score,0);assert.equal(new Set(g.sticks.map(p=>p.slot)).size,max);}
 });
 test('All six sticks respond in one update, without waiting for each other or their animations',()=>{
- const {g}=setup({pace:'brave'});while(g.spawn());tick(g,.85);for(const p of g.getTargets()){p.roast=.8;g.queue.enqueue(p.item.answer);}g.update(.05);assert.equal(g.score,600);assert.equal(g.hits,6);assert.equal(g.queue.length,0);assert(g.sticks.every(p=>p.stage==='withdrawing'));tick(g,1);assert.equal(g.score,600);assert.equal(g.sticks.length,0);
+ const {g}=setup({pace:'brave'});while(g.spawn());tick(g,.85);for(const p of g.getTargets()){p.roast=.8;g.queue.enqueue(p.item.answer);}g.update(.05);assert.equal(g.score,228);assert.equal(g.hits,6);assert.equal(g.queue.length,0);assert(g.sticks.every(p=>p.stage==='withdrawing'));tick(g,1);assert.equal(g.score,228);assert.equal(g.sticks.length,0);
 });
 test('Early collection pauses cooking, inspects, and returns with a different label and fresh hint timer',()=>{
  const {g,p,events}=setup({mode:'chinese'});p.roast=.4;const item=p.item,at=p.appearedAt;g.queue.enqueue(p.item.answer);g.work();assert.equal(p.stage,'inspecting');tick(g,1.65);assert.equal(p.roast,.4);assert(!g.getTargets().includes(p));tick(g,.05);assert.equal(p.stage,'roasting');assert.notEqual(p.item.answer,item.answer);assert(p.appearedAt>at);assert(!SC.pinyinHints(g).has(p));assert.equal(g.score,0);assert.equal(g.early,1);assert.equal(events.filter(e=>e.type==='early').length,1);
 });
 test('The golden window includes its lower boundary and excludes its burnt boundary',()=>{
- for(const [roast,outcome] of [[.61999,'early'],[.62,'good'],[1.27999,'good'],[1.28,'burnt'],[1.6,'burnt']]){const {g,p}=setup();p.roast=roast;g.queue.enqueue(p.item.answer);g.work();assert.equal(g.early,outcome==='early'?1:0);assert.equal(g.hits,outcome==='good'?1:0);assert.equal(g.burnt,outcome==='burnt'?1:0);assert.equal(g.score,outcome==='good'?100:0);}
+ for(const [roast,outcome] of [[.61999,'early'],[.62,'good'],[1.27999,'good'],[1.28,'burnt'],[1.6,'burnt']]){const {g,p}=setup();p.roast=roast;g.queue.enqueue(p.item.answer);g.work();assert.equal(g.early,outcome==='early'?1:0);assert.equal(g.hits,outcome==='good'?1:0);assert.equal(g.burnt,outcome==='burnt'?1:0);assert.equal(g.score,outcome==='good'?25:0);}
 });
 test('Ignored marshmallows ignite once, withdraw, and leave permanent charred pieces on the ground',()=>{
  const {g,p,events}=setup();p.roast=1.599;tick(g,.05);assert.equal(p.stage,'flaming');assert.equal(events.filter(e=>e.type==='camp-ignite').length,1);tick(g,2);assert.equal(g.burnt,1);assert.equal(g.sticks.length,0);assert.equal(g.waste.length,1);const waste=g.waste[0];assert(waste.x>=.28&&waste.x<=.72&&waste.y>=.87&&waste.y<=.97);tick(g,12);assert.equal(g.waste[0],waste);assert.equal(events.filter(e=>e.type==='camp-ignite').length,1);g.start();assert.equal(g.waste.length,0);
@@ -47,7 +59,7 @@ test('Full nights finish on all difficulties with silent, timed, early and wrong
    if(g.state==='playing'&&g.clock>=due){const p=g.getTargets().find(p=>strategy==='early'||strategy==='timed'&&p.roast>=.8&&p.roast<1.1);if(strategy==='wrong')g.queue.enqueue('wrong');else if(p)g.queue.enqueue(p.item.answer);due=g.clock+.6;}
    g.update(.05);max=Math.max(max,g.sticks.length);
   }
-  assert.equal(g.state,'won',pace+'/'+mode+'/'+strategy);assert(max<=g.maxSticks);assert.equal(events.filter(e=>e.type==='end').length,1);assert.equal(events.filter(e=>e.type==='daybreak').length,1);assert.equal(g.fireStrength(),0);assert.equal(g.score,g.hits*100);
+  assert.equal(g.state,'won',pace+'/'+mode+'/'+strategy);assert(max<=g.maxSticks);assert.equal(events.filter(e=>e.type==='end').length,1);assert.equal(events.filter(e=>e.type==='daybreak').length,1);assert.equal(g.fireStrength(),0);assert(g.score>=g.hits*25&&g.score<=g.hits*50);assert.equal(g.score,events.filter(e=>e.type==='hit').reduce((sum,e)=>sum+e.points,0));
   if(strategy==='timed'){assert(g.hits>=8,pace+'/'+mode+' only '+g.hits+' served');assert.equal(g.burnt,0);}if(strategy==='silent'||strategy==='wrong'){assert.equal(g.hits,0);assert(g.waste.length>0);}
  }
 });
