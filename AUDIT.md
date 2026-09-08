@@ -1,3 +1,13 @@
+# Spelkortens illustrationer och rubriker
+
+2026-09-08.
+
+Laga mat har en egen SVG-illustration av en matbil med serveringslucka, randig markis och hjul. Äggröra visar ett sprucket grönt ägg med slem och ett litet rymdkryp, med samma platta färger och rundade former som övriga SVG-kort. Den tidigare bakgrundsplattan bakom ägget är borttagen. Alla spelrubriker är centrerade inom kortets textyta. De nya illustrationerna skalas ned inom de smala kortens bildyta.
+
+Befintlig meny- och spelintegration passerar. Båda SVG-bilderna har renderats och granskats i stor och liten storlek. Ingen manuell webbläsarprovning gjordes.
+
+---
+
 # Kortare spelnamn och förenklad meny
 
 2026-09-08.
