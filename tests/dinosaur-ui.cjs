@@ -26,7 +26,7 @@ async function start(kind,lesson='swedish'){const radio=radios.find(r=>r.value==
 (async()=>{
  assert.equal(radios.length,8);assert.match(html,/<title>Skolarkaden<\/title>/);assert.doesNotMatch(html,/id="(?:queue-list|voice-toggle|live-speech|interim)"/);assert.match(html,/<details id="debug-panel"[^>]*>/);assert.doesNotMatch(html,/<details id="debug-panel"[^>]*\bopen\b/);
  const SC=context.Starlight;assert.equal(elements.lesson.options.length,20);assert.deepEqual(elements.lesson.options.map(o=>o.text),Object.values(SC.modes).map(m=>m.name));
- assert.deepEqual([...html.match(/<div class="setup-grid">[\s\S]*?<\/div>/)[0].matchAll(/<select id="([^"]+)"/g)].map(m=>m[1]),['lesson','input-kind','language','pace']);
+ assert.deepEqual([...html.match(/<div class="setup-grid">[\s\S]*?<div class="menu-bottom">/)[0].matchAll(/<select id="([^"]+)"/g)].map(m=>m[1]),['lesson','input-kind','language','pace']);
  assert.deepEqual(elements['input-kind'].options.map(o=>o.value),['typing','browser']);assert.deepEqual(elements.pace.options.map(o=>o.textContent),['Lätt','Medel','Svår']);assert(elements.language.disabled);
  elements['input-kind'].value='browser';elements['input-kind'].dispatchEvent(new Event('change'));assert.equal(elements.language.disabled,false);
  elements['input-kind'].value='typing';elements['input-kind'].dispatchEvent(new Event('change'));assert(elements.language.disabled);assert(!elements['install-language']);

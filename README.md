@@ -10,9 +10,9 @@ All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och
 
 | Spel | Uppdrag |
 | --- | --- |
-| Stjärnförsvaret | Låt tre lasrar skydda staden från 40 kometer. |
-| Stjärnköket | Servera hungriga gäster i 90 sekunder. |
-| Ordträdgården | Hjälp alla plantor att blomma. |
+| Meteorregn | Låt tre lasrar skydda staden från 40 kometer. |
+| Laga mat | Servera hungriga gäster i 90 sekunder. |
+| Odla blommor | Hjälp alla plantor att blomma. |
 | Bikupan | Samla tillräckligt med honung före vintern. |
 | Färgballonger | Träffa så många av de 40 förbipasserande som möjligt. |
 | Hungrig dinosaurie | Fånga så många av de 40 små figurerna som möjligt. |
@@ -60,7 +60,7 @@ Svenskt tal kan delas upp när tjänsten skriver ihop två eller tre aktuella m�
 
 ## Bikupans äng
 
-Blommorna står utspridda på en ny, oregelbunden äng varje omgång. Växterna delar modell med Ordträdgården: fyra stamformer, fem bladformer och sex blomformer kombineras med olika höjd, färg, bredd och antal blommor. Torr jord blir ljusare och plantan slokar, näringsbrist bleker bladverket och ohyra syns som allt fler och större kryp.
+Blommorna står utspridda på en ny, oregelbunden äng varje omgång. Växterna delar modell med Odla blommor: fyra stamformer, fem bladformer och sex blomformer kombineras med olika höjd, färg, bredd och antal blommor. Torr jord blir ljusare och plantan slokar, näringsbrist bleker bladverket och ohyra syns som allt fler och större kryp.
 
 De första blommorna öppnar efter ungefär en sekund. En del sommarplantor håller kvar knoppar för en senare höstblomning; avlägsna höstblommor öppnar tidigare så att bina hinner tur och retur. När inga svar finns att ge, kön är tom och alla fem bin är hemma går årstiden fyra gånger fortare. Så snart en blomma öppnar återgår tiden till normal takt. Synliga uppgifters livslängd och pågående flygningar snabbas aldrig upp. Matte behåller sin längre speltid och blomningstid.
 
@@ -78,7 +78,7 @@ Alla övningar fungerar, inklusive bokstäver utan Enter, kontinuerligt tal och 
 
 Stjärnor, moln, träd, växter, eldflugor, eld, armar och campingprylar ritas lokalt med Canvas. Växternas storlek följer avståndet i scenen, och förgrundsträden har kraftigare stammar utan lodräta ljusstreck. Sprakande ved, syrsor, antändning och tuppgalning syntetiseras utan inspelningar eller nedladdningar. Eldljudet tonar ned med elden och stängs av vid paus, meny, ljud av eller avslut. Alla nya ljud dämpas vid talinmatning.
 
-## Ordträdgården
+## Odla blommor
 
 Trädgårdsmästaren går med 20 procent av sin tidigare hastighet. Varje planta börjar med oberoende slumpmässiga hälsoavdrag på 10–35 procent för vatten, näring och ohyra, fortfarande på den friska sidan av uppgiftströskeln på 40 procent. Nya behov uppstår därför tidigare. Behovstakten har ökats med 30 procent; färdiga eller döda plantor behåller inte sin andel av nya behov.
 

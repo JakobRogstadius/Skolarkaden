@@ -1,3 +1,13 @@
+# Kortare spelnamn och förenklad meny
+
+2026-09-08.
+
+Meteorregn, Laga mat och Odla blommor används i spelkort, speltitlar, hjälp, dokumentation och utvecklingsfixturer. Samtliga åtta spelkort visar endast illustration och titel. Övningens och talspråkets befintliga hjälptexter ligger direkt under respektive lista, vänsterjusterade inom samma responsiva fältgrupp, med aria-describedby-kopplingar.
+
+Befintliga `tests/dinosaur-ui.cjs` och `tests/check.cjs` passerar. Menytestets avgränsning har anpassats till de nästlade fältgrupperna. Ändringen omfattar ingen server eller global poänglista.
+
+---
+
 # Bopomofo: talmatchning och förenklad spelmeny
 
 2026-09-08.
@@ -79,7 +89,7 @@ Blandade scener med och utan ledtrådar har granskats i native Canvas vid 1100 o
 2026-09-06.
 
 - Ängen använder 24 oregelbundet spridda växtplatser med avstånd mellan plantorna. Ett separat slumpfrö gör placeringen stabil vid storleksändringar utan att förbruka spelets slumpföljd. Även fullvuxna växter får marginal till bildkanterna.
-- Bikupan och Ordträdgården använder samma växtmodell: fyra stamformer, fem bladformer och sex blomformer samt varierad höjd, bredd, färg och blomantal. Torrhet ger slokande stjälkar och blad samt ljusare jord. Näringsbrist minskar färgmättnaden. Infektion ger fler, större kryp som följer stjälkarna. Tillväxt, knoppar, blomning och död fungerar med samtliga former.
+- Bikupan och Odla blommor använder samma växtmodell: fyra stamformer, fem bladformer och sex blomformer samt varierad höjd, bredd, färg och blomantal. Torrhet ger slokande stjälkar och blad samt ljusare jord. Näringsbrist minskar färgmättnaden. Infektion ger fler, större kryp som följer stjälkarna. Tillväxt, knoppar, blomning och död fungerar med samtliga former.
 - Första uppgiften kommer efter cirka en sekund. Sommarplantor kan vänta med att blomma till hösten; avlägsna blommor öppnar tidigare för att lämna tid för kö och tur-och-retur-flygning. Besökta blommor lämnar plats för nya plantor. Lagom och Snabb får två respektive tre extra sekunders vanlig blomningstid för den utspridda ängen. Honungsmål, säsongslängder, flyghastighet och poäng är oförändrade.
 - Helt tomma perioder går fyra gånger fortare, bara om inga uppgifter finns, kön är tom och alla bin är hemma. Synliga uppgifter och pågående flygningar behåller normal tid. Paus fryser även detta förlopp. Vintern är fortfarande en strikt leveransgräns.
 - Bina landar nu på den aktuella växtmodellens blomhuvud i stället för på en fast höjd. Varje leverans efter full kupa lägger till en honungsburk bredvid kupan; burkarna finns kvar under vinterfirandet. Nektar som fortfarande flygs hem räknas inte i förväg.
@@ -97,7 +107,7 @@ De faktiska Canvas-renderarna har granskats vid 1100 och 370 pixlars bredd samt 
 
 2026-09-06.
 
-- Appen heter Skolarkaden. Övning och språk behålls när spel väljs, även till och från Stjärnköket. Matordboken har 70 unika svenska ord.
+- Appen heter Skolarkaden. Övning och språk behålls när spel väljs, även till och från Laga mat. Matordboken har 70 unika svenska ord.
 - Spelvyn har ett enda svarsfält under canvas; talläge döljer fältet. Separata kö-, arbetsstatus- och uppgiftspaneler är borttagna. Uppgiftsorden och kömarkeringarna finns kvar i spelen, med en osynlig textmotsvarighet för hjälpmedel.
 - Bin, krukor, tomma tallrikar och lediga lasrar har inga nummer. Kundbubblornas extra statusord är borttagna; ansikten, färg och tålamodsstaplar visar tillståndet. Uppgiftsord och pinyin behålls.
 - Taldiagnostik finns endast i en hopfälld del av mikrofoninställningarna. Stoppande talfel pausar spelet med ett synligt fel och en återupptagningsknapp.
@@ -141,7 +151,7 @@ Lasrarna har nu separata steg för siktning, stabil låsning och skott. Tidigast
 - Vintern är en strikt leveransgräns. Ingen förtida vinst; fördröjda resultat skickas exakt en gång.
 - 72 kompletta omgångar: sex frön × tre svårigheter × svenska/matte × två skärmbredder. Alla vanns vid kalibrerade svarstakter och 10 procent fel.
 
-Kalibrering mot Stjärnförsvaret kördes med samma svarstakter, 10 procent fel och tolv frön per villkor. På svenska klarade Bikupan Lugn med ett svar var tredje sekund och Lagom med ett svar varannan sekund i samtliga tolv frön. Stjärnförsvaret var hårdare vid samma takt. Sluttestet för Bikupan använder 3/2/1,5 sekunder per svar, respektive 30 procent mer tid per mattesvar. Det är en automatisk spelare som väljer de mest brådskande lediga målen.
+Kalibrering mot Meteorregn kördes med samma svarstakter, 10 procent fel och tolv frön per villkor. På svenska klarade Bikupan Lugn med ett svar var tredje sekund och Lagom med ett svar varannan sekund i samtliga tolv frön. Meteorregn var hårdare vid samma takt. Sluttestet för Bikupan använder 3/2/1,5 sekunder per svar, respektive 30 procent mer tid per mattesvar. Det är en automatisk spelare som väljer de mest brådskande lediga målen.
 
 De befintliga spelkontrollerna kördes om efter att gemensam växt- och personrendering ändrats.
 
@@ -156,7 +166,7 @@ Porträttalbumet, dess menyknapp, dialog, räknare och lagring är borttagna. De
 - Felaktiga svar kostar enbart arbetstid. En kock, automatisk servering, bestående uppochnedvänd mat och rätt hantering när en kund går under tillagningen.
 - Fullständiga 40-träffars vinster och 90-sekunders matomgångar på alla tre svårigheter.
 - 6/9/12 krukor och ett gemensamt slumpförsök varje 0,1 sekund: högst en egenskap på en planta försämras. Matte halverar sannolikheten; färdiga plantor minskar den totala belastningen.
-- Statistisk kontroll av uppgiftsinflödet vid tre svårigheter, två övningstyper och tre speltider, med 2 000 simulerade sekunder per kombination. Inflödet ligger inom 13 procent från Stjärnförsvarets motsvarande takt före dess träffbonus, efter omedelbar skötsel.
+- Statistisk kontroll av uppgiftsinflödet vid tre svårigheter, två övningstyper och tre speltider, med 2 000 simulerade sekunder per kombination. Inflödet ligger inom 13 procent från Meteorregns motsvarande takt före dess träffbonus, efter omedelbar skötsel.
 - En separat svårighetsjämförelse med två sekunder mellan svar klarade alla 90 omgångar med det valda lugnare tempot (30 frön per svårighet).
 - Verktygsbyte på aktuell position, återanvändning av buret verktyg, återställning av rätt egenskap, funderpaus, tillväxt, blomning, död och paus.
 - 45 lyckade trädgårdssimuleringar: 15 frön för vardera 6, 9 och 12 krukor. Testspelaren prioriterar mest akut behov när arbetaren är ledig.
