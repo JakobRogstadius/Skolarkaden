@@ -1,3 +1,13 @@
+# Enklare och kumulativa mandarinövningar
+
+2026-09-08.
+
+De fyra nivåerna innehåller nu 30, 80, 155 och 255 tecken i båda skrifterna. Nytillskotten är exakt 30, 50, 75 och 100 unika tecken; tidigare nivåer finns kvar för repetition. Första nivån innehåller talen 0–10, konkreta enkla begrepp och 我, 你, 好. Senare nivåer prioriterar vardagsnytta tillsammans med ökande visuell komplexitet. Fullständiga listor, urvalsprinciper och Unicode-baserad streckkontroll finns i `dev/mandarin-levels.md`. Dessa är spelanpassade urval, inte officiella kursnivåer. De traditionella och förenklade tecknen har fortsatt motsvarande begrepp och samma pinyin; fristående 子 använder nu zǐ. Övningsbeskrivningarna visar rätt total och antal nya tecken.
+
+Verifierat: exakt antal nya och kumulativa tecken, inga dubbletter inom någon nivå, alla tidigare tecken bevarade på nästa nivå, parade skrifter och pinyinmatchning för varje tecken. Alla nio spel kontrolleras med samtliga åtta kinesiska övningar för fördröjda pinyinhintar och köade talsvar. Befintliga prov för tonlös matchning, kinesiska siffertranskript, strömmande tal, bopomofo och pinyinfördröjning passerar också. Namn, övnings-id:n, poängregler och spelversioner är oförändrade.
+
+---
+
 # Närmaste hjälpare och rädda ansikten under hela ilskan
 
 2026-09-08.

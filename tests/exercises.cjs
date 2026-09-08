@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 const ctx=vm.createContext({Event,EventTarget,CustomEvent,console});
-for(const file of ['pinyin','data','speech','input','people','game','foodtruck','plants','garden','beehive','paint','dinosaur','marshmallows','eggs'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
+for(const file of ['pinyin','data','speech','input','people','game','foodtruck','plants','garden','beehive','paint','dinosaur','marshmallows','eggs','home'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
 const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
 const tick=(g,t)=>{for(let i=0;i<Math.round(t/.05);i++)g.update(.05);};
 let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
@@ -10,18 +10,32 @@ const modes=Object.keys(SC.modes),math=modes.filter(SC.isMath),chinese=modes.fil
 test('Twenty exercises have the requested order and complete, distinct dictionaries',()=>{
  assert.deepEqual(modes,['letters','swedish','swedishLong','english','englishLong','bopomofo','chinese','chineseTrad2','chineseTrad3','chineseTrad4','chineseSimpl1','chineseSimpl2','chineseSimpl3','chineseSimpl4','math','math2','math3','math4','math5','math6']);
  for(const mode of ['swedish','swedishLong','english','englishLong',...chinese]){
-  const items=SC.modes[mode].items;assert.equal(items.length,100,mode);assert.equal(new Set(items.map(i=>i.answer)).size,100,mode);
+  const items=SC.modes[mode].items,count=SC.isChinese(mode)?[30,80,155,255][chinese.indexOf(mode)%4]:100;assert.equal(items.length,count,mode);assert.equal(new Set(items.map(i=>i.answer)).size,count,mode);
   for(const i of items){assert.equal(i.answer,i.label);assert(SC.matches(i.answer,i,mode));}
  }
  for(const mode of ['swedish','english'])assert(SC.modes[mode].items.every(i=>i.answer.length<=5),mode);
  for(const mode of ['swedishLong','englishLong'])assert(SC.modes[mode].items.every(i=>i.answer.length>=6&&i.answer.length<=12),mode);
- for(const group of [chinese.slice(0,4),chinese.slice(4)])assert.equal(new Set(group.flatMap(mode=>Array.from(SC.modes[mode].items,i=>i.answer))).size,400);
- for(let level=0;level<4;level++)for(let i=0;i<100;i++){
+ for(const group of [chinese.slice(0,4),chinese.slice(4)])assert.equal(new Set(group.flatMap(mode=>Array.from(SC.modes[mode].items,i=>i.answer))).size,255);
+ for(let level=0;level<4;level++)for(let i=0;i<[30,80,155,255][level];i++){
   const trad=SC.modes[chinese[level]].items[i],simpl=SC.modes[chinese[level+4]].items[i];assert.equal(trad.hint,simpl.hint);assert.equal(Array.from(trad.answer).length,1);
   for(const [mode,item] of [[chinese[level],trad],[chinese[level+4],simpl]])assert(SC.matches(item.hint,item,mode,'zh-TW','speech'),mode+' '+item.answer);
  }
  for(const [a,b] of [['貓','猫'],['聽','听'],['體','体'],['幾','几'],['麼','么'],['湯','汤'],['從','从']]){
   const t=chinese.slice(0,4).flatMap(m=>Array.from(SC.modes[m].items,i=>i.answer)),s=chinese.slice(4).flatMap(m=>Array.from(SC.modes[m].items,i=>i.answer));assert.equal(t.indexOf(a),s.indexOf(b));assert(t.includes(a));
+ }
+});
+test('Chinese sets add exactly 30, 50, 75 and 100 characters while retaining earlier practice',()=>{
+ for(const group of [chinese.slice(0,4),chinese.slice(4)]){
+  let previous=[];
+  for(const [level,mode] of group.entries()){
+   const lesson=SC.modes[mode],answers=Array.from(lesson.items,i=>i.answer);
+   assert.deepEqual(answers.slice(0,previous.length),previous);assert.equal(answers.length-previous.length,[30,50,75,100][level]);assert(lesson.description.startsWith(answers.length+' tecken'));
+   if(level)assert(lesson.description.includes([30,50,75,100][level]+' nya'));previous=answers;
+  }
+  assert.equal(SC.modes[group[0]].items.map(i=>i.answer).join(''),'一二三四五六七八九十零人大小上下中口手日月山水火木土天我你好');
+ }
+ for(const [trad,simpl,hint] of [['嗎','吗','ma'],['呢','呢','ne'],['目','目','mù'],['兩','两','liǎng'],['子','子','zǐ']]){
+  for(const [mode,answer] of [['chineseTrad4',trad],['chineseSimpl4',simpl]]){const item=SC.modes[mode].items.find(i=>i.answer===answer);assert.equal(item.hint,hint);assert(SC.matches(hint,item,mode,SC.modes[mode].lang,'speech'));}
  }
 });
 const evaluate=label=>Function('return '+label.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-'))();
@@ -74,6 +88,7 @@ test('Spoken integers 0–200 round-trip and multiword numbers stay intact',()=>
 });
 function firstTarget(name,mode){
  const g=new SC[name+'Game']({random:rng(9)});g.start({mode,lang:SC.modes[mode].lang});g.resize(1000,740);
+ if(name==='Home')g.createTask('toys',g.spots.toys[0]);
  if(name==='Garden'){g.pots[0].moisture=.4;g.syncRequests(g.pots[0]);}
  if(name==='Egg'){g.eggs.forEach(e=>e.crackAt=10000);tick(g,7);g.crack(g.eggs[0]);}
  for(let i=0;i<100&&!g.getTargets().length;i++)g.update(.05);
@@ -89,7 +104,7 @@ test('Every game supports every math lesson, fixed across correct answers, mista
  }
 });
 test('All Chinese lessons retain delayed pinyin, queued-answer suppression and tone-free matching in every game',()=>{
- for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg'])for(const mode of chinese){
+ for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home'])for(const mode of chinese){
   const {g,target}=firstTarget(name,mode);assert(!SC.pinyinHints(g).has(target));g.clock=target.appearedAt+5.1;assert(SC.pinyinHints(g).has(target));target.pinyinRevealed=false;
   g.queue.enqueue(target.item.hint,'speech');assert(!SC.pinyinHints(g).has(target),name+'/'+mode+' queued');
  }

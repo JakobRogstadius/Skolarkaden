@@ -63,7 +63,7 @@ Tangentbordsfokus hålls i svarsfältet under aktivt spel. Tab och Shift+Tab fly
 
 Svenska och engelska har korta och längre ord. Bokstavsövningen väljer ett slumpmässigt block av tangenter för varje omgång: 3 × 3, 2 × 5 eller en hel bokstavsrad. Svenska använder svensk QWERTY med å, ä och ö. Latinska övningar visar antingen stora eller små bokstäver under hela omgången; båda accepteras som svar.
 
-Varje svensk och engelsk ordlista innehåller 100 olika ord. Korta ord har högst fem bokstäver och långa ord har 6–12. Kinesiska har fyra nivåer med 100 tecken vardera i traditionell respektive förenklad skrift. Nivåerna börjar med tal, natur, djur och familj och fortsätter med tid, kropp, vardagsord, skola, mat och handlingar. De båda skrifterna har motsvarande tecken och samma pinyin. Val av talspråk ändrar inte tecknens skrift.
+Varje svensk och engelsk ordlista innehåller 100 olika ord. Korta ord har högst fem bokstäver och långa ord har 6–12. Kinesiska har fyra kumulativa nivåer med 30, 80, 155 och 255 tecken i traditionell respektive förenklad skrift. Nivå 1 innehåller talen 0–10 och mycket enkla grundtecken. Nivå 2, 3 och 4 lägger till 50, 75 respektive 100 nya tecken, samtidigt som tidigare tecken finns kvar för repetition. Urvalet väger vardagsnytta mot visuell komplexitet: enkla konkreta begrepp först, sedan familj och vanliga uttryck, hem och vardag, och sist skola, samtal och mer sammansatta tecken. [Alla tecken och urvalsprinciper](dev/mandarin-levels.md). De båda skrifterna har motsvarande tecken och samma pinyin. Val av talspråk ändrar inte tecknens skrift.
 
 Matematiken har sex fasta nivåer. Nivån ändras aldrig under en omgång och ger inte högre poäng för svårare uppgifter.
 
