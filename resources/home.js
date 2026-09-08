@@ -103,6 +103,8 @@ class HomeGame{
  }
  clearRoute(p){p.path=[];p.goalKey='';p.moving=false;}
  familySpeed(p){return this.walkSpeed*(p.look.child?1.5:1);}
+ playerRunSpeed(){return this.playerSpeed*(1+.7*this.messes.length);}
+ angerLevel(){return this.helping?1:clamp(this.messes.length/7,0,1);}
  roomFor(position){return this.layout.rooms.find(r=>position.x>=r.x&&position.x<r.x+r.w&&position.y>=r.y&&position.y<r.y+r.d)?.id||'hall';}
  roomLoads(){
   const loads={...this.roomCounts};let laundry=this.stations.laundry.fill,trash=this.stations.trash.fill;
@@ -161,7 +163,7 @@ class HomeGame{
   const j=p.job;if(!j)return;if(p.player)this.job=j;
   if(!j.target){j.age+=dt;if(j.age>=.75){this.emit('miss',{entry:j.entry});p.job=null;this.job=null;}return;}
   const t=j.target;if(t.done){p.job=null;if(p.player)this.job=null;return;}
-  const speed=p.player?this.playerSpeed:this.helpSpeed;
+  const speed=p.player?this.playerRunSpeed():this.helpSpeed;
   if(['walk','deliver','machine'].includes(j.stage)){
    if(this.go(p,this.taskGoal(t,j.stage),speed,dt)){j.stage=j.stage==='walk'?'clean':'finish';j.age=0;p.moving=false;if(j.stage==='clean')this.emit(t.type==='hungry'?'home-cook':t.type==='dishes'?'home-wash':t.type==='clothes'||t.type==='toys'?'home-rustle':'home-handle');}
    return;
@@ -174,6 +176,7 @@ class HomeGame{
  }
  completeTask(p,t,j){
   if(t.done)return;t.done=true;p.job=null;p.carry=null;this.clearRoute(p);if(p.player)this.job=null;
+  this.effects.push({position:{...this.taskPosition(t)},at:this.clock});
   this.cleaned++;if(p.player){this.hits++;this.score+=j.points;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.emit('hit',{entry:j.entry,target:t,points:j.points});}else{this.familyCleaned++;this.emit('home-help',{target:t});}
   if(t.station?.task===t){t.station.fill=0;t.station.task=null;t.station.items=[];}
   if(['cabinet','drawer','fridge'].includes(t.type))this.emit('home-shut');
@@ -249,7 +252,7 @@ class HomeGame{
    if(this.go(this.player,{x:3.9,y:10.75},this.playerSpeed,dt)){this.player.moving=false;this.player.restAge+=dt;}
    if(this.celebration>=4&&this.player.restAge>=2.5){this.state='won';this.emit('end',{won:true,score:this.score,hits:this.hits,shots:this.shots,cleaned:this.cleaned,familyCleaned:this.familyCleaned,bestStreak:this.bestStreak});}return;
   }
-  if(this.state!=='playing')return;this.clock+=dt;this.elapsed+=dt;this.people.forEach(p=>{p.moving=false;p.age+=dt;});this.angerLeft=Math.max(0,this.angerLeft-dt);
+  if(this.state!=='playing')return;this.clock+=dt;this.elapsed+=dt;this.effects=this.effects.filter(e=>this.clock-e.at<.7);this.people.forEach(p=>{p.moving=false;p.age+=dt;});this.angerLeft=Math.max(0,this.angerLeft-dt);
   if(this.helping){const previous=Math.floor(this.angerAge/.4);this.angerAge+=dt;if(Math.floor(this.angerAge/.4)>previous)this.emit('home-stomp');}
   this.syncReservations();
   if(!this.closing&&!this.helping&&this.messes.length>=7)this.becomeAngry();

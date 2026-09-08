@@ -7,7 +7,7 @@ let game,renderer,kind='city',busy=false,soundOn=true,lastOptions=null,log=[],la
 const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer],home:[SC.HomeGame,SC.HomeRenderer]};
 const highscores=new SC.Highscores({getSelection:()=>scoreSelection()});
 function scoreSelection(selected=options()){
-  return {kind,mode:selected.mode,pace:selected.pace,
+  return {kind,mode:selected.mode,pace:selected.pace,input:$('input-kind').value,lang:selected.lang,spokenLanguage:$('language').value,uppercase:selected.uppercase,soundEnabled:soundOn,reducedMotion:root.matchMedia('(prefers-reduced-motion: reduce)').matches,
     label:[names[kind],SC.modes[selected.mode].name,
       {gentle:'Lätt',steady:'Medel',brave:'Svår'}[selected.pace]].join(' · ')};
 }
@@ -66,7 +66,7 @@ function onGameEvent(e){
     $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Trädgården är klar.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!',eggs:'Skeppet är säkrat!',home:'Skönt att vara klar!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'Alla plantor vissnade.',hive:'Honungen räckte inte.',eggs:'Rymdkrypen tog över.'}[kind]);
     $('result-game').textContent=names[kind];$('result-context').textContent=SC.modes[game.mode].name+' · '+{gentle:'Lätt',steady:'Medel',brave:'Svår'}[game.pace];
     highscores.showEnd();
-    if(soundOn&&!(kind!=='city'&&e.won))sounds.play(e.won?'win':'miss');$('again').focus({preventScroll:true});
+    if(soundOn&&!(kind!=='city'&&e.won))sounds.play(e.won?'win':'miss');
   }
   lastTargetKey=null;
 }
@@ -75,7 +75,7 @@ async function start(){
   try{
     input.setEnabled(false);input.configure(speechOptions());await input.prepare();if(token!==lifecycle)return;
     sounds.stopCampfire();sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
-    const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});lastOptions=options();highscores.begin(scoreSelection(lastOptions));$('arena').className='arena '+kind;$('play').dataset.game=kind;game.start(lastOptions);queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
+    const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});lastOptions=options();$('arena').className='arena '+kind;$('play').dataset.game=kind;game.start(lastOptions);highscores.begin({...scoreSelection(lastOptions),letterKeys:game.mode==='letters'?game.items.map(i=>i.answer):null});queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
     best=safeRead(bestKey());$('game-title').textContent=names[kind];$('objective').closest('.hud-objective').hidden=['marshmallows','eggs'].includes(kind);$('answer').placeholder=input.singleLetter()?'…':SC.modes[game.mode].placeholder.replace('…',' ↵');$('answer-hint').textContent=typingHint();$('keyboard').hidden=game.mode!=='bopomofo';$('input-dock').hidden=input.voice.enabled;document.body.classList.add('playing');document.body.classList.toggle('voice-play',input.voice.enabled);
     input.setEnabled(true);if(input.voice.enabled)input.start();
     input.focus();lastTargetKey=null;renderUi();

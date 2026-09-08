@@ -7,6 +7,9 @@ const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>
 function setup(options={},active=false){const events=[],g=new SC.HomeGame({random:rng(8),onEvent:e=>events.push(e)});g.start({uppercase:false,...options});g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,i)=>SC.matches(e.text,i,g.mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,g.mode,g.lang)});if(!active){g.chooseActivity=()=>false;g.people.slice(1).forEach(p=>{p.wait=0;p.activity=null;});}return {g,events};}
 function until(g,condition,seconds=60){for(let i=0;i<seconds*20&&!condition();i++)g.update(.05);assert(condition(),'condition must resolve in '+seconds+' seconds');}
 let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
+test('Player speed and expression respond to the backlog on the actual walking route',()=>{
+ for(const count of [1,4,6,10]){const {g}=setup();Object.assign(g.player,{x:6.125,y:10.125});const t=g.createTask('toys',{x:6.125,y:3.125});for(let i=1;i<count;i++)g.createTask('toys',g.spots.toys[i%g.spots.toys.length]);g.queue.enqueue(t.item.answer);const start=g.player.y;g.work(g.player,.05);assert(Math.abs(start-g.player.y-g.playerSpeed*(1+.7*count)*.05)<1e-9);assert.equal(g.angerLevel(),Math.min(1,count/7));g.helping=true;g.messes=[];assert.equal(g.angerLevel(),1,'anger lasts throughout help even after the backlog shrinks');}
+});
 test('Five rooms, two ordinary adults and 1/2/3 children with matching beds, shared models and fixed speeds',()=>{
  for(const [pace,count] of [['gentle',1],['steady',2],['brave',3]]){const {g}=setup({pace});assert.equal(g.layout.rooms.length,5);assert.equal(g.people.length,count+2);assert.equal(g.people.filter(p=>p.look.child).length,count);assert(g.people.slice(0,2).every(p=>!p.look.child&&!p.look.exotic));assert(g.people.slice(2).every(p=>!p.look.beard&&!p.look.exotic&&(p.look.feminine||p.look.hairStyle<2)));assert.equal(g.layout.furniture.filter(b=>b.child).length,count);assert.equal(g.people.filter(p=>p.player).length,1);assert.equal(g.playerSpeed,3.15);assert.equal(g.walkSpeed,1.3);assert.equal(g.messes.length,0);}
 });
@@ -112,6 +115,12 @@ test('Compact labels stay inside the canvas and do not overlap across bed counts
   const r=Object.create(SC.HomeRenderer.prototype);Object.assign(r,{game:g,ctx:canvas,dpr:1,reduced:true,scoreNotices:[]});r.draw();assert.equal(r.labelBoxes.length,10);for(const [i,a] of r.labelBoxes.entries()){assert(a.x>=6&&a.y>=115&&a.x+a.w<=width-6&&a.y+a.h<=g.height-6);for(const b of r.labelBoxes.slice(i+1))assert(a.x+a.w<=b.x||b.x+b.w<=a.x||a.y+a.h<=b.y||b.y+b.h<=a.y,`${pace}/${width}/${mode}: overlapping labels`);}
   const before=JSON.stringify(r.labelBoxes);r.draw();assert.equal(JSON.stringify(r.labelBoxes),before,'stationary reading targets must not shuffle every frame');
  }
+});
+test('Three children remain manageable with a correct answer every two seconds',()=>{
+ for(let seed=1;seed<=12;seed++){const g=new SC.HomeGame({random:rng(seed)});g.start({pace:'brave',mode:'swedish',uppercase:false});g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,i)=>SC.matches(e.text,i,g.mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,g.mode,g.lang)});let next=0,maxWait=0;const pending=new Map();
+  for(let i=0;i<24000&&['playing','celebrating'].includes(g.state);i++){if(g.state==='playing'&&g.clock>=next){const reserved=g.reservations(),t=g.getAvailableTargets().find(t=>!reserved.has(t)&&g.clock-t.appearedAt>=2);if(t){g.queue.enqueue(t.item.answer);pending.set(t,g.clock);next=g.clock+2;}}g.update(.05);for(const [t,at]of pending)if(t.done){maxWait=Math.max(maxWait,g.clock-at);pending.delete(t);}}
+  assert.equal(g.state,'won');assert(g.hits>=36,`seed ${seed}: ${g.hits} player cleanups`);assert(g.angerCount<=1,`seed ${seed}: ${g.angerCount} anger episodes`);assert(maxWait<10,`seed ${seed}: ${maxWait}s from answer to completion`);
+ }console.log('  12 hard-mode capacity rounds passed.');
 });
 test('Finite full rounds with paced imperfect answers, silence or wrong answers; balanced rooms and no wall crossings',()=>{
  let rounds=0;const roomTotals={gentle:{},steady:{},brave:{}};

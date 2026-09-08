@@ -5,6 +5,12 @@ const SC=root.Starlight, API='https://skolarkaden-api.jakob-rogstadius.workers.d
 const $=id=>document.getElementById(id);
 const policy=root.SkolarkadenHighscorePolicy;
 const boardKey=selection=>[policy.versions[selection.kind],selection.kind,selection.mode].join(':');
+const storedKey=selection=>boardKey(selection)+':'+selection.pace;
+const scoreSettings=s=>({game_version:policy.versions[s.kind],game:s.kind,exercise:s.mode,difficulty:s.pace,
+  input_mode:s.input==='typing'?'keyboard':s.input==='browser'?'voice':null,
+  spoken_language:s.spokenLanguage||s.lang||null,exercise_language:s.lang||null,
+  uppercase:typeof s.uppercase==='boolean'?s.uppercase:null,letter_keys:s.letterKeys||null,
+  sound_enabled:typeof s.soundEnabled==='boolean'?s.soundEnabled:null,reduced_motion:typeof s.reducedMotion==='boolean'?s.reducedMotion:null});
 const difficultyName=pace=>({gentle:'Lätt',steady:'Medel',brave:'Svår'}[pace]||'—');
 const displayName=name=>Array.from(String(name).normalize('NFC').toUpperCase()).slice(0,10).join('');
 const validName=name=>/^[\p{L}\p{M} ]{1,10}$/u.test(name);
@@ -22,6 +28,21 @@ async function request(path,options={}){
     return await response.json();
   }finally{clearTimeout(timeout);}
 }
+async function readBoard(selection,result){
+  const group=boardKey(selection),key=storedKey(selection),suffix=result?'&score='+result.score+(result.id?'&submission='+encodeURIComponent(result.id):''):'';
+  const read=board=>request('/scores?leaderboard='+encodeURIComponent(board)+suffix);
+  const first=await read(key);
+  if(first.leaderboard!==key)return first; // Updated Workers combine all difficulties.
+  // Older deployed Workers only understand the original four-part keys.
+  const paces=['gentle','steady','brave'],boards=await Promise.all(paces.map(p=>p===selection.pace?first:read(group+':'+p)));
+  if(boards.some(b=>!Array.isArray(b.scores)))throw new Error('Invalid response');
+  const rows=boards.flatMap((b,i)=>b.scores.map(r=>({...r,difficulty:r.difficulty||paces[i]})));
+  rows.sort((a,b)=>b.score-a.score||String(a.created_at).localeCompare(String(b.created_at)));
+  // Never invent an exact low rank from a server which only returns ten rows.
+  const complete=result&&boards.every(b=>b.scores.length<10||b.scores.at(-1).score<result.score);
+  const rank=complete&&!result.saved?1+rows.filter(r=>r.score>=result.score).length:null;
+  return {leaderboard:group,scores:rows.slice(0,10),rank,saved:false};
+}
 class Highscores{
   constructor({getSelection}){
     this.getSelection=getSelection;this.run=null;this.result=null;this.view=0;this.readGeneration=0;
@@ -38,7 +59,7 @@ class Highscores{
     });
   }
   dismiss(){this.view++;this.shownResult=null;}
-  begin(selection){this.dismiss();$('score-name').value='';$('score-name').readOnly=false;this.result=null;this.run={selection:{...selection},id:root.crypto?.randomUUID?.()||null};}
+  begin(selection){this.dismiss();$('score-name').value='';$('score-name').readOnly=false;this.result=null;this.run={selection:JSON.parse(JSON.stringify(selection)),id:root.crypto?.randomUUID?.()||null};}
   finish(score){this.result=this.run?{...this.run,score,saved:false,payload:null,pending:false}:null;}
   showEnd(){this.open(this.result?.selection||this.getSelection(),this.result);}
   open(selection,result=null){
@@ -51,7 +72,7 @@ class Highscores{
       $('score-submit').disabled=Boolean(result.saved||result.pending||!result.id);
       $('score-status').textContent=result.saved?'Resultatet är sparat.':result.pending?'Sparar…':!result.id?'Resultatet kan inte skickas från den här webbläsaren.':'';
     }
-    this.render();return this.load(token);
+    this.render();if(result){$(result.saved||!result.id?'again':'score-name').focus({preventScroll:true});}return this.load(token);
   }
   render(){
     const result=this.shownResult,list=$(this.endView?'end-scores-list':'scores-list'),rows=(this.data?.scores||[]).slice(0,10);
@@ -64,7 +85,7 @@ class Highscores{
     if(result&&savedIndex<0&&rank!==null&&rank<=10){rows.splice(rank-1,0,own);rows.length=Math.min(rows.length,10);}
     for(let i=0;i<10;i++)this.row(list,rows[i],i+1);
     if(result&&!rows.some(row=>row.is_player))this.row(list,own,rank);
-    if(focused&&!result?.saved){$('score-name').focus();if(selection!==null)$('score-name').setSelectionRange(selection,selection);}
+    if(focused&&!result?.saved){$('score-name').focus({preventScroll:true});if(Number.isInteger(selection))$('score-name').setSelectionRange(selection,selection);}
   }
   row(list,row,rank){
     const item=document.createElement('li'),number=document.createElement('span'),name=document.createElement('span'),score=document.createElement('span'),difficulty=document.createElement('span');
@@ -76,15 +97,14 @@ class Highscores{
     item.append(number,name,difficulty,score);list.append(item);
   }
   async load(token){
-    const result=this.shownResult,board=boardKey(this.selection),generation=++this.readGeneration,status=$(this.endView?'end-scores-status':'scores-status');
+    const result=this.shownResult,generation=++this.readGeneration,status=$(this.endView?'end-scores-status':'scores-status');
     const current=()=>token===this.view&&generation===this.readGeneration;
     status.textContent='Hämtar topplistan…';$('scores-refresh').disabled=true;
     try{
-      const query='/scores?leaderboard='+encodeURIComponent(board)+(result?'&score='+result.score+(result.id?'&submission='+encodeURIComponent(result.id):''):'');
-      const data=await request(query);if(!current())return;
+      const data=await readBoard(this.selection,result);if(!current())return;
       if(!Array.isArray(data.scores))throw new Error('Invalid response');
       this.data=data;this.render();
-      status.textContent=result&&data.rank===undefined?'Din placering kan inte hämtas just nu.':data.scores.length?'':'Bli först på topplistan!';
+      status.textContent=result&&data.rank==null?'Din placering kan inte hämtas just nu.':data.scores.length?'':'Bli först på topplistan!';
     }catch(error){if(current())status.textContent=error.code==='invalid_leaderboard'?error.message:'Topplistan kunde inte hämtas. Försök igen om en stund.';}
     finally{if(current())$('scores-refresh').disabled=false;}
   }
@@ -99,7 +119,7 @@ class Highscores{
     if(!result||result.saved||result.pending||!result.id)return;
     const raw=$('score-name').value.normalize('NFC').trim(),name=raw.toUpperCase()||'ANONYM';
     if(!result.payload&&!policy.isBannedName(raw)&&!validName(name)){$('score-status').textContent='Skriv 1–10 bokstäver. Mellanslag går också bra.';return;}
-    result.payload ||= {submission_id:result.id,leaderboard_key:boardKey(result.selection)+':'+result.selection.pace,player_name:name,score:result.score};
+    result.payload ||= {submission_id:result.id,leaderboard_key:storedKey(result.selection),player_name:name,score:result.score,settings:scoreSettings(result.selection)};
     result.pending=true;$('score-submit').disabled=true;$('score-name').readOnly=true;$('score-status').textContent='Sparar…';
     try{
       const data=policy.isBannedName(result.payload.player_name)?{ok:true}:await request('/scores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(result.payload)});

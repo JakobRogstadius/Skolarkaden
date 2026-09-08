@@ -3,23 +3,36 @@
 The frontend calls `https://skolarkaden-api.jakob-rogstadius.workers.dev`.
 The website remains on GitHub Pages. No API token belongs in the frontend.
 
-## Städa hemmet in an existing installation
+## Update the existing installation
 
-The game retains score version `v1` during initial tuning. The family-routine
-update requires no Worker redeployment if the installation already accepts
-`v1:home:swedish:gentle`.
+The stored score format and four-part leaderboard keys are retained. Home stays
+on `v1`. One nullable column stores the settings which were previously omitted:
 
-For an installation that does not yet support `home`, deploy the complete
-[worker.mjs](worker.mjs) to **skolarkaden-api**, keeping its existing **DB** binding.
-No D1 schema change is required; existing score rows are preserved. Verify that
-`/scores?leaderboard=v1:home:swedish:gentle` returns a `scores` array.
+1. In **D1 → skolarkaden → Console**, inspect `PRAGMA table_info(highscores)`.
+   If `settings_json` is absent, run [add-score-settings.sql](add-score-settings.sql)
+   once: `ALTER TABLE highscores ADD COLUMN settings_json TEXT;`.
+   This preserves every existing score; do not recreate or clear the table.
+2. In **Workers & Pages → skolarkaden-api → Edit code**, replace the code with the
+   complete generated [worker.mjs](worker.mjs). Keep the existing **DB** binding
+   and deploy. Updating GitHub Pages alone does not deploy this Worker.
+3. `/health` should include `capabilities` with `combined_boards: true`,
+   `submission_lookup: true` and `score_settings: 1`.
+   `/scores?leaderboard=v1:home:swedish` should return `scores`, `rank` and `saved`.
+
+The previously deployed Worker accepted only four-part GET keys and did not
+return player ranks or submission identity. The page now loads those older
+endpoints and combines their three top-ten lists if necessary. Exact low ranks
+and identification of an already saved player's row require the updated Worker.
+POST retains its existing fields and adds `settings`; older Workers ignore that
+extra data, so settings preservation requires the deployment above.
 
 ## Finish the existing dashboard setup
 
 1. Open the existing D1 database **skolarkaden → Console**. Run the statements in
    [schema.sql](schema.sql). They preserve existing scores and add the rate-limit
    table and indexes. The `highscores.ip` column has already been added by the owner;
-   it does not need to be added again. For older installations without that column,
+   it does not need to be added again. Apply the existing-installation update above
+   if `settings_json` is absent. For older installations without the IP column,
    check `PRAGMA table_info(highscores)` and run `ALTER TABLE highscores ADD COLUMN ip TEXT`
    only if `ip` is absent. `CREATE TABLE IF NOT EXISTS` does not add missing columns.
 2. Open **Workers & Pages → skolarkaden-api → Edit code**. Replace all of the health
@@ -27,8 +40,8 @@ No D1 schema change is required; existing score rows are preserved. Verify that
    file includes the name filter and needs no imports or package installation.
 3. Keep the existing D1 binding named **DB**, pointing to **skolarkaden**. Deploy.
 4. Open `/health`. Expected response:
-   `{"ok":true,"database":"connected","api":"highscores-v1"}`.
-   The check includes both tables and the `ip` column.
+   It reports `ok: true`, `database: "connected"`, `api: "highscores-v1"` and the
+   capabilities listed above. The check includes both tables, `ip` and `settings_json`.
 5. Open `/scores?leaderboard=v2:city:swedish:gentle`. Initially this returns an empty
    `scores` array. Reading the URL directly does not create a test score.
 6. Merge the accompanying frontend change into `main` and let GitHub Pages publish.
@@ -50,6 +63,13 @@ available, but that origin cannot submit to the production leaderboard.
   Older four-part GET keys also return this combined board. Every returned score
   includes `difficulty` (`gentle`, `steady`, or `brave`). Player ranks use the same
   combined set; POST continues to store the difficulty that was actually played.
+- Each new row also stores validated `settings_json`: game version, game,
+  exercise, difficulty, keyboard/voice mode, selected spoken language, effective
+  exercise language, uppercase/lowercase, the actual random letter subset, sound
+  setting and reduced-motion setting. These are snapshotted when the round starts.
+  Presentation can change later without losing the conditions of the score.
+  Existing rows keep their known conditions in the key; previously unrecorded
+  settings remain unknown. Old clients are still accepted with those values null.
 - Game versions live in `resources/highscore-policy.js`. Increment the affected
   game's value only when a change is likely to materially affect score comparability; deploy Worker and frontend together.
   Old rows remain stored but the current API only accepts current versions.
@@ -59,6 +79,7 @@ available, but that origin cannot submit to the production leaderboard.
 - The result screen only submits on Enter in the name input or the replay/menu buttons. Closing the browser never schedules an upload. Failed saves leave the screen open for retry.
 - Each game has a UUID. Duplicate delivery of the same payload succeeds without
   adding another row; changing the payload under an existing UUID is rejected.
+  A retry spanning deployment can add missing settings to the same original row.
   A timed-out submission can be retried while that result remains open; there is
   no persistent offline upload queue.
 - `ip` is taken exclusively from Cloudflare's `CF-Connecting-IP` header. A supplied

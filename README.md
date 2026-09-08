@@ -9,8 +9,9 @@ All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och
 ## Gemensamma topplistor
 
 **Topplista** i menyn visar de 10 högsta resultaten för valt spel och övning, gemensamt för alla svårighetsgrader. Varje rad visar svårighetsgraden.
-Omgångens slut visar samma topplista, med spelarens egen placering på en extra rad om den är lägre än tio. Namnet är valfritt: högst tio bokstäver i versaler, annars ANONYM. Enter i namnfältet sparar; Spela igen och Till menyn sparar innan de fortsätter. Att stänga webbläsaren skickar inget resultat.
+Omgångens slut visar samma topplista, med spelarens egen placering på en extra rad om den är lägre än tio. Namnfältet får fokus direkt och behåller text och markör när poängen hämtas. Namnet är valfritt: högst tio bokstäver i versaler, annars ANONYM. Enter i namnfältet sparar; Spela igen och Till menyn sparar innan de fortsätter. Att stänga webbläsaren skickar inget resultat.
 Tangentbord och röst delar topplista. Varje spel har en separat intern poängversion.
+Varje nytt resultat behåller även omgångens inställningar: spel och version, övning, svårighet, tangentbord/röst, valt talspråk och faktiskt övningsspråk, stora/små bokstäver, den lottade bokstavsuppsättningen, ljud och minskad rörelse. Databasens befintliga poängnycklar ändras inte. Inställningarna kräver den extra kolumnen och Worker-uppdateringen i installationsanvisningen; äldre resultat bevaras med tidigare okända inställningar tomma.
 Topplistor och sparande kräver internet. Om sparandet misslyckas stannar slutdialogen kvar så att samma resultat kan skickas igen utan dubbletter.
 
 API:t använder Cloudflare Worker + D1. Installationssteg och underhåll finns i
@@ -125,6 +126,8 @@ Familjen använder rummen och lämnar kläder, leksaker, disk, sopor och öppna 
 
 Nya aktiviteter väljs i den del av hemmet som hittills fått minst stök. Alla fem rum och hallen räknas separat, med en jämn fördelning på ungefär en sjättedel vardera som mål. Även pågående aktiviteter och kommande tvätt och disk räknas in, så att följduppgifter inte tränger undan hallen och sovrummen.
 
+Spelarföräldern springer snabbare när stöket växer: grundhastigheten multipliceras med `1 + 0,7 × antal olösta uppgifter`. Fyra uppgifter ger 3,8 gånger grundhastigheten, sex ger 5,2 gånger. Detta gäller även leveranser av kläder och tvätt, men ändrar inte arbetstid, bonus eller gångvägar. Ansiktsuttrycket blir proportionellt argare fram till sjugränsen. Under familjens hjälpinsats syns ett grått tecknat åskmoln med blixtar ovanför föräldern, som fortsätter hoppa tills alla hjälpare är klara.
+
 Ett svar räcker till en uppgift. Kläder bärs till tvättkorgen; tre plagg skapar en separat tvättuppgift, som bärs till maskinen. Nya plagg i korgen under en pågående tvätt blir kvar. Disk uppstår bara genom två matkedjor: någon hämtar ett mellanmål i kylskåpet, lämnar dörren öppen, äter och bär förpackningen till en köksbänk; eller en hungrig person får mat lagad, hämtar tallriken, äter och bär den smutsiga tallriken till bänken. Matlagning och disk är separata uppgifter. Högar, fulla korgar och fulla soptunnor har en uppgift var. Disk som är på väg försvinner inte om en hög börjar diskas, och avbrutna måltider återupptar rätt gångväg efter en hjälpinsats. Felaktiga svar ger en kort funderandepaus.
 
 Varje uppgift som spelaren gör ger 10 poäng plus en bonus som minskar linjärt från 10 till 0 under de första tio sekunderna. Bonusen avrundas till heltal och låses när rätt svar tas emot, så att gångavstånd och kötid inte sänker den. En liten poängtext ersätter den slutförda uppgiftsbubblan. Matematik ger 50 procent längre brukstid per aktivitet och längre vilopauser när fler än fyra uppgifter finns, med samma gånghastigheter och bonusregel.
@@ -135,7 +138,9 @@ Efter 40 avklarade uppgifter, oavsett vem som gjort dem, upphör nytt vardagsst�
 
 Matönskemål fästs vid en tom dukning på bordet. Burna föremål får ingen uppgift förrän de har lagts ned. Etiketterna håller sig på plats när människor passerar; kraftigare linjer med ljus kontur pekar ut stöket och ritas bakom texten. Sängbordets låda syns framför garderoben. Toaletten följer rummets perspektiv, och köksskåp, kylskåp, matstolar och soffans armstöd ritas i rätt ordning. Korta syntetiserade ljud följer skåpdörrar, disk, förpackningar, kläder, leksaker, diskning, matlagning, hunger och arga nedstamp. Ljuden dämpas vid talinmatning.
 
-Spelet behåller topplistenyckeln `v1:home:<övning>:<svårighet>` under den första intrimningen. De nya familjerutinerna använder samma topplista som tidigare och kräver ingen ny Worker-distribution om home v1 redan stöds.
+Kläder, leksaker, disk och matförpackningar är större och färgstarkare. Tvätt och sopor sticker upp tydligare, öppna lådor dras längre ut och disken har synliga matrester. En varm kontur markerar varje stökplats; den blir grön när uppgiften tas om hand. Etiketternas placering undviker själva stöket och ett kort glitter visar när städningen är klar. Minskad rörelse behåller de tydliga markeringarna utan puls eller hopp.
+
+Spelet behåller den lagrade topplistenyckeln `v1:home:<övning>:<svårighet>` under den första intrimningen. Visningen slår samman de tre svårigheterna. Familjerutinerna ändrar inte poängnyckeln; lagring av alla omgångsinställningar kräver den gemensamma Worker-uppdateringen ovan.
 
 ## Äggröra
 

@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS highscores (
     player_name TEXT NOT NULL CHECK (length(player_name) BETWEEN 1 AND 24),
     score INTEGER NOT NULL CHECK (typeof(score) = 'integer' AND score >= 0),
     ip TEXT,
+    settings_json TEXT,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_highscores_leaderboard

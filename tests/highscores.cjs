@@ -3,6 +3,9 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const {DatabaseSync}=require('node:sqlite'),{webcrypto}=require('node:crypto');
 const base=path.join(__dirname,'..'),read=file=>fs.readFileSync(path.join(base,file),'utf8');
 const db=new DatabaseSync(':memory:');db.exec(read('cloudflare/schema.sql'));
+const migration=new DatabaseSync(':memory:');migration.exec(read('cloudflare/schema.sql').replace('    settings_json TEXT,\n',''));
+migration.prepare('INSERT INTO highscores(submission_id,leaderboard_key,player_name,score) VALUES(?,?,?,?)').run('existing','v1:home:letters:brave','ANONYM',70);
+migration.exec(read('cloudflare/add-score-settings.sql'));assert.deepEqual({...migration.prepare('SELECT player_name,score,settings_json FROM highscores').get()},{player_name:'ANONYM',score:70,settings_json:null});migration.close();
 // Execute the Worker's actual SQL with SQLite; only the D1 transport is adapted.
 const DB={prepare(sql){let params=[];return {
   bind(...values){params=values;return this;},
@@ -12,9 +15,11 @@ const DB={prepare(sql){let params=[];return {
 };}};
 const origin='https://jakobrogstadius.github.io',board='v2:city:swedish:gentle';
 const payload=(extra={})=>({submission_id:webcrypto.randomUUID(),leaderboard_key:board,player_name:'Stefan',score:123,...extra});
+let focused=null;
 class Element extends EventTarget{
   constructor(){super();this.dataset={};this.value='';this.textContent='';this.children=[];this.open=false;}
-  focus(){}
+  focus(){focused=this;}
+  setSelectionRange(start,end){this.selectionStart=start;this.selectionEnd=end;}
   append(...items){this.children.push(...items);}replaceChildren(){this.children=[];}showModal(){this.open=true;}
   close(){this.open=false;this.dispatchEvent(new Event('close'));}
 }
@@ -27,12 +32,18 @@ class Element extends EventTarget{
   assert.equal((await call('GET','/health')).status,200);
   const preflight=await call('OPTIONS');assert.equal(preflight.status,204);assert.equal(preflight.headers.get('Access-Control-Allow-Origin'),origin);
   assert.equal((await call('POST','/scores',payload(),{Origin:'https://unrelated.example'})).status,403);
-  const first=payload({ip:'198.51.100.99'});
+  const settings={game_version:'v2',game:'city',exercise:'swedish',difficulty:'gentle',input_mode:'voice',spoken_language:'zh-TW',exercise_language:'zh-TW',uppercase:false,sound_enabled:true,reduced_motion:false,letter_keys:null};
+  const first=payload({ip:'198.51.100.99',settings});
   assert.equal((await call('POST','/scores',first)).status,201);
   assert.equal(db.prepare('SELECT ip FROM highscores').get().ip,'192.0.2.10','ignore browser-supplied IP');
+  assert.deepEqual(JSON.parse(db.prepare('SELECT settings_json FROM highscores').get().settings_json),settings,'every selected setting is retained without changing the score key');
   assert.equal((await call('POST','/scores',first)).status,200);
   assert.equal(db.prepare('SELECT count(*) AS n FROM highscores').get().n,1,'retry is idempotent');
   assert.equal((await call('POST','/scores',{...first,score:999})).status,409);
+  assert.equal((await call('POST','/scores',{...first,settings:{...settings,input_mode:'keyboard'}})).status,409);
+  for(const change of [{difficulty:'brave'},{spoken_language:'unexpected'},{uppercase:'yes'},{letter_keys:['a']}])assert.equal((await call('POST','/scores',payload({settings:{...settings,...change}}))).status,400);
+  db.prepare('UPDATE highscores SET settings_json=NULL WHERE submission_id=?').run(first.submission_id);
+  assert.equal((await call('POST','/scores',first)).status,200);assert.deepEqual(JSON.parse(db.prepare('SELECT settings_json FROM highscores').get().settings_json),settings,'a deployment-crossing retry enriches the same score');
   for(const score of [-1,1.5,'123',1000001])assert.equal((await call('POST','/scores',payload({score}))).status,400);
   for(const key of ['v1:city:swedish:sv-SE:typing:gentle','v1:city:swedish:gentle:','v1:bogus:swedish:gentle','v1:city:swedish:gentle']){
     assert.equal((await call('POST','/scores',payload({leaderboard_key:key}))).status,400);
@@ -83,10 +94,10 @@ class Element extends EventTarget{
   // reuse one ID/payload and results remain tied to the completed game's board.
   const elements=new Map(),get=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
   const nicknameStorage=new Map([['skolarkaden-nickname-v1','OLD NAME']]);
-  let posts=[],failOnce=false,unsupported=false,boardData={scores:[],rank:1};
+  let posts=[],failOnce=false,unsupported=false,legacyBoards=null,boardData={scores:[],rank:1};
   const context=vm.createContext({Starlight:{},console,crypto:webcrypto,Event,EventTarget,setTimeout,clearTimeout,AbortController,
-    document:{getElementById:get,createElement:()=>new Element()},localStorage:{getItem:key=>nicknameStorage.get(key),setItem:(key,value)=>nicknameStorage.set(key,value),removeItem:key=>nicknameStorage.delete(key)},
-    fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));if(failOnce){failOnce=false;throw new Error('network');}return Response.json({ok:true});}return unsupported?Response.json({error:'invalid_leaderboard'},{status:400}):Response.json(boardData);}});
+    document:{get activeElement(){return focused;},getElementById:get,createElement:()=>new Element()},localStorage:{getItem:key=>nicknameStorage.get(key),setItem:(key,value)=>nicknameStorage.set(key,value),removeItem:key=>nicknameStorage.delete(key)},
+    fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));if(failOnce){failOnce=false;throw new Error('network');}return Response.json({ok:true});}if(legacyBoards){const key=new URL(url).searchParams.get('leaderboard');assert.equal(key.split(':').length,4);return Response.json({leaderboard:key,scores:legacyBoards[key.split(':')[3]]});}return unsupported?Response.json({error:'invalid_leaderboard'},{status:400}):Response.json(boardData);}});
   vm.runInContext(read('resources/highscore-policy.js'),context);vm.runInContext(read('resources/highscores.js'),context);
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),'v2:city:swedish');
@@ -101,7 +112,12 @@ class Element extends EventTarget{
   assert.equal(context.Starlight.highscoreBoardKey({...selection,input:'browser',lang:'zh-TW'}),'v2:city:swedish');
   assert.equal(context.Starlight.highscoreBoardKey({...selection,pace:'brave'}),context.Starlight.highscoreBoardKey(selection));
   const ui=new context.Starlight.Highscores({getSelection:()=>selection});
-  unsupported=true;await ui.open({...selection,kind:'home'});assert.equal(get('scores-status').textContent,'Topplistan är inte redo för det här spelet ännu.');unsupported=false;
+  legacyBoards={gentle:[{score:200,player_name:'A'},{score:80,player_name:'B'}],steady:[{score:210,player_name:'C'}],brave:[{score:300,player_name:'D'}]};
+  ui.begin(selection);ui.finish(150);await ui.open(selection,ui.result);assert.deepEqual([...ui.data.scores].map(r=>r.score),[300,210,200,80]);assert.equal(ui.data.rank,4);assert.deepEqual([...ui.data.scores].map(r=>r.difficulty),['brave','steady','gentle','gentle']);assert.equal(focused,get('score-name'));assert.equal(posts.length,0);
+  get('score-name').value='ÅS';get('score-name').setSelectionRange(1,1);await ui.load(ui.view);assert.equal(focused,get('score-name'));assert.equal(get('score-name').selectionStart,1);get('again').focus();await ui.load(ui.view);assert.equal(focused,get('again'),'loading must not steal focus after Tab');
+  legacyBoards.brave=Array.from({length:10},()=>({score:300,player_name:'D'}));await ui.load(ui.view);assert.equal(ui.data.rank,null,'limited legacy rows cannot establish a low rank');legacyBoards=null;
+  ui.begin(selection);
+  ui.begin(selection);unsupported=true;await ui.open({...selection,kind:'home'});assert.equal(get('scores-status').textContent,'Topplistan är inte redo för det här spelet ännu.');unsupported=false;
   assert.equal(get('score-name').value,'');assert.equal(nicknameStorage.size,0,'discard legacy remembered names');
   ui.begin(selection);ui.finish(200);ui.open(selection,ui.result);get('score-name').value='f.u.c.k';await ui.submit();
   assert.equal(posts.length,0);assert.equal(get('score-status').textContent,'Resultatet är sparat.');
@@ -109,6 +125,7 @@ class Element extends EventTarget{
   assert.equal(ui.result.saved,false);const pendingId=ui.result.id;
   get('score-name').value='Someone else';await ui.submit();
   assert.equal(posts.length,2);assert.deepEqual(posts[0],posts[1]);assert.equal(posts[1].submission_id,pendingId);assert.equal(posts[1].leaderboard_key,board,'store the played difficulty');assert.equal(ui.result.saved,true);
+  assert.equal(posts[1].settings.input_mode,'keyboard');assert.equal(posts[1].settings.spoken_language,'sv-SE');assert.equal(posts[1].settings.game,'city');
   await ui.submit();assert.equal(posts.length,2,'saved result cannot be submitted again');
   // Display top ten plus the actual rank below them; never post merely for opening.
   boardData={scores:Array.from({length:10},(_,i)=>({player_name:'PLAYER',score:1000-i})),rank:38,saved:false};
@@ -120,5 +137,9 @@ class Element extends EventTarget{
   // A saved top-ten player occupies exactly one ranked row, even with duplicate names/scores.
   boardData={scores:Array.from({length:10},(_,i)=>({player_name:'BOSSE',score:99,is_player:i===4})),rank:5,saved:true};
   await ui.open(selection,ui.result);assert.equal(get('end-scores-list').children.length,10);assert.equal(get('end-scores-list').children.filter(row=>row.className.includes('player-row')).length,1);
+  const configured={...selection,kind:'home',mode:'letters',pace:'brave',input:'browser',lang:'sv-SE',spokenLanguage:'sv-SE',uppercase:true,letterKeys:['å','ä','ö'],soundEnabled:false,reducedMotion:true};
+  ui.begin(configured);configured.letterKeys.push('x');ui.finish(250);await ui.open(configured,ui.result);get('score-name').value='TEST';await ui.submit();
+  const sent=posts.at(-1);assert.deepEqual(sent.settings.letter_keys,['å','ä','ö'],'snapshot actual practice keys at round start');assert.equal(sent.settings.input_mode,'voice');assert.equal(sent.settings.uppercase,true);assert.equal(sent.settings.sound_enabled,false);assert.equal(sent.settings.reduced_motion,true);
+  assert.equal((await call('POST','/scores',sent)).status,201,'the actual frontend payload is accepted by the Worker');assert.deepEqual(JSON.parse(db.prepare('SELECT settings_json FROM highscores WHERE submission_id=?').get(sent.submission_id).settings_json),sent.settings);
   db.close();console.log('PASS highscores: real SQLite, privacy, filtering, ranking, CORS, limits, keys, browser submission and retries.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

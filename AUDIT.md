@@ -1,3 +1,21 @@
+# Snabbare hjälp vid mycket stök och kompletta poänginställningar
+
+2026-09-08.
+
+Spelarförälderns rörelsehastighet är nu grundhastigheten gånger `1 + 0,7 × olösta uppgifter`, även under leveranser. Ansiktets ilska växer proportionellt fram till sju uppgifter; sjugränsen och familjens hjälpinsats är oförändrade. Ett grått tecknat moln med gula blixtar följer de arga hoppen ovanför huvudet. Kläder, leksaker, disk och förpackningar är större och har starkare färger, tvätt/sopor är tydligare överfulla och lådor öppnas längre. Stök markeras med konturer som blir gröna när det hanteras, och avklarad städning ger ett kort glitter. Etiketter undviker föremålen och åskmolnet, och läget för minskad rörelse behåller statiska markeringar.
+
+En kapacitetsjämförelse med tre barn och ett korrekt svar varannan sekund gav tidigare minst 16 spelarstädningar över tolv slumpfrön. Efter justeringen är minimum 36, med högst en ilskeinsats och mindre än tio sekunder från accepterat svar till slutförd uppgift i samtliga tolv omgångar. Tester låser också verklig rörelse på gångvägen, bibehållna bonusregler och ilska under hela hjälpinsatsen. Ytterligare 72 omgångar med olika övningar, svarstider, misstag eller tystnad passerar, liksom rumsfördelning och etikettplacering vid smala bredder.
+
+Slutdialogen fokuserar namnfältet direkt. Fokus och markör bevaras under hämtning, men fokus stjäls inte tillbaka om spelaren tabbar till en knapp. Den tidigare explicita fokuseringen av Spela igen efter öppning är borttagen. Prov genom den riktiga appkopplingen verifierar detta för både dinosaurie- och hemmaspelet.
+
+Live-diagnosen visade att Workern fortfarande avvisade treledade kombinationsnycklar med `invalid_leaderboard` men accepterade de ursprungliga fyrledade nycklarna. Svaren saknade dessutom `rank`, `saved` och spelaridentifiering. De lagrade nycklarna och POST-fälten hade inte bytt format. Klienten använder nu kompatibla fyrledade GET-begäranden och slår vid behov samman tre äldre topplistor. Om serverns begränsade svar inte räcker för en exakt placering visas ingen påhittad siffra. Den uppdaterade Workern ger korrekt gemensam rankning och identifierar den egna raden.
+
+POST utökas med en ögonblicksbild av omgångens inställningar. En ny nullable kolumn, `settings_json`, lagrar spelversion, spel, övning, svårighet, inmatningssätt, talspråk och faktiskt övningsspråk, versaler/gemener, den lottade bokstavsuppsättningen, ljud och minskad rörelse. Nycklar, befintliga poäng och home v1 bevaras. En separat engångsmigrering och komplett genererad Worker är förberedda; den externa Cloudflare-distributionen återstår för ägaren. Gamla klienter accepteras med okända inställningar null. Återförsök behåller samma UUID och kan fylla saknade inställningar utan att dubblera poängen.
+
+Samtliga 26 testsviter passerar. Poängproven kör den riktiga SQL-koden med SQLite, migrerar en befintlig rad utan att tappa data, skickar den faktiska klientens inställningspayload till Workern och verifierar återförsök, konfliktkontroll, fokus, äldre API-svar och ranking. Stora och smala Canvas-renderingar har granskats. Produktions-API:t har bara lästs; inga testpoäng har skrivits där.
+
+---
+
 # Rumsfördelning, tydligare stök och möbelgrafik i Städa hemmet
 
 2026-09-08.
