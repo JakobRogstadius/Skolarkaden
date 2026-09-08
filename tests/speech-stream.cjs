@@ -35,8 +35,8 @@ test('Chinese digit splitting preserves ten, full-width digits, raw punctuation 
  const context={lesson:'chinese',language:'zh-CN',candidates:[]};
  for(const [raw,expected] of [['10',['10']],['103',['10','3']],['110',['1','10']],['1010',['10','10']],['390',['3','9','0']],['三108',['三','10','8']]])assert.deepEqual(Array.from(SC.tokenizeSpeech(raw,context)),expected);
 });
-test('Number-run splitting is exclusive to Chinese speech tokens, without splitting pinyin or decimals',()=>{
- for(const lesson of ['math','bopomofo','letters','english','swedish'])assert.deepEqual(Array.from(SC.tokenizeSpeech('38',{lesson,language:'zh-CN',candidates:[]})),['38']);
+test('Number-run splitting is exclusive to Chinese-character and bopomofo speech tokens, without splitting pinyin or decimals',()=>{
+ for(const lesson of ['math','letters','english','swedish'])assert.deepEqual(Array.from(SC.tokenizeSpeech('38',{lesson,language:'zh-CN',candidates:[]})),['38']);
  const context={lesson:'chinese',language:'zh-CN',candidates:[]};for(const raw of ['san3','ba1','-38','3.8','3,8','38abc'])assert.deepEqual(Array.from(SC.tokenizeSpeech(raw,context)),[raw]);
  assert(!SC.matches('38',SC.modes.chinese.items[2],'chinese','zh-CN','text'));assert(SC.matches('10',SC.modes.chinese.items[9],'chinese','zh-CN','speech'));
 });

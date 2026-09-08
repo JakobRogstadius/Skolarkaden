@@ -1,3 +1,19 @@
+# Bopomofo: talmatchning och förenklad spelmeny
+
+2026-09-08.
+
+**Felorsak:** Bopomofoövningen använde bara bokstavlig symbolmatchning. Mandarintranskriptioner som 波 och pinyin som bo kunde inte matcha ㄅ. Nu har alla 37 symboler en uttrycklig talmappning. Uttal från den befintliga pinyintabellen kopplas till symbolernas fristående namn. Flertydiga vanliga transkriptioner som 佛, 勒 och 嗯 får övningsspecifika läsningar; teckenövningarnas pinyintabell ändras inte. ㄝ accepterar även ye / 也 / 耶 som en uttrycklig reservform för taltjänsten. ㄜ, ㄝ och ㄟ slås inte ihop.
+
+Samma identitet används för matchning, tidig sändning, köreservationer och rättningar. Kinesiska siffror som tjänsten skriver ihop delas på samma sätt som i teckenövningarna. Bokstavliga symboler med tontecken hålls ihop, utan separata felsvar för tonmarkeringarna. Originaltranskriptioner ligger kvar i diagnostiken. Ingen ändring görs av tangentkonverteringen eller online-API:t.
+
+Menyns synliga legend ”Välj ett spel” är borttagen. Fältgruppen behåller det tillgängliga namnet ”Spel”.
+
+**Verifiering:** Den nya sviten kontrollerar alla 37 symboler med pinyin, tonnummer och teckentranskriptioner i båda Mandarin-lokalerna, närliggande ljud som ska avvisas, tangentkonvertering, sifferföljder, tonmarkeringar, dubbletter, rättningar samt faktisk konsumtion genom kön i alla åtta spel. Samtliga 21 testsviter passerar. Ingen liveprovning av ljudtranskription via en fysisk mikrofon gjordes.
+
+Referens för symbolsystemet: [Utbildningsministeriets handbok för Zhuyin](https://language.moe.gov.tw/001/Upload/files/site_content/M0001/juyin/html_ch/index.html). Uttalsuppslagningen använder den redan versionslåsta och licensierade pinyinkällan.
+
+---
+
 # Övningsmeny, fasta matematiknivåer och onlinetal
 
 2026-09-08.

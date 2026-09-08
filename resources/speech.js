@@ -3,7 +3,7 @@
    Revisions of the same span never fire a second job. */
 (function(root){'use strict';const SC=root.Starlight;
 SC.speechWords=(text,lesson)=>{
-  if(SC.isChinese(lesson)||lesson==='bopomofo')return text.match(/[\p{Script=Han}\p{Script=Bopomofo}][\p{P}]*|[^\s\p{Script=Han}\p{Script=Bopomofo}]+/gu)||[];
+  if(SC.isChinese(lesson)||lesson==='bopomofo')return text.match(/˙?[\p{Script=Han}\p{Script=Bopomofo}][\p{P}ˉˊˇˋ˙]*|[^\s\p{Script=Han}\p{Script=Bopomofo}]+/gu)||[];
   return text.match(/\S+/gu)||[];
 };
 SC.splitChineseDigits=function(text){
@@ -48,7 +48,7 @@ SC.tokenizeSpeech=function(text,context,history=[],offset=0){
       if(i+2<words.length&&['point','komma','punkt'].includes(SC.speechNormalize(words[i+1])))i=numberEnd(i+2);
       word=words.slice(start,i+1).join(' ');
       out.push(word); // No compound-word splitting in number exercises.
-    }else out.push(...SC.splitSwedish(word,context,history,offset+out.length).flatMap(part=>SC.isChinese(lesson)?SC.splitChineseDigits(part):[part]));
+    }else out.push(...SC.splitSwedish(word,context,history,offset+out.length).flatMap(part=>SC.isChinese(lesson)||lesson==='bopomofo'?SC.splitChineseDigits(part):[part]));
   }
   return out;
 };

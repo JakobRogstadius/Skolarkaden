@@ -97,6 +97,21 @@
     if(/^\d+$/.test(v)){const n=Number(v);if(n>10)return null;v=SC.numberName(n,'zh-CN');}
     return SC.mandarinPinyin[v]||SC.tonelessPinyin(v);
   };
+  // Standalone Zhuyin names, not keyboard keys or arbitrary syllable initials.
+  // Mandarin ASR normally returns Hanzi, e.g. 波坡摸佛, rather than ㄅㄆㄇㄈ.
+  const bopomofoSounds='bo po mo fo de te ne le ge ke he ji qi xi zhi chi shi ri zi ci si yi wu yu a o e ê ai ei ao ou an en ang eng er'.split(' ');
+  const bopomofoSymbols=Array.from('ㄅㄆㄇㄈㄉㄊㄋㄌㄍㄎㄏㄐㄑㄒㄓㄔㄕㄖㄗㄘㄙㄧㄨㄩㄚㄛㄜㄝㄞㄟㄠㄡㄢㄣㄤㄥㄦ');
+  const bopomofoNames=Object.fromEntries(bopomofoSounds.map((sound,i)=>[sound,bopomofoSymbols[i]]));
+  for(const [i,initial] of 'b p m f d t n l g k h j q x zh ch sh r z c s i u ü'.split(' ').entries())bopomofoNames[initial]=bopomofoSymbols[i];
+  // ㄝ has no ordinary standalone word. Also accept the familiar ye sound
+  // (也 / 耶) as an explicit speech-service fallback; keep e, ê and ei distinct.
+  bopomofoNames.ye='ㄝ';
+  const bopomofoReadings={'佛':'fo','勒':'le','樂':'le','乐':'le','嗯':'en'};
+  SC.bopomofoSpeechSymbol=function(value){
+    const v=SC.speechNormalize(value).replace(/[ˉˊˇˋ˙]/g,'');
+    if(bopomofoSymbols.includes(v))return v;
+    return bopomofoNames[bopomofoReadings[v]||SC.chineseSpeechPinyin(v)]||null;
+  };
   SC.spokenNumber=function(value,lang,source='speech'){
     const v=SC.speechNormalize(value),names=SC.numberWords[lang]||{};
     if(Object.hasOwn(names,v))return names[v];
@@ -113,6 +128,7 @@
     const v=SC.speechNormalize(value);
     if(SC.isMath(mode)){const n=SC.spokenNumber(v,lang);return n===null?v:'#'+n;}
     if(mode==='letters')return SC.letterNames[lang]?.[v]||v;
+    if(mode==='bopomofo')return SC.bopomofoSpeechSymbol(v)||v;
     if(SC.isChinese(mode)){
       const item=SC.modes[mode].items.find(item=>item.answer===v),pinyin=item?SC.tonelessPinyin(item.hint):SC.chineseSpeechPinyin(v);return pinyin?'pinyin:'+pinyin:v;
     }
