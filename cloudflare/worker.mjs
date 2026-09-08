@@ -152,11 +152,28 @@ export default {
       if (request.method === 'GET') {
         const board = url.searchParams.get('leaderboard');
         if (!validBoard(board)) return reply({ error: 'invalid_leaderboard' }, 400);
+        const submission = url.searchParams.get('submission') || '';
+        const rawScore = url.searchParams.get('score');
+        if ((submission && !UUID.test(submission)) || (rawScore !== null &&
+            (!/^\d+$/.test(rawScore) || Number(rawScore) > 1000000))) return reply({ error: 'invalid_score' }, 400);
         const { results } = await env.DB.prepare(`
-          SELECT player_name, score, created_at FROM highscores
-          WHERE leaderboard_key = ? ORDER BY score DESC, created_at ASC LIMIT 20
-        `).bind(board).all();
-        return reply({ leaderboard: board, scores: results });
+          SELECT player_name, score, created_at, submission_id = ? AS is_player FROM highscores
+          WHERE leaderboard_key = ? ORDER BY score DESC, created_at ASC, submission_id ASC LIMIT 10
+        `).bind(submission, board).all();
+        const own = submission ? await env.DB.prepare(`SELECT score, created_at, submission_id FROM highscores
+          WHERE leaderboard_key = ? AND submission_id = ?`).bind(board, submission).first() : null;
+        let rank = null;
+        if (own) {
+          const row = await env.DB.prepare(`SELECT count(*) AS n FROM highscores WHERE leaderboard_key = ? AND
+            (score > ? OR (score = ? AND (created_at < ? OR (created_at = ? AND submission_id <= ?))))`)
+            .bind(board, own.score, own.score, own.created_at, own.created_at, own.submission_id).first();
+          rank = row.n;
+        } else if (rawScore !== null) {
+          const row = await env.DB.prepare('SELECT count(*) AS n FROM highscores WHERE leaderboard_key = ? AND score >= ?')
+            .bind(board, Number(rawScore)).first();
+          rank = row.n + 1;
+        }
+        return reply({ leaderboard: board, scores: results, rank, saved: Boolean(own) });
       }
       if (request.method !== 'POST') return reply({ error: 'method_not_allowed' }, 405, { Allow: 'GET, POST, OPTIONS' });
       if (origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_required' }, 403);
@@ -166,11 +183,11 @@ export default {
       const body = await readBody(request);
       if (!body || typeof body !== 'object' || Array.isArray(body)) return reply({ error: 'invalid_score' }, 400);
       const { submission_id: id, leaderboard_key: board, score } = body;
-      const name = typeof body.player_name === 'string' ? body.player_name.normalize('NFC').trim() : '';
+      const name = typeof body.player_name === 'string' ? body.player_name.normalize('NFC').trim().toUpperCase() || 'ANONYM' : 'ANONYM';
       // Mirror the browser's silent drop; direct API calls cannot bypass it.
       if (globalThis.SkolarkadenHighscorePolicy.isBannedName(name)) return reply({ ok: true });
       if (typeof id !== 'string' || !UUID.test(id) || !validBoard(board) ||
-          !/^[\p{L}\p{M}\p{N} _.'’\-]{1,24}$/u.test(name) ||
+          !/^[\p{L}\p{M} ]{1,10}$/u.test(name) ||
           !Number.isSafeInteger(score) || score < 0 || score > 1000000) {
         return reply({ error: 'invalid_score' }, 400);
       }

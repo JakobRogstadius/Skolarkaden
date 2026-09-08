@@ -21,8 +21,8 @@ The website remains on GitHub Pages. No API token belongs in the frontend.
 5. Open `/scores?leaderboard=v2:city:swedish:gentle`. Initially this returns an empty
    `scores` array. Reading the URL directly does not create a test score.
 6. Merge the accompanying frontend change into `main` and let GitHub Pages publish.
-   In Skolarkaden, play a game, choose **Spara på topplistan**, enter a nickname and
-   save. Open **Topplista** in another browser with the same game, exercise and
+   In Skolarkaden, play a game, optionally enter a nickname in your scoreboard row, then press Enter or choose
+   **Spela igen** / **Till menyn** to save. Open **Topplista** in another browser with the same game, exercise and
    difficulty to confirm the result is shared.
 
 The allowed browser origin is `https://jakobrogstadius.github.io` (no path).
@@ -36,17 +36,18 @@ available, but that origin cannot submit to the production leaderboard.
   `v2:city:swedish:gentle`. Input mode and language are not separate key components.
   The exercise still distinguishes Swedish, English and Chinese exercises.
 - Game versions live in `resources/highscore-policy.js`. Increment the affected
-  game's value when changing scoring rules; deploy Worker and frontend together.
+  game's value only when a change is likely to materially affect score comparability; deploy Worker and frontend together.
   Old rows remain stored but the current API only accepts current versions.
-- The top 20 completed-game results are sorted by score descending, then submission
-  time ascending. Nicknames are not accounts and are not unique; one person may
+- The top 10 completed-game results are sorted by score descending, then submission
+  time ascending, then submission ID for deterministic ties. GET accepts optional `score` and `submission` query parameters to return the player’s actual rank and mark their row; submission IDs themselves remain private. Nicknames are not accounts and are not unique; one person may
   have several results. Local best scores continue to work independently.
+- The result screen only submits on Enter in the name input or the replay/menu buttons. Closing the browser never schedules an upload. Failed saves leave the screen open for retry.
 - Each game has a UUID. Duplicate delivery of the same payload succeeds without
   adding another row; changing the payload under an existing UUID is rejected.
   A timed-out submission can be retried while that result remains open; there is
   no persistent offline upload queue.
 - `ip` is taken exclusively from Cloudflare's `CF-Connecting-IP` header. A supplied
-  JSON `ip` is ignored. Public queries return only nickname, score and timestamp.
+  JSON `ip` is ignored. Public queries return nickname, score, timestamp and an `is_player` flag, plus rank metadata.
   IP addresses are retained in score rows for future moderation. Ban enforcement
   itself is not implemented. An IP can represent several people or change over time.
 - The shared Swedish/English name filter runs in the browser before POST and in the
@@ -57,7 +58,7 @@ available, but that origin cannot submit to the production leaderboard.
   This is a maintained string filter, not an exhaustive moderation model.
 - Every displayed nickname is inserted with `textContent`, never HTML. SQL uses
   bound parameters. Requests are limited to 2 KiB, known board components, integer
-  scores from 0 to 1,000,000 and nicknames of at most 24 characters.
+  scores from 0 to 1,000,000 and optional nicknames of at most 10 letters/spaces, normalized to uppercase. Empty names become `ANONYM`.
 - A D1 counter permits up to 120 valid submission attempts per minute per public
   IP, allowing shared school networks. It is a fixed-window limit across Worker
   instances. Daily IP hashes identify counters; expired counters are removed on

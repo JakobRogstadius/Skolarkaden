@@ -39,13 +39,26 @@ body.playing.voice-play .arena{height:clamp(540px,calc(100dvh - 82px),900px)}
 
 .game-card .card-art svg{display:block;max-width:100%;max-height:100%}
 
-/* Global highscores use a separate dialog so the game-over card stays compact. */
-#leaderboard-context{overflow-wrap:anywhere;color:var(--muted)}
-#score-form{padding:16px 0;border-block:1px solid var(--line);margin:16px 0}
-#score-form label{font-size:16px;margin:10px 0}#score-name-help{font-size:14px}
-#scores-list{padding-left:2.4em;margin:20px 0}
-#scores-list li{padding:10px 4px 10px 8px;border-bottom:1px solid var(--line);font-size:16px}
-#scores-list li span{display:inline-block;max-width:70%;overflow-wrap:anywhere;vertical-align:top}
-#scores-list li strong{float:right;color:var(--gold);font-variant-numeric:tabular-nums}
-#scores-list li::after{content:"";display:block;clear:both}
-#score-status:empty,#scores-status:empty{display:none}
+/* One compact score board for every game, coloured by its surrounding game. */
+#end-overlay{position:fixed;z-index:40;padding:12px;overflow:auto}
+.end-scoreboard{--board-accent:#b8ddd6;--board-bg:#182f3a;--board-panel:#233f48;width:min(440px,100%);max-width:440px;max-height:calc(100dvh - 24px);overflow:auto;padding:20px 24px;background:var(--board-panel);border-color:var(--board-accent)}
+[data-game=city] .end-scoreboard{--board-accent:#b9cdec;--board-bg:#111c32;--board-panel:#263750}
+[data-game=food] .end-scoreboard{--board-accent:#f1c88e;--board-bg:#242e2e;--board-panel:#3c4b46}
+[data-game=garden] .end-scoreboard{--board-accent:#c5deb0;--board-bg:#192e25;--board-panel:#344f3d}
+[data-game=hive] .end-scoreboard{--board-accent:#e8c778;--board-bg:#2c2b1d;--board-panel:#4d4c32}
+[data-game=paint] .end-scoreboard{--board-accent:#acd9d4;--board-bg:#1a3030;--board-panel:#3b5654}
+[data-game=dinosaur] .end-scoreboard{--board-accent:#d5df9f;--board-bg:#26341e;--board-panel:#4a5b39}
+[data-game=marshmallows] .end-scoreboard{--board-accent:#e6c293;--board-bg:#262821;--board-panel:#414738}
+[data-game=eggs] .end-scoreboard{--board-accent:#c3d8b1;--board-bg:#14262a;--board-panel:#2c4542}
+.end-scoreboard h2{font-size:26px;margin:0 0 9px}
+.end-scoreboard #result-game{font-size:17px;color:var(--board-accent);font-weight:bold;margin:0}
+.end-scoreboard #result-context{font-size:12px;margin:3px 0 13px;color:#deded2}
+.arcade-board{padding:8px 12px;margin:12px 0;list-style:none;background:var(--board-bg,#142931);border:1px solid var(--board-accent,#789a94);border-radius:8px;color:var(--board-accent,#d2e6c8);font-variant-numeric:tabular-nums}
+.arcade-board .board-row{display:grid;grid-template-columns:3ch minmax(0,1fr) 7ch;align-items:center;gap:8px;min-height:28px;text-align:left;border-bottom:1px solid #ffffff0c;font:14px ui-monospace,monospace}
+.board-rank{opacity:.6;text-align:right;font-size:11px}.board-name{font:22px/1.1 SkolarkadenLED,ui-monospace,monospace;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;overflow:hidden}.board-points{text-align:right;font-size:14px}
+.arcade-board .player-row{color:#fff2c8;background:#ffffff0a}.arcade-board .player-row:last-child:nth-child(11){border-top:1px solid var(--board-accent,#789a94);margin-top:5px;padding-top:5px}
+#score-form{margin:0}#score-entry{width:100%}#score-name{font:inherit;letter-spacing:inherit;text-transform:uppercase;background:transparent;border:0;border-bottom:1px dashed var(--board-accent);border-radius:0;color:inherit;padding:2px 0;width:100%;height:28px}#score-name::placeholder{color:inherit;opacity:.55;font-size:16px}#score-name:focus-visible{outline:1px solid var(--board-accent);outline-offset:1px}
+.end-scoreboard .board-status{font-size:11px;line-height:1.4;margin:6px 0;color:#e5decc}.board-status:empty,#scores-status:empty{display:none}
+.end-actions{display:flex;gap:8px;justify-content:center;margin-top:12px}.end-actions button{margin:0;font-size:14px;padding:10px 14px}.end-actions .primary{background:var(--board-accent);border-color:var(--board-accent);color:var(--board-bg)}
+#leaderboard-context{font-size:13px;color:var(--muted)}
+@media(max-width:420px){.end-scoreboard{padding:16px 13px}.end-scoreboard h2{font-size:24px}.arcade-board{padding:6px 8px}.arcade-board .board-row{gap:5px;grid-template-columns:3ch minmax(0,1fr) 6ch}.board-name{font-size:19px}.board-points{font-size:13px}.end-actions button{flex:1}}

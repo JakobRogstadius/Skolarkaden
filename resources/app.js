@@ -63,10 +63,9 @@ function onGameEvent(e){
     highscores.finish(e.score);
     input.setEnabled(false);$('pause').disabled=true;$('end-overlay').hidden=false;$('pause-overlay').hidden=true;
     if(e.score>best){best=e.score;safeWrite(bestKey(),best);}
-    $('result-kicker').textContent=['paint','dinosaur','marshmallows'].includes(kind)?'OMGÅNGEN ÄR KLAR':e.won?'DU KLARADE DET!':'EN NY CHANS VÄNTAR';
     $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Trädgården är klar.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!',eggs:'Skeppet är säkrat!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'Alla plantor vissnade.',hive:'Honungen räckte inte.',eggs:'Rymdkrypen tog över.'}[kind]);
-    $('result-score').textContent=e.score.toLocaleString('sv-SE')+' poäng';
-    $('result-detail').textContent=kind==='eggs'?e.survivors+' av '+e.totalHumans+' överlevde · '+e.hits+' av '+e.total+' hot släckta · '+e.survivorBonus+' bonuspoäng för överlevande.':kind==='marshmallows'?e.hits+' gyllene marshmallows · '+e.burnt+' brända.':kind==='city'?e.hits+' av '+SC.cityGoal+' kometer stoppade.':kind==='food'?e.hits+(e.hits===1?' glad gäst · ':' glada gäster · ')+e.lostCustomers+' gäster gick hem.':kind==='hive'?e.honey+' av '+e.honeyGoal+' lass nektar hann hem före vintern · '+e.timeBonus+' tidsbonuspoäng.':kind==='paint'?e.hits+' träffar · '+e.passed+' förbipasserande.':kind==='dinosaur'?e.hits+' uppätna · '+e.escaped+' gick vidare · '+e.passed+' totalt.':e.flowers+' blommade · '+e.dead+' vissnade · '+e.survivorBonus+' bonuspoäng för överlevande.';
+    $('result-game').textContent=names[kind];$('result-context').textContent=SC.modes[game.mode].name+' · '+{gentle:'Lätt',steady:'Medel',brave:'Svår'}[game.pace];
+    highscores.showEnd();
     if(soundOn&&!(kind!=='city'&&e.won))sounds.play(e.won?'win':'miss');$('again').focus({preventScroll:true});
   }
   lastTargetKey=null;
@@ -80,7 +79,7 @@ async function start(){
     best=safeRead(bestKey());$('game-title').textContent=names[kind];$('objective').closest('.hud-objective').hidden=['marshmallows','eggs'].includes(kind);$('answer').placeholder=input.singleLetter()?'…':SC.modes[game.mode].placeholder.replace('…',' ↵');$('answer-hint').textContent=typingHint();$('keyboard').hidden=game.mode!=='bopomofo';$('input-dock').hidden=input.voice.enabled;document.body.classList.add('playing');document.body.classList.toggle('voice-play',input.voice.enabled);
     input.setEnabled(true);if(input.voice.enabled)input.start();
     input.focus();lastTargetKey=null;renderUi();
-  }catch(error){$('setup-error').textContent=error.message; $('resume-error').textContent=error.message;if($('menu').hidden){$('end-overlay').hidden=false;$('result-detail').textContent=error.message;}}
+  }catch(error){$('setup-error').textContent=error.message; $('resume-error').textContent=error.message;if($('menu').hidden){$('end-overlay').hidden=false;$('result-title').textContent=error.message;}}
   finally{busy=false;$('start').disabled=false;$('again').disabled=false;}
 }
 function pause(){if(game?.state!=='playing')return;game.pause();input.setEnabled(false);$('pause-overlay').hidden=false;$('resume-error').textContent='';$('resume').focus({preventScroll:true});renderUi();}
@@ -89,8 +88,8 @@ async function resume(){
   try{await input.prepare();if(token!==lifecycle)return;$('pause-overlay').hidden=true;game.resume();const canAnswer=kind!=='eggs'||game.player.status!=='dead';input.setEnabled(canAnswer);if(canAnswer&&input.voice.enabled)input.start();if(canAnswer)input.focus();}
   catch(error){$('resume-error').textContent=error.message;}finally{busy=false;$('resume').disabled=false;}
 }
-function menu(){sounds.stopCampfire();lifecycle++;input.setEnabled(false);game?.menu();renderer?.destroy();renderer=null;queue.clear();$('play').hidden=true;$('menu').hidden=false;document.body.classList.remove('playing','voice-play');menuUpdate();$('start').focus({preventScroll:true});}
-$('start').addEventListener('click',start);$('again').addEventListener('click',start);$('pause').addEventListener('click',pause);$('resume').addEventListener('click',resume);$('pause-menu').addEventListener('click',menu);$('end-menu').addEventListener('click',menu);
+function menu(){highscores.dismiss();sounds.stopCampfire();lifecycle++;input.setEnabled(false);game?.menu();renderer?.destroy();renderer=null;queue.clear();$('play').hidden=true;$('menu').hidden=false;document.body.classList.remove('playing','voice-play');menuUpdate();$('start').focus({preventScroll:true});}
+$('start').addEventListener('click',start);$('again').addEventListener('click',()=>highscores.leave(start));$('pause').addEventListener('click',pause);$('resume').addEventListener('click',resume);$('pause-menu').addEventListener('click',menu);$('end-menu').addEventListener('click',()=>highscores.leave(menu));
 root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){
   // Canvas labels are primary. Keep a compact alternative for assistive technology.
