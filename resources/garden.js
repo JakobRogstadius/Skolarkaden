@@ -32,10 +32,11 @@ class GardenGame{
   averageHealth(){return this.pots.length?this.pots.reduce((sum,p)=>sum+(p.bloom?1:p.dead?0:(p.moisture+p.nutrition+1-p.infection)/3),0)/this.pots.length:1;}
   gardenerAnger(){return ['celebrating','won'].includes(this.state)?0:1-this.averageHealth();}
   requestInterval(){
-    // 30% more care traffic than City's base rate, with the same time ramp.
-    // Finished pots retire their share of the traffic instead of overloading the last plant.
-    const active=this.pots.filter(p=>!p.bloom&&!p.dead).length/this.pots.length;
-    return active?SC.citySpawnInterval(this.pace,SC.cityPressure(0,this.elapsed))*(SC.isMath(this.mode)?2:1)/(active*1.3):Infinity;
+    // One care cycle per minute per living plant. Twelve plants average one
+    // request every five seconds, leaving room for reading and tool travel.
+    // Difficulty comes from plant count; traffic never accelerates with time.
+    const active=this.pots.filter(p=>!p.bloom&&!p.dead).length;
+    return active?60*(SC.isMath(this.mode)?2:1)/active:Infinity;
   }
   decayProbability(){
     // Two 0.2 changes create a 0.4 request after care. One global trial, not one per pot.

@@ -1,3 +1,13 @@
+# Balanserad behovstakt i Odla blommor
+
+2026-09-08.
+
+Trädgårdens behovstakt är frikopplad från Meteorregns tidsbaserade acceleration. Varje levande, ännu inte blommande planta bidrar nu med ungefär ett nytt skötselbehov per minut, med dubbelt så lång tid i matematik. Antalet plantor är fortsatt 6, 9 och 12 och gånghastigheten är oförändrad. Svår får därmed fler uppgifter än de lättare lägena utan att takten accelererar bortom trädgårdsmästarens kapacitet. Hälsoavdrag, tillväxt, död, poäng och slutvillkor är oförändrade.
+
+Det tidigare slutvillkoret räknade en enda blommande planta som vinst och dolde därför stora förluster i balansproven. Befintliga omgångsprov kräver nu att alla plantor blommar. Ett nytt balansprov kör 144 hela omgångar över tre svårigheter, två skärmbredder och ord/matematik, med fem respektive åtta sekunder mellan svar och 10 procent felaktiga svar. Alla plantor blommade i samtliga 144 omgångar. Provet använder riktig gång, verktygshämtning och svarskö. Separata kontroller låser gånghastighet, antal plantor, jämn behovstakt och extra matematiktid. Samtliga 22 testsviter passerar.
+
+---
+
 # Illustrationer för Meteorregn, Odla blommor och Bikupan
 
 2026-09-08.

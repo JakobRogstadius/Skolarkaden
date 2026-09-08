@@ -80,7 +80,7 @@ Stjärnor, moln, träd, växter, eldflugor, eld, armar och campingprylar ritas l
 
 ## Odla blommor
 
-Trädgårdsmästaren går med 20 procent av sin tidigare hastighet. Varje planta börjar med oberoende slumpmässiga hälsoavdrag på 10–35 procent för vatten, näring och ohyra, fortfarande på den friska sidan av uppgiftströskeln på 40 procent. Nya behov uppstår därför tidigare. Behovstakten har ökats med 30 procent; färdiga eller döda plantor behåller inte sin andel av nya behov.
+Trädgårdsmästaren går med 20 procent av sin tidigare hastighet. Varje planta börjar med oberoende slumpmässiga hälsoavdrag på 10–35 procent för vatten, näring och ohyra, fortfarande på den friska sidan av uppgiftströskeln på 40 procent. Nya behov uppstår därför tidigare. Behovstakten är jämn genom hela omgången: ungefär ett nytt skötselbehov per minut och levande planta. Med 6, 9 respektive 12 plantor på Lätt, Medel och Svår motsvarar det i genomsnitt ett behov var 10:e, 6,7:e respektive 5:e sekund när alla plantor fortfarande växer. Matematik ger dubbelt så lång tid. Slumpen och de inledande hälsoavdragen ger variation; färdiga eller döda plantor behåller inte sin andel av nya behov.
 
 En planta kan vissna utan att avsluta omgången. Döda plantor får inga fler uppgifter och kan inte återupplivas; påbörjad skötsel av dem avbryts. Omgången slutar när varje planta antingen blommar eller är död. Resultatet visar båda antalen. Finns minst en blommande planta firas resultatet, annars slutar spelet med en förlust.
 
