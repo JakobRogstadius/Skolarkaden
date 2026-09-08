@@ -158,6 +158,10 @@ Röstläget använder alltid webbläsarens taltjänst över internet (`processLo
 
 Appens talläge kräver stöd för `SpeechRecognition.start(audioTrack)` och kontrollerar att Chrome är minst version 135. Mikrofonens godkända grundanslutning återanvänds mellan talavsnitt och pauser. Ett nytt tillstånd kan behövas när sidan öppnas på nytt eller mikrofonen uttryckligen stängts av.
 
+För bokstäver, korta svenska/engelska ord, bopomofo och mandarinövningar där flertalet svar är enstaka tecken begär appen `noiseSuppression: false`. Samma inställning används för de korta talsvaren (0–20) i Matematik 1, 2 och 6. Ekodämpning och automatisk nivå behålls om ljudbehandling är påslagen. Övriga övningar återgår till normal brusreducering. Inställningen tillämpas före taligenkänning, även när mikrofonen återanvänds; enhetsvalet och användarens avstängning av all ljudbehandling bevaras. Sessionsloggen visar ljudspårets faktiska inställningar, eftersom enheter kan ignorera önskemålet.
+
+Detta är en möjlig förbättring för korta, svaga ljud, inte en verifierad lösning på igenkänningsproblemen. [Media Capture API](https://w3c.github.io/mediacapture-main/#dom-mediatrackconstraintset-noisesuppression) styr mikrofonens brusreducering; [Web Speech API](https://webaudio.github.io/web-speech-api/#speechreco-attributes) har ingen inställning för taldetekteringens känslighet eller minsta yttrandelängd. Kontinuerlig lyssning och preliminära resultat är redan aktiverade.
+
 Mikrofonknappen öppnar enhetsval, ljudbehandling, nivåmätare och inspelningstest. Transkriptioner och diagnostik är dolda under den hopfällda delen **Felsökning av tal**. Där kan loggen kopieras; en rapport kan också kopieras från mikrofoninställningarna. Vid ett talfel som stoppar lyssningen pausas spelet med ett felmeddelande och möjlighet att försöka igen.
 
 Logg och rullande testljud sparas bara i minnet. Appen har inga konton, analysverktyg eller egen server. Vald internettaltjänst tar emot ljud för transkribering. Ljudeffekter dämpas när mikrofonen lyssnar. Rekord sparas lokalt i webbläsaren; de befintliga lagringsnycklarna är bevarade vid namnbytet.

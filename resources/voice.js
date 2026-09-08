@@ -2,15 +2,25 @@
 (function(root){
   'use strict';
   const SC=root.Starlight;
+  // Short word/sound practice, plus arithmetic with answers up to 20.
+  // Inspect Mandarin items so future compound-word lessons keep normal processing.
+  SC.shortSpeechLesson=lesson=>['letters','swedish','english','bopomofo','math','math2','math6'].includes(lesson)||
+    (SC.isChinese(lesson)&&SC.modes[lesson].items.filter(item=>Array.from(item.answer).length===1).length>SC.modes[lesson].items.length/2);
   class Microphone {
-    constructor(){this.stream=null;this.context=null;this.chunks=[];this.recording=false;this.generation=0;this.options={deviceId:'',processing:true};this.level=0;}
+    constructor(){this.stream=null;this.context=null;this.chunks=[];this.recording=false;this.generation=0;this.options={deviceId:'',processing:true,shortInput:false};this.level=0;}
+    constraints(options=this.options){
+      // Keep speaker echo removal and level adjustment, but avoid suppressing
+      // quiet, brief speech sounds. These are preferences; inspect getSettings()
+      // in diagnostics to see what the device actually supports/applies.
+      return {channelCount:1,echoCancellation:options.processing,noiseSuppression:options.processing&&!options.shortInput,autoGainControl:options.processing,...(options.deviceId?{deviceId:{exact:options.deviceId}}:{})};
+    }
     async configure(options){
       if(this.opening)throw new Error('Vänta tills mikrofonaktiveringen är klar.');
-      const next={deviceId:options.deviceId||'',processing:options.processing!==false};
+      const next={deviceId:options.deviceId||'',processing:options.processing!==false,shortInput:options.shortInput??this.options.shortInput};
       if(next.deviceId!==this.options.deviceId){this.close();this.options=next;await this.open();return;}
       const track=this.stream?.getAudioTracks()[0];
-      if(track&&next.processing!==this.options.processing){
-        await track.applyConstraints({echoCancellation:next.processing,noiseSuppression:next.processing,autoGainControl:next.processing});
+      if(track&&(next.processing!==this.options.processing||next.shortInput!==this.options.shortInput)){
+        await track.applyConstraints(this.constraints(next));
       }
       this.options=next;await this.open();
     }
@@ -23,8 +33,7 @@
       const stale=()=>generation!==this.generation;
       this.opening=(async()=>{
         if(!navigator.mediaDevices?.getUserMedia)throw new Error('Mikrofonen är inte tillgänglig. Öppna index.html i Chrome på datorn.');
-        const processing=this.options.processing;
-        stream=await navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:processing,noiseSuppression:processing,autoGainControl:processing,...(this.options.deviceId?{deviceId:{exact:this.options.deviceId}}:{})}});
+        stream=await navigator.mediaDevices.getUserMedia({audio:this.constraints()});
         if(stale())return;
         const AC=root.AudioContext||root.webkitAudioContext;context=new AC();await context.resume();
         if(stale())return;

@@ -124,5 +124,5 @@ test('Math rounds accept spoken answers through all three game engines',()=>{
   g.update(.05);
  }assert.equal(g.state,'won',Game.name);assert(g.hits>0);}
 });
-test('Case, math aliases, bopomofo and static package references',()=>{assert(SC.matches('SOL!',SC.modes.swedish.items[0],'swedish'));assert(SC.matches('två',{answer:'2'},'math','sv-SE','speech'));assert.equal(SC.toBopomofo('1qaz'),'ㄅㄆㄇㄈ');const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(ids.length,new Set(ids).size);for(const m of html.matchAll(/(?:src|href)="(resources\/[^"]+)"/g))assert(fs.existsSync(path.join(__dirname,'..',m[1])));assert(!/skyhop/i.test(html));});
+test('Case, math aliases, bopomofo and static package references',()=>{assert(SC.matches('SOL!',SC.modes.swedish.items[0],'swedish'));assert(SC.matches('två',{answer:'2'},'math','sv-SE','speech'));assert.equal(SC.toBopomofo('1qaz'),'ㄅㄆㄇㄈ');const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(ids.length,new Set(ids).size);for(const m of html.matchAll(/(?:src|href)="(resources\/[^"]+)"/g))assert(fs.existsSync(path.join(__dirname,'..',m[1].split(/[?#]/)[0])));assert(!/skyhop/i.test(html));});
 console.log(checks+' engine/queue checks passed.');

@@ -5,6 +5,7 @@ class Element extends EventTarget{constructor(){super();this.value='';this.butto
 const timers=new Map();let timerId=0,opens=0,stops=0,prepared=0;
 const track={enabled:true,clone(){return {enabled:true,stop(){stops++;}};}};
 const mic={ready:false,recording:false,stream:{getAudioTracks:()=>[track]},async open(){prepared++;if(!this.ready){opens++;this.ready=true;}},begin(){this.recording=true;},snapshot(){return {samples:new Float32Array(20),sampleRate:16000};},cancel(){this.recording=false;}};
+mic.options={processing:true,deviceId:''};mic.configure=async function(options){this.options=options;await this.open();};
 const sessions=[];class Recognition{start(t){this.track=t;sessions.push(this);this.onstart?.();}stop(){this.stopped=true;}abort(){this.aborted=true;}}
 const context=vm.createContext({Event,EventTarget,CustomEvent,Float32Array,console,navigator:{userAgent:'Chrome/145'},SpeechRecognition:Recognition,setTimeout:fn=>{timers.set(++timerId,fn);return timerId;},clearTimeout:id=>timers.delete(id)});
 for(const f of ['pinyin','data','voice','speech','input'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),context);
@@ -12,9 +13,14 @@ const SC=context.Starlight,queue=new SC.AnswerQueue(),field=new Element(),form=n
 const input=new SC.AnswerInput({field,form,voiceButton:button,queue,microphone:mic});let diagnostic=[];input.addEventListener('diagnostic',e=>diagnostic.push(e.detail));
 const result=(text,final=false)=>Object.assign([{transcript:text,confidence:.4}],{isFinal:final});
 const fire=(r,results,index=0)=>r.onresult({results,resultIndex:index});
+for(const lesson of ['letters','swedish','english','bopomofo','math','math2','math6',...Object.keys(SC.modes).filter(SC.isChinese)])assert.equal(SC.shortSpeechLesson(lesson),true,lesson);
+for(const lesson of ['swedishLong','englishLong','math3','math4','math5'])assert.equal(SC.shortSpeechLesson(lesson),false,lesson);
+SC.modes.compoundTest={type:'chinese',items:[{answer:'人'},{answer:'人口'},{answer:'大人'}]};
+assert.equal(SC.shortSpeechLesson('compoundTest'),false);delete SC.modes.compoundTest;
 (async()=>{
  input.configure({enabled:true,kind:'browser',language:'sv-SE',lesson:'swedish'});await input.prepare();input.setEnabled(true);input.start();let r=sessions.at(-1);
  assert.equal(r.continuous,true);assert.equal(r.interimResults,true);assert.equal(r.track.enabled,true);
+ assert.equal(mic.options.shortInput,true);
  fire(r,[result('sol ka')]);fire(r,[result('sol katt')]);assert.equal(queue.length,0);
  fire(r,[result('SOL! katt katt OVÄNTAT?',true)]);assert.deepEqual(Array.from(queue.items,x=>x.text),['SOL!','katt','katt','OVÄNTAT?']);
  fire(r,[result('SOL! katt katt OVÄNTAT?',true),result('hund')],1);assert.equal(queue.length,4);
@@ -29,6 +35,7 @@ const fire=(r,results,index=0)=>r.onresult({results,resultIndex:index});
  Recognition.available=async()=> 'available';Recognition.prototype.processLocally=false;
  input.configure({enabled:true,kind:'local',language:'en-US',lesson:'english'});await input.prepare();input.start();assert.equal(sessions.at(-1).processLocally,false);assert.equal(opens,1);
  for(let i=0;i<4;i++){sessions.at(-1).onend();if(i<3){const fn=[...timers.values()][0];timers.clear();fn();}}assert.equal(input.wanted,false);assert.equal(timers.size,0);
+ input.configure({enabled:true,language:'sv-SE',lesson:'swedishLong'});await input.prepare();assert.equal(mic.options.shortInput,false);assert.equal(opens,1);
  input.configure({enabled:false,kind:'typing',lesson:'swedish'});input.setEnabled(true);field.value='hela svaret';form.dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(queue.items.at(-1).text,'hela svaret');assert.equal(field.value,'');
  field.dispatchEvent(new Event('compositionstart'));field.value='pågående';const before=queue.length;form.dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(queue.length,before);field.dispatchEvent(new Event('compositionend'));form.dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(queue.length,before+1);
  input.configure({enabled:false,lesson:'bopomofo'});field.value='1qaz';field.dispatchEvent(new Event('input'));assert.equal(field.value,'');assert.deepEqual(Array.from(queue.items.slice(-4),x=>x.text),['ㄅ','ㄆ','ㄇ','ㄈ']);

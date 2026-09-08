@@ -75,7 +75,7 @@ class AnswerInput extends EventTarget{
     if(!(root.SpeechRecognition||root.webkitSpeechRecognition))throw new Error('Taligenkänning saknas i denna webbläsare.');
     const version=navigator.userAgentData?.brands?.find(b=>b.brand==='Chromium')?.version||navigator.userAgent?.match(/\b(?:Chrome|Chromium)\/(\d+)/)?.[1];
     if(!(Number(version)>=135))throw new Error('Röstläget behöver Chrome 135 eller senare för att återanvända den godkända mikrofonen.');
-    await this.microphone.open();
+    await this.microphone.configure({...this.microphone.options,shortInput:SC.shortSpeechLesson(this.voice.lesson)});
   }
   start(){
     if(!this.enabled||!this.voice.enabled||this.wanted||this.recognition)return;
@@ -90,7 +90,7 @@ class AnswerInput extends EventTarget{
     const valid=()=>epoch===this.epoch&&this.enabled&&this.recognition===r;
     r.lang=this.voice.language;r.continuous=true;r.interimResults=true;r.maxAlternatives=5;
     r.processLocally=false;
-    this.status('Ansluter taligenkänning…');this.trace('session',{language:r.lang,engine:this.voice.kind});
+    this.status('Ansluter taligenkänning…');this.trace('session',{language:r.lang,engine:this.voice.kind,shortInput:this.microphone.options.shortInput,audioSettings:track.getSettings?.()});
     r.onstart=()=>{if(!valid()){track.stop();return;}track.enabled=true;this.listening=true;this.status('Lyssnar kontinuerligt · säg flera svar i följd');this.trace('start');};
     r.onaudiostart=()=>{if(valid())this.trace('audio-start');};
     r.onspeechstart=()=>{if(valid())this.trace('speech-start');};
