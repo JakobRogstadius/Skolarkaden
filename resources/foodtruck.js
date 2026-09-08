@@ -46,10 +46,11 @@
       this.activeCook=null;
       const c=j.customer;
       if(c&&c.status==='cooking'&&this.customers.includes(c)){
-        const tip=Math.round(this.patienceLeft(c)*100),points=100+tip;this.score+=points;this.tips+=tip;this.hits++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);
-        if(c.look.exotic){this.score+=500;this.emit('rare-earned',{look:c.look,bonus:500});}
+        const tip=Math.round(this.patienceLeft(c)*10),points=10+tip+Math.min(this.streak,5);this.score+=points;this.tips+=tip;this.hits++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);
+        if(c.look.exotic){this.score+=40;this.emit('rare-earned',{look:c.look,bonus:40});}
         c.status='leaving';c.happy=true;c.motion=0;this.effects.push({slot:c.slot,dish:j.dish,age:0,tip});this.emit('hit',{target:c,points,entry:j.entry});
       }else{
+        this.streak=0;
         this.waste.push({text:j.entry.text,dish:j.dish,x:.08+this.random()*.84,y:.934+this.random()*.048,angle:Math.PI+(this.random()-.5)*.5,age:0});
         this.emit('waste',{entry:j.entry});
       }

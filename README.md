@@ -22,6 +22,10 @@ men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 
 Första meteoren ger 30 poäng, sedan 31, 32 och så vidare utan tak. Sviten bryts av ett missat skott eller en förstörd byggnad/kanon. Vid omgångens slut ger varje kvarvarande byggnad och kanon 50 bonuspoäng, även vid förlust. Meteorregn använder poängversion v2.
 
+## Laga mats poäng
+
+Varje serverad måltid ger 10 poäng plus 0–10 i dricks, avrundat efter gästens återstående tålamod vid servering. Sviten ger +0 för första måltiden, +1 för nästa och upp till +5 från den sjätte. Felaktiga beställningar och gäster som går utan mat bryter sviten. En exotisk gäst ger ytterligare 40 poäng. Ingen slutbonus tillkommer. Laga mat använder poängversion v2.
+
 ## Spelen
 
 | Spel | Uppdrag |

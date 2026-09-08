@@ -26,6 +26,20 @@ test('City scores uncapped streaks, resets on misses and destruction, and counts
 test('City bot reaches exactly 40 kills and wins all three difficulties',()=>{for(const pace of ['gentle','steady','brave']){const g=new SC.CityGame({random:rng(15)});g.start({pace});for(let i=0;i<18000&&g.state==='playing';i++){for(const t of g.getTargets())if(!g.turrets.some(x=>x.job?.target===t)&&!g.queue.items.some(e=>e.text===t.item.answer))g.queue.enqueue(t.item.answer);g.update(.05);}assert.equal(g.state,'won',pace);assert.equal(g.hits,40);}});
 test('Food cook consumes wrong and correct words in FIFO, serves automatically, retains flipped waste',()=>{const g=new SC.FoodTruckGame({random:rng(3)});g.start();tick(g,.85);const c=g.getTargets()[0];g.queue.enqueue('mystery');g.queue.enqueue(c.item.answer);g.update(.05);assert.equal(g.activeCook.entry.text,'mystery');assert.equal(g.queue.length,1);tick(g,2);assert.equal(g.waste.length,1);assert(g.waste[0].angle>Math.PI-.26);assert.equal(g.waste[0].text,'mystery');tick(g,2);assert.equal(g.hits,1);assert.equal(c.happy,true);assert.equal(g.lives,5);const waste=g.waste[0];tick(g,5);assert.equal(g.waste[0],waste);});
 test('Departed customer does not cancel cooking; its dish becomes waste with no extra life penalty',()=>{const g=new SC.FoodTruckGame({random:rng(4)});g.start();tick(g,.85);const c=g.getTargets()[0];c.wait=c.patience-.2;g.queue.enqueue(c.item.answer);g.update(.05);tick(g,2.1);assert.equal(g.lives,4);assert.equal(g.waste.length,1);assert.equal(g.hits,0);});
+test('Food scoring uses patience, capped streaks and exotic bonuses; failures break streaks',()=>{
+ const events=[],g=new SC.FoodTruckGame({onEvent:e=>events.push(e)});g.start();
+ const serve=(remaining=1,exotic=null)=>{
+  const c={status:'cooking',patience:100,wait:100*(1-remaining),look:{exotic},slot:0};g.customers.push(c);
+  g.activeCook={customer:c,entry:{text:'meal'},age:0,duration:1,dish:0};const before=g.score;g.work(1);return g.score-before;
+ };
+ assert.equal(serve(),20);assert.equal(serve(.5),16);assert.equal(serve(0),12);
+ assert.equal(serve(),23);assert.equal(serve(),24);assert.equal(serve(),25);assert.equal(serve(),25);
+ assert.equal(serve(1,'dragon'),65);assert.equal(events.find(e=>e.type==='rare-earned').bonus,40);
+ g.activeCook={customer:null,entry:{text:'wrong'},age:0,duration:1,dish:0};const before=g.score;g.work(1);
+ assert.equal(g.score,before);assert.equal(g.streak,0);assert.equal(serve(),20);
+ g.loseCustomer({status:'waiting'});assert.equal(g.streak,0);assert.equal(serve(.5),15);
+ const final=g.score;g.finish();assert.equal(g.score,final,'no end bonus');
+});
 test('Food bot finishes full 90-second rounds with automatic service',()=>{for(const pace of ['gentle','steady','brave']){const g=new SC.FoodTruckGame({random:rng(5)});g.start({pace});for(let i=0;i<2000&&['playing','celebrating'].includes(g.state);i++){for(const c of g.getTargets())if(c.status==='waiting'&&!g.queue.items.some(e=>e.text===c.item.answer))g.queue.enqueue(c.item.answer);g.update(.05);}assert.equal(g.state,'won');assert.equal(g.lives,5);assert(g.hits>12);}});
 test('Garden has one global 0.1-second chance trial, and math halves the probability',()=>{
  for(const pace of ['gentle','steady','brave']){

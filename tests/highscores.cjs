@@ -50,7 +50,7 @@ class Element extends EventTarget{
   // the shared-address limit while filling a representative leaderboard.
   for(let i=0;i<25;i++)db.prepare('INSERT INTO highscores(submission_id,leaderboard_key,player_name,score,ip) VALUES(?,?,?,?,?)')
     .run(webcrypto.randomUUID(),board,'Spelare '+i,200+i,'192.0.2.1');
-  await call('POST','/scores',payload({leaderboard_key:'v1:food:swedish:gentle',score:9999}));
+  await call('POST','/scores',payload({leaderboard_key:'v2:food:swedish:gentle',score:9999}));
   const scores=await (await call('GET','/scores?leaderboard='+board)).json();
   assert.equal(scores.scores.length,20);assert.equal(scores.scores[0].score,224);
   assert(scores.scores.every(row=>!('ip' in row)&&!('submission_id' in row)),'private fields never reach the public response');
@@ -71,7 +71,7 @@ class Element extends EventTarget{
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),board);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'eggs'}),'v2:eggs:swedish:gentle');
-  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,['eggs','city'].includes(game)?'v2':'v1');
+  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,['eggs','city','food'].includes(game)?'v2':'v1');
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:eggs:swedish:gentle'}))).status,201);
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:eggs:swedish:gentle'}))).status,400);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,input:'browser',lang:'zh-TW'}),board);
