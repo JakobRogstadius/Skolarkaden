@@ -11,8 +11,8 @@ test('Character category proportions are exactly 40%, 40%, 9.5%, 9.5% and 1% ove
  const counts={man:0,woman:0,boy:0,girl:0,exotic:0};for(let i=0;i<10000;i++){let first=true;const p=SC.makePerson(()=>{if(first){first=false;return (i+.5)/10000;}return .5;});counts[p.kind]++;assert.equal(p.child,['boy','girl'].includes(p.kind));}
  assert.deepEqual(counts,{man:4000,woman:4000,boy:950,girl:950,exotic:100});assert.equal(SC.rarePeople.length,8);assert.equal(new Set(Array.from({length:8},(_,i)=>exotic(i).exotic)).size,8);
 });
-test('Rare food customers earn a single 500-point bonus only when served',()=>{
- const events=[],g=new SC.FoodTruckGame({random:rng(5),onEvent:e=>events.push(e)});g.start();tick(g,.85);const c=g.getTargets()[0];c.look=exotic(1);g.queue.enqueue(c.item.answer);tick(g,2.1);assert.equal(g.hits,1);assert(g.score>=600&&g.score<=700);assert.equal(events.filter(e=>e.type==='rare-earned').length,1);tick(g,2);assert.equal(events.filter(e=>e.type==='rare-earned').length,1);
+test('Rare food customers earn a single 40-point bonus only when served',()=>{
+ const events=[],g=new SC.FoodTruckGame({random:rng(5),onEvent:e=>events.push(e)});g.start();tick(g,.85);const c=g.getTargets()[0];c.look=exotic(1);g.queue.enqueue(c.item.answer);tick(g,2.1);assert.equal(g.hits,1);assert(g.score>=50&&g.score<=60);assert.equal(events.filter(e=>e.type==='rare-earned').length,1);tick(g,2);assert.equal(events.filter(e=>e.type==='rare-earned').length,1);
  const lost=new SC.FoodTruckGame({onEvent:e=>events.push(e)});lost.start();lost.customers[0].look=exotic(2);lost.loseCustomer(lost.customers[0]);assert.equal(events.filter(e=>e.type==='rare-earned').length,1);
 });
 test('Five bees take different queued targets concurrently; nectar counts only after returning',()=>{

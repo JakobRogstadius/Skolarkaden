@@ -3,7 +3,7 @@
 class BeehiveGame{
  constructor({queue=new SC.AnswerQueue(),onEvent=()=>{},random=Math.random}={}){Object.assign(this,{queue,onEvent,random,width:1000,height:720});this.menu();}
  emit(type,detail={}){this.onEvent({type,...detail});}
- menu(){this.state='menu';this.clock=0;this.elapsed=0;this.plants=[];this.bees=[];this.effects=[];this.hive={x:.83,y:.32};this.honey=0;this.score=0;this.hits=0;this.timeRate=1;this.lastJarAt=-10;this.meadow=[];}
+ menu(){this.state='menu';this.clock=0;this.elapsed=0;this.plants=[];this.bees=[];this.effects=[];this.hive={x:.83,y:.32};this.honey=0;this.score=0;this.hits=0;this.timeRate=1;this.timeBonus=0;this.timeBonusAwarded=false;this.finalNectarCollected=false;this.lastJarAt=-10;this.meadow=[];}
  start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
   this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Ängen behöver minst ett svar.');
   this.timeScale=SC.isMath(mode)?1.4:1;this.duration={gentle:150,steady:130,brave:115}[pace]*this.timeScale;this.honeyGoal={gentle:24,steady:30,brave:36}[pace];this.plantBudget={gentle:44,steady:56,brave:66}[pace];
@@ -85,18 +85,18 @@ class BeehiveGame{
     else if(this.move(b,this.nectarPoint(j.target),dt)){b.stage='gather';b.age=0;this.emit('nectar');}
    }else if(b.stage==='gather'){
     if(j.target.status!=='flower'){j.target.claimedBy=null;b.stage='return';b.age=0;this.emit('miss',{entry:j.entry,reason:'Blomman hann vissna.'});}
-    else if(b.age>=.8){j.target.harvested=true;j.target.claimedBy=null;j.target.bloomFor=Math.min(j.target.bloomFor,j.target.flowerAge+4);b.nectar=1;b.stage='return';b.age=0;this.emit('targets');}
+    else if(b.age>=.8){j.target.harvested=true;j.target.claimedBy=null;j.target.bloomFor=Math.min(j.target.bloomFor,j.target.flowerAge+4);b.nectar=1;this.finalNectarCollected=!this.getTargets().length&&!this.plants.some(p=>p.status==='young')&&(this.progress()>=.64||this.spawned>=this.plantBudget);b.stage='return';b.age=0;this.emit('targets');}
    }else if(b.stage==='confused'){
     this.move(b,{x:b.wander.x+Math.sin(b.age*3)*.07,y:b.wander.y+Math.cos(b.age*3)*.045},dt,.115);
     if(b.age>=3.6){b.stage='return';b.age=0;}
    }else if(b.stage==='return'&&this.move(b,this.hive,dt)){
-    if(b.nectar){this.honey++;this.hits++;this.score+=100;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.effects.push({x:b.x,y:b.y,age:0});if(this.jarCount)this.lastJarAt=this.clock;this.emit('hit',{entry:j.entry,points:100});
+    if(b.nectar){this.honey++;this.hits++;const points=this.jarCount?15:10;this.score+=points;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.effects.push({x:b.x,y:b.y,age:0});if(this.jarCount)this.lastJarAt=this.clock;this.emit('hit',{entry:j.entry,points});
      if(this.honey>=this.honeyGoal&&!this.fullAnnounced){this.fullAnnounced=true;this.emit('hive-full');}
     }b.stage='idle';b.job=null;b.nectar=0;b.age=0;
    }
   }
  }
- endResult(won){this.emit('end',{won,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,honey:this.honey,honeyGoal:this.honeyGoal});}
+ endResult(won){this.emit('end',{won,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,honey:this.honey,honeyGoal:this.honeyGoal,timeBonus:this.timeBonus});}
  winter(){
   const won=this.honey>=this.honeyGoal;if(won&&this.keeperLook.exotic)this.emit('rare-earned',{look:this.keeperLook,bonus:0});this.state=won?'celebrating':'mourning';this.endingLeft=won?4:3;this.emit(won?'celebrate':'loss-pause');
   for(const b of this.bees){b.job=null;b.nectar=0;b.stage=won?'sheltered':'hungry';}for(const p of this.plants)p.claimedBy=null;
@@ -107,6 +107,7 @@ class BeehiveGame{
   if(this.state!=='playing'){if(this.state==='menu')this.clock+=dt;return;}
   // Only advance empty time. Never shorten a visible task's life or a bee's trip.
   this.timeRate=this.clock>1&&!this.queue.length&&!this.getTargets().length&&this.bees.every(b=>b.stage==='idle')?4:1;
+  if(this.timeRate===4&&this.finalNectarCollected&&!this.timeBonusAwarded){this.timeBonusAwarded=true;this.timeBonus=Math.floor(this.timeLeft()*10+1e-8);this.score+=this.timeBonus;}
   dt=Math.min(dt,this.timeLeft()/this.timeRate);const yearDt=dt*this.timeRate;
   this.clock+=dt;this.elapsed=Math.min(this.duration,this.elapsed+yearDt);
   const season=this.season();if(season!==this.lastSeason){this.lastSeason=season;this.emit('season');}

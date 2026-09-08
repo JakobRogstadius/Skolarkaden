@@ -47,10 +47,24 @@ test('Bee landing follows each plant model, including viewport resizing',()=>{
   for(let i=0;i<500&&g.bees[0].stage!=='gather';i++)g.update(.05);assert.equal(g.bees[0].stage,'gather');const tip=g.nectarPoint(p);assert(Math.hypot(g.bees[0].x-tip.x,g.bees[0].y-tip.y)<1e-8);
  }
 });
+test('Final collected nectar earns the remaining tenths once, only after all bees return',()=>{
+ function setup({early=false,bud=false,wilt=false}={}){
+  const g=new SC.BeehiveGame();g.start();g.clock=2;g.elapsed=early?20:100.05;g.nextSpawn=10000;
+  const p=g.plants[0];g.plants=bud?g.plants.slice(0,2):[p];g.bloom(p);p.bloomFor=1000;
+  if(wilt){p.status='wilt';p.wiltAge=0;return g;}
+  const b=g.bees[0];Object.assign(b,{stage:'gather',age:.8,job:{target:p,entry:{text:p.item.answer}}});
+  g.work(0);assert.equal(g.score,0);assert.equal(g.timeBonus,0);
+  Object.assign(b,g.hive);g.work(0);assert.equal(g.score,10);return g;
+ }
+ const g=setup();g.update(.05);assert.equal(g.timeRate,4);assert.equal(g.timeBonus,499);assert.equal(g.score,509);
+ tick(g,1);assert.equal(g.score,509);g.winter();tick(g,4);assert.equal(g.score,509);
+ for(const options of [{early:true},{bud:true},{wilt:true}]){const other=setup(options);other.update(.05);assert.equal(other.timeBonus,0,JSON.stringify(options));}
+ g.start();assert.equal(g.timeBonus,0);assert.equal(g.timeBonusAwarded,false);assert.equal(g.finalNectarCollected,false);
+});
 test('Every surplus delivery makes exactly one jar; in-flight nectar does not count; restart clears jars',()=>{
  const g=new SC.BeehiveGame();g.start();g.honey=g.honeyGoal-1;
  function delivered(){const b=g.bees[0];Object.assign(b,{...g.hive,stage:'return',nectar:1,job:{entry:{text:'nectar'}}});g.work(.05);}
- delivered();assert.equal(g.jarCount,0);delivered();assert.equal(g.jarCount,1);const score=g.score;delivered();assert.equal(g.jarCount,2);assert.equal(g.score-score,100);
+ delivered();assert.equal(g.jarCount,0);assert.equal(g.score,10);delivered();assert.equal(g.jarCount,1);const score=g.score;delivered();assert.equal(g.jarCount,2);assert.equal(g.score-score,15);
  Object.assign(g.bees[0],{stage:'return',nectar:1,x:.1,y:.9,job:{entry:{text:'still outside'}}});assert.equal(g.jarCount,2);g.elapsed=g.duration-.05;g.update(.05);assert.equal(g.jarCount,2);assert.equal(g.state,'celebrating');g.start();assert.equal(g.jarCount,0);
  for(const width of [355,1100]){const {game,r}=renderer(SC.BeehiveGame,SC.BeehiveRenderer,width,width<600?1200:740);game.honey=game.honeyGoal+30;let jars=0;r.circle=()=>{};r.round=(x,y,w,h)=>{if(h===5)jars++;};r.jars();assert.equal(jars,30);const layout=r.jarLayout();assert(layout.x>=0&&layout.x+layout.columns*layout.pitch<width);}
 });

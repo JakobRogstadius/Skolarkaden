@@ -88,7 +88,7 @@ Blommorna står utspridda på en ny, oregelbunden äng varje omgång. Växterna 
 
 De första blommorna öppnar efter ungefär en sekund. En del sommarplantor håller kvar knoppar för en senare höstblomning; avlägsna höstblommor öppnar tidigare så att bina hinner tur och retur. När inga svar finns att ge, kön är tom och alla fem bin är hemma går årstiden fyra gånger fortare. Så snart en blomma öppnar återgår tiden till normal takt. Synliga uppgifters livslängd och pågående flygningar snabbas aldrig upp. Matte behåller sin längre speltid och blomningstid.
 
-Varje leverans efter att kupan blivit full ger en synlig honungsburk. Burkarna staplas bredvid kupan och finns kvar under vinterfirandet. Poängregeln är oförändrad: 100 poäng per leverans. Nektar som fortfarande är ute när vintern börjar räknas inte.
+Varje leverans efter att kupan blivit full ger en synlig honungsburk. Burkarna staplas bredvid kupan och finns kvar under vinterfirandet. Leveranser till kupan ger 10 poäng och varje överskottsburk ger 15 poäng. När den sista nektarn har samlats in och alla bin är hemma ges en engångsbonus på 1 poäng per återstående hel tiondels sekund innan tiden snabbspolas. Tillfälliga tomrum före nya blommor och vissnade oskördade slutblommor ger ingen tidsbonus. Bikupan använder poängversion v2. Nektar som fortfarande är ute när vintern börjar räknas inte.
 
 Uppgiftsbubblorna anpassar bredden efter ordet, tecknet och eventuell pinyin i samtliga spel. Bikupan behåller placeringen när en uppgift bara byter köstatus och söker fria platser runt växterna om etiketter annars skulle överlappa.
 
