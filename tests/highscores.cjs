@@ -93,11 +93,13 @@ class Element extends EventTarget{
   // Browser module: no POST for banned names, identical visible success; retries
   // reuse one ID/payload and results remain tied to the completed game's board.
   const elements=new Map(),get=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
+  get('pace').options=Array.from(read('index.html').match(/<select id="pace">([\s\S]*?)<\/select>/)[1].matchAll(/<option value="([^"]+)">([^<]+)<\/option>/g),match=>({value:match[1],textContent:match[2]}));
   const nicknameStorage=new Map([['skolarkaden-nickname-v1','OLD NAME']]);
   let posts=[],failOnce=false,unsupported=false,legacyBoards=null,boardData={scores:[],rank:1};
-  const context=vm.createContext({Starlight:{modes:{swedish:{name:'Svenska ord – korta'},english:{name:'Engelska ord – korta'}}},console,crypto:webcrypto,Event,EventTarget,setTimeout,clearTimeout,AbortController,
+  const context=vm.createContext({Starlight:{},console,crypto:webcrypto,Event,EventTarget,setTimeout,clearTimeout,AbortController,
     document:{get activeElement(){return focused;},getElementById:get,createElement:()=>new Element()},localStorage:{getItem:key=>nicknameStorage.get(key),setItem:(key,value)=>nicknameStorage.set(key,value),removeItem:key=>nicknameStorage.delete(key)},
     fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));if(failOnce){failOnce=false;throw new Error('network');}return Response.json({ok:true});}if(legacyBoards){const key=new URL(url).searchParams.get('leaderboard');assert.equal(key.split(':').length,4);return Response.json({leaderboard:key,scores:key.split(':')[2]==='swedish'?legacyBoards[key.split(':')[3]]:[]});}return unsupported?Response.json({error:'invalid_leaderboard'},{status:400}):Response.json(boardData);}});
+  vm.runInContext(read('resources/data.js'),context);
   vm.runInContext(read('resources/highscore-policy.js'),context);vm.runInContext(read('resources/highscores.js'),context);
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),'v2:city');
@@ -113,6 +115,18 @@ class Element extends EventTarget{
   assert.equal(context.Starlight.highscoreBoardKey({...selection,mode:'english'}),context.Starlight.highscoreBoardKey(selection));
   assert.equal(context.Starlight.highscoreBoardKey({...selection,pace:'brave'}),context.Starlight.highscoreBoardKey(selection));
   const ui=new context.Starlight.Highscores({getSelection:()=>selection});
+  // Both boards render the menu's complete labels, with casing handled by CSS.
+  for(const listId of ['scores-list','end-scores-list']){
+    const list=get(listId);
+    for(const [exercise,mode] of Object.entries(context.Starlight.modes)){
+      for(const option of get('pace').options){
+        list.replaceChildren();ui.row(list,{player_name:'TEST',score:1,exercise,difficulty:option.value},1);
+        assert.equal(list.children[0].children[2].textContent,mode.name);
+        assert.equal(list.children[0].children[3].textContent,option.textContent);
+      }
+    }
+    list.replaceChildren();
+  }
   legacyBoards={gentle:[{score:200,player_name:'A'},{score:80,player_name:'B'}],steady:[{score:210,player_name:'C'}],brave:[{score:300,player_name:'D'}]};
   ui.begin(selection);ui.finish(150);await ui.open(selection,ui.result);assert.deepEqual([...ui.data.scores].map(r=>r.score),[300,210,200,80]);assert.equal(ui.data.rank,4);assert.deepEqual([...ui.data.scores].map(r=>r.difficulty),['brave','steady','gentle','gentle']);assert.equal(focused,get('score-name'));assert.equal(posts.length,0);
   get('score-name').value='ÅS';get('score-name').setSelectionRange(1,1);await ui.load(ui.view);assert.equal(focused,get('score-name'));assert.equal(get('score-name').selectionStart,1);get('again').focus();await ui.load(ui.view);assert.equal(focused,get('again'),'loading must not steal focus after Tab');
@@ -131,7 +145,7 @@ class Element extends EventTarget{
   // Display top ten plus the actual rank below them; never post merely for opening.
   boardData={scores:Array.from({length:10},(_,i)=>({player_name:'PLAYER',score:1000-i})),rank:38,saved:false};
   ui.begin(selection);ui.finish(12);await ui.open(selection,ui.result);assert.equal(get('score-name').value,'','new round never reuses the previous name');assert.equal(nicknameStorage.size,0,'submitted names are not remembered');assert.equal(posts.length,2);assert.equal(get('end-scores-list').children.length,11);assert.equal(get('end-scores-list').children[10].children[0].textContent,'38');
-  boardData={...boardData,rank:3};await ui.load(ui.view);assert.equal(get('end-scores-list').children.length,10);assert.equal(get('end-scores-list').children[2].className,'board-row player-row');assert.equal(get('end-scores-list').children[2].children[3].textContent,'LÄTT');assert.equal(get('end-scores-list').children[2].children[2].textContent,'SVENSKA KORT');assert.equal(get('end-scores-list').children[2].children[4].textContent,'12');
+  boardData={...boardData,rank:3};await ui.load(ui.view);assert.equal(get('end-scores-list').children.length,10);assert.equal(get('end-scores-list').children[2].className,'board-row player-row');assert.equal(get('end-scores-list').children[2].children[3].textContent,'Lätt');assert.equal(get('end-scores-list').children[2].children[2].textContent,'Svenska ord - korta');assert.equal(get('end-scores-list').children[2].children[4].textContent,'12');
   let continued=false;await ui.leave(()=>{continued=true;});assert(continued);assert.equal(posts.at(-1).player_name,'ANONYM');
   ui.begin(selection);ui.finish(1);await ui.open(selection,ui.result);const count=posts.length;ui.dismiss();assert.equal(posts.length,count,'closing without action never posts');
   ui.begin(selection);ui.finish(7);await ui.open(selection,ui.result);get('score-name').value='BOSSE';failOnce=true;continued=false;await ui.leave(()=>{continued=true;});assert.equal(continued,false);assert.equal(ui.result.saved,false);await ui.leave(()=>{continued=true;});assert(continued);assert.deepEqual(posts.at(-1),posts.at(-2));

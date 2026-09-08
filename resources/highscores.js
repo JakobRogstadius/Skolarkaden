@@ -11,8 +11,7 @@ const scoreSettings=s=>({game_version:policy.versions[s.kind],game:s.kind,exerci
   spoken_language:s.spokenLanguage||s.lang||null,exercise_language:s.lang||null,
   uppercase:typeof s.uppercase==='boolean'?s.uppercase:null,letter_keys:s.letterKeys||null,
   sound_enabled:typeof s.soundEnabled==='boolean'?s.soundEnabled:null,reduced_motion:typeof s.reducedMotion==='boolean'?s.reducedMotion:null});
-const difficultyName=pace=>({gentle:'Lätt',steady:'Medel',brave:'Svår'}[pace]||'—');
-const exerciseNames={letters:'BOKSTÄVER',swedish:'SVENSKA KORT',swedishLong:'SVENSKA LÅNG',english:'ENGELSKA KORT',englishLong:'ENGELSKA LÅNG',bopomofo:'BOPOMOFO',chinese:'KINESISKA T1',chineseTrad2:'KINESISKA T2',chineseTrad3:'KINESISKA T3',chineseTrad4:'KINESISKA T4',chineseSimpl1:'KINESISKA S1',chineseSimpl2:'KINESISKA S2',chineseSimpl3:'KINESISKA S3',chineseSimpl4:'KINESISKA S4',math:'MATEMATIK 1',math2:'MATEMATIK 2',math3:'MATEMATIK 3',math4:'MATEMATIK 4',math5:'MATEMATIK 5',math6:'MATEMATIK 6'};
+const difficultyName=pace=>Array.from($('pace').options).find(option=>option.value===pace)?.textContent||'—';
 const displayName=name=>Array.from(String(name).normalize('NFC').toUpperCase()).slice(0,10).join('');
 const validName=name=>/^[\p{L}\p{M} ]{1,10}$/u.test(name);
 async function request(path,options={}){
@@ -35,7 +34,7 @@ async function readBoard(selection,result){
   const first=await read(key);
   if(first.leaderboard===group||!first.leaderboard)return first;
   // Preserve compatibility during deployment: combine older exercise boards too.
-  const exercises=Object.keys(SC.modes||exerciseNames),paces=['gentle','steady','brave'],parts=[];
+  const exercises=Object.keys(SC.modes),paces=['gentle','steady','brave'],parts=[];
   for(let offset=0;offset<exercises.length;offset+=4){
     const batch=await Promise.all(exercises.slice(offset,offset+4).map(async exercise=>{
       const exerciseKey=group+':'+exercise,probe=exercise===selection.mode?first:await read(exerciseKey+':'+selection.pace);
@@ -99,8 +98,8 @@ class Highscores{
     number.className='board-rank';number.textContent=rank===null?'—':String(rank);name.className='board-name';score.className='board-points';
     name.textContent=row?displayName(row.player_name):'—';score.textContent=row?String(Number(row.score)):'—';
     if(row?.is_player&&this.shownResult&&!this.shownResult.saved){name.textContent='';$('score-entry').hidden=false;name.append($('score-entry'));}
-    difficulty.className='board-difficulty';difficulty.textContent=difficultyName(row?.difficulty).toUpperCase();
-    exercise.className='board-exercise';exercise.textContent=exerciseNames[row?.exercise]||'—';exercise.title=SC.modes?.[row?.exercise]?.name||exercise.textContent;
+    difficulty.className='board-difficulty';difficulty.textContent=difficultyName(row?.difficulty);
+    exercise.className='board-exercise';exercise.textContent=SC.modes[row?.exercise]?.name||'—';exercise.title=exercise.textContent;
     item.append(number,name,exercise,difficulty,score);list.append(item);
   }
   async load(token){

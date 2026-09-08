@@ -77,6 +77,6 @@ body.playing.voice-play .arena{height:clamp(540px,calc(100dvh - 82px),900px)}
 .score-table .board-row>span{font:inherit;letter-spacing:0;white-space:nowrap;min-width:0}
 .score-table .board-heading{opacity:.65;border-bottom:1px solid #ffffff30;padding-bottom:5px;margin-bottom:3px}
 .score-table .board-row>span:first-child,.score-table .board-row>span:last-child{text-align:right}
-.score-table .board-difficulty{text-align:center;opacity:.85}.score-table .board-name{width:10ch;overflow:hidden}.score-table .board-exercise{overflow:hidden;text-overflow:ellipsis}
+.score-table .board-difficulty{text-align:center;opacity:.85}.score-table .board-name{width:10ch;overflow:hidden}.score-table .board-row>.board-exercise{white-space:normal;overflow-wrap:anywhere;padding:3px 0}
 .score-table #score-name{font:inherit;height:28px;width:10ch;max-width:100%;letter-spacing:0}.score-table #score-name::placeholder{font:inherit}
 @media(max-width:600px){.end-scoreboard{padding:16px 12px}.score-table{padding:6px 8px}.score-table .board-row{font-size:18px;column-gap:6px;min-width:494px}.score-table .arcade-board{min-width:494px}}
