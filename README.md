@@ -131,7 +131,7 @@ Vid sju olösta uppgifter blir spelarföräldern genast arg och hoppar tre gång
 
 Efter 40 avklarade uppgifter, oavsett vem som gjort dem, upphör nytt vardagsstök. Familjen hjälper till tills kvarvarande uppgifter, pågående måltider och delvis fyllda korgar och soptunnor är klara. Spelaren kan fortsätta svara och få poäng under denna avslutning. Därför kan slutantalet bli högre än 40. När hemmet är färdigstädat gör familjen tre glada hopp, medan spelarföräldern går till hallmattan och lägger sig på golvet. Spelet kan inte förloras. Paus och omstart använder samma funktioner som övriga spel.
 
-Den högre aktivitetstakten använder topplistenyckeln `v2:home:<övning>:<svårighet>`, åtskild från tidigare resultat. Den uppdaterade `cloudflare/worker.mjs` behöver distribueras till den befintliga Workern för att API:t ska acceptera versionen; databasens schema behöver inte ändras och befintliga poängrader bevaras.
+Spelet behåller topplistenyckeln `v1:home:<övning>:<svårighet>` under den första intrimningen. De nya familjerutinerna använder samma topplista som tidigare och kräver ingen ny Worker-distribution om home v1 redan stöds.
 
 ## Äggröra
 

@@ -8,7 +8,7 @@ Den tidigare spontana disken ersätts med två matkedjor. Kylskåpsmellanmål l�
 
 Verifierat: 10 000 föräldrapar; 24 naturliga simuleringar som når minst tio samtidiga fysiska uppgifter med ilskestädningen avstängd; dörrvägar och möbelhinder; båda matkedjorna, avbruten ätning och avlämning; bibehållna köreservationer, bonusregler och slutstädning; 72 fullständiga omgångar över alla svårigheter med tidsfördröjda, felaktiga eller uteblivna svar. Den nya takten ger fler familjeinsatser på högre svårigheter, vilket omgångsprovens deltagandegränser tar hänsyn till. Alla 25 testsviter passerar. Stora och smala renderingar har granskats, inklusive tio samtidiga etiketter. Ingen produktionsdata skrivs i testerna.
 
-Ändrad takt och nya uppgifter använder topplisteversion v2 för home. Den uppdaterade Workern måste distribueras separat med befintlig DB-bindning. Övriga spelversioner, databasens schema och tidigare poängrader bevaras.
+Efter ägarens beslut behåller home topplisteversion v1 eftersom spelet är nytt. Klient, genererad Worker och tester använder samma befintliga nyckel; familjeuppdateringen kräver ingen ny Worker-distribution om home v1 redan stöds. Övriga spelversioner, databasens schema och tidigare poängrader bevaras.
 
 ---
 

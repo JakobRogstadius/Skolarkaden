@@ -80,13 +80,13 @@ class Element extends EventTarget{
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),board);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'eggs'}),'v2:eggs:swedish:gentle');
-  for(const version of Object.values(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,'v2');
+  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,game==='home'?'v1':'v2');
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:eggs:swedish:gentle'}))).status,201);
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:eggs:swedish:gentle'}))).status,400);
-  assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'home'}),'v2:home:swedish:gentle');
-  assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:home:swedish:gentle',score:20}))).status,201);
-  assert.equal((await call('GET','/scores?leaderboard=v2:home:swedish:gentle')).status,200);
-  assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:home:swedish:gentle',score:20}))).status,400);
+  assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'home'}),'v1:home:swedish:gentle');
+  assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:home:swedish:gentle',score:20}))).status,201);
+  assert.equal((await call('GET','/scores?leaderboard=v1:home:swedish:gentle')).status,200);
+  assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:home:swedish:gentle',score:20}))).status,400);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,input:'browser',lang:'zh-TW'}),board);
   const ui=new context.Starlight.Highscores({getSelection:()=>selection});
   assert.equal(get('score-name').value,'');assert.equal(nicknameStorage.size,0,'discard legacy remembered names');
