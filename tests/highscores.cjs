@@ -71,9 +71,10 @@ class Element extends EventTarget{
   // Browser module: no POST for banned names, identical visible success; retries
   // reuse one ID/payload and results remain tied to the completed game's board.
   const elements=new Map(),get=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
+  const nicknameStorage=new Map([['skolarkaden-nickname-v1','OLD NAME']]);
   let posts=[],failOnce=false,boardData={scores:[],rank:1};
   const context=vm.createContext({Starlight:{},console,crypto:webcrypto,Event,EventTarget,setTimeout,clearTimeout,AbortController,
-    document:{getElementById:get,createElement:()=>new Element()},localStorage:{getItem:()=>'',setItem(){}},
+    document:{getElementById:get,createElement:()=>new Element()},localStorage:{getItem:key=>nicknameStorage.get(key),setItem:(key,value)=>nicknameStorage.set(key,value),removeItem:key=>nicknameStorage.delete(key)},
     fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));if(failOnce){failOnce=false;throw new Error('network');}return Response.json({ok:true});}return Response.json(boardData);}});
   vm.runInContext(read('resources/highscore-policy.js'),context);vm.runInContext(read('resources/highscores.js'),context);
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
@@ -84,6 +85,7 @@ class Element extends EventTarget{
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:eggs:swedish:gentle'}))).status,400);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,input:'browser',lang:'zh-TW'}),board);
   const ui=new context.Starlight.Highscores({getSelection:()=>selection});
+  assert.equal(get('score-name').value,'');assert.equal(nicknameStorage.size,0,'discard legacy remembered names');
   ui.begin(selection);ui.finish(200);ui.open(selection,ui.result);get('score-name').value='f.u.c.k';await ui.submit();
   assert.equal(posts.length,0);assert.equal(get('score-status').textContent,'Resultatet är sparat.');
   ui.begin(selection);ui.finish(300);ui.open(selection,ui.result);get('score-name').value='Åsa';failOnce=true;await ui.submit();
@@ -93,9 +95,9 @@ class Element extends EventTarget{
   await ui.submit();assert.equal(posts.length,2,'saved result cannot be submitted again');
   // Display top ten plus the actual rank below them; never post merely for opening.
   boardData={scores:Array.from({length:10},(_,i)=>({player_name:'PLAYER',score:1000-i})),rank:38,saved:false};
-  ui.begin(selection);ui.finish(12);await ui.open(selection,ui.result);assert.equal(posts.length,2);assert.equal(get('end-scores-list').children.length,11);assert.equal(get('end-scores-list').children[10].children[0].textContent,'38');
+  ui.begin(selection);ui.finish(12);await ui.open(selection,ui.result);assert.equal(get('score-name').value,'','new round never reuses the previous name');assert.equal(nicknameStorage.size,0,'submitted names are not remembered');assert.equal(posts.length,2);assert.equal(get('end-scores-list').children.length,11);assert.equal(get('end-scores-list').children[10].children[0].textContent,'38');
   boardData={...boardData,rank:3};await ui.load(ui.view);assert.equal(get('end-scores-list').children.length,10);assert.equal(get('end-scores-list').children[2].className,'board-row player-row');
-  let continued=false;get('score-name').value='';await ui.leave(()=>{continued=true;});assert(continued);assert.equal(posts.at(-1).player_name,'ANONYM');
+  let continued=false;await ui.leave(()=>{continued=true;});assert(continued);assert.equal(posts.at(-1).player_name,'ANONYM');
   ui.begin(selection);ui.finish(1);await ui.open(selection,ui.result);const count=posts.length;ui.dismiss();assert.equal(posts.length,count,'closing without action never posts');
   ui.begin(selection);ui.finish(7);await ui.open(selection,ui.result);get('score-name').value='BOSSE';failOnce=true;continued=false;await ui.leave(()=>{continued=true;});assert.equal(continued,false);assert.equal(ui.result.saved,false);await ui.leave(()=>{continued=true;});assert(continued);assert.deepEqual(posts.at(-1),posts.at(-2));
   // A saved top-ten player occupies exactly one ranked row, even with duplicate names/scores.

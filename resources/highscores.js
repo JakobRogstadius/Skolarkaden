@@ -23,7 +23,8 @@ async function request(path,options={}){
 class Highscores{
   constructor({getSelection}){
     this.getSelection=getSelection;this.run=null;this.result=null;this.view=0;this.readGeneration=0;
-    try{$('score-name').value=displayName(localStorage.getItem('skolarkaden-nickname-v1')||'');}catch(_){}
+    $('score-name').value='';
+    try{localStorage.removeItem('skolarkaden-nickname-v1');}catch(_){}
     $('score-name').addEventListener('input',()=>{if(!$('score-name').readOnly)$('score-name').value=displayName($('score-name').value);});
     $('leaderboard-open').addEventListener('click',()=>this.open(this.getSelection()));
     $('scores-refresh').addEventListener('click',()=>this.load(this.view));
@@ -35,7 +36,7 @@ class Highscores{
     });
   }
   dismiss(){this.view++;this.shownResult=null;}
-  begin(selection){this.dismiss();this.result=null;this.run={selection:{...selection},id:root.crypto?.randomUUID?.()||null};}
+  begin(selection){this.dismiss();$('score-name').value='';$('score-name').readOnly=false;this.result=null;this.run={selection:{...selection},id:root.crypto?.randomUUID?.()||null};}
   finish(score){this.result=this.run?{...this.run,score,saved:false,payload:null,pending:false}:null;}
   showEnd(){this.open(this.result?.selection||this.getSelection(),this.result);}
   open(selection,result=null){
@@ -100,7 +101,6 @@ class Highscores{
     try{
       const data=policy.isBannedName(result.payload.player_name)?{ok:true}:await request('/scores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(result.payload)});
       if(data.ok!==true)throw new Error('Invalid response');result.saved=true;
-      try{localStorage.setItem('skolarkaden-nickname-v1',result.payload.player_name);}catch(_){}
       if(this.shownResult===result&&token===this.view){$('score-status').textContent='Resultatet är sparat.';this.render();if(!this.leaving){$('again').focus();await this.load(token);}}
     }catch(error){
       if(token===this.view)$('score-status').textContent=error.status?error.message:'Det gick inte att bekräfta sparandet. Försök igen med samma smeknamn.';
