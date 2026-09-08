@@ -1,3 +1,15 @@
+# Mandarinord byggda av bekanta tecken
+
+2026-09-08.
+
+Nivå 1 och 2 behåller 30 respektive 80 enstaka tecken. Nivå 3 lägger till 75 tvåteckensord och nivå 4 ytterligare 100, med samtliga tidigare uppgifter kvar. Totalt blir det 155 och 255 uppgifter. Varje nytt ord innehåller minst ett tecken som förekommer i en lägre nivå; nytt–nytt förekommer inte. Båda skrifterna har parade ord och pinyin. Fullständiga listor och uttalskällor finns i `dev/mandarin-levels.md`.
+
+Talströmmen grupperar hela aktuella ord före köhantering och bevarar gränserna vid ändrade transkript, även efter att målet försvunnit. Ett ofärdigt interimssvar väntar om det kan vara början av ett synligt ord. Tangentbord och tal accepterar pinyin med eller utan mellanrum; tangentbordet accepterar även tonmarkeringar och tonnummer per stavelse. Ordspecifika uttal, som 家長 jiā zhǎng, används före enskilda teckens standarduttal. Fördröjda hintar, siffertranskript, dubblettregeln och poängreglerna är oförändrade.
+
+Verifierat: samtliga 27 testsviter passerar efter att kontrollen av statiska filreferenser korrigerats för befintliga URL-parametrar i faviconlänken. Nya prov täcker ordantal, kumulativa listor, lägre nivåers tecken, båda skrifterna, alla pinyinvarianter, interimssvar, homofoner och transkriptrevisioner. Alla nio spel verifieras med ord som ett enda svar och utan extra handling vid senare transkriptrevision. Etiketter och hintar har renderats och granskats på stor och smal skärm. Spelversionerna är oförändrade.
+
+---
+
 # Enklare och kumulativa mandarinövningar
 
 2026-09-08.

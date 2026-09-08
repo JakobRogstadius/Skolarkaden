@@ -28,8 +28,32 @@ SC.splitSwedish=function(text,{lesson,language,candidates=[]},history=[],offset=
   for(let a=1;a<raw.length&&!parts;a++)for(let b=a+1;b<raw.length&&!parts;b++){const three=[raw.slice(0,a),raw.slice(a,b),raw.slice(b)];if(valid(three))parts=three;}
   if(!parts)return [text];parts[0]=m[1]+parts[0];parts[parts.length-1]+=m[3];return parts;
 };
+// Group known two-character targets before reconciling transcript revisions.
+// Sent history retains word boundaries even after its target has disappeared.
+SC.groupChineseSpeech=function(atoms,context,history=[],offset=0){
+  const out=[],candidates=context.candidates||[],matches=text=>candidates.some(item=>Array.from(item.answer).length>1&&SC.matches(text,item,context.lesson,context.language,'speech'));
+  for(let i=0;i<atoms.length;i++){
+    const previous=history[offset+out.length],remembered=text=>previous?.sent&&previous.keys.includes(SC.speechIdentity(text,context.lesson,context.language));
+    let token=atoms[i];
+    if(!remembered(token.text)&&i+1<atoms.length&&!/[,.!?;，。！？、]$/.test(token.text)){
+      const next=atoms[i+1],join=/[a-züê]/iu.test(token.text+next.text)?' ':'',text=token.text+join+next.text;
+      if(matches(text)||remembered(text)){token={text,final:token.final&&next.final};i++;}
+    }
+    out.push(token);
+  }
+  return out;
+};
+SC.chineseCompoundPrefix=function(text,context){
+  const heard=SC.chineseSpeechPinyin(text);if(!heard)return false;
+  return (context.candidates||[]).some(item=>{
+    if(Array.from(item.answer).length<2)return false;
+    const full=SC.tonelessPinyin(item.hint)||SC.chineseSpeechPinyin(item.answer);
+    return full&&heard!==full&&full.startsWith(heard);
+  });
+};
 SC.tokenizeSpeech=function(text,context,history=[],offset=0){
   const {lesson,language}=context,words=SC.speechWords(text,lesson),out=[];
+  if(SC.isChinese(lesson))return SC.groupChineseSpeech(words.flatMap(SC.splitChineseDigits).map(text=>({text})),context,history,offset).map(t=>t.text);
   for(let i=0;i<words.length;i++){
     let word=words[i],v=SC.speechNormalize(word);
     if(lesson==='letters'&&i+1<words.length){const phrase=word+' '+words[i+1];if(SC.letterNames[language]?.[SC.speechNormalize(phrase)]){word=phrase;i++;}}
@@ -56,7 +80,10 @@ class SpeechStream{
   constructor({getContext,enqueue,revise=()=>false,trace=()=>{}}){Object.assign(this,{getContext,enqueue,revise,trace});this.ledger=[];this.finalCount=0;this.finalResults=0;}
   update(results){
     const context=this.getContext(),history=this.ledger.filter(t=>!t.ghost),fresh=[];
-    for(const result of results){
+    if(SC.isChinese(context.lesson)){
+      const atoms=results.flatMap(result=>SC.speechWords(result[0]?.transcript||'',context.lesson).flatMap(SC.splitChineseDigits).map(text=>({text,final:result.isFinal})));
+      for(const token of SC.groupChineseSpeech(atoms,context,history))fresh.push({...token,key:SC.speechIdentity(token.text,context.lesson,context.language),sent:false,ghost:false});
+    }else for(const result of results){
       const raw=result[0]?.transcript||'';
       for(const text of SC.tokenizeSpeech(raw,context,history,fresh.length))fresh.push({text,key:SC.speechIdentity(text,context.lesson,context.language),final:result.isFinal,sent:false,ghost:false});
     }
@@ -65,7 +92,7 @@ class SpeechStream{
     const carry=(a,b)=>{
       const revised=a.sent&&a.text!==b.text&&this.revise(a.entry,b.text);
       if(a.sent&&!same(a,b))this.trace('revision',{text:b.text,previous:a.text,action:revised?'Väntande svar uppdaterades':'Påbörjad handling behålls'});
-      return {...b,sent:a.sent,entry:a.entry,keys:[...new Set([...a.keys,b.key])]};
+      return {...b,sent:a.sent,entry:a.entry,keys:a.sent?[...new Set([...a.keys,b.key])]:[b.key]};
     };
     let prefix=0;while(prefix<old.length&&prefix<fresh.length&&same(old[prefix],fresh[prefix])){merged.push(carry(old[prefix],fresh[prefix]));prefix++;}
     const n=old.length-prefix,m=fresh.length-prefix;
@@ -90,7 +117,7 @@ class SpeechStream{
     for(let k=0;k<merged.length;k++){
       // In lessons reaching 100 or more, the trailing interim "one" may still become "one
       // hundred". Wait for its boundary; earlier complete answers still flow.
-      const t=merged[k],boundary=!['math3','math4','math5'].includes(context.lesson)||k<merged.length-1;
+      const t=merged[k],last=k===merged.length-1,boundary=(!['math3','math4','math5'].includes(context.lesson)||!last)&&(!SC.isChinese(context.lesson)||!last||!SC.chineseCompoundPrefix(t.text,context));
       if(!t.ghost&&(t.final||boundary&&context.candidates.some(item=>SC.matches(t.text,item,context.lesson,context.language,'speech'))))frontier=k;
     }
     const added=[];

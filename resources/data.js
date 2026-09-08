@@ -18,23 +18,28 @@
   // Standard Zhuyin layout; ASCII conversion also works with a Swedish keyboard.
   SC.bopomofoKeys=Object.fromEntries(Array.from('1qaz2wsxedcrfv5tgbyhnujm8ik,9ol.0p;/-').map((key,i)=>[key,Array.from('ㄅㄆㄇㄈㄉㄊㄋㄌㄍㄎㄏㄐㄑㄒㄓㄔㄕㄖㄗㄘㄙㄧㄨㄩㄚㄛㄜㄝㄞㄟㄠㄡㄢㄣㄤㄥㄦ')[i]]));
   SC.modes.bopomofo=lesson('Bopomofo','zh-TW',Object.entries(SC.bopomofoKeys).map(([key,label])=>({...word(label),key,hint:'Tangent '+key.toUpperCase()})),'Träna 37 kinesiska ljudtecken','ㄅ');
-  // Cumulative, paired scripts with an explicit teaching pronunciation.
-  // Character selection and complexity checks: dev/mandarin-levels.md. Pinyin comes from
-  // the same pinned, MIT-licensed pinyin-data source as resources/pinyin.js.
-  const characters=[
-    // 30 starter characters: numbers, concrete basics, I/you/good.
+  // Cumulative single-character starters, then compounds with a familiar half.
+  // Curated lists and readings: dev/mandarin-levels.md. Compound readings derive
+  // from phrase-pinyin-data (MIT, copyright 2017 mozillazg); see phrase-pinyin-LICENSE.txt.
+  const mandarinLessons=[
+    // 30 starter characters.
     [["一","一","yī"],["二","二","èr"],["三","三","sān"],["四","四","sì"],["五","五","wǔ"],["六","六","liù"],["七","七","qī"],["八","八","bā"],["九","九","jiǔ"],["十","十","shí"],["零","零","líng"],["人","人","rén"],["大","大","dà"],["小","小","xiǎo"],["上","上","shàng"],["下","下","xià"],["中","中","zhōng"],["口","口","kǒu"],["手","手","shǒu"],["日","日","rì"],["月","月","yuè"],["山","山","shān"],["水","水","shuǐ"],["火","火","huǒ"],["木","木","mù"],["土","土","tǔ"],["天","天","tiān"],["我","我","wǒ"],["你","你","nǐ"],["好","好","hǎo"]],
-    // 50 new: core sentence words, family, everyday actions.
+    // 50 more single characters.
     [["不","不","bù"],["了","了","le"],["的","的","de"],["是","是","shì"],["有","有","yǒu"],["在","在","zài"],["也","也","yě"],["他","他","tā"],["她","她","tā"],["它","它","tā"],["子","子","zǐ"],["女","女","nǚ"],["男","男","nán"],["爸","爸","bà"],["媽","妈","mā"],["哥","哥","gē"],["姐","姐","jiě"],["弟","弟","dì"],["妹","妹","mèi"],["友","友","yǒu"],["多","多","duō"],["少","少","shǎo"],["幾","几","jǐ"],["這","这","zhè"],["那","那","nà"],["哪","哪","nǎ"],["什","什","shén"],["麼","么","me"],["嗎","吗","ma"],["呢","呢","ne"],["來","来","lái"],["去","去","qù"],["出","出","chū"],["回","回","huí"],["走","走","zǒu"],["吃","吃","chī"],["看","看","kàn"],["要","要","yào"],["用","用","yòng"],["打","打","dǎ"],["今","今","jīn"],["明","明","míng"],["早","早","zǎo"],["年","年","nián"],["白","白","bái"],["耳","耳","ěr"],["目","目","mù"],["牛","牛","niú"],["羊","羊","yáng"],["米","米","mǐ"]],
-    // 75 new: home, directions, time, food and familiar things.
-    [["們","们","men"],["自","自","zì"],["己","己","jǐ"],["父","父","fù"],["母","母","mǔ"],["兒","儿","ér"],["家","家","jiā"],["名","名","míng"],["字","字","zì"],["文","文","wén"],["左","左","zuǒ"],["右","右","yòu"],["前","前","qián"],["後","后","hòu"],["裡","里","lǐ"],["外","外","wài"],["東","东","dōng"],["西","西","xī"],["南","南","nán"],["北","北","běi"],["百","百","bǎi"],["千","千","qiān"],["兩","两","liǎng"],["個","个","gè"],["本","本","běn"],["分","分","fēn"],["午","午","wǔ"],["晚","晚","wǎn"],["時","时","shí"],["間","间","jiān"],["雨","雨","yǔ"],["風","风","fēng"],["花","花","huā"],["草","草","cǎo"],["林","林","lín"],["河","河","hé"],["海","海","hǎi"],["狗","狗","gǒu"],["貓","猫","māo"],["魚","鱼","yú"],["足","足","zú"],["牙","牙","yá"],["毛","毛","máo"],["皮","皮","pí"],["心","心","xīn"],["身","身","shēn"],["頭","头","tóu"],["眼","眼","yǎn"],["紅","红","hóng"],["黃","黄","huáng"],["色","色","sè"],["到","到","dào"],["坐","坐","zuò"],["站","站","zhàn"],["跑","跑","pǎo"],["玩","玩","wán"],["找","找","zhǎo"],["拿","拿","ná"],["放","放","fàng"],["洗","洗","xǐ"],["穿","穿","chuān"],["書","书","shū"],["車","车","chē"],["門","门","mén"],["床","床","chuáng"],["包","包","bāo"],["衣","衣","yī"],["果","果","guǒ"],["菜","菜","cài"],["飯","饭","fàn"],["奶","奶","nǎi"],["和","和","hé"],["很","很","hěn"],["沒","没","méi"],["愛","爱","ài"]],
-    // 100 new: school, conversation, richer actions and more complex forms.
-    [["雪","雪","xuě"],["雲","云","yún"],["樹","树","shù"],["葉","叶","yè"],["星","星","xīng"],["春","春","chūn"],["夏","夏","xià"],["秋","秋","qiū"],["冬","冬","dōng"],["馬","马","mǎ"],["鳥","鸟","niǎo"],["兔","兔","tù"],["雞","鸡","jī"],["豬","猪","zhū"],["長","长","cháng"],["短","短","duǎn"],["高","高","gāo"],["低","低","dī"],["快","快","kuài"],["慢","慢","màn"],["冷","冷","lěng"],["熱","热","rè"],["新","新","xīn"],["舊","旧","jiù"],["黑","黑","hēi"],["藍","蓝","lán"],["綠","绿","lǜ"],["方","方","fāng"],["光","光","guāng"],["亮","亮","liàng"],["會","会","huì"],["能","能","néng"],["想","想","xiǎng"],["知","知","zhī"],["都","都","dōu"],["再","再","zài"],["就","就","jiù"],["每","每","měi"],["從","从","cóng"],["給","给","gěi"],["做","做","zuò"],["帶","带","dài"],["買","买","mǎi"],["送","送","sòng"],["幫","帮","bāng"],["說","说","shuō"],["聽","听","tīng"],["讀","读","dú"],["寫","写","xiě"],["問","问","wèn"],["答","答","dá"],["學","学","xué"],["校","校","xiào"],["老","老","lǎo"],["師","师","shī"],["朋","朋","péng"],["課","课","kè"],["習","习","xí"],["語","语","yǔ"],["話","话","huà"],["樂","乐","lè"],["歌","歌","gē"],["畫","画","huà"],["笑","笑","xiào"],["哭","哭","kū"],["睡","睡","shuì"],["醒","醒","xǐng"],["謝","谢","xiè"],["請","请","qǐng"],["對","对","duì"],["起","起","qǐ"],["歡","欢","huān"],["讓","让","ràng"],["等","等","děng"],["開","开","kāi"],["關","关","guān"],["進","进","jìn"],["路","路","lù"],["店","店","diàn"],["桌","桌","zhuō"],["椅","椅","yǐ"],["窗","窗","chuāng"],["筆","笔","bǐ"],["紙","纸","zhǐ"],["杯","杯","bēi"],["碗","碗","wǎn"],["刀","刀","dāo"],["叉","叉","chā"],["肉","肉","ròu"],["蛋","蛋","dàn"],["茶","茶","chá"],["湯","汤","tāng"],["糖","糖","táng"],["麵","面","miàn"],["喝","喝","hē"],["誰","谁","shuí"],["跳","跳","tiào"],["同","同","tóng"],["生","生","shēng"],["體","体","tǐ"]],
+    // 75 new two-character words; at least one character comes from levels 1–2.
+    [["你好","你好","nǐ hǎo"],["大家","大家","dà jiā"],["我們","我们","wǒ men"],["你們","你们","nǐ men"],["他們","他们","tā men"],["她們","她们","tā men"],["爸爸","爸爸","bà ba"],["媽媽","妈妈","mā ma"],["哥哥","哥哥","gē ge"],["姐姐","姐姐","jiě jie"],["弟弟","弟弟","dì di"],["妹妹","妹妹","mèi mei"],["朋友","朋友","péng you"],["家人","家人","jiā rén"],["回家","回家","huí jiā"],["兒子","儿子","ér zi"],["女兒","女儿","nǚ ér"],["小孩","小孩","xiǎo hái"],["老人","老人","lǎo rén"],["今天","今天","jīn tiān"],["明天","明天","míng tiān"],["今年","今年","jīn nián"],["明年","明年","míng nián"],["早上","早上","zǎo shàng"],["上午","上午","shàng wǔ"],["中午","中午","zhōng wǔ"],["下午","下午","xià wǔ"],["晚上","晚上","wǎn shang"],["生日","生日","shēng rì"],["多少","多少","duō shǎo"],["什麼","什么","shén me"],["哪個","哪个","nǎ ge"],["這個","这个","zhè ge"],["那個","那个","nà ge"],["幾個","几个","jǐ gè"],["一半","一半","yí bàn"],["一起","一起","yì qǐ"],["一天","一天","yì tiān"],["中文","中文","zhōng wén"],["大字","大字","dà zì"],["名人","名人","míng rén"],["小心","小心","xiǎo xīn"],["開口","开口","kāi kǒu"],["入口","入口","rù kǒu"],["出口","出口","chū kǒu"],["門口","门口","mén kǒu"],["上車","上车","shàng chē"],["下車","下车","xià chē"],["車子","车子","chē zi"],["看書","看书","kàn shū"],["吃飯","吃饭","chī fàn"],["牛奶","牛奶","niú nǎi"],["白飯","白饭","bái fàn"],["大米","大米","dà mǐ"],["水果","水果","shuǐ guǒ"],["白菜","白菜","bái cài"],["小花","小花","xiǎo huā"],["羊毛","羊毛","yáng máo"],["上衣","上衣","shàng yī"],["耳朵","耳朵","ěr duo"],["目光","目光","mù guāng"],["牛肉","牛肉","niú ròu"],["手指","手指","shǒu zhǐ"],["左手","左手","zuǒ shǒu"],["右手","右手","yòu shǒu"],["大雨","大雨","dà yǔ"],["下雨","下雨","xià yǔ"],["天氣","天气","tiān qì"],["火山","火山","huǒ shān"],["山羊","山羊","shān yáng"],["河水","河水","hé shuǐ"],["海水","海水","hǎi shuǐ"],["大海","大海","dà hǎi"],["白色","白色","bái sè"],["好吃","好吃","hǎo chī"]],
+    // 100 new two-character words; at least one character comes from levels 1–3.
+    [["名字","名字","míng zi"],["文字","文字","wén zì"],["兒女","儿女","ér nǚ"],["家門","家门","jiā mén"],["家裡","家里","jiā lǐ"],["家長","家长","jiā zhǎng"],["老師","老师","lǎo shī"],["上學","上学","shàng xué"],["下課","下课","xià kè"],["書本","书本","shū běn"],["書包","书包","shū bāo"],["讀書","读书","dú shū"],["寫字","写字","xiě zì"],["圖書","图书","tú shū"],["語文","语文","yǔ wén"],["明白","明白","míng bai"],["不同","不同","bù tóng"],["現在","现在","xiàn zài"],["有時","有时","yǒu shí"],["每天","每天","měi tiān"],["昨天","昨天","zuó tiān"],["前天","前天","qián tiān"],["後天","后天","hòu tiān"],["春天","春天","chūn tiān"],["夏天","夏天","xià tiān"],["秋天","秋天","qiū tiān"],["冬天","冬天","dōng tiān"],["月亮","月亮","yuè liang"],["下雪","下雪","xià xuě"],["大風","大风","dà fēng"],["白雲","白云","bái yún"],["樹木","树木","shù mù"],["花草","花草","huā cǎo"],["花朵","花朵","huā duǒ"],["河流","河流","hé liú"],["海邊","海边","hǎi biān"],["天空","天空","tiān kōng"],["小狗","小狗","xiǎo gǒu"],["小貓","小猫","xiǎo māo"],["小鳥","小鸟","xiǎo niǎo"],["小魚","小鱼","xiǎo yú"],["小馬","小马","xiǎo mǎ"],["小兔","小兔","xiǎo tù"],["小雞","小鸡","xiǎo jī"],["小豬","小猪","xiǎo zhū"],["黃牛","黄牛","huáng niú"],["雞肉","鸡肉","jī ròu"],["米飯","米饭","mǐ fàn"],["白糖","白糖","bái táng"],["喝水","喝水","hē shuǐ"],["開水","开水","kāi shuǐ"],["熱水","热水","rè shuǐ"],["冷水","冷水","lěng shuǐ"],["水杯","水杯","shuǐ bēi"],["杯子","杯子","bēi zi"],["桌子","桌子","zhuō zi"],["椅子","椅子","yǐ zi"],["房子","房子","fáng zi"],["屋子","屋子","wū zi"],["帽子","帽子","mào zi"],["褲子","裤子","kù zi"],["鞋子","鞋子","xié zi"],["葉子","叶子","yè zi"],["袋子","袋子","dài zi"],["鼻子","鼻子","bí zi"],["肚子","肚子","dù zi"],["洗手","洗手","xǐ shǒu"],["洗衣","洗衣","xǐ yī"],["起床","起床","qǐ chuáng"],["上床","上床","shàng chuáng"],["開門","开门","kāi mén"],["關門","关门","guān mén"],["走路","走路","zǒu lù"],["跳水","跳水","tiào shuǐ"],["好看","好看","hǎo kàn"],["好玩","好玩","hǎo wán"],["好笑","好笑","hǎo xiào"],["開心","开心","kāi xīn"],["愛心","爱心","ài xīn"],["放心","放心","fàng xīn"],["小聲","小声","xiǎo shēng"],["大聲","大声","dà shēng"],["午飯","午饭","wǔ fàn"],["晚飯","晚饭","wǎn fàn"],["晚安","晚安","wǎn ān"],["早安","早安","zǎo ān"],["左右","左右","zuǒ yòu"],["出去","出去","chū qù"],["出來","出来","chū lái"],["進來","进来","jìn lái"],["進去","进去","jìn qù"],["回來","回来","huí lai"],["回去","回去","huí qu"],["坐下","坐下","zuò xia"],["站起","站起","zhàn qǐ"],["起立","起立","qǐ lì"],["身上","身上","shēn shàng"],["身子","身子","shēn zi"],["木頭","木头","mù tou"],["點心","点心","diǎn xin"]],
   ];
+  SC.mandarinCompoundHints=Object.fromEntries(mandarinLessons.slice(2).flat().flatMap(([trad,simpl,hint])=>[[trad,hint],[simpl,hint]]));
   for(const traditional of [true,false])for(let level=0;level<4;level++){
     const id=traditional?(level?'chineseTrad'+(level+1):'chinese'):'chineseSimpl'+(level+1);
-    const items=characters.slice(0,level+1).flat().map(pair=>{const label=pair[traditional?0:1],hint=pair[2];return {...word(label),hint,aliases:[hint,SC.tonelessPinyinNumber(hint).slice(0,-1),SC.tonelessPinyinNumber(hint)]};});
-    SC.modes[id]={...lesson((traditional?'傳統中文 (trad.) ':'简体中文 (simpl.) ')+(level+1),traditional?'zh-TW':'zh-CN',items,`${items.length} tecken${level?' · '+characters[level].length+' nya':' · tal och grunder'} · pinyin efter fem sekunder`,'字'),type:'chinese'};
+    const items=mandarinLessons.slice(0,level+1).flat().map(pair=>{
+      const label=pair[traditional?0:1],hint=pair[2],numbered=hint.split(' ').map(SC.tonelessPinyinNumber),plain=numbered.map(s=>s.slice(0,-1));
+      return {...word(label),hint,aliases:[...new Set([hint,hint.replace(/ /g,''),plain.join(' '),plain.join(''),numbered.join(' '),numbered.join('')])]};
+    });
+    const description=level<2?`${items.length} tecken${level?' · 50 nya':' · tal och grunder'}`:`80 tecken + ${items.length-80} ord`;
+    SC.modes[id]={...lesson((traditional?'傳統中文 (trad.) ':'简体中文 (simpl.) ')+(level+1),traditional?'zh-TW':'zh-CN',items,description+' · pinyin efter fem sekunder','字'),type:'chinese'};
   }
   const mathNames=['Matematik 1 (+)','Matematik 2 (+ och -)','Matematik 3 (10-100)','Matematik 4 (x)','Matematik 5 (x och /)','Matematik 6 (ekvationer)'];
   const mathDescriptions=['Addition med talen 0–10','Addition och subtraktion inom 0–20','Addition och subtraktion med talen 10–100','Multiplikationstabellerna 1–10','Multiplikation och division i tabellerna 1–10','Skriv det positiva heltal som x står för'];
@@ -92,15 +97,21 @@
   };
   SC.speechNormalize=value=>String(value??'').normalize('NFKC').toLocaleLowerCase('sv-SE').trim().replace(/^["“”'‘’«»(\[]+|["“”'‘’«»)\],.!?;:。！？、，]+$/gu,'').trim().replace(/\s+/g,' ');
   SC.tonelessPinyin=function(value){
-    // Remove tones, not vowels: lü stays different from lu. Accept the usual
-    // keyboard spellings lv / lu: as well as accented and numbered pinyin.
-    const v=SC.speechNormalize(value).replace(/u:/g,'ü').replace(/v/g,'ü').normalize('NFD').replace(/[\u0300\u0301\u0304\u030c]/g,'').normalize('NFC').replace(/[0-5]$/,'');
-    return /^[a-züê]+$/.test(v)?v:null;
+    // Preserve vowels, but accept spaced/joined syllables and per-syllable tones.
+    const v=SC.speechNormalize(value).replace(/u:/g,'ü').replace(/v/g,'ü').normalize('NFD').replace(/[\u0300\u0301\u0304\u030c]/g,'').normalize('NFC');
+    if(!/^[a-züê0-5]+(?:[ '’]+[a-züê0-5]+)*$/.test(v))return null;
+    const key=v.replace(/[0-5 '’]/g,'');return /^[a-züê]+$/.test(key)?key:null;
   };
   SC.chineseSpeechPinyin=function(value){
     let v=SC.speechNormalize(value);
     if(/^\d+$/.test(v)){const n=Number(v);if(n>10)return null;v=SC.numberName(n,'zh-CN');}
-    return SC.mandarinPinyin[v]||SC.tonelessPinyin(v);
+    // ASR sometimes mixes digits and Hanzi, e.g. 1天 for 一天.
+    if(/[\p{Script=Han}]/u.test(v))v=v.replace(/\d+/g,n=>Number(n)<=10?SC.numberName(Number(n),'zh-CN'):n).replace(/\s/g,'');
+    const phrase=SC.mandarinCompoundHints?.[v];if(phrase)return SC.tonelessPinyin(phrase);
+    if(/^\p{Script=Han}+$/u.test(v)){
+      const readings=Array.from(v,c=>SC.mandarinPinyin[c]);return readings.every(Boolean)?readings.join(''):null;
+    }
+    return SC.tonelessPinyin(v);
   };
   // Standalone Zhuyin names, not keyboard keys or arbitrary syllable initials.
   // Mandarin ASR normally returns Hanzi, e.g. 波坡摸佛, rather than ㄅㄆㄇㄈ.

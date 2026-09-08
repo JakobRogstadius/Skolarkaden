@@ -17,24 +17,28 @@ test('Twenty exercises have the requested order and complete, distinct dictionar
  for(const mode of ['swedishLong','englishLong'])assert(SC.modes[mode].items.every(i=>i.answer.length>=6&&i.answer.length<=12),mode);
  for(const group of [chinese.slice(0,4),chinese.slice(4)])assert.equal(new Set(group.flatMap(mode=>Array.from(SC.modes[mode].items,i=>i.answer))).size,255);
  for(let level=0;level<4;level++)for(let i=0;i<[30,80,155,255][level];i++){
-  const trad=SC.modes[chinese[level]].items[i],simpl=SC.modes[chinese[level+4]].items[i];assert.equal(trad.hint,simpl.hint);assert.equal(Array.from(trad.answer).length,1);
+  const trad=SC.modes[chinese[level]].items[i],simpl=SC.modes[chinese[level+4]].items[i];assert.equal(trad.hint,simpl.hint);assert.equal(Array.from(trad.answer).length,i<80?1:2);
   for(const [mode,item] of [[chinese[level],trad],[chinese[level+4],simpl]])assert(SC.matches(item.hint,item,mode,'zh-TW','speech'),mode+' '+item.answer);
  }
- for(const [a,b] of [['貓','猫'],['聽','听'],['體','体'],['幾','几'],['麼','么'],['湯','汤'],['從','从']]){
+ for(const [a,b] of [['小貓','小猫'],['老師','老师'],['木頭','木头'],['幾','几'],['什麼','什么'],['熱水','热水'],['我們','我们']]){
   const t=chinese.slice(0,4).flatMap(m=>Array.from(SC.modes[m].items,i=>i.answer)),s=chinese.slice(4).flatMap(m=>Array.from(SC.modes[m].items,i=>i.answer));assert.equal(t.indexOf(a),s.indexOf(b));assert(t.includes(a));
  }
 });
-test('Chinese sets add exactly 30, 50, 75 and 100 characters while retaining earlier practice',()=>{
+test('Chinese sets retain 80 starter characters, then add 75 and 100 words with a previously learned character',()=>{
  for(const group of [chinese.slice(0,4),chinese.slice(4)]){
   let previous=[];
   for(const [level,mode] of group.entries()){
    const lesson=SC.modes[mode],answers=Array.from(lesson.items,i=>i.answer);
-   assert.deepEqual(answers.slice(0,previous.length),previous);assert.equal(answers.length-previous.length,[30,50,75,100][level]);assert(lesson.description.startsWith(answers.length+' tecken'));
-   if(level)assert(lesson.description.includes([30,50,75,100][level]+' nya'));previous=answers;
+   assert.deepEqual(answers.slice(0,previous.length),previous);assert.equal(answers.length-previous.length,[30,50,75,100][level]);if(level<2)assert(lesson.description.startsWith(answers.length+' tecken'));else{
+    assert(lesson.description.startsWith('80 tecken + '+(answers.length-80)+' ord'));
+    const old=new Set(previous.join('')),patterns=new Set();
+    for(const answer of answers.slice(previous.length)){assert.equal(Array.from(answer).length,2);const pattern=Array.from(answer,c=>old.has(c)?'old':'new').join('/');assert.notEqual(pattern,'new/new',mode+' '+answer);patterns.add(pattern);}
+    assert.deepEqual([...patterns].sort(),['new/old','old/new','old/old']);
+   }previous=answers;
   }
   assert.equal(SC.modes[group[0]].items.map(i=>i.answer).join(''),'一二三四五六七八九十零人大小上下中口手日月山水火木土天我你好');
  }
- for(const [trad,simpl,hint] of [['嗎','吗','ma'],['呢','呢','ne'],['目','目','mù'],['兩','两','liǎng'],['子','子','zǐ']]){
+ for(const [trad,simpl,hint] of [['嗎','吗','ma'],['呢','呢','ne'],['目','目','mù'],['牛奶','牛奶','niú nǎi'],['子','子','zǐ']]){
   for(const [mode,answer] of [['chineseTrad4',trad],['chineseSimpl4',simpl]]){const item=SC.modes[mode].items.find(i=>i.answer===answer);assert.equal(item.hint,hint);assert(SC.matches(hint,item,mode,SC.modes[mode].lang,'speech'));}
  }
 });
@@ -111,6 +115,16 @@ test('All Chinese lessons retain delayed pinyin, queued-answer suppression and t
  for(const mode of ['chinese','chineseSimpl1'])for(const language of ['zh-CN','zh-TW']){
   const item=SC.modes[mode].items.find(i=>i.answer==='山');for(const text of ['山','shan','shān','shan1','杉','衫','善'])assert(SC.matches(text,item,mode,language,'speech'),text);
   for(const text of ['三','san','si','shi'])assert(!SC.matches(text,item,mode,language,'speech'),text);
+ }
+});
+test('All nine games consume a compound as one answer and keep transcript revisions deduplicated',()=>{
+ for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home'])for(const mode of ['chineseTrad3','chineseTrad4','chineseSimpl3','chineseSimpl4']){
+  const {g,target}=firstTarget(name,mode),compound=SC.modes[mode].items.find(i=>i.answer==='牛奶');target.item=compound;
+  g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,i)=>SC.matches(e.text,i,mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,mode,g.lang)});
+  const result=(text,isFinal=false)=>Object.assign([{transcript:text}],{isFinal}),stream=new SC.SpeechStream({getContext:()=>({lesson:mode,language:g.lang,candidates:g.getAvailableTargets().map(t=>t.item)}),enqueue:text=>g.queue.enqueue(text,'speech'),revise:(e,text)=>g.queue.revise(e,text)});
+  stream.update([result('牛奶')]);assert.equal(g.queue.length+(g.shots||0),1,name+'/'+mode);assert(!SC.pinyinHints(g).has(target));
+  for(let i=0;i<100&&!g.shots;i++)g.update(.05);assert.equal(g.shots,1,name+'/'+mode);
+  stream.update([result('niu2 nai3',true)]);g.update(.05);assert.equal(g.shots,1,name+'/'+mode+' revised');assert.equal(g.queue.length,0);
  }
 });
 console.log(checks+' exercise-catalogue and fixed-maths checks passed.');
