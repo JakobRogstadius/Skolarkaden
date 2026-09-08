@@ -125,7 +125,7 @@ class HomeGame{
   loads.bath+=Number(laundry>0&&!this.stations.laundry.task);
   loads.kitchen+=Number(trash>0&&!this.stations.trash.task);return loads;
  }
- getTargets(){return this.messes.filter(t=>!t.done&&(t.owner===null||t.owner===0)).sort((a,b)=>a.id-b.id);}
+ getTargets(){return this.messes.filter(t=>!t.done&&(t.owner===null||t.owner===0&&!this.helping)).sort((a,b)=>a.id-b.id);}
  getAvailableTargets(){return this.getTargets().filter(t=>t.owner===null);}
  getActiveEntries(){return this.player?.job?.entry?[this.player.job.entry]:[];}
  reservations(){const free=[...this.getAvailableTargets()],map=new Map();for(const entry of this.queue.items){const i=free.findIndex(t=>SC.matches(entry.text,t.item,this.mode,this.lang,entry.source));if(i>=0)map.set(free.splice(i,1)[0],entry);}return map;}
@@ -150,6 +150,32 @@ class HomeGame{
  assignHelp(p){const choices=this.messes.filter(t=>!t.done&&t.owner===null);if(!choices.length)return false;
   choices.sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y)||a.id-b.id);this.takeFamilyTask(p,choices[0]);return true;
  }
+ assignAngryHelp(){
+  const family=this.people.slice(1),distances=new Map();
+  const distance=(p,t)=>{
+   const key=p.id+':'+t.id;if(distances.has(key))return distances.get(key);
+   const goal=t.handoff||this.taskGoal(t,'walk');let from=p,length=0;
+   for(const q of this.route(p,goal)){length+=Math.hypot(q.x-from.x,q.y-from.y);from=q;}
+   distances.set(key,length);return length;
+  };
+  // Choose the closest available person/task pair across the whole family.
+  // Idle helpers can relieve a farther walker, but never interrupt hands-on work.
+  while(family.some(p=>!p.job)){
+   let best=null;
+   for(const t of this.messes){
+    if(t.done)continue;const owner=t.owner===null?null:this.people[t.owner];
+    if(owner&&!owner.player&&!['walk','handoff'].includes(owner.job?.stage))continue;
+    for(const p of family){
+     if(p.job)continue;const d=distance(p,t);
+     if(owner&&!owner.player&&d>=distance(owner,t)-1e-6)continue;
+     if(!best||d<best.distance-1e-6)best={person:p,target:t,owner,distance:d};
+    }
+   }
+   if(!best)break;
+   if(best.owner&&!best.owner.player){best.owner.job=null;this.clearRoute(best.owner);}
+   this.takeFamilyTask(best.person,best.target);
+  }
+ }
  becomeAngry(){
   this.angerLeft=1.2;this.angerAge=0;this.angerCount++;this.helping=true;this.emit('home-anger');
   // Relatives also take over the parent's current chore. Carried laundry stays
@@ -160,7 +186,8 @@ class HomeGame{
    this.answerLocks.delete(j.entry);this.player.job=null;this.job=null;
   }
   this.clearRoute(this.player);
-  for(const p of this.people.slice(1)){p.fear=1;p.activity=null;this.clearRoute(p);if(!p.job){if(j?.target?.owner===0)this.takeFamilyTask(p,j.target);else this.assignHelp(p);}}
+  for(const p of this.people.slice(1)){p.fear=1;p.activity=null;this.clearRoute(p);}
+  this.assignAngryHelp();
  }
  taskGoal(t,stage){if(stage==='deliver')return this.stations.laundry;if(t.type==='hungry')return {x:3.65,y:1.75};if(t.type==='laundry'&&stage==='machine')return {x:10.2,y:12};return t;}
  work(p,dt){
@@ -242,9 +269,9 @@ class HomeGame{
   meal.age+=dt;if(meal.age>=.6){this.addToStation(meal.bench.id,1,meal.kind==='snack'?'container':'plate');this.emit(meal.kind==='snack'?'home-container':'home-plate');p.meal=null;p.wait=2*this.timeScale;this.clearRoute(p);}
  }
  updateFamily(p,dt){
-  p.fear=Math.max(0,p.fear-dt*(this.angerLeft?0:.22));
+  p.fear=this.helping?1:Math.max(0,p.fear-dt*.22);
   if(p.job){this.work(p,dt);return;}
-  if(this.helping){if(this.assignHelp(p))this.work(p,dt);return;}
+  if(this.helping)return;
   if(this.closing){if(this.assignHelp(p)){this.work(p,dt);return;}}
   if(p.meal){this.updateMeal(p,dt);return;}
   if(this.closing)return;
@@ -276,9 +303,10 @@ class HomeGame{
   if(this.helping){const previous=Math.floor(this.angerAge/.4);this.angerAge+=dt;if(Math.floor(this.angerAge/.4)>previous)this.emit('home-stomp');}
   this.syncReservations();
   if(!this.closing&&!this.helping&&this.messes.length>=7)this.becomeAngry();
+  if(this.helping)this.assignAngryHelp();
   this.work(this.player,dt);for(const p of this.people.slice(1))this.updateFamily(p,dt);
   if(this.helping&&!this.messes.length)this.flushStations();
-  if(this.helping&&!this.messes.length&&this.people.slice(1).every(p=>!p.job)){this.helping=false;this.angerLeft=0;this.people.slice(1).forEach(p=>p.wait=Math.max(p.wait,1));}
+  if(this.helping&&!this.messes.length&&this.people.slice(1).every(p=>!p.job)){this.helping=false;this.angerLeft=0;this.people.slice(1).forEach(p=>{p.wait=Math.max(p.wait,1);p.fear=0;});}
   if(!this.closing&&!this.helping&&this.messes.length>=7)this.becomeAngry();
   if(this.closing){this.flushStations();if(!this.messes.length&&!this.people.some(p=>p.meal||p.job))this.finish();}
  }

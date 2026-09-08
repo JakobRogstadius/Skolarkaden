@@ -1,3 +1,15 @@
+# Närmaste hjälpare och rädda ansikten under hela ilskan
+
+2026-09-08.
+
+Ilskeinsatsen fördelar uppgifter gemensamt över familjen i stället för i personernas listordning. Avstånd räknas längs gångvägen genom dörröppningar och runt möbler, till den faktiska arbetsplatsen eller till föräldern vid överlämning av burna kläder. När någon blir ledig kan personen ta över en uppgift från en längre bort belägen hjälpare som fortfarande går dit. Påbörjad städning och leveranser av burna föremål behåller sin hjälpare. Redan accepterade spelaruppgifter får inte tillbaka etiketten medan de väntar på familjens övertagande, och köreservationer för andra likalydande svar bevaras.
+
+Alla andra familjemedlemmar har fullt rädda ansikten under hela hjälpinsatsen, även när den korta inledande skräckhoppstiden har gått ut eller de väntar utan uppgift. Uttrycken återgår när hemmet är städat och ilskan slutar. Home behåller v1.
+
+Verifierat: 33 hemmakontroller inklusive 84 hela omgångar. Nya prov täcker listordning, en närmare person på andra sidan en vägg, övertagande från en längre bort belägen person på väg till uppgiften, skydd av påbörjat arbete och rädsla efter mer än tio sekunder. Köer, tvättöverlämningar, avslutning och rumsfördelning passerar. Kapacitetskraven vid ett korrekt svar varannan sekund är oförändrade. De långsamma och avsiktligt ofullkomliga svarssimuleringarna kontrollerar fortsatt poäng och fullföljda omgångar; deras tidigare fasta minimiantal spelaruppgifter ersätts eftersom effektivare obetald familjehjälp kan slutföra fler uppgifter före nästa svar.
+
+---
+
 # Gradvis familjetempo, full ilskestädning och vila på plats
 
 2026-09-08.

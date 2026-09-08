@@ -89,6 +89,26 @@ test('Helping interruptions preserve food and require returning to the seat or b
   g.updateFamily(p,.05);assert(p.meal);assert(!g.messes.some(t=>t.type==='dishes'));until(g,()=>!p.meal);const s=g.messes.find(t=>t.type==='dishes').station;assert(Math.hypot(p.x-s.x,p.y-s.y)<.4);assert.deepEqual([...s.items],['container']);
  }
 });
+test('Angry cleanup gives tasks to the closest available relative, independent of family order',()=>{
+ const {g}=setup(),[adult,child]=g.people.slice(1);Object.assign(adult,{x:6.125,y:6.125});Object.assign(child,{x:6.125,y:2.125});
+ const near=g.createTask('toys',{x:6.125,y:2.125}),far=g.createTask('toys',{x:6.125,y:11.125});g.becomeAngry();assert.equal(child.job.target,near);assert.equal(adult.job.target,far);
+});
+test('Closest means the walk through doorways, not straight through a wall',()=>{
+ const {g}=setup(),[acrossWall,inRoom]=g.people.slice(1),t=g.createTask('toys',{x:7.125,y:1.875});
+ Object.assign(acrossWall,{x:6.125,y:1.875});Object.assign(inRoom,{x:8.625,y:1.875});assert(g.people.slice(1).every(p=>g.walkable(p)));assert(Math.hypot(acrossWall.x-t.x,acrossWall.y-t.y)<Math.hypot(inRoom.x-t.x,inRoom.y-t.y));
+ g.becomeAngry();assert.equal(inRoom.job.target,t);assert.equal(acrossWall.job,null);
+});
+test('An idle relative takes over a farther walk, while cleaning and carrying remain uninterrupted',()=>{
+ for(const stage of ['walk','clean','deliver','machine','finish']){
+  const {g}=setup(),[far,near]=g.people.slice(1),t=g.createTask('toys',{x:6.125,y:10.125});Object.assign(far,{x:6.125,y:2.125});Object.assign(near,{x:t.x,y:t.y});g.takeFamilyTask(far,t);far.job.stage=stage;g.helping=true;g.assignAngryHelp();
+  assert.equal(t.owner,stage==='walk'?near.id:far.id);assert.equal(g.people.filter(p=>p.job?.target===t).length,1);if(stage==='walk'){assert.equal(far.job,null);assert.equal(near.job.target,t);}
+ }
+});
+test('Every relative stays fully afraid throughout a long anger phase, then relaxes',()=>{
+ const {g}=setup(),speed=g.helpSpeed;for(let i=0;i<7;i++)g.createTask('toys',g.spots.toys[i]);g.helpSpeed=.1;g.update(.05);
+ for(let i=0;i<200;i++){g.update(.05);assert(g.helping);assert(g.people.slice(1).every(p=>p.fear===1));}assert.equal(g.angerLeft,0,'the short startle timer is independent of fear');
+ g.helpSpeed=speed;until(g,()=>!g.helping,120);assert(g.people.slice(1).every(p=>p.fear===0));
+});
 test('No anger at six; seven triggers immediately and sends one job per relative',()=>{
  const {g,events}=setup({pace:'brave'});for(let i=0;i<6;i++)g.createTask('toys',g.spots.toys[i%5]);g.update(.05);assert.equal(g.angerCount,0);g.createTask('clothes',g.spots.clothes[0]);g.queue.enqueue(g.getTargets()[0].item.answer);const before={x:g.player.x,y:g.player.y};g.update(.05);assert.equal(g.angerCount,1);assert.equal(g.angerLeft,1.2);assert.equal(events.filter(e=>e.type==='home-anger').length,1);assert.equal(new Set(g.people.slice(1).map(p=>p.job.target)).size,4);assert(g.people.slice(1).every(p=>p.fear>.95));assert.equal(g.player.x,before.x);assert.equal(g.player.y,before.y);assert.equal(g.score,0);until(g,()=>g.familyCleaned>=4);assert.equal(g.cleaned,g.hits+g.familyCleaned);
 });
@@ -109,7 +129,7 @@ test('Full family cleanup takes over active chores and physically collects carri
   const carried=g.player.carry,at={x:g.player.x,y:g.player.y};
   if(carried==='laundry')g.addToStation('laundry',1); // A later shirt must receive its own wash.
   for(let i=0;i<6;i++){const task=g.createTask('toys',g.spots.toys[i]);g.queue.enqueue(task.item.answer);}
-  g.update(.05);assert(g.helping);assert(!g.player.job);assert(g.people.some(p=>p.job?.target===t));
+  g.update(.05);assert(g.helping);assert(!g.player.job);assert(t.owner===0||g.people.some(p=>p.job?.target===t),'active chore remains assigned or pending family takeover');assert(!g.getTargets().includes(t),'the accepted chore stays hidden while awaiting its helper');
   if(carried){assert.equal(g.player.carry,carried);assert.equal(t.handoff,g.player);assert(!SC.HomeRenderer.prototype.messOnSite.call({game:g},t));
    until(g,()=>!g.player.carry);const helper=g.people.find(p=>p.carry===carried);assert(helper);assert(Math.hypot(helper.x-at.x,helper.y-at.y)<.01,'handoff happens at the parent');
   }
@@ -160,9 +180,9 @@ test('Finite full rounds with paced imperfect answers, silence or wrong answers;
    if(g.state==='playing'&&g.clock>=due&&style!=='silent'){const reserved=g.reservations(),t=g.getAvailableTargets().find(t=>!reserved.has(t));if(t){g.queue.enqueue(style==='wrong'||inputRng()<.1?'wrong':t.item.answer);due=g.clock+(style==='math3'?8:5);}}
    g.update(.05);if(i%20===0)assert(g.people.every(p=>g.walkable(p)),`${pace}/${style}/${seed}: nobody crosses a wall`);
   }
-  // Full anger cleanups now transfer every remaining chore to the family.
-  // Slower/imperfect answers still earn points, with more unpaid help on hard.
-  assert.equal(g.state,'won',`${pace}/${style}/${seed} at ${g.elapsed}`);assert(g.cleaned>=40);assert.equal(g.messes.length,0);assert.equal(g.cleaned,g.hits+g.familyCleaned);assert(g.score>=10*g.hits&&g.score<=20*g.hits);assert(g.player.restAge>=2.5);if(['silent','wrong'].includes(style)){assert.equal(g.score,0);assert(g.angerCount>0);}else assert(g.hits>={gentle:28,steady:10,brave:8}[pace],`${pace}/${style}/${seed}: ${g.hits} player jobs`);for(const [room,n]of Object.entries(g.roomCounts))roomTotals[pace][room]=(roomTotals[pace][room]||0)+n;rounds++;
+  // Fast-input capacity is checked above. These deliberately slow/imperfect
+  // runs verify completion and earned points despite faster unpaid family help.
+  assert.equal(g.state,'won',`${pace}/${style}/${seed} at ${g.elapsed}`);assert(g.cleaned>=40);assert.equal(g.messes.length,0);assert.equal(g.cleaned,g.hits+g.familyCleaned);assert(g.score>=10*g.hits&&g.score<=20*g.hits);assert(g.player.restAge>=2.5);if(['silent','wrong'].includes(style)){assert.equal(g.score,0);assert(g.angerCount>0);}else assert(g.hits>0,`${pace}/${style}/${seed}: ${g.hits} player jobs`);for(const [room,n]of Object.entries(g.roomCounts))roomTotals[pace][room]=(roomTotals[pace][room]||0)+n;rounds++;
  }
  assert.equal(rounds,72);for(const [pace,counts]of Object.entries(roomTotals)){const total=Object.values(counts).reduce((a,b)=>a+b,0);assert.equal(Object.keys(counts).length,6);for(const [room,n]of Object.entries(counts))assert(n/total>=.15,`${pace}/${room}: ${(100*n/total).toFixed(1)}% of generated tasks`);}console.log('  72 complete rounds passed; every room and the hallway receive at least 15% at each difficulty across the seeded rounds.');
 });
