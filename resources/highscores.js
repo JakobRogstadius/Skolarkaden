@@ -70,7 +70,7 @@ class Highscores{
   open(selection,result=null){
     this.selection={...selection};this.shownResult=result;this.endView=Boolean(result);this.data=null;
     const token=++this.view;
-    if(!result){$('leaderboard-context').textContent=selection.label.split(' · ')[0];$('leaderboard').showModal();}
+    if(!result){$('leaderboard-title').textContent='Topplista: '+selection.label.split(' · ')[0];$('leaderboard').showModal();}
     else{
       $('score-name').readOnly=Boolean(result.payload);
       if(result.payload)$('score-name').value=result.payload.player_name;
