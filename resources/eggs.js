@@ -14,7 +14,7 @@ class EggGame{
  point(){return {x:.1+this.random()*.8,y:.47+this.random()*.45};}
  start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
   this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Välj en övning med minst ett svar.');
-  this.timeScale=mode==='math'?1.4:1;this.total={gentle:10,steady:16,brave:21}[pace];this.walkSpeed=34/this.timeScale;this.runSpeed=88/this.timeScale;this.alienSpeed=this.runSpeed*2;
+  this.timeScale=mode==='math'?1.4:1;this.total={gentle:10,steady:16,brave:21}[pace];this.walkSpeed=34/this.timeScale;this.runSpeed=88/this.timeScale;this.alienSpeed=this.runSpeed*2;this.playerSpeed=this.runSpeed*2;
   // A human crew, drawn by the shared parameterised cast (adult men and women).
   this.people=Array.from({length:6},(_,i)=>{let first=true;const look=SC.makePerson(()=>{if(first){first=false;return this.random()*.8;}return this.random();});look.hat=false;const goal=i===0?{x:.5,y:.86}:{x:.19+i*.12,y:.55+(i%3)*.12};return {id:i,x:.5+(i%2?.04:-.04),y:1.08+i*.10,status:'entering',age:0,goal,look,fear:0,facing:1,player:i===0,attacker:null,wait:0};});
   this.player=this.people[0];this.player.look.shirt='#e6ac5e';this.player.look.pants='#36444c';
@@ -53,7 +53,7 @@ class EggGame{
   const j=this.job;if(!j)return;
   if(j.target&&!j.firing){
    const e=j.target;if(harmless(e)){this.job=null;return;}p.facing=e.x<p.x?-1:1;
-   if(!this.inFlameRange(e)&&p.status!=='chewing'){p.moving=true;this.move(p,e,this.runSpeed,dt);}
+   if(!this.inFlameRange(e)&&p.status!=='chewing'){p.moving=true;this.move(p,e,this.playerSpeed,dt);}
    if(!this.inFlameRange(e))return;
    this.ignite(e,j.entry);j.firing=true;j.age=0;
   }
@@ -72,7 +72,7 @@ class EggGame{
   const aliens=this.eggs.filter(e=>e.form==='alien'&&!harmless(e));
   for(const p of this.people){
    p.age+=dt;if(p.status==='dead'||p.status==='chewing')continue;
-   if(p.status==='entering'){if(this.move(p,p.goal,this.runSpeed*1.15,dt)){p.status=p.player?'ready':'walking';p.age=0;p.wait=.6+this.random();p.goal=this.point();}continue;}
+   if(p.status==='entering'){if(this.move(p,p.goal,(p.player?this.playerSpeed:this.runSpeed)*1.15,dt)){p.status=p.player?'ready':'walking';p.age=0;p.wait=.6+this.random();p.goal=this.point();}continue;}
    if(p.player)continue;
    const near=aliens.filter(e=>e.stage!=='chewing').sort((a,b)=>this.distance(p,a)-this.distance(p,b))[0];
    if(near&&this.distance(p,near)<125*this.scale()&&!['startled','running'].includes(p.status))this.startle(p,near);
