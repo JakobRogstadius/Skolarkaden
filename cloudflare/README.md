@@ -33,8 +33,7 @@ No D1 schema change is required; existing score rows are preserved. Verify that
    `scores` array. Reading the URL directly does not create a test score.
 6. Merge the accompanying frontend change into `main` and let GitHub Pages publish.
    In Skolarkaden, play a game, optionally enter a nickname in your scoreboard row, then press Enter or choose
-   **Spela igen** / **Till menyn** to save. Open **Topplista** in another browser with the same game, exercise and
-   difficulty to confirm the result is shared.
+   **Spela igen** / **Till menyn** to save. Open **Topplista** in another browser with the same game and exercise to confirm the result is shared.
 
 The allowed browser origin is `https://jakobrogstadius.github.io` (no path).
 If the website moves to a custom domain, update `ALLOWED_ORIGIN` in
@@ -43,9 +42,14 @@ available, but that origin cannot submit to the production leaderboard.
 
 ## Data and behaviour
 
-- Keys contain exactly **game version : game : exercise : difficulty**, e.g.
+- Stored score keys contain exactly **game version : game : exercise : difficulty**, e.g.
   `v2:city:swedish:gentle`. Input mode and language are not separate key components.
   The exercise still distinguishes Swedish, English and Chinese exercises.
+  Public leaderboard reads use **game version : game : exercise** and combine all
+  three stored difficulty keys. Existing rows remain included without a migration.
+  Older four-part GET keys also return this combined board. Every returned score
+  includes `difficulty` (`gentle`, `steady`, or `brave`). Player ranks use the same
+  combined set; POST continues to store the difficulty that was actually played.
 - Game versions live in `resources/highscore-policy.js`. Increment the affected
   game's value only when a change is likely to materially affect score comparability; deploy Worker and frontend together.
   Old rows remain stored but the current API only accepts current versions.

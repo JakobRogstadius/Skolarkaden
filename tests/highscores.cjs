@@ -62,7 +62,18 @@ class Element extends EventTarget{
   const winnerBoard=await (await call('GET','/scores?leaderboard='+board+'&submission='+winner.submission_id+'&score=999')).json();assert.equal(winnerBoard.rank,1);assert.equal(winnerBoard.scores[0].is_player,1);assert.equal(winnerBoard.scores[0].player_name,'ÅSA');
   assert.equal((await call('POST','/scores',payload({player_name:'ABCDEFGHIJK'}))).status,400);
   const anon=payload({player_name:''});assert.equal((await call('POST','/scores',anon)).status,201);assert.equal(db.prepare('SELECT player_name FROM highscores WHERE submission_id=?').get(anon.submission_id).player_name,'ANONYM');
-  const plan=db.prepare('EXPLAIN QUERY PLAN SELECT player_name,score,created_at FROM highscores WHERE leaderboard_key=? ORDER BY score DESC,created_at ASC LIMIT 20').all(board);
+  // Existing difficulty-specific rows now share one ranking, without mixing exercises or versions.
+  const medium=payload({leaderboard_key:'v2:city:swedish:steady',score:1200}),hard=payload({leaderboard_key:'v2:city:swedish:brave',score:1100});
+  await call('POST','/scores',medium);await call('POST','/scores',hard);
+  db.prepare('INSERT INTO highscores(submission_id,leaderboard_key,player_name,score) VALUES(?,?,?,?)').run(webcrypto.randomUUID(),'v1:city:swedish:brave','OLD',9000);
+  await call('POST','/scores',payload({leaderboard_key:'v2:city:english:brave',score:8000}));
+  for(const key of ['v2:city:swedish','v2:city:swedish:gentle','v2:city:swedish:steady','v2:city:swedish:brave']){
+    const mixed=await (await call('GET','/scores?leaderboard='+key+'&score=999&submission='+winner.submission_id)).json();
+    assert.equal(mixed.rank,3);assert.deepEqual(mixed.scores.slice(0,3).map(r=>r.difficulty),['steady','brave','gentle']);assert.equal(mixed.scores[2].is_player,1);
+  }
+  assert.equal((await (await call('GET','/scores?leaderboard=v2:city:swedish&score=1100')).json()).rank,3);
+  for(const key of ['v2:city:swedish:bogus','v2:city:swedish:brave:extra','v1:city:swedish'])assert.equal((await call('GET','/scores?leaderboard='+key)).status,400);
+  const plan=db.prepare('EXPLAIN QUERY PLAN SELECT player_name,score,created_at FROM highscores WHERE leaderboard_key IN (?,?,?) ORDER BY score DESC,created_at ASC,submission_id ASC LIMIT 10').all(board,'v2:city:swedish:steady','v2:city:swedish:brave');
   assert(plan.some(row=>row.detail.includes('idx_highscores_leaderboard')));
   db.prepare('UPDATE score_rate_limits SET attempts=120').run();
   assert.equal((await call('POST','/scores',payload())).status,429);
@@ -78,16 +89,17 @@ class Element extends EventTarget{
     fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));if(failOnce){failOnce=false;throw new Error('network');}return Response.json({ok:true});}return unsupported?Response.json({error:'invalid_leaderboard'},{status:400}):Response.json(boardData);}});
   vm.runInContext(read('resources/highscore-policy.js'),context);vm.runInContext(read('resources/highscores.js'),context);
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
-  assert.equal(context.Starlight.highscoreBoardKey(selection),board);
-  assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'eggs'}),'v2:eggs:swedish:gentle');
+  assert.equal(context.Starlight.highscoreBoardKey(selection),'v2:city:swedish');
+  assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'eggs'}),'v2:eggs:swedish');
   for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,game==='home'?'v1':'v2');
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:eggs:swedish:gentle'}))).status,201);
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:eggs:swedish:gentle'}))).status,400);
-  assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'home'}),'v1:home:swedish:gentle');
+  assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'home'}),'v1:home:swedish');
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:home:swedish:gentle',score:20}))).status,201);
   assert.equal((await call('GET','/scores?leaderboard=v1:home:swedish:gentle')).status,200);
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:home:swedish:gentle',score:20}))).status,400);
-  assert.equal(context.Starlight.highscoreBoardKey({...selection,input:'browser',lang:'zh-TW'}),board);
+  assert.equal(context.Starlight.highscoreBoardKey({...selection,input:'browser',lang:'zh-TW'}),'v2:city:swedish');
+  assert.equal(context.Starlight.highscoreBoardKey({...selection,pace:'brave'}),context.Starlight.highscoreBoardKey(selection));
   const ui=new context.Starlight.Highscores({getSelection:()=>selection});
   unsupported=true;await ui.open({...selection,kind:'home'});assert.equal(get('scores-status').textContent,'Topplistan är inte redo för det här spelet ännu.');unsupported=false;
   assert.equal(get('score-name').value,'');assert.equal(nicknameStorage.size,0,'discard legacy remembered names');
@@ -96,12 +108,12 @@ class Element extends EventTarget{
   ui.begin(selection);ui.finish(300);ui.open(selection,ui.result);get('score-name').value='Åsa';failOnce=true;await ui.submit();
   assert.equal(ui.result.saved,false);const pendingId=ui.result.id;
   get('score-name').value='Someone else';await ui.submit();
-  assert.equal(posts.length,2);assert.deepEqual(posts[0],posts[1]);assert.equal(posts[1].submission_id,pendingId);assert.equal(ui.result.saved,true);
+  assert.equal(posts.length,2);assert.deepEqual(posts[0],posts[1]);assert.equal(posts[1].submission_id,pendingId);assert.equal(posts[1].leaderboard_key,board,'store the played difficulty');assert.equal(ui.result.saved,true);
   await ui.submit();assert.equal(posts.length,2,'saved result cannot be submitted again');
   // Display top ten plus the actual rank below them; never post merely for opening.
   boardData={scores:Array.from({length:10},(_,i)=>({player_name:'PLAYER',score:1000-i})),rank:38,saved:false};
   ui.begin(selection);ui.finish(12);await ui.open(selection,ui.result);assert.equal(get('score-name').value,'','new round never reuses the previous name');assert.equal(nicknameStorage.size,0,'submitted names are not remembered');assert.equal(posts.length,2);assert.equal(get('end-scores-list').children.length,11);assert.equal(get('end-scores-list').children[10].children[0].textContent,'38');
-  boardData={...boardData,rank:3};await ui.load(ui.view);assert.equal(get('end-scores-list').children.length,10);assert.equal(get('end-scores-list').children[2].className,'board-row player-row');
+  boardData={...boardData,rank:3};await ui.load(ui.view);assert.equal(get('end-scores-list').children.length,10);assert.equal(get('end-scores-list').children[2].className,'board-row player-row');assert.equal(get('end-scores-list').children[2].children[2].textContent,'Lätt');
   let continued=false;await ui.leave(()=>{continued=true;});assert(continued);assert.equal(posts.at(-1).player_name,'ANONYM');
   ui.begin(selection);ui.finish(1);await ui.open(selection,ui.result);const count=posts.length;ui.dismiss();assert.equal(posts.length,count,'closing without action never posts');
   ui.begin(selection);ui.finish(7);await ui.open(selection,ui.result);get('score-name').value='BOSSE';failOnce=true;continued=false;await ui.leave(()=>{continued=true;});assert.equal(continued,false);assert.equal(ui.result.saved,false);await ui.leave(()=>{continued=true;});assert(continued);assert.deepEqual(posts.at(-1),posts.at(-2));

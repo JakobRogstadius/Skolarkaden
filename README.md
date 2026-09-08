@@ -8,7 +8,7 @@ All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och
 
 ## Gemensamma topplistor
 
-**Topplista** i menyn visar de 10 högsta resultaten för valt spel, övning och svårighet.
+**Topplista** i menyn visar de 10 högsta resultaten för valt spel och övning, gemensamt för alla svårighetsgrader. Varje rad visar svårighetsgraden.
 Omgångens slut visar samma topplista, med spelarens egen placering på en extra rad om den är lägre än tio. Namnet är valfritt: högst tio bokstäver i versaler, annars ANONYM. Enter i namnfältet sparar; Spela igen och Till menyn sparar innan de fortsätter. Att stänga webbläsaren skickar inget resultat.
 Tangentbord och röst delar topplista. Varje spel har en separat intern poängversion.
 Topplistor och sparande kräver internet. Om sparandet misslyckas stannar slutdialogen kvar så att samma resultat kan skickas igen utan dubbletter.

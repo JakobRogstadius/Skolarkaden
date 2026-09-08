@@ -4,7 +4,8 @@
 const SC=root.Starlight, API='https://skolarkaden-api.jakob-rogstadius.workers.dev';
 const $=id=>document.getElementById(id);
 const policy=root.SkolarkadenHighscorePolicy;
-const boardKey=selection=>[policy.versions[selection.kind],selection.kind,selection.mode,selection.pace].join(':');
+const boardKey=selection=>[policy.versions[selection.kind],selection.kind,selection.mode].join(':');
+const difficultyName=pace=>({gentle:'Lätt',steady:'Medel',brave:'Svår'}[pace]||'—');
 const displayName=name=>Array.from(String(name).normalize('NFC').toUpperCase()).slice(0,10).join('');
 const validName=name=>/^[\p{L}\p{M} ]{1,10}$/u.test(name);
 async function request(path,options={}){
@@ -43,7 +44,7 @@ class Highscores{
   open(selection,result=null){
     this.selection={...selection};this.shownResult=result;this.endView=Boolean(result);this.data=null;
     const token=++this.view;
-    if(!result){$('leaderboard-context').textContent=selection.label;$('leaderboard').showModal();}
+    if(!result){$('leaderboard-context').textContent=selection.label.split(' · ').slice(0,2).join(' · ');$('leaderboard').showModal();}
     else{
       $('score-name').readOnly=Boolean(result.payload);
       if(result.payload)$('score-name').value=result.payload.player_name;
@@ -59,19 +60,20 @@ class Highscores{
     if(this.endView){$('score-form').append($('score-entry'));$('score-entry').hidden=true;}
     list.replaceChildren();
     const savedIndex=rows.findIndex(row=>row.is_player),rank=this.data?.rank??null;
-    const own={player_name:result?.payload?.player_name||'',score:result?.score,is_player:true};
+    const own={player_name:result?.payload?.player_name||'',score:result?.score,difficulty:result?.selection.pace,is_player:true};
     if(result&&savedIndex<0&&rank!==null&&rank<=10){rows.splice(rank-1,0,own);rows.length=Math.min(rows.length,10);}
     for(let i=0;i<10;i++)this.row(list,rows[i],i+1);
     if(result&&!rows.some(row=>row.is_player))this.row(list,own,rank);
     if(focused&&!result?.saved){$('score-name').focus();if(selection!==null)$('score-name').setSelectionRange(selection,selection);}
   }
   row(list,row,rank){
-    const item=document.createElement('li'),number=document.createElement('span'),name=document.createElement('span'),score=document.createElement('span');
+    const item=document.createElement('li'),number=document.createElement('span'),name=document.createElement('span'),score=document.createElement('span'),difficulty=document.createElement('span');
     item.className='board-row'+(row?.is_player?' player-row':'');
     number.className='board-rank';number.textContent=rank===null?'—':String(rank);name.className='board-name';score.className='board-points';
     name.textContent=row?displayName(row.player_name):'—';score.textContent=row?Number(row.score).toLocaleString('sv-SE'):'—';
     if(row?.is_player&&this.shownResult&&!this.shownResult.saved){name.textContent='';$('score-entry').hidden=false;name.append($('score-entry'));}
-    item.append(number,name,score);list.append(item);
+    difficulty.className='board-difficulty';difficulty.textContent=difficultyName(row?.difficulty);
+    item.append(number,name,difficulty,score);list.append(item);
   }
   async load(token){
     const result=this.shownResult,board=boardKey(this.selection),generation=++this.readGeneration,status=$(this.endView?'end-scores-status':'scores-status');
@@ -97,7 +99,7 @@ class Highscores{
     if(!result||result.saved||result.pending||!result.id)return;
     const raw=$('score-name').value.normalize('NFC').trim(),name=raw.toUpperCase()||'ANONYM';
     if(!result.payload&&!policy.isBannedName(raw)&&!validName(name)){$('score-status').textContent='Skriv 1–10 bokstäver. Mellanslag går också bra.';return;}
-    result.payload ||= {submission_id:result.id,leaderboard_key:boardKey(result.selection),player_name:name,score:result.score};
+    result.payload ||= {submission_id:result.id,leaderboard_key:boardKey(result.selection)+':'+result.selection.pace,player_name:name,score:result.score};
     result.pending=true;$('score-submit').disabled=true;$('score-name').readOnly=true;$('score-status').textContent='Sparar…';
     try{
       const data=policy.isBannedName(result.payload.player_name)?{ok:true}:await request('/scores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(result.payload)});

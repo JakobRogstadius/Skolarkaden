@@ -152,29 +152,33 @@ export default {
       if (url.pathname !== '/scores') return reply({ error: 'not_found' }, 404);
       if (request.method === 'GET') {
         const board = url.searchParams.get('leaderboard');
-        if (!validBoard(board)) return reply({ error: 'invalid_leaderboard' }, 400);
+        // Read across the three stored difficulty keys; old scores need no migration.
+        const group = typeof board === 'string' ? board.split(':').slice(0, 3).join(':') : '';
+        if (!(board === group ? validBoard(group + ':gentle') : validBoard(board))) return reply({ error: 'invalid_leaderboard' }, 400);
+        const boards = [...PACES].map(pace => group + ':' + pace);
         const submission = url.searchParams.get('submission') || '';
         const rawScore = url.searchParams.get('score');
         if ((submission && !UUID.test(submission)) || (rawScore !== null &&
             (!/^\d+$/.test(rawScore) || Number(rawScore) > 1000000))) return reply({ error: 'invalid_score' }, 400);
         const { results } = await env.DB.prepare(`
-          SELECT player_name, score, created_at, submission_id = ? AS is_player FROM highscores
-          WHERE leaderboard_key = ? ORDER BY score DESC, created_at ASC, submission_id ASC LIMIT 10
-        `).bind(submission, board).all();
+          SELECT player_name, score, created_at, leaderboard_key, submission_id = ? AS is_player FROM highscores
+          WHERE leaderboard_key IN (?, ?, ?) ORDER BY score DESC, created_at ASC, submission_id ASC LIMIT 10
+        `).bind(submission, ...boards).all();
         const own = submission ? await env.DB.prepare(`SELECT score, created_at, submission_id FROM highscores
-          WHERE leaderboard_key = ? AND submission_id = ?`).bind(board, submission).first() : null;
+          WHERE leaderboard_key IN (?, ?, ?) AND submission_id = ?`).bind(...boards, submission).first() : null;
         let rank = null;
         if (own) {
-          const row = await env.DB.prepare(`SELECT count(*) AS n FROM highscores WHERE leaderboard_key = ? AND
+          const row = await env.DB.prepare(`SELECT count(*) AS n FROM highscores WHERE leaderboard_key IN (?, ?, ?) AND
             (score > ? OR (score = ? AND (created_at < ? OR (created_at = ? AND submission_id <= ?))))`)
-            .bind(board, own.score, own.score, own.created_at, own.created_at, own.submission_id).first();
+            .bind(...boards, own.score, own.score, own.created_at, own.created_at, own.submission_id).first();
           rank = row.n;
         } else if (rawScore !== null) {
-          const row = await env.DB.prepare('SELECT count(*) AS n FROM highscores WHERE leaderboard_key = ? AND score >= ?')
-            .bind(board, Number(rawScore)).first();
+          const row = await env.DB.prepare('SELECT count(*) AS n FROM highscores WHERE leaderboard_key IN (?, ?, ?) AND score >= ?')
+            .bind(...boards, Number(rawScore)).first();
           rank = row.n + 1;
         }
-        return reply({ leaderboard: board, scores: results, rank, saved: Boolean(own) });
+        return reply({ leaderboard: group, scores: results.map(({ leaderboard_key, ...row }) =>
+          ({ ...row, difficulty: leaderboard_key.split(':')[3] })), rank, saved: Boolean(own) });
       }
       if (request.method !== 'POST') return reply({ error: 'method_not_allowed' }, 405, { Allow: 'GET, POST, OPTIONS' });
       if (origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_required' }, 403);
