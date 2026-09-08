@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 110">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="44 8 64 64">
 <title>Hungrig dinosaurie</title>
-<rect width="110" height="110" rx="22" fill="#142b35"/>
-<g transform="translate(0 8)"><path d="M47 52Q22 82 7 57Q18 91 54 72" fill="#659663"/><path d="M42 77Q29 38 58 38L59 23Q56 12 78 12H98Q106 12 106 25V39H78L72 74Z" fill="#a1ce8a"/><ellipse cx="62" cy="57" rx="12" ry="21" fill="#deE6a5"/><path d="M49 66V82H67M70 42 78 50 85 46" fill="none" stroke="#a1ce8a" stroke-width="9" stroke-linecap="round"/><circle cx="72" cy="22" r="7" fill="#fff3ce"/><circle cx="74" cy="23" r="3" fill="#315749"/><circle cx="100" cy="26" r="2" fill="#537b58"/><path d="M84 37 88 43 92 37M94 37 98 43 102 37" fill="#fff3ce"/></g>
+<rect x="44" y="8" width="64" height="64" fill="#142b35"/>
+<g><path d="M47 52Q22 82 7 57Q18 91 54 72" fill="#659663"/><path d="M42 77Q29 38 58 38L59 23Q56 12 78 12H98Q106 12 106 25V39H78L72 74Z" fill="#a1ce8a"/><ellipse cx="62" cy="57" rx="12" ry="21" fill="#deE6a5"/><path d="M49 66V82H67M70 42 78 50 85 46" fill="none" stroke="#a1ce8a" stroke-width="9" stroke-linecap="round"/><circle cx="72" cy="22" r="7" fill="#fff3ce"/><circle cx="74" cy="23" r="3" fill="#315749"/><circle cx="100" cy="26" r="2" fill="#537b58"/><path d="M84 37 88 43 92 37M94 37 98 43 102 37" fill="#fff3ce"/></g>
 </svg>
