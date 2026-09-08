@@ -37,4 +37,4 @@ body.playing.voice-play .arena{height:clamp(540px,calc(100dvh - 82px),900px)}
 .setup-field{min-width:0}.setup-help{margin:7px 0 0;font-size:12px;line-height:1.45;font-weight:normal;color:var(--muted);text-align:left}.menu-bottom{justify-content:flex-end}
 @media(max-width:520px){.game-card{justify-content:center}}
 
-.food-card svg,.eggs-card svg{display:block;max-width:100%;max-height:100%}
+.game-card .card-art svg{display:block;max-width:100%;max-height:100%}
