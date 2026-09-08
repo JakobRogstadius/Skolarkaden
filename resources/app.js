@@ -5,6 +5,12 @@ const queue=new SC.AnswerQueue(),microphone=new SC.Microphone(),sounds=new SC.Ga
 const input=new SC.AnswerInput({field:$('answer'),form:$('answer-form'),queue,microphone,retainFocus:()=>game?.state==='playing'&&!document.querySelector('dialog[open]'),getCandidates:()=>game?.state==='playing'?game.getTargets().map(t=>t.item):[]});
 let game,renderer,kind='city',busy=false,soundOn=true,lastOptions=null,log=[],lastTargetKey=null,lastUi=0,uiFrame,replaying=null,lifecycle=0;
 const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer]};
+const highscores=new SC.Highscores({getSelection:()=>scoreSelection()});
+function scoreSelection(selected=options()){
+  return {kind,mode:selected.mode,pace:selected.pace,
+    label:[names[kind],SC.modes[selected.mode].name,
+      {gentle:'Lätt',steady:'Medel',brave:'Svår'}[selected.pace]].join(' · ')};
+}
 const safeRead=key=>{try{return Number(localStorage.getItem(key))||0;}catch(_){return 0;}},safeWrite=(key,v)=>{try{localStorage.setItem(key,String(v));}catch(_){}};
 let best=0,noticeUntil=0;
 try{localStorage.removeItem('starlight-friends-v1');}catch(_){}
@@ -48,6 +54,7 @@ function onGameEvent(e){
   if(e.type==='player-down')input.setEnabled(false);
   if(e.type==='pause'||e.type==='end')sounds.stopCampfire();
   if(e.type==='end'){
+    highscores.finish(e.score);
     input.setEnabled(false);$('pause').disabled=true;$('end-overlay').hidden=false;$('pause-overlay').hidden=true;
     if(e.score>best){best=e.score;safeWrite(bestKey(),best);}
     $('result-kicker').textContent=['paint','dinosaur','marshmallows'].includes(kind)?'OMGÅNGEN ÄR KLAR':e.won?'DU KLARADE DET!':'EN NY CHANS VÄNTAR';
@@ -63,7 +70,7 @@ async function start(){
   try{
     input.setEnabled(false);input.configure(speechOptions());await input.prepare();if(token!==lifecycle)return;
     sounds.stopCampfire();sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
-    const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});lastOptions=options();$('arena').className='arena '+kind;$('play').dataset.game=kind;game.start(lastOptions);queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
+    const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});lastOptions=options();highscores.begin(scoreSelection(lastOptions));$('arena').className='arena '+kind;$('play').dataset.game=kind;game.start(lastOptions);queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
     best=safeRead(bestKey());$('game-title').textContent=names[kind];$('objective').closest('.hud-objective').hidden=['marshmallows','eggs'].includes(kind);$('answer').placeholder=input.singleLetter()?'…':SC.modes[game.mode].placeholder.replace('…',' ↵');$('answer-hint').textContent=typingHint();$('keyboard').hidden=game.mode!=='bopomofo';$('input-dock').hidden=input.voice.enabled;document.body.classList.add('playing');document.body.classList.toggle('voice-play',input.voice.enabled);
     input.setEnabled(true);if(input.voice.enabled)input.start();
     input.focus();lastTargetKey=null;renderUi();
