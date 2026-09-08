@@ -1,3 +1,13 @@
+# Illustrationer för Meteorregn, Odla blommor och Bikupan
+
+2026-09-08.
+
+De tre återstående symbolbilderna ersätts med egna SVG-illustrationer: meteorer ovanför en stad med en laserkanon, två blomkrukor med en vattenkanna samt en halmkupa med bin och en blomma. Samma platta pastellfärger, rundade former och bildyta används som på övriga spelkort. Alla kortillustrationer skalas inom sina bildytor på smala skärmar.
+
+Samtliga tre bilder har renderats och granskats i stor och liten storlek. Befintlig meny- och spelintegration passerar. Ingen manuell webbläsarprovning gjordes.
+
+---
+
 # Spelkortens illustrationer och rubriker
 
 2026-09-08.
