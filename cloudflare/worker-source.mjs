@@ -1,7 +1,7 @@
 // Paste this entire file into skolarkaden-api's Cloudflare editor and deploy.
 // Required D1 binding: DB. Run schema.sql first. No browser API key is used.
 const ALLOWED_ORIGIN = 'https://jakobrogstadius.github.io';
-const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs']);
+const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home']);
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',
   'chineseSimpl1', 'chineseSimpl2', 'chineseSimpl3', 'chineseSimpl4',

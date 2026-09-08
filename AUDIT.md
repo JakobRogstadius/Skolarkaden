@@ -1,3 +1,17 @@
+# Städa hemmet
+
+2026-09-08.
+
+Nionde spelet har fem rum, två föräldrar, 1/2/3 barn och lika många barnsängar. Lägenheten och möblerna ritas med samma geometriska språk som de befintliga personmodellerna. Gångvägar beräknas på lägenhetens faktiska plan med dörröppningar och möbler som hinder; ritning och fönsterstorlek ändrar inte simuleringen.
+
+Ett svar slutför en hushållsuppgift. Kläder följs av tvätt när korgen blir full; matlagning följs av måltid och disk. Staplar och korgar får en gemensam uppgift var. Spelaren får 10 grundpoäng och 0–10 för svarstiden under de första tio sekunderna. Bonusen låses vid inmatning. Sju olösta uppgifter utlöser omedelbart arga hopp och en hjälpinsats med en gratis uppgift per övrig familjemedlem. Övertagna köreservationer tas bort individuellt, även när flera mål har samma text eller tonlösa pinyin. Påbörjat spelarbete stjäls inte.
+
+Efter 40 avklarade uppgifter upphör nya vardagsaktiviteter; familjen städar rester och fullföljer redan påbörjade tvätt- och måltidskedjor. Även delvis fyllda behållare töms. Alla övriga familjemedlemmar firar och spelarföräldern lägger sig på hallgolvet före den gemensamma resultatdialogen. Alla övningar, talinmatning, köregler, femsekunders pinyinfördröjning och tonlösa talmatchningar används. Ny menyillustration och syntetiserade städ-/hjälpljud ingår.
+
+Verifiering omfattar verkliga gångsegment genom hela lägenheten, bedräknare, exakt bonustid, tvätt/diskkedjor, sjugränsen, köborttagning för upprepade homofoner, paus, omstart och 72 fullständiga omgångar med svarsfördröjning, misstag, tystnad eller bara felaktiga svar. Separata integrationsprov går genom faktisk HTML, delad inmatning, poäng, slutdialog och omspelning. Grafiken granskas vid stora och smala bredder. Global topplista är registrerad i både klient och genererad Worker; den senare behöver distribueras separat till Cloudflare. Samtliga 25 testsviter passerar. Ingen produktionsdata skrivs i testerna.
+
+---
+
 # Balanserad behovstakt i Odla blommor
 
 2026-09-08.

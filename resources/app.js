@@ -4,7 +4,7 @@
 const queue=new SC.AnswerQueue(),microphone=new SC.Microphone(),sounds=new SC.GameSounds();
 const input=new SC.AnswerInput({field:$('answer'),form:$('answer-form'),queue,microphone,retainFocus:()=>game?.state==='playing'&&!document.querySelector('dialog[open]'),getCandidates:()=>game?.state==='playing'?game.getTargets().map(t=>t.item):[]});
 let game,renderer,kind='city',busy=false,soundOn=true,lastOptions=null,log=[],lastTargetKey=null,lastUi=0,uiFrame,replaying=null,lifecycle=0;
-const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer]};
+const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer],home:[SC.HomeGame,SC.HomeRenderer]};
 const highscores=new SC.Highscores({getSelection:()=>scoreSelection()});
 function scoreSelection(selected=options()){
   return {kind,mode:selected.mode,pace:selected.pace,
@@ -49,7 +49,7 @@ function bestKey(){
 }
 function onGameEvent(e){
   if(renderer?.game===game)renderer.scoreEvent(e);
-  const mapped={early:'camp-check',think:kind==='marshmallows'?'camp-check':'think',fire:'laser',impact:'crash',hit:kind==='city'?'explosion':kind==='food'?'serve':kind==='hive'?'honey':kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-gulp':kind==='marshmallows'?'camp-good':null,miss:kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-air':'miss','customer-left':'miss','plant-dead':'crash',need:null,impatient:'tick'};
+  const mapped={early:'camp-check',think:kind==='marshmallows'?'camp-check':'think',fire:'laser',impact:'crash',hit:kind==='city'?'explosion':kind==='food'?'serve':kind==='hive'?'honey':kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-gulp':kind==='marshmallows'?'camp-good':kind==='home'?'home-clean':null,miss:kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-air':'miss','customer-left':'miss','plant-dead':'crash',need:null,impatient:'tick'};
   const sound=Object.hasOwn(mapped,e.type)?mapped[e.type]:e.type;
   if(soundOn&&sound&&!(e.type==='end'))sounds.play(sound,input.listening?.23:1);
   if(e.type==='rare-arrival')notice('✦ '+SC.rarePeople.find(r=>r.id===e.look.exotic).name);
@@ -63,7 +63,7 @@ function onGameEvent(e){
     highscores.finish(e.score);
     input.setEnabled(false);$('pause').disabled=true;$('end-overlay').hidden=false;$('pause-overlay').hidden=true;
     if(e.score>best){best=e.score;safeWrite(bestKey(),best);}
-    $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Trädgården är klar.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!',eggs:'Skeppet är säkrat!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'Alla plantor vissnade.',hive:'Honungen räckte inte.',eggs:'Rymdkrypen tog över.'}[kind]);
+    $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Trädgården är klar.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!',eggs:'Skeppet är säkrat!',home:'Skönt att vara klar!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'Alla plantor vissnade.',hive:'Honungen räckte inte.',eggs:'Rymdkrypen tog över.'}[kind]);
     $('result-game').textContent=names[kind];$('result-context').textContent=SC.modes[game.mode].name+' · '+{gentle:'Lätt',steady:'Medel',brave:'Svår'}[game.pace];
     highscores.showEnd();
     if(soundOn&&!(kind!=='city'&&e.won))sounds.play(e.won?'win':'miss');$('again').focus({preventScroll:true});
@@ -93,7 +93,7 @@ $('start').addEventListener('click',start);$('again').addEventListener('click',(
 root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){
   // Canvas labels are primary. Keep a compact alternative for assistive technology.
-  const hints=SC.pinyinHints(game),text=game.getTargets().map(t=>t.item.label+(hints.has(t)?' · '+t.item.hint:'')).join(', ');
+  const hints=SC.pinyinHints(game),text=game.getTargets().map(t=>(kind==='home'?SC.homeTaskTypes[t.type].name+': ':'')+t.item.label+(hints.has(t)?' · '+t.item.hint:'')).join(', ');
   if(text!==lastTargetKey){lastTargetKey=text;$('targets').textContent=text;}
 }
 function renderUi(){
@@ -106,6 +106,7 @@ function renderUi(){
   else if(kind==='food'){objective='◷ '+Math.ceil(game.timeLeft);secondary='♥ '.repeat(game.lives)+'♡ '.repeat(Math.max(0,5-game.lives));value=game.elapsed/90*100;}
   else if(kind==='hive'){objective=Math.min(100,Math.floor(game.honey/game.honeyGoal*100))+'% 🍯';secondary=game.season()+' · '+Math.ceil(game.timeLeft())+' s ❄';value=game.honey/game.honeyGoal*100;}
   else if(kind==='marshmallows'||kind==='eggs'){objective='';secondary='';value=0;}
+  else if(kind==='home'){objective=Math.min(game.cleaned,game.total)+' / '+game.total;secondary='';value=Math.min(100,game.cleaned/game.total*100);}
   else if(kind==='paint'||kind==='dinosaur'){objective=game.passed+' / '+game.total;secondary='';value=game.passed/game.total*100;}
   else{const flowers=game.pots.filter(p=>p.bloom).length;objective=flowers+' / '+game.pots.length+' ✿';secondary='';value=game.pots.reduce((sum,p)=>sum+(p.dead?1:p.growth),0)/game.pots.length*100;}
   $('objective').textContent=objective;$('secondary').textContent=secondary;$('progress').value=value;renderTargets();

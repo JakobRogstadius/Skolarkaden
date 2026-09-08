@@ -125,6 +125,10 @@
         else if(kind==='camp-good'){tone(660,660,.13,0,.013,'sine');tone(990,990,.20,.10,.010,'sine');}
         else if(kind==='camp-check'){tone(320,360,.08,0,.009,'triangle');tone(360,300,.1,.12,.007,'triangle');}
         else if(kind==='camp-toss')tone(115,65,.10,0,.010,'sine');
+        else if(kind==='home-clean'){tone(740,880,.1,0,.011,'sine');tone(1100,1100,.15,.075,.009,'sine');}
+        else if(kind==='home-help')tone(530,650,.09,0,.006,'sine');
+        else if(kind==='home-anger'){for(let i=0;i<3;i++){tone(105,62,.1,i*.32,.018,'sine');tone(210,150,.14,i*.32,.009,'triangle');}}
+        else if(kind==='home-together'){tone(440,590,.12,0,.01,'sine');tone(660,790,.15,.13,.01,'sine');}
         else if(kind==='egg-crack'){noise(.09,1300);tone(150,65,.12,.04,.018,'sine');}
         else if(kind==='egg-hatch'){noise(.32,1800);tone(220,80,.28,0,.019,'triangle');tone(920,470,.16,.12,.008,'sine');}
         else if(kind==='egg-flame'){noise(.58,3200);tone(72,46,.48,0,.023,'sine');}

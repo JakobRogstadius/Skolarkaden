@@ -3,6 +3,15 @@
 The frontend calls `https://skolarkaden-api.jakob-rogstadius.workers.dev`.
 The website remains on GitHub Pages. No API token belongs in the frontend.
 
+## Add Städa hemmet to an existing installation
+
+Deploy the updated complete [worker.mjs](worker.mjs) to **skolarkaden-api**, keeping
+its existing **DB** binding. This adds `home` to the allowed games and score
+version `v1`; existing games, versions and score rows are preserved. No D1 schema
+change is required. Verify a read of `/scores?leaderboard=v1:home:swedish:gentle`
+returns a `scores` array. The new game's scoreboard can save and proceed to replay
+or the menu once that Worker is deployed.
+
 ## Finish the existing dashboard setup
 
 1. Open the existing D1 database **skolarkaden → Console**. Run the statements in

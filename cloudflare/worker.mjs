@@ -4,7 +4,7 @@
 (function(root){
 'use strict';
 // Bump only the affected game's version when its scoring/rules change.
-const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2'});
+const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1'});
 // Longer distinctive strings also match inside a name (including separated or
 // simple leetspeak spellings). Short/ambiguous words only match complete tokens.
 const substrings=`
@@ -71,7 +71,7 @@ root.SkolarkadenHighscorePolicy=Object.freeze({versions,isBannedName});
 // Paste this entire file into skolarkaden-api's Cloudflare editor and deploy.
 // Required D1 binding: DB. Run schema.sql first. No browser API key is used.
 const ALLOWED_ORIGIN = 'https://jakobrogstadius.github.io';
-const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs']);
+const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home']);
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',
   'chineseSimpl1', 'chineseSimpl2', 'chineseSimpl3', 'chineseSimpl4',

@@ -1,6 +1,6 @@
 # Skolarkaden
 
-Åtta små lärspel för tangentbord eller mikrofon. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
+Nio små lärspel för tangentbord eller mikrofon. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
 
 **Öppna `index.html` i Chrome.** Behåll `resources` bredvid HTML-filen. Ingen installation, byggprocess eller webbserver behövs. Om du laddar ned projektet som ZIP: packa upp hela filen först.
 
@@ -42,6 +42,7 @@ Varje slutförd skötselåtgärd ger 10 poäng. Flera åtgärder av samma typ i 
 | Hungrig dinosaurie | Fånga så många av de 40 små figurerna som möjligt. |
 | Marshmallows | Ta in gyllene marshmallows innan solen går upp. |
 | Äggröra | Bränn spruckna rymdägg och rymdkryp för att skydda besättningen. |
+| Städa hemmet | Städa 40 hushållsuppgifter och gör sedan klart det sista tillsammans. |
 
 Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övning eller valt språk.
 
@@ -116,6 +117,20 @@ Trädgårdsmästaren går med 20 procent av sin tidigare hastighet. Varje planta
 
 En planta kan vissna utan att avsluta omgången. Döda plantor får inga fler uppgifter och kan inte återupplivas; påbörjad skötsel av dem avbryts. Omgången slutar när varje planta antingen blommar eller är död. Resultatet visar båda antalen. Finns minst en blommande planta firas resultatet, annars slutar spelet med en förlust.
 
+## Städa hemmet
+
+En lägenhet i isometrisk genomskärning har kök/matplats, vardagsrum, föräldrasovrum, barnrum och badrum/tvätt, med en förbindande hall. Två föräldrar och 1, 2 eller 3 barn bor där på Lätt, Medel respektive Svår. Barnrummet har samma antal barnsängar. Familjen använder de gemensamma personmodellerna. Alla går genom dörröppningar och runt möbler; fönsterstorleken ändrar inte vägar eller gångtider.
+
+Familjen använder rummen och lämnar kläder, leksaker, disk, sopor och öppna skåp, eller blir hungrig. Ett svar räcker till en uppgift. Kläder bärs till tvättkorgen; tre plagg skapar en separat tvättuppgift, som bärs till maskinen. Nya plagg i korgen under en pågående tvätt blir kvar. Matlagning och måltid leder senare till en separat diskuppgift. Högar, fulla korgar och fulla soptunnor har en uppgift var. Felaktiga svar ger en kort funderandepaus.
+
+Varje uppgift som spelaren gör ger 10 poäng plus en bonus som minskar linjärt från 10 till 0 under de första tio sekunderna. Bonusen avrundas till heltal och låses när rätt svar tas emot, så att gångavstånd och kötid inte sänker den. En liten poängtext ersätter den slutförda uppgiftsbubblan. Matematik ger längre pauser mellan familjens aktiviteter men samma bonusregel.
+
+Vid sju olösta uppgifter blir spelarföräldern genast arg och hoppar tre gånger, utan förvarning. De andra blir rädda och springer för att göra en uppgift var utan poäng. De kan ta över köade uppgifter: exakt det tillhörande svaret tas då bort, medan andra svar för likadana ord eller homofoner behålls. Spelarens redan påbörjade uppgift förblir hos spelaren. Familjen skapar inget nytt vardagsstök under hjälpinsatsen; redan påbörjade måltider kan fortfarande ge disk.
+
+Efter 40 avklarade uppgifter, oavsett vem som gjort dem, upphör nytt vardagsstök. Familjen hjälper till tills kvarvarande uppgifter, pågående måltider och delvis fyllda korgar och soptunnor är klara. Spelaren kan fortsätta svara och få poäng under denna avslutning. Därför kan slutantalet bli högre än 40. När hemmet är färdigstädat gör familjen tre glada hopp, medan spelarföräldern går till hallmattan och lägger sig på golvet. Spelet kan inte förloras. Paus och omstart använder samma funktioner som övriga spel.
+
+Spelet använder topplistenyckeln `v1:home:<övning>:<svårighet>`. Den uppdaterade `cloudflare/worker.mjs` behöver distribueras till den befintliga Workern för att API:t ska acceptera det nya spelet; databasens schema behöver inte ändras.
+
 ## Äggröra
 
 En besättning på sex människor, inklusive spelaren med eldkastare, kommer in i ett mörkt rymdskepp med slemmiga ägg, kåda och våta nät. Vännerna strövar omkring och undersöker rummet. Lätt, Medel och Svår ger 10, 16 respektive 21 ägg (cirka 30 procent fler). Äggen står slumpmässigt utspridda med avstånd mellan varandra, utan rutnätsrader. De spricker vid olika slumpmässiga tider och kläcks 15 procent snabbare: tiden från första sprickan till kläckning är 9–15 sekunder delat med 1,15. Sprickor och öppnade äggflikar visar kläckningen; inga förloppsmätare visas.
@@ -146,7 +161,7 @@ Klassiska skript används så att `file://` fungerar utan modulladdare, externa 
 | `resources/speech.js` | Tidig köning, rättningar, orddelning och deduplicering av tal. |
 | `resources/voice.js` | Mikrofonens livscykel. |
 | `resources/data.js`, `pinyin.js` | Övningar, ordböcker, fasta matematiknivåer och svarsmatchning. |
-| `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js`, `marshmallows.js`, `eggs.js` | Åtta separata simuleringar och canvas-renderare. |
+| `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js`, `marshmallows.js`, `eggs.js`, `home.js`, `home-renderer.js` | Nio separata simuleringar och canvas-renderare. |
 | `resources/people.js`, `plants.js`, `sounds.js` | Gemensamma figurer, växter och syntetiska ljud. |
 | `resources/app.js` | Menyer, paus, HUD och anslutning av modulerna. |
 
