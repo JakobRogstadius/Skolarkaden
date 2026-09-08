@@ -18,7 +18,7 @@ The website remains on GitHub Pages. No API token belongs in the frontend.
 4. Open `/health`. Expected response:
    `{"ok":true,"database":"connected","api":"highscores-v1"}`.
    The check includes both tables and the `ip` column.
-5. Open `/scores?leaderboard=v1:city:swedish:gentle`. Initially this returns an empty
+5. Open `/scores?leaderboard=v2:city:swedish:gentle`. Initially this returns an empty
    `scores` array. Reading the URL directly does not create a test score.
 6. Merge the accompanying frontend change into `main` and let GitHub Pages publish.
    In Skolarkaden, play a game, choose **Spara på topplistan**, enter a nickname and
@@ -33,7 +33,7 @@ available, but that origin cannot submit to the production leaderboard.
 ## Data and behaviour
 
 - Keys contain exactly **game version : game : exercise : difficulty**, e.g.
-  `v1:city:swedish:gentle`. Input mode and language are not separate key components.
+  `v2:city:swedish:gentle`. Input mode and language are not separate key components.
   The exercise still distinguishes Swedish, English and Chinese exercises.
 - Game versions live in `resources/highscore-policy.js`. Increment the affected
   game's value when changing scoring rules; deploy Worker and frontend together.

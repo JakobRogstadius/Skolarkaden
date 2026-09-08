@@ -18,6 +18,10 @@ API:t använder Cloudflare Worker + D1. Installationssteg och underhåll finns i
 men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 `resources/highscore-policy.js` och tillämpas både i spelet och i API:t.
 
+## Meteorregns poäng
+
+Första meteoren ger 30 poäng, sedan 31, 32 och så vidare utan tak. Sviten bryts av ett missat skott eller en förstörd byggnad/kanon. Vid omgångens slut ger varje kvarvarande byggnad och kanon 50 bonuspoäng, även vid förlust. Meteorregn använder poängversion v2.
+
 ## Spelen
 
 | Spel | Uppdrag |

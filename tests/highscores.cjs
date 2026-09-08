@@ -10,7 +10,7 @@ const DB={prepare(sql){let params=[];return {
   async all(){return {results:db.prepare(sql).all(...params)};},
   async first(){return db.prepare(sql).get(...params)||null;}
 };}};
-const origin='https://jakobrogstadius.github.io',board='v1:city:swedish:gentle';
+const origin='https://jakobrogstadius.github.io',board='v2:city:swedish:gentle';
 const payload=(extra={})=>({submission_id:webcrypto.randomUUID(),leaderboard_key:board,player_name:'Stefan',score:123,...extra});
 class Element extends EventTarget{
   constructor(){super();this.value='';this.textContent='';this.children=[];this.open=false;}
@@ -33,7 +33,7 @@ class Element extends EventTarget{
   assert.equal(db.prepare('SELECT count(*) AS n FROM highscores').get().n,1,'retry is idempotent');
   assert.equal((await call('POST','/scores',{...first,score:999})).status,409);
   for(const score of [-1,1.5,'123',1000001])assert.equal((await call('POST','/scores',payload({score}))).status,400);
-  for(const key of ['v1:city:swedish:sv-SE:typing:gentle','v1:city:swedish:gentle:','v1:bogus:swedish:gentle','v2:city:swedish:gentle']){
+  for(const key of ['v1:city:swedish:sv-SE:typing:gentle','v1:city:swedish:gentle:','v1:bogus:swedish:gentle','v1:city:swedish:gentle']){
     assert.equal((await call('POST','/scores',payload({leaderboard_key:key}))).status,400);
   }
   const before=db.prepare('SELECT count(*) AS n FROM highscores').get().n;
@@ -71,7 +71,7 @@ class Element extends EventTarget{
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),board);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'eggs'}),'v2:eggs:swedish:gentle');
-  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,game==='eggs'?'v2':'v1');
+  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,['eggs','city'].includes(game)?'v2':'v1');
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:eggs:swedish:gentle'}))).status,201);
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:eggs:swedish:gentle'}))).status,400);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,input:'browser',lang:'zh-TW'}),board);

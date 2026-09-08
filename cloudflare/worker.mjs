@@ -4,7 +4,7 @@
 (function(root){
 'use strict';
 // Bump only the affected game's version when its scoring/rules change.
-const versions=Object.freeze({city:'v1',food:'v1',garden:'v1',hive:'v1',paint:'v1',dinosaur:'v1',marshmallows:'v1',eggs:'v2'});
+const versions=Object.freeze({city:'v2',food:'v1',garden:'v1',hive:'v1',paint:'v1',dinosaur:'v1',marshmallows:'v1',eggs:'v2'});
 // Longer distinctive strings also match inside a name (including separated or
 // simple leetspeak spellings). Short/ambiguous words only match complete tokens.
 const substrings=`
