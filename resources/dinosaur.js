@@ -129,7 +129,6 @@ class DinosaurRenderer extends SC.SceneRenderer{
   // neck cannot conceal the startled faces beside the mouth during a chase.
   actors.push({y:g.dino.y-70*g.scale()/h,draw:()=>this.dinosaur()});actors.sort((a,b)=>a.y-b.y).forEach(a=>a.draw());
   this.plants(true);this.labels();
-  for(const e of g.effects){c.save();c.globalAlpha=clamp(1-e.age/1.3,0,1);c.font='bold 27px system-ui';c.textAlign='center';c.lineWidth=4;c.strokeStyle='#315549';const x=e.x*w,y=e.y*h-185*g.scale()-e.age*40;c.strokeText(e.text,x,y);c.fillStyle='#ffdf82';c.fillText(e.text,x,y);c.restore();}
   if(g.job?.stage==='confused'){const d=g.dino,text=g.job.entry.text+' ?',max=w<600?142:220;c.font='bold 16px system-ui';const bw=clamp(c.measureText(text).width+24,52,max),x=clamp(d.x*w-bw/2,8,w-bw-8),y=Math.max(142,d.y*h-215*g.scale());this.round(x,y,bw,34,12,'#fff0ce','#bfa46d');c.fillStyle='#6c6048';c.textAlign='center';c.fillText(text,x+bw/2,y+23,bw-14);}
   if(['celebrating','won'].includes(g.state)){const text='Mätt och belåten!',bw=Math.min(276,w-24);this.round((w-bw)/2,h*.28,bw,46,16,'#fff3cf','#c4a66b');c.fillStyle='#3b6150';c.textAlign='center';c.font='bold 21px system-ui';c.fillText(text,w/2,h*.28+30,bw-16);}
  }
@@ -195,6 +194,7 @@ class DinosaurRenderer extends SC.SceneRenderer{
    candidates.sort((a,b)=>Math.hypot(a.x+bw/2-anchor.x,a.y+bh-anchor.y)-Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y));
    if(w>=700)for(const offset of [bw+6,-bw-6,0])candidates.unshift({x:clamp(anchor.x-bw/2+offset,8,w-bw-8),y:clamp(anchor.y-bh-5,top,bottom),w:bw,h:bh});
    const box=candidates.find(b=>[...boxes,...blocked].every(a=>!overlaps(a,b)))||candidates.find(b=>boxes.every(a=>!overlaps(a,b)))||candidates[0];boxes.push({...box,id:p.id});
+   this.rememberScoreAnchor(p,box,'#466748','#f2efd8');
    c.strokeStyle='#54725da0';c.lineWidth=1.5;c.beginPath();c.moveTo(anchor.x,anchor.y+4);c.lineTo(box.x+bw/2,box.y+bh);c.stroke();
    const state=states.get(p);c.lineWidth=state==='active'?3:1;this.round(box.x,box.y,bw,bh,10,state?'#a8ed9d':'#fff3d5',state==='active'?'#2f7953':p.look.exotic?'#c5953c':'#a5a473');c.lineWidth=1;
    c.fillStyle='#365749';c.font='bold '+font+'px system-ui';c.textAlign='center';c.fillText(p.item.label,box.x+bw/2,box.y+23,bw-12);if(hint){c.font='12px system-ui';c.fillText(p.item.hint||'',box.x+bw/2,box.y+40,bw-12);}

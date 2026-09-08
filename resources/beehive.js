@@ -90,7 +90,7 @@ class BeehiveGame{
     this.move(b,{x:b.wander.x+Math.sin(b.age*3)*.07,y:b.wander.y+Math.cos(b.age*3)*.045},dt,.115);
     if(b.age>=3.6){b.stage='return';b.age=0;}
    }else if(b.stage==='return'&&this.move(b,this.hive,dt)){
-    if(b.nectar){this.honey++;this.hits++;const points=this.jarCount?15:10;this.score+=points;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.effects.push({x:b.x,y:b.y,age:0});if(this.jarCount)this.lastJarAt=this.clock;this.emit('hit',{entry:j.entry,points});
+    if(b.nectar){this.honey++;this.hits++;const points=this.jarCount?15:10;this.score+=points;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.effects.push({x:b.x,y:b.y,age:0});if(this.jarCount)this.lastJarAt=this.clock;this.emit('hit',{entry:j.entry,target:j.target,points});
      if(this.honey>=this.honeyGoal&&!this.fullAnnounced){this.fullAnnounced=true;this.emit('hive-full');}
     }b.stage='idle';b.job=null;b.nectar=0;b.age=0;
    }
@@ -210,6 +210,7 @@ class BeehiveRenderer extends SC.SceneRenderer{
   }
   const states=g.getTaskStates(),byId=new Map(targets.map(p=>[p.id,p]));
   for(const box of this.labelBoxes){const p=byId.get(box.id);if(!p)continue;const q=this.point(p),state=states.get(p),hint=hints.has(p),{x,y,w:bw,h:bh}=box;
+   this.rememberScoreAnchor(p,box,'#695331','#f5efda');
    c.strokeStyle='#75865b90';c.lineWidth=1;c.beginPath();c.moveTo(q.x,q.y-35*s);c.lineTo(x+bw/2,y+bh/2);c.stroke();
    c.lineWidth=state==='active'?2:1;this.round(x,y,bw,bh,8,state?'#ffe176':'#fff9e1',state==='active'?'#b77a2c':'#b5a577');c.lineWidth=1;c.fillStyle='#50432d';c.font='bold '+font+'px system-ui';c.textAlign='center';c.fillText(p.item.label,x+bw/2,y+22,bw-14);
    if(hint){c.font='11px system-ui';c.fillText(p.item.hint||'',x+bw/2,y+36,bw-14);}

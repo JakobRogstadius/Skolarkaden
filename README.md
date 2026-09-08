@@ -163,3 +163,5 @@ npm test
 ## Licens
 
 Spelet omfattas av repositoryts befintliga BSD 2-Clause-licens i `LICENSE`. Den lokala pinyintabellen kommer från [mozillazg/pinyin-data](https://github.com/mozillazg/pinyin-data/tree/923b108dc5d45dee061324c011b478fb649f8b73) och omfattas av MIT-licensen i `resources/pinyin-LICENSE.txt`.
+
+Slutförda uppgifter ersätts kort av en diskret text med det faktiskt tilldelade antalet poäng (”N poäng”), som tonar bort efter cirka 1,35 sekunder. Texten följer respektive spels färgskala och pausar tillsammans med spelet. Skrämselpoäng visas intill den fortfarande aktiva uppgiften. Poängregler och spelversioner påverkas inte.

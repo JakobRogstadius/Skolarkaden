@@ -48,6 +48,7 @@ function bestKey(){
   return version==='v1'?legacy:legacy+':'+version;
 }
 function onGameEvent(e){
+  if(renderer?.game===game)renderer.scoreEvent(e);
   const mapped={early:'camp-check',think:kind==='marshmallows'?'camp-check':'think',fire:'laser',impact:'crash',hit:kind==='city'?'explosion':kind==='food'?'serve':kind==='hive'?'honey':kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-gulp':kind==='marshmallows'?'camp-good':null,miss:kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-air':'miss','customer-left':'miss','plant-dead':'crash',need:null,impatient:'tick'};
   const sound=Object.hasOwn(mapped,e.type)?mapped[e.type]:e.type;
   if(soundOn&&sound&&!(e.type==='end'))sounds.play(sound,input.listening?.23:1);

@@ -189,6 +189,7 @@ class GardenRenderer extends SC.SceneRenderer{
       this.round(box.x,box.y,bw,bh,10,'#f5efd8','#b2c79e');
       for(let i=0;i<reqs.length;i++){
         const r=reqs[i],y=box.y+4+i*row,state=taskStates.get(r);
+        this.rememberScoreAnchor(r,{x:box.x,y,w:bw,h:row},'#dae7bc','#304e3e');
         if(state)this.round(box.x+3,y,bw-6,row,5,'#62df87',state==='active'?'#17683b':null);
         SC.drawGardenTool(this,r.property,box.x+16,y+14,.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font='bold '+(SC.isChinese(g.mode)||g.mode==='bopomofo'?21:16)+'px system-ui';if(hints.has(r)){c.fillText(r.item.label,box.x+40,y+21,24);c.font='10px system-ui';c.fillText(r.item.hint||'',box.x+51+(bw-57)/2,y+18,bw-57);}else c.fillText(r.item.label,box.x+30+(bw-36)/2,y+20,bw-36);
       }

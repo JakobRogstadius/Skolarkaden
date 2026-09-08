@@ -182,6 +182,8 @@
   class SceneRenderer{
     constructor(canvas,game){
       this.canvas=canvas;this.game=game;this.ctx=canvas.getContext('2d');
+      this.scoreNotices=[];this.scoreAnchors=new WeakMap();this.liveScoreBoxes=[];
+      const draw=this.draw.bind(this);this.draw=()=>{this.liveScoreBoxes=[];draw();this.drawScores();};
       this.reduced=root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
       this.stars=Array.from({length:95},(_,i)=>({x:((i*137.5)%997)/997,y:((i*73.7)%613)/613,r:i%7===0?1.6:.8,phase:i*.7}));
       this.resize=()=>{
@@ -194,10 +196,39 @@
       this.last=0;
       const frame=now=>{
         let dt=this.last?Math.min(.25,(now-this.last)/1000):0;this.last=now;
-        while(dt>0){const step=Math.min(.05,dt);game.update(step);dt-=step;}
+        while(dt>0){const step=Math.min(.05,dt);this.advanceScores(step);game.update(step);dt-=step;}
         this.draw();this.raf=requestAnimationFrame(frame);
       };
       this.raf=requestAnimationFrame(frame);
+    }
+    rememberScoreAnchor(target,box,color='#e3e8cb',outline='#243d38'){
+      this.scoreAnchors??=new WeakMap();this.liveScoreBoxes??=[];
+      const g=this.game,anchor={x:(box.x+box.w/2)/g.width,y:(box.y+box.h/2)/g.height,color,outline};
+      this.scoreAnchors.set(target,anchor);this.liveScoreBoxes.push(box);
+    }
+    scoreEvent(e){
+      if(e.type==='start'){this.scoreNotices=[];this.scoreAnchors=new WeakMap();return;}
+      if(!['hit','scare'].includes(e.type)||!Number.isFinite(e.points)||e.points<=0)return;
+      const anchor=this.scoreAnchors?.get(e.target);if(!anchor)return;
+      this.scoreNotices.push({...anchor,points:e.points,age:0,scare:e.type==='scare'});
+    }
+    advanceScores(dt){
+      if(this.game.state==='paused')return;
+      for(const n of this.scoreNotices)n.age+=dt;
+      this.scoreNotices=this.scoreNotices.filter(n=>n.age<1.35);
+    }
+    drawScores(){
+      const c=this.ctx,g=this.game,occupied=[...this.liveScoreBoxes];
+      for(const n of this.scoreNotices){
+        const text=n.points+' poäng',size=g.width<600?13:15;
+        c.save();c.font='500 '+size+'px system-ui';c.textAlign='center';c.textBaseline='middle';
+        const bw=c.measureText(text).width+12,bh=22,x=clamp(n.x*g.width,bw/2+8,g.width-bw/2-8),y=n.y*g.height+(n.scare?28:0);
+        // Prefer the old bubble position, moving only to keep live tasks readable.
+        const candidates=[0,26,-26,52,-52,78,-78].map(d=>({x:x-bw/2,y:clamp(y+d-bh/2,120,g.height-bh-8),w:bw,h:bh}));
+        const box=candidates.find(b=>occupied.every(o=>b.x+b.w+3<o.x||o.x+o.w+3<b.x||b.y+b.h+3<o.y||o.y+o.h+3<b.y));
+        if(box){occupied.push(box);c.globalAlpha=.88*clamp((1.35-n.age)/.85,0,1);c.lineWidth=3;c.lineJoin='round';c.strokeStyle=n.outline;c.strokeText(text,box.x+bw/2,box.y+bh/2);c.fillStyle=n.color;c.fillText(text,box.x+bw/2,box.y+bh/2);}
+        c.restore();
+      }
     }
     round(x,y,w,h,r,fill,stroke){
       const c=this.ctx;c.beginPath();c.roundRect(x,y,w,h,r);if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.strokeStyle=stroke;c.stroke();}
@@ -238,7 +269,7 @@
         const candidates=[];
         for(const dy of [0,-50,50,-100,100])for(const dx of [0,-bw-8,bw+8,-2*bw,2*bw])candidates.push({x:clamp(t.x+dx-bw/2,8,w-bw-8),y:clamp(t.y+dy-20,122,g.ground-bh-7),w:bw,h:bh});
         box=candidates.find(b=>labels.every(o=>b.x+b.w+5<o.x||o.x+o.w+5<b.x||b.y+b.h+5<o.y||o.y+o.h+5<b.y))||candidates[0];
-        t.labelBox=box;labels.push(box);this.comet(t,hint);
+        t.labelBox=box;this.rememberScoreAnchor(t,box,'#c4dedb','#202c48');labels.push(box);this.comet(t,hint);
       }
       if(g.state==='playing')for(const gun of g.turrets)if(gun.alive&&gun.job?.target)this.crosshair({gun,target:gun.job.target});
       for(const beam of g.lasers){

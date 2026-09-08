@@ -48,7 +48,7 @@
       if(c&&c.status==='cooking'&&this.customers.includes(c)){
         const tip=Math.round(this.patienceLeft(c)*10),points=10+tip+Math.min(this.streak,5);this.score+=points;this.tips+=tip;this.hits++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);
         if(c.look.exotic){this.score+=40;this.emit('rare-earned',{look:c.look,bonus:40});}
-        c.status='leaving';c.happy=true;c.motion=0;this.effects.push({slot:c.slot,dish:j.dish,age:0,tip});this.emit('hit',{target:c,points,entry:j.entry});
+        c.status='leaving';c.happy=true;c.motion=0;this.effects.push({slot:c.slot,dish:j.dish,age:0,tip});this.emit('hit',{target:c,points:points+(c.look.exotic?40:0),entry:j.entry});
       }else{
         this.streak=0;
         this.waste.push({text:j.entry.text,dish:j.dish,x:.08+this.random()*.84,y:.934+this.random()*.048,angle:Math.PI+(this.random()-.5)*.5,age:0});
@@ -125,7 +125,6 @@
       for(const e of g.effects){
         const t=clamp(e.age/.35,0,1),x=counter.x+([.18,.5,.82][e.slot]*w-counter.x)*t,y=counter.y+(h*.80-counter.y)*t-Math.sin(t*Math.PI)*35;
         if(e.age<.35)this.dish(x,y,e.dish,.7);
-        c.globalAlpha=clamp(1-(e.age-.3),0,1);c.font='bold 15px system-ui';c.fillStyle='#ffe2a4';c.textAlign='center';c.fillText('+'+(100+e.tip),[.18,.5,.82][e.slot]*w,h*.62-e.age*23);c.globalAlpha=1;
       }
       if(g.state==='celebrating'){const bw=Math.min(300,w-24);this.round((w-bw)/2,h-55,bw,39,12,'#3e6654','#9fe8b9');c.font='bold 19px system-ui';c.fillStyle='#fff3d9';c.textAlign='center';c.fillText('Tack för idag!',w/2,h-29);}
     }
@@ -193,6 +192,7 @@
       if(leaving)return;
       const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?25:w<500?17:20;
       const bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',max:Math.min(176,w*.285),min:32}),bh=hint?59:44,bx=slotX-bw/2,by=feet+(headY-45)*visualScale-bh-8,remaining=g.patienceLeft(p);
+      this.rememberScoreAnchor(p,{x:bx,y:by,w:bw,h:bh},'#f0d8ad','#304b4e');
       c.lineWidth=g.activeCook?.customer===p?2.5:1;
       this.round(bx,by,bw,bh,12,'#fff1d9',g.activeCook?.customer===p||p.look.exotic?'#ffc55e':'#cfb596');
       c.fillStyle='#fff1d9';c.beginPath();c.moveTo(slotX-7,by+bh-1);c.lineTo(slotX,by+bh+8);c.lineTo(slotX+7,by+bh-1);c.fill();
