@@ -59,6 +59,23 @@ test('Garden measured request inflow follows its steady per-plant target rate',(
   assert(Math.abs(needs-expected)/expected<.13,`${pace}/${mode}/${elapsed}: ${needs} versus ${expected}`);
  }
 });
+test('Garden action-type sequences, incorrect answers and survivor bonus',()=>{
+ const g=new SC.GardenGame();g.start();g.decayInterval=1000;const pot=g.pots[0];
+ const action=property=>{
+  pot[property]=property==='infection'?.6:.4;g.syncRequests(pot);const request=pot.requests[property];assert(request);
+  g.job={request,entry:{text:request.item.answer},stage:'tend',age:0};const before=g.score;g.work(.5);return g.score-before;
+ };
+ assert.equal(action('moisture'),10);assert.equal(action('moisture'),15);assert.equal(action('moisture'),20);
+ assert.equal(action('nutrition'),10);assert.equal(action('nutrition'),15);
+ g.queue.enqueue('incorrect');g.beginJob();assert.equal(g.job.stage,'think');g.work(2);
+ assert.equal(action('nutrition'),10);assert.equal(action('infection'),10);assert.equal(action('infection'),15);
+ g.pots.forEach(p=>Object.assign(p,{moisture:1,nutrition:1,infection:0,growth:0}));pot.growth=.99999;
+ const beforeBloom=g.score;g.update(.05);assert(pot.bloom);assert.equal(g.score,beforeBloom,'blooming alone adds no points');
+ g.pots[1].dead=true;g.finish(true);assert.equal(g.survivorBonus,100);assert.equal(g.score,beforeBloom+100);
+ g.finish(true);tick(g,5);assert.equal(g.score,beforeBloom+100,'survivor bonus only once');
+ g.start();assert.equal(g.sameTypeStreak,0);assert.equal(g.lastActionType,null);assert.equal(g.survivorBonus,0);
+ g.pots.forEach(p=>p.dead=true);g.finish(false);assert.equal(g.score,0);
+});
 test('Garden puts held tool down at current position, fetches needed tool and keeps it after care',()=>{const g=new SC.GardenGame({random:rng(7)});g.start();g.decayInterval=100;const p=g.pots[0];p.moisture=.4;p.nutrition=.6;g.syncRequests(p);g.gardener.x=.3;g.gardener.y=-.2;g.gardener.held=g.tools[1];g.queue.enqueue(p.requests.moisture.item.answer);g.beginJob();assert.equal(g.gardener.held,null);assert.equal(g.tools[1].x,.3);assert.equal(g.tools[1].y,-.2);assert.equal(g.job.stage,'fetch');tick(g,8);assert.equal(p.moisture,1);assert.equal(p.nutrition,.6);assert.equal(g.gardener.held.property,'moisture');p.moisture=.4;g.syncRequests(p);g.queue.enqueue(p.requests.moisture.item.answer);g.beginJob();assert.equal(g.job.stage,'run');});
 test('Wrong garden word causes a thinking delay, keeps held tool, changes no score',()=>{const g=new SC.GardenGame();g.start();g.gardener.held=g.tools[0];g.queue.enqueue('??');g.queue.enqueue('next');g.update(.05);assert.equal(g.job.stage,'think');tick(g,1);assert.equal(g.queue.length,1);assert.equal(g.gardener.held,g.tools[0]);assert.equal(g.score,0);tick(g,1);assert.equal(g.queue.length,0);});
 test('Garden growth reflects care, flowers freeze needs, and individual deaths leave the other plants playing',()=>{const g=new SC.GardenGame();g.start();g.decayInterval=100;g.pots.forEach(p=>Object.assign(p,{moisture:1,nutrition:1,infection:0}));g.pots[0].moisture=.4;tick(g,1);assert(g.pots[1].growth>g.pots[0].growth);assert(Math.abs(g.pots[1].growth-.021)<1e-8);g.pots[0].growth=.99999;g.pots[0].moisture=1;tick(g,.1);assert(g.pots[0].bloom);const moisture=g.pots[0].moisture;tick(g,7);assert.equal(g.pots[0].moisture,moisture);assert.equal(Object.keys(g.pots[0].requests).length,0);for(const key of ['moisture','nutrition','infection']){const x=new SC.GardenGame();x.start();x.pots[0][key]=key==='infection'?1:0;x.update(.05);assert.equal(x.state,'playing');assert(x.pots[0].dead);assert.equal(Object.keys(x.pots[0].requests).length,0);for(const p of x.pots)p[key]=key==='infection'?1:0;x.update(.05);assert.equal(x.state,'mourning');tick(x,3);assert.equal(x.state,'lost');}});

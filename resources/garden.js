@@ -9,7 +9,7 @@ class GardenGame{
   menu(){this.state='menu';this.clock=0;this.pots=[];this.tools=[];this.effects=[];this.job=null;this.gardener={x:0,y:0,held:null,look:SC.makePerson(this.random)};}
   start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
     this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Övningen behöver minst ett svar.');
-    this.state='playing';this.elapsed=0;this.score=0;this.hits=0;this.shots=0;this.streak=0;this.bestStreak=0;this.nextId=0;
+    this.state='playing';this.elapsed=0;this.score=0;this.survivorBonus=0;this.lastActionType=null;this.sameTypeStreak=0;this.hits=0;this.shots=0;this.streak=0;this.bestStreak=0;this.nextId=0;
     const count={gentle:6,steady:9,brave:12}[pace];this.decayInterval=.1;this.decayElapsed=0;this.failedPot=null;this.layoutSeed=this.random()*10000;
     this.gardener.look.hat=true;
     this.tools=PROPS.map((property,i)=>({property,x:(i-1)*.36,y:.28}));
@@ -75,7 +75,7 @@ class GardenGame{
     if(this.job||!this.queue.length)return;
     const entry=this.queue.take();if(!entry)return;
     const request=this.getTargets().find(t=>SC.matches(entry.text,t.item,this.mode,this.lang,entry.source));this.shots++;
-    if(!request){this.job={entry,stage:'think',age:0};this.emit('think',{entry});return;}
+    if(!request){this.lastActionType=null;this.sameTypeStreak=0;this.job={entry,stage:'think',age:0};this.emit('think',{entry});return;}
     const tool=this.tools.find(t=>t.property===request.property),g=this.gardener;
     this.job={entry,request,tool,age:0,stage:g.held===tool?'run':'fetch'};
     if(g.held&&g.held!==tool){g.held.x=g.x;g.held.y=g.y;g.held=null;this.emit('drop');}
@@ -93,12 +93,15 @@ class GardenGame{
       const p=j.request.pot;
       if(this.moveTo({x:p.x*.79,y:p.y*.79},dt)){j.stage='tend';j.age=0;this.emit(j.request.property==='moisture'?'water':j.request.property==='nutrition'?'feed':'spray');}
     }else if(j.stage==='tend'&&j.age>=.42){
-      const {pot,property}=j.request;pot[property]=property==='infection'?0:1;this.syncRequests(pot);this.score+=100;this.hits++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.effects.push({pot,property,age:0});this.emit('hit',{entry:j.entry,target:j.request,points:100});this.job=null;
+      const {pot,property}=j.request;pot[property]=property==='infection'?0:1;this.syncRequests(pot);
+      this.sameTypeStreak=this.lastActionType===property?this.sameTypeStreak+1:1;this.lastActionType=property;
+      const points=10+5*(this.sameTypeStreak-1);this.score+=points;this.hits++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.effects.push({pot,property,age:0});this.emit('hit',{entry:j.entry,target:j.request,points});this.job=null;
     }
   }
-  endResult(won){this.emit('end',{won,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,flowers:this.pots.filter(p=>p.bloom).length,dead:this.pots.filter(p=>p.dead).length});}
+  endResult(won){this.emit('end',{won,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,flowers:this.pots.filter(p=>p.bloom).length,survivorBonus:this.survivorBonus,dead:this.pots.filter(p=>p.dead).length});}
   finish(won){
     if(this.state!=='playing')return;this.job=null;
+    this.survivorBonus=this.pots.filter(p=>!p.dead).length*20;this.score+=this.survivorBonus;
     if(won){if(this.gardener.look.exotic)this.emit('rare-earned',{look:this.gardener.look,bonus:0});this.state='celebrating';this.celebrationLeft=4;this.emit('celebrate');}
     else{this.state='mourning';this.lossPauseLeft=3;this.emit('loss-pause',{pot:this.failedPot});}
   }
@@ -113,7 +116,7 @@ class GardenGame{
       if(p.bloom||p.dead)continue;
       if(p.moisture<=0||p.nutrition<=0||p.infection>=1){p.dead=true;p.requests={};this.failedPot=p;this.lossReason=p.moisture<=0?'Vattnet tog slut':p.nutrition<=0?'Näringen tog slut':'För mycket ohyra';this.emit('plant-dead',{pot:p});if(this.job?.request?.pot===p)this.job=null;continue;}
       if(p.moisture>=.4&&p.nutrition>=.4&&p.infection<=.6)p.growth=clamp(p.growth+dt*.021*p.moisture*p.nutrition*(1-p.infection),0,1);
-      if(p.growth>=1){p.bloom=true;p.requests={};this.score+=500;this.emit('flower',{pot:p});}
+      if(p.growth>=1){p.bloom=true;p.requests={};this.emit('flower',{pot:p});}
     }
     if(this.pots.every(p=>p.bloom||p.dead)){this.finish(this.pots.some(p=>p.bloom));return;}
     this.work(dt);

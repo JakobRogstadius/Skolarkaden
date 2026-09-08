@@ -26,6 +26,10 @@ Första meteoren ger 30 poäng, sedan 31, 32 och så vidare utan tak. Sviten bry
 
 Varje serverad måltid ger 10 poäng plus 0–10 i dricks, avrundat efter gästens återstående tålamod vid servering. Sviten ger +0 för första måltiden, +1 för nästa och upp till +5 från den sjätte. Felaktiga beställningar och gäster som går utan mat bryter sviten. En exotisk gäst ger ytterligare 40 poäng. Ingen slutbonus tillkommer. Laga mat använder poängversion v2.
 
+## Odla blommors poäng
+
+Varje slutförd skötselåtgärd ger 10 poäng. Flera åtgärder av samma typ i följd ger 10, 15, 20 poäng och så vidare utan tak. Byte av åtgärdstyp eller ett felaktigt svar återställer följden. Varje överlevande planta ger 20 poäng vid omgångens slut; blomning ger ingen separat bonus. Poängversionen är v2.
+
 ## Spelen
 
 | Spel | Uppdrag |

@@ -107,6 +107,6 @@ test('Gardens start penalised but request-free, walk at one fifth speed and fini
  const g=new SC.GardenGame({random:rng(7)});g.start();assert.equal(g.getTargets().length,0);for(const p of g.pots)for(const key of ['moisture','nutrition','infection'])assert(g.badness(p,key)>0&&g.badness(p,key)<.4);
  g.gardener.x=0;g.gardener.y=0;g.moveTo({x:1,y:0},.25);assert(Math.abs(g.gardener.x-.14)<1e-9);
  const a=g.pots[0];a.moisture=.6;g.syncRequests(a);g.queue.enqueue(a.requests.moisture.item.answer);g.beginJob();a.moisture=0;g.update(.05);assert(a.dead);assert.equal(g.job,null);assert.equal(g.state,'playing');assert.equal(g.getTargets().filter(t=>t.pot===a).length,0);
- g.pots.slice(1).forEach(p=>p.bloom=true);g.update(.05);assert.equal(g.state,'celebrating');tick(g,4);assert.equal(g.state,'won');assert.equal(g.score,0,'dead plant care must never award points');
+ g.pots.slice(1).forEach(p=>p.bloom=true);g.update(.05);assert.equal(g.state,'celebrating');tick(g,4);assert.equal(g.state,'won');assert.equal(g.score,100,'only the five surviving plants award points');
 });
 console.log(checks+' Äggröra and garden checks passed.');
