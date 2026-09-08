@@ -197,19 +197,20 @@ class HomeRenderer extends SC.SceneRenderer{
   const faces=g.people.map(p=>{const q=this.point(p.x,p.y),s=this.view.s;return {x:q.x-s*.47,y:q.y-s*1.95,w:s*.94,h:s*.8};});if(this.angerBox)faces.push(this.angerBox);
   const messBounds=g.messes.filter(t=>this.messOnSite(t)).map(t=>{const p=g.taskPosition(t),q=this.point(p.x,p.y,p.z??.08),s=Math.max(16,this.view.s);return {x:q.x-s*.7,y:q.y-s*.8,w:s*1.4,h:s*1.05};});faces.push(...messBounds);
   for(const target of targets){
-   const hint=hints.has(target),pos=g.taskPosition(target),z=pos.z??(target.type==='hungry'?2.15:.18),anchor=this.point(pos.x,pos.y,z),textWidth=SC.labelWidth(c,target.item.label,{font:'bold '+font+'px system-ui',hint:hint?target.item.hint:'',hintFont:'11px system-ui',max:narrow?125:178}),bw=textWidth+21,bh=hint?45:30;
+   const hint=hints.has(target),pos=g.taskPosition(target),z=pos.z??(target.type==='hungry'?2.15:.18),anchor=this.point(pos.x,pos.y,z),textWidth=SC.labelWidth(c,target.item.label,{font:'bold '+font+'px system-ui',hint:hint?target.item.hint:'',translation:hint?target.item.translation:'',hintFont:'11px system-ui',max:narrow?125:178}),bw=textWidth+21,bh=hint?59:30;
    const make=(x,y)=>({x:clamp(x,7,w-bw-7),y:clamp(y,116,h-bh-7),w:bw,h:bh}),direct=make(anchor.x-bw/2,anchor.y-bh-Math.max(20,this.view.s*.65)),candidates=[direct],previous=this.previousBoxes.get(target.id);
    if(previous&&Math.hypot(previous.x+bw/2-anchor.x,previous.y+bh-anchor.y)<115)candidates.unshift(make(previous.x,previous.y));
    for(const dy of [-51,51,-102,102,-153])for(const dx of [0,-bw-5,bw+5])candidates.push(make(direct.x+dx,direct.y+dy));
    for(let y=120;y<h-bh-7;y+=51)for(let x=7;x<w-bw-5;x+=(w-14)/Math.max(2,Math.floor(w/190)))candidates.push(make(x,y));
+   const stable=this.stableLabel(target,anchor,bw,bh,{top:116,bottom:h-7,left:7,right:w-7});if(stable)candidates.unshift(stable);
    const nearby=candidates.slice(0,2),rest=candidates.slice(2).sort((a,b)=>Math.hypot(a.x+bw/2-anchor.x,a.y+bh-anchor.y)-Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y));
    const held=previous&&Math.hypot(previous.x+bw/2-anchor.x,previous.y+bh-anchor.y)<115&&boxes.every(o=>!intersects(candidates[0],o))&&messBounds.every(o=>!intersects(candidates[0],o))&&(!this.angerBox||!intersects(candidates[0],this.angerBox))?candidates[0]:null;
    const box=held||[...nearby,...rest].find(b=>boxes.every(o=>!intersects(b,o))&&faces.every(f=>!intersects(b,f)))||rest.find(b=>boxes.every(o=>!intersects(b,o)))||direct;
+   this.keepLabel(target,anchor,box);
    paintLinks.push(()=>{c.beginPath();c.moveTo(anchor.x,anchor.y);c.lineTo(box.x+bw/2,box.y+bh);c.lineCap='round';c.strokeStyle='#fff5dc';c.lineWidth=5;c.stroke();c.strokeStyle=states.has(target)?'#367546':'#526e45';c.lineWidth=2.4;c.stroke();this.circle(anchor.x,anchor.y,4.8,'#fff5dc');this.circle(anchor.x,anchor.y,3.1,states.has(target)?'#367546':'#526e45');});
    paintLabels.push(()=>{
-   c.lineWidth=states.has(target)?2:1;this.round(box.x,box.y,bw,bh,7,states.has(target)?'#daedcb':'#faf0d8',states.has(target)?'#6b9974':'#aab594');this.icon(target.type,box.x+12,box.y+15,13);
-   c.textAlign='center';c.font='bold '+font+'px system-ui';c.fillStyle='#34554a';c.fillText(target.item.label,box.x+21+textWidth/2,box.y+21,textWidth-12);
-   if(hint){c.font='11px system-ui';c.fillStyle='#688064';c.fillText(target.item.hint||'',box.x+21+textWidth/2,box.y+37,textWidth-10);}
+   c.lineWidth=states.has(target)?2:1;this.round(box.x,box.y,bw,bh,7,states.has(target)?'#daedcb':'#faf0d8',states.has(target)?'#6b9974':'#aab594');this.icon(target.type,box.x+12,box.y+bh/2,13);
+   c.textAlign='center';c.font='bold '+font+'px system-ui';c.fillStyle='#34554a';SC.drawLabelText(c,target.item,{x:box.x+21,y:box.y,w:textWidth,h:bh},{hint,hintFont:'11px system-ui'});
    this.rememberScoreAnchor(target,box,'#426950','#f3eedc');});boxes.push({...box,id:target.id});this.previousBoxes.set(target.id,box);
   }
   paintLinks.forEach(draw=>draw());paintLabels.forEach(draw=>draw());

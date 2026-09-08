@@ -1,3 +1,15 @@
+# Pinyin ovanför och svensk betydelse under mandarinuppgifter
+
+2026-09-08.
+
+Alla 255 mandarinuppgifter har nu en svensk betydelse, parad mellan traditionell och förenklad skrift. Efter fem sekunder visas pinyin ovanför tecknet eller ordet och svenska nedanför. Grammatiska tecken har korta funktionsförklaringar. Samma fördröjning, pauser och köreservationer styr båda ledtrådarna; svenska läggs inte till som godkänt svar.
+
+Samtliga nio spel använder en gemensam centrerad textritning. Bredden tar hänsyn till båda ledtrådarna och höjden ger plats åt tre rader. Där det finns plats växer rutan runt sin tidigare mittpunkt och följer målets rörelse utan att tecknet hoppar när ledtrådarna visas. Skärmkanter och andra etiketter kan kräva omplacering. Odla blommors uppgiftsrader växer efter behov, Äggröras etikettbanor rymmer den extra raden och Marshmallows undviker överlapp mellan sex utökade etiketter. Tillgänglighetstexten följer samma ordning och fördröjning.
+
+Verifierat: samtliga 27 testsviter passerar, inklusive parade betydelser för alla uppgifter, fördröjd visning och radordning i alla nio renderare, symmetrisk placering och rörelse samt befintliga kö- och taltolkningstester. Kontroller av smala skärmar täcker blandade hintar, hemmets tio uppgifter och sex marshmallowetiketter. Alla nio scener har renderats och granskats på stor och smal skärm. Spelversioner och poängregler är oförändrade.
+
+---
+
 # Mandarinord byggda av bekanta tecken
 
 2026-09-08.

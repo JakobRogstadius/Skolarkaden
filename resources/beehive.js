@@ -189,22 +189,23 @@ class BeehiveRenderer extends SC.SceneRenderer{
  labels(){
   const c=this.ctx,g=this.game,w=g.width,h=g.height,s=this.plantScale();if(g.progress()>=1){this.labelBoxes=[];return;}
   const targets=g.getTargets().sort((a,b)=>a.id-b.id),hints=SC.pinyinHints(g),font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?14:17;
-  const key=[w,h,g.mode,...g.plants.map(p=>p.id+':'+p.status+':'+p.harvested+':'+p.item?.label+':'+p.item?.hint+':'+hints.has(p))].join('|');
+  const key=[w,h,g.mode,...g.plants.map(p=>p.id+':'+p.status+':'+p.harvested+':'+p.item?.label+':'+p.item?.hint+':'+p.item?.translation+':'+hints.has(p))].join('|');
   if(key!==this.labelKey){
    const previous=new Map((this.labelBoxes||[]).map(b=>[b.id,b])),boxes=[],top=Math.max(132,h*.43);
    const bodies=g.plants.map(p=>{const q=this.point(p),bounds=SC.plantBounds({...p,growth:1});return {x:q.x-32*s,y:q.y+bounds.top*s,w:64*s,h:-bounds.top*s+8};});
    const hs=Math.min(w/700,.86),jars=this.jarLayout(),props=[{x:w*.17-85*hs,y:h*.435-185*hs,w:170*hs,h:195*hs},{x:w*g.hive.x-74*hs,y:h*g.hive.y-90*hs,w:148*hs,h:193*hs},{x:jars.x-40,y:h*.445-100,w:40+jars.columns*jars.pitch,h:110}];
    const overlaps=(a,b)=>a.x<b.x+b.w+4&&a.x+a.w+4>b.x&&a.y<b.y+b.h+4&&a.y+a.h+4>b.y;
    for(const p of targets){
-    const hint=hints.has(p),bh=hint?45:31,q=this.point(p),bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',hintFont:'11px system-ui',max:w<600?116:166}),anchor={x:q.x,y:q.y+SC.plantBounds(p).top*s-2},candidates=[];
+    const hint=hints.has(p),bh=hint?59:31,q=this.point(p),bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',hintFont:'11px system-ui',max:w<600?116:166}),anchor={x:q.x,y:q.y+SC.plantBounds(p).top*s-2},candidates=[];
     const add=(x,y)=>candidates.push({id:p.id,x:clamp(x,7,w-bw-7),y:clamp(y,top,h-bh-10),w:bw,h:bh});
     add(anchor.x-bw/2,anchor.y-bh);add(q.x-33*s-bw,q.y-45*s-bh/2);add(q.x+33*s,q.y-45*s-bh/2);add(q.x-bw/2,q.y+8);
     for(let yy=top;yy<=h-bh-10;yy+=18)for(let xx=7;xx<=w-bw-7;xx+=18)add(xx,yy);
     const distance=b=>(b.x+bw/2-anchor.x)**2+(b.y+bh-anchor.y)**2;
     candidates.sort((a,b)=>distance(a)-distance(b));
     const old=previous.get(p.id);if(old&&old.w===bw&&old.h===bh&&old.x>=7&&old.x+bw<=w-7&&old.y>=top&&old.y+bh<=h-10)candidates.unshift(old);
+    const stable=this.stableLabel(p,anchor,bw,bh,{top,bottom:h-10,left:7,right:w-7});if(stable)candidates.unshift({...stable,id:p.id});
     const free=b=>boxes.every(o=>!overlaps(b,o)),safe=b=>props.every(o=>!overlaps(b,o));
-    const box=candidates.find(b=>free(b)&&safe(b)&&bodies.every(o=>!overlaps(b,o)))||candidates.find(b=>free(b)&&safe(b))||candidates.find(free)||candidates[0];boxes.push(box);
+    const box=candidates.find(b=>free(b)&&safe(b)&&bodies.every(o=>!overlaps(b,o)))||candidates.find(b=>free(b)&&safe(b))||candidates.find(free)||candidates[0];this.keepLabel(p,anchor,box);boxes.push(box);
    }
    this.labelBoxes=boxes;this.labelKey=key;
   }
@@ -212,8 +213,7 @@ class BeehiveRenderer extends SC.SceneRenderer{
   for(const box of this.labelBoxes){const p=byId.get(box.id);if(!p)continue;const q=this.point(p),state=states.get(p),hint=hints.has(p),{x,y,w:bw,h:bh}=box;
    this.rememberScoreAnchor(p,box,'#695331','#f5efda');
    c.strokeStyle='#75865b90';c.lineWidth=1;c.beginPath();c.moveTo(q.x,q.y-35*s);c.lineTo(x+bw/2,y+bh/2);c.stroke();
-   c.lineWidth=state==='active'?2:1;this.round(x,y,bw,bh,8,state?'#ffe176':'#fff9e1',state==='active'?'#b77a2c':'#b5a577');c.lineWidth=1;c.fillStyle='#50432d';c.font='bold '+font+'px system-ui';c.textAlign='center';c.fillText(p.item.label,x+bw/2,y+22,bw-14);
-   if(hint){c.font='11px system-ui';c.fillText(p.item.hint||'',x+bw/2,y+36,bw-14);}
+   c.lineWidth=state==='active'?2:1;this.round(x,y,bw,bh,8,state?'#ffe176':'#fff9e1',state==='active'?'#b77a2c':'#b5a577');c.lineWidth=1;c.fillStyle='#50432d';c.font='bold '+font+'px system-ui';c.textAlign='center';SC.drawLabelText(c,p.item,box,{hint,hintFont:'11px system-ui'});
    const left=clamp(1-p.flowerAge/p.bloomFor,0,1);this.round(x+5,y+bh-3,Math.max(1,(bw-10)*left),2,1,left<.23?'#d17649':'#8cb773');
   }
  }

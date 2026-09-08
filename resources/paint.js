@@ -146,7 +146,7 @@ class PaintRenderer extends SC.SceneRenderer{
   for(const person of g.people){const s=g.personScale(person);blocked.push({x:person.x*w-28*s,y:person.y*h-(54*person.look.height+52)*s,w:56*s,h:(54*person.look.height+54)*s});}
   for(const p of targets){
    const maxWidth=Math.min(w<600?110:154,w-16),font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?13:17;
-   const hint=hints.has(p),bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',hintFont:'11px system-ui',max:maxWidth}),bh=hint?47:33,s=g.personScale(p),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+54)*s},candidates=[];
+   const hint=hints.has(p),bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',hintFont:'11px system-ui',max:maxWidth}),bh=hint?61:33,s=g.personScale(p),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+54)*s},candidates=[];
    const top=Math.max(178,h*.50),bottom=h*.92-bh;
    // On narrow streets, aligned slots prevent eight moving labels from trapping
    // one another in the gaps left by greedy free placement.
@@ -155,11 +155,11 @@ class PaintRenderer extends SC.SceneRenderer{
    slots.sort((a,b)=>Math.hypot(a.x+bw/2-anchor.x,a.y+bh-anchor.y)-Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y));
    if(w>=900)for(const dy of [0,-bh-6,bh+5,-2*bh-10])for(const offset of [0,-bw*.65,bw*.65])candidates.push({x:clamp(anchor.x-bw/2+offset,8,w-bw-8),y:clamp(anchor.y-bh-6+dy,top,bottom),w:bw,h:bh});
    candidates.push(...slots);
+   const stable=this.stableLabel(p,anchor,bw,bh,{top:top,bottom:h*.92});if(stable)candidates.unshift(stable);
    const box=candidates.find(b=>[...boxes,...blocked].every(a=>!overlaps(a,b)))||candidates.find(b=>boxes.every(a=>!overlaps(a,b)))||candidates[0];boxes.push(box);
-   this.rememberScoreAnchor(p,box,'#3d6863','#f7eedb');
+   this.keepLabel(p,anchor,box);this.rememberScoreAnchor(p,box,'#3d6863','#f7eedb');
    c.strokeStyle='#735f5480';c.lineWidth=1;c.beginPath();c.moveTo(anchor.x,anchor.y+3);c.lineTo(box.x+bw/2,box.y+bh);c.stroke();
-   const state=states.get(p);this.round(box.x,box.y,bw,bh,9,state?'#b7ecd7':'#fff4dc',state==='active'?'#408f7d':p.look.exotic?'#bc9047':'#b89a77');c.fillStyle='#405553';c.font='bold '+font+'px system-ui';c.textAlign='center';c.fillText(p.item.label,box.x+bw/2,box.y+22,bw-12);
-   if(hint){c.font='11px system-ui';c.fillText(p.item.hint||'',box.x+bw/2,box.y+38,bw-12);}
+   const state=states.get(p);this.round(box.x,box.y,bw,bh,9,state?'#b7ecd7':'#fff4dc',state==='active'?'#408f7d':p.look.exotic?'#bc9047':'#b89a77');c.fillStyle='#405553';c.font='bold '+font+'px system-ui';c.textAlign='center';SC.drawLabelText(c,p.item,box,{hint,hintFont:'11px system-ui'});
   }
   this.labelBoxes=boxes;
  }

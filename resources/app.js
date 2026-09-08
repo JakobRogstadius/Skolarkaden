@@ -93,7 +93,7 @@ $('start').addEventListener('click',start);$('again').addEventListener('click',(
 root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){
   // Canvas labels are primary. Keep a compact alternative for assistive technology.
-  const hints=SC.pinyinHints(game),text=game.getTargets().map(t=>(kind==='home'?SC.homeTaskTypes[t.type].name+': ':'')+t.item.label+(hints.has(t)?' · '+t.item.hint:'')).join(', ');
+  const hints=SC.pinyinHints(game),text=game.getTargets().map(t=>(kind==='home'?SC.homeTaskTypes[t.type].name+': ':'')+(hints.has(t)?t.item.hint+' · '+t.item.label+(t.item.translation?' · '+t.item.translation:''):t.item.label)).join(', ');
   if(text!==lastTargetKey){lastTargetKey=text;$('targets').textContent=text;}
 }
 function renderUi(){

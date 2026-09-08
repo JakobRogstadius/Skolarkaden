@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 const ctx=vm.createContext({Event,EventTarget,CustomEvent,console});
-for(const file of ['pinyin','data','input','people','game','foodtruck','plants','garden','beehive','paint','dinosaur','marshmallows','eggs'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
+for(const file of ['pinyin','data','input','people','game','foodtruck','plants','garden','beehive','paint','dinosaur','marshmallows','eggs','home','home-renderer'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
 const SC=ctx.Starlight,names=['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg'];
 const rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;},tick=(g,t)=>{for(let i=0;i<Math.round(t/.05);i++)g.update(.05);};
 let checks=0;const test=(name,fn)=>{fn();checks++;console.log('PASS '+name);};
@@ -21,8 +21,8 @@ function game(name,width=1000){
  return {g,p};
 }
 function renderer(name,g){
- const text=[],stack=[],c=new Proxy({font:'16px system-ui',save(){stack.push(this.font);},restore(){this.font=stack.pop();},measureText(s){return {width:Array.from(s).length*Number(this.font?.match(/([\d.]+)px/)?.[1]||16)*.6};},fillText(s,x,y,max){assert(Number.isFinite(x)&&Number.isFinite(y));if(max!==undefined)assert(max>0);text.push(s);}},{get:(o,k)=>k in o?o[k]:k==='createLinearGradient'||k==='createRadialGradient'?()=>({addColorStop(){}}):()=>{}});
- const r=Object.create(SC[name+'Renderer'].prototype);Object.assign(r,{game:g,ctx:c,dpr:1,stars:[],reduced:true});return {r,text};
+ const text=[],drawn=[],stack=[],c=new Proxy({font:'16px system-ui',save(){stack.push(this.font);},restore(){this.font=stack.pop();},measureText(s){return {width:Array.from(s).length*Number(this.font?.match(/([\d.]+)px/)?.[1]||16)*.6};},fillText(s,x,y,max){assert(Number.isFinite(x)&&Number.isFinite(y));if(max!==undefined)assert(max>0);text.push(s);drawn.push({text:s,x,y,max,font:this.font});}},{get:(o,k)=>k in o?o[k]:k==='createLinearGradient'||k==='createRadialGradient'?()=>({addColorStop(){}}):()=>{}});
+ const r=Object.create(SC[name+'Renderer'].prototype);Object.assign(r,{game:g,ctx:c,dpr:1,stars:[],reduced:true});return {r,text,drawn};
 }
 test('Every game reveals each unhandled character after five playable seconds, excluding pauses',()=>{
  for(const name of names){const {g,p}=game(name);assert(!SC.pinyinHints(g).has(p),name);tick(g,4.95);assert(!SC.pinyinHints(g).has(p),name+' early hint');
@@ -64,10 +64,38 @@ test('All renderers draw the delayed hint, use compact early boxes, and preserve
  }
  const {g,p}=game('Beehive'),{r}=renderer('Beehive',g);r.labels();const before=r.labelBoxes[0].h;g.clock+=5;r.labels();assert(r.labelBoxes[0].h>before,'cached meadow layout did not grow for pinyin');
 });
+test('All nine renderers reveal pinyin above the answer and Swedish below with the same delay and reserve enough vertical space',()=>{
+ for(const width of [370,1100])for(const name of [...names,'Home'])for(const mode of ['chineseTrad4','chineseSimpl4']){
+  let g,p;
+  if(name==='Home'){g=new SC.HomeGame({random:rng(5)});g.start({mode});g.resize(width,740);p=g.createTask('toys',g.spots.toys[0]);}
+  else ({g,p}=game(name,width));
+  g.mode=mode;p.item=SC.modes[mode].items.find(i=>i.answer==='牛奶');
+  const {r,text,drawn}=renderer(name,g);r.draw();assert(!text.includes('mjölk'),name+' immediate translation');
+  g.clock=p.appearedAt+4.95;text.length=0;r.draw();assert(!text.includes('mjölk'),name+' early translation');
+  g.clock=p.appearedAt+5;text.length=0;drawn.length=0;r.draw();
+  const hanzi=drawn.find(t=>t.text==='牛奶'),pinyin=drawn.find(t=>t.text==='niú nǎi'),swedish=drawn.find(t=>t.text==='mjölk');
+  assert(hanzi&&pinyin&&swedish,name+' missing hint lines');assert(pinyin.y<hanzi.y&&hanzi.y<swedish.y,name+' incorrect line order');
+  assert.equal(pinyin.x,swedish.x,name+' misaligned hint lines');assert.equal(pinyin.x,hanzi.x,name+' answer is not centered with hints');assert(Math.abs((pinyin.y+swedish.y)/2-hanzi.y)<.001,name+' answer is not vertically centered');assert.equal(pinyin.font,swedish.font,name+' mismatched hint fonts');
+  const boxes=name==='City'?[p.labelBox]:name==='Garden'?r.bubbleBoxes:r.labelBoxes;
+  if(boxes)for(const b of boxes){assert(b.x>=0&&b.y>=0&&b.x+b.w<=width&&b.y+b.h<=g.height,name+' expanded hint outside screen');assert(b.h>=55,name+' translation does not fit');}
+  g.queue.enqueue(p.item.answer);text.length=0;r.draw();assert(text.includes('mjölk'),name+' revealed translation disappeared');
+ }
+ const {g}=game('City'),{r}=renderer('City',g),c=r.ctx;
+ const width=SC.labelWidth(c,'木',{hint:'mù',translation:'trä och trävirke'});
+ c.font='12px system-ui';assert(width>=c.measureText('trä och trävirke').width,'translation is omitted from width measurement');
+});
+test('Expanding a label preserves its center and follows target movement, within screen bounds',()=>{
+ const {g,p}=game('City'),{r}=renderer('City',g),box={x:250,y:250,w:40,h:40},anchor={x:270,y:270};
+ r.keepLabel(p,anchor,box);
+ const expanded=r.stableLabel(p,anchor,120,78);assert.equal(expanded.x+expanded.w/2,270);assert.equal(expanded.y+expanded.h/2,270);
+ r.keepLabel(p,anchor,expanded);const moved=r.stableLabel(p,{x:280,y:290},120,78);assert.equal(moved.x+moved.w/2,280);assert.equal(moved.y+moved.h/2,290);
+ const clipped=r.stableLabel(p,{x:-100,y:0},120,78);assert(clipped.x>=8&&clipped.y>=116);
+ g.resize(370,740);assert.equal(r.stableLabel(p,anchor,120,78),null,'resize must invalidate old positions');
+});
 test('Restart clears revealed hints, and other exercises never show pinyin',()=>{
  for(const name of names){const {g,p}=game(name);g.clock+=6;SC.pinyinHints(g);assert(p.pinyinRevealed);g.queue.clear();g.start({mode:'chinese'});assert.equal(SC.pinyinHints(g).size,0,name+' restart');
   for(const mode of ['letters','bopomofo','math','swedish']){g.start({mode});g.clock+=30;assert.equal(SC.pinyinHints(g).size,0,name+'/'+mode);}
  }
  const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8'),app=fs.readFileSync(path.join(__dirname,'../resources/app.js'),'utf8');assert.doesNotMatch(html,/id="hints"|Visa pinyin/);assert.doesNotMatch(app,/\$\('hints'\)/);
 });
-console.log(checks+' delayed-pinyin checks passed across eight games.');
+console.log(checks+' delayed-hint checks passed, including all nine renderers.');

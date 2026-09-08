@@ -24,6 +24,17 @@ test('Twenty exercises have the requested order and complete, distinct dictionar
   const t=chinese.slice(0,4).flatMap(m=>Array.from(SC.modes[m].items,i=>i.answer)),s=chinese.slice(4).flatMap(m=>Array.from(SC.modes[m].items,i=>i.answer));assert.equal(t.indexOf(a),s.indexOf(b));assert(t.includes(a));
  }
 });
+test('Every Mandarin entry has a paired Swedish meaning, used only as a hint',()=>{
+ for(let level=0;level<4;level++){
+  const trad=SC.modes[chinese[level]].items,simpl=SC.modes[chinese[level+4]].items;
+  for(let i=0;i<trad.length;i++){
+   assert.equal(typeof trad[i].translation,'string');assert(trad[i].translation.trim(),trad[i].answer);
+   assert.equal(trad[i].translation,simpl[i].translation,trad[i].answer);
+   assert(!SC.matches(trad[i].translation,trad[i],chinese[level]),trad[i].answer+' Swedish accepted as answer');
+  }
+ }
+ for(const [answer,translation] of [['水','vatten'],['牛奶','mjölk'],['老師','lärare'],['下雨','regna'],['書包','skolväska']])assert.equal(SC.modes.chineseTrad4.items.find(i=>i.answer===answer).translation,translation);
+});
 test('Chinese sets retain 80 starter characters, then add 75 and 100 words with a previously learned character',()=>{
  for(const group of [chinese.slice(0,4),chinese.slice(4)]){
   let previous=[];

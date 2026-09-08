@@ -213,17 +213,18 @@ class EggRenderer extends SC.SceneRenderer{
   for(let i=12;i>=1;i--)c.lineTo(d*i/12,(3+i*1.1+Math.cos(t*29+i)*4)*s);c.lineTo(0,3*s);c.closePath();c.fill();c.strokeStyle='#fff1bd';c.lineWidth=3*s;c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(d*.4,Math.sin(t*28)*6*s,d*.82,0);c.stroke();c.restore();
  }
  labels(){
-  const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],targets=g.getTargets(),narrow=w<700,top=122,slotH=50,rows=Math.max(1,Math.floor((h-top-8)/slotH)),cols=Math.max(narrow?2:Math.max(3,Math.floor((w-16)/188)),Math.ceil(targets.length/rows)),maxWidth=Math.min(narrow?134:180,(w-16)/cols-8);
+  const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],targets=g.getTargets(),narrow=w<700,top=122,slotH=SC.isChinese(g.mode)?65:50,rows=Math.max(1,Math.floor((h-top-8)/slotH)),cols=Math.max(narrow?2:Math.max(3,Math.floor((w-16)/188)),Math.ceil(targets.length/rows)),maxWidth=Math.min(narrow?134:180,(w-16)/cols-8);
   const overlaps=(a,b)=>a.x<b.x+b.w+4&&a.x+a.w+4>b.x&&a.y<b.y+b.h+4&&a.y+a.h+4>b.y;
-  for(const e of targets){const hint=hints.has(e),font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:narrow?14:18,bw=SC.labelWidth(c,e.item.label,{font:'bold '+font+'px system-ui',hint:hint?e.item.hint:'',hintFont:'12px system-ui',max:maxWidth}),bh=hint?44:31,anchor={x:e.x*w,y:e.y*h-(e.form==='egg'?66:35)*g.scale()},candidates=[];
+  for(const e of targets){const hint=hints.has(e),font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:narrow?14:18,bw=SC.labelWidth(c,e.item.label,{font:'bold '+font+'px system-ui',hint:hint?e.item.hint:'',translation:hint?e.item.translation:'',hintFont:'12px system-ui',max:maxWidth}),bh=hint?59:31,anchor={x:e.x*w,y:e.y*h-(e.form==='egg'?66:35)*g.scale()},candidates=[];
    // Use fixed-height lanes so delayed hints cannot close off the last slots.
    for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){const cell=(w-16)/cols;candidates.push({x:8+col*cell+(cell-bw)/2,y:top+row*slotH,w:bw,h:bh});}
    candidates.sort((a,b)=>Math.hypot(a.x+bw/2-anchor.x,a.y+bh-anchor.y)-Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y));
    if(!narrow&&targets.length<=rows*(cols-1))candidates.unshift({x:clamp(anchor.x-bw/2,8,w-bw-8),y:clamp(anchor.y-bh-6,top,h-bh-8),w:bw,h:bh});
+   const stable=this.stableLabel(e,anchor,bw,bh,{top:top,bottom:h-8});if(stable)candidates.unshift(stable);
    const box=candidates.find(b=>boxes.every(a=>!overlaps(a,b)))||candidates[0];if(!box)continue;boxes.push({...box,id:e.id});
-   this.rememberScoreAnchor(e,box,'#c3d8b1','#203632');
+   this.keepLabel(e,anchor,box);this.rememberScoreAnchor(e,box,'#c3d8b1','#203632');
    c.strokeStyle='#a9b98a85';c.lineWidth=1;c.beginPath();c.moveTo(anchor.x,anchor.y);c.lineTo(box.x+bw/2,box.y+bh);c.stroke();c.lineWidth=states.has(e)?2:1;this.round(box.x,box.y,bw,bh,7,states.has(e)?'#314e44':'#15282b',states.has(e)?'#97e9b7':e.form==='alien'?'#c7a178':'#819178');
-   c.fillStyle='#ecedce';c.font='bold '+font+'px system-ui';c.textAlign='center';c.fillText(e.item.label,box.x+bw/2,box.y+22,bw-12);if(hint){c.font='12px system-ui';c.fillStyle='#b7c89b';c.fillText(e.item.hint||'',box.x+bw/2,box.y+38,bw-12);}c.lineWidth=1;
+   c.fillStyle='#ecedce';c.font='bold '+font+'px system-ui';c.textAlign='center';SC.drawLabelText(c,e.item,box,{hint,hintFont:'12px system-ui'});c.lineWidth=1;
   }
   this.labelBoxes=boxes;
  }

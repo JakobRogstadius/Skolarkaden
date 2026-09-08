@@ -178,20 +178,22 @@ class GardenRenderer extends SC.SceneRenderer{
     for(const pot of g.pots){
       const reqs=Object.values(pot.requests);if(!reqs.length)continue;
       const font='bold '+((SC.isChinese(g.mode)||g.mode==='bopomofo')?21:16)+'px system-ui';
-      const widths=reqs.map(r=>{const main=SC.labelWidth(c,r.item.label,{font,padding:0,min:0,max:400});if(hints.has(r))return main+SC.labelWidth(c,r.item.hint||'',{font:'10px system-ui',padding:0,min:0,max:400})+43;return main+38;});
-      const p=this.point(pot),bw=clamp(Math.max(...widths),48,w<500?144:180),row=28,bh=reqs.length*row+8,candidates=[];
+      const widths=reqs.map(r=>SC.labelWidth(c,r.item.label,{font,hint:hints.has(r)?r.item.hint:'',translation:hints.has(r)?r.item.translation:'',hintFont:'11px system-ui',padding:0,min:0,max:400})+38);
+      const rows=reqs.map(r=>hints.has(r)?62:28),p=this.point(pot),bw=clamp(Math.max(...widths),48,w<500?144:180),bh=rows.reduce((sum,row)=>sum+row,8),candidates=[];
       const bx=pot.x>=0?p.x+30*this.scale:p.x-bw-30*this.scale;
       for(const [x,y] of [[bx,p.y-bh/2],[p.x-bw/2,p.y-(42+pot.growth*75)*this.scale-bh],[p.x-bw/2,p.y+40*this.scale],[w/2-bw/2,135]])candidates.push({x:clamp(x,7,w-bw-7),y:clamp(y,120,h-bh-9),w:bw,h:bh});
       for(let y=120;y<h-bh-8;y+=16)for(let x=7;x<w-bw;x+=22)candidates.push({x,y,w:bw,h:bh});
+      const stable=this.stableLabel(pot,p,bw,bh,{top:120,bottom:h-9,left:7,right:w-7});
       const good=candidates.filter(b=>[...boxes,...blocked].every(o=>!overlaps(b,o)));good.sort((a,b)=> (crowded&&Math.abs(a.y-b.y)>1?a.y-b.y:0)||Math.hypot(a.x+bw/2-p.x,a.y+bh/2-p.y)-Math.hypot(b.x+bw/2-p.x,b.y+bh/2-p.y));
-      const box=good[0]||candidates.find(b=>boxes.every(o=>!overlaps(b,o))&&!overlaps(b,blocked[blocked.length-1]))||candidates[0];boxes.push(box);
+      const box=(stable&&[...boxes,...blocked].every(o=>!overlaps(stable,o))?stable:null)||good[0]||candidates.find(b=>boxes.every(o=>!overlaps(b,o))&&!overlaps(b,blocked[blocked.length-1]))||candidates[0];this.keepLabel(pot,p,box);boxes.push(box);
       c.strokeStyle='#c6d6b680';c.lineWidth=1;c.beginPath();c.moveTo(p.x,p.y-20*this.scale);c.lineTo(box.x+bw/2,box.y+bh/2);c.stroke();
       this.round(box.x,box.y,bw,bh,10,'#f5efd8','#b2c79e');
       for(let i=0;i<reqs.length;i++){
-        const r=reqs[i],y=box.y+4+i*row,state=taskStates.get(r);
+        const r=reqs[i],row=rows[i],y=box.y+4+rows.slice(0,i).reduce((sum,n)=>sum+n,0),state=taskStates.get(r);
         this.rememberScoreAnchor(r,{x:box.x,y,w:bw,h:row},'#dae7bc','#304e3e');
         if(state)this.round(box.x+3,y,bw-6,row,5,'#62df87',state==='active'?'#17683b':null);
-        SC.drawGardenTool(this,r.property,box.x+16,y+14,.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font='bold '+(SC.isChinese(g.mode)||g.mode==='bopomofo'?21:16)+'px system-ui';if(hints.has(r)){c.fillText(r.item.label,box.x+40,y+21,24);c.font='10px system-ui';c.fillText(r.item.hint||'',box.x+51+(bw-57)/2,y+18,bw-57);}else c.fillText(r.item.label,box.x+30+(bw-36)/2,y+20,bw-36);
+        SC.drawGardenTool(this,r.property,box.x+16,y+row/2,.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font='bold '+(SC.isChinese(g.mode)||g.mode==='bopomofo'?21:16)+'px system-ui';
+        SC.drawLabelText(c,r.item,{x:box.x+26,y,w:bw-30,h:row},{hint:hints.has(r),hintFont:'11px system-ui'});
       }
     }
     this.bubbleBoxes=boxes;
