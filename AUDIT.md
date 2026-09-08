@@ -1,3 +1,19 @@
+# Rumsfördelning, tydligare stök och möbelgrafik i Städa hemmet
+
+2026-09-08.
+
+Familjens aktiviteter balanseras mellan de fem rummen och hallen, inklusive redan påbörjade aktiviteter och kommande disk och tvätt. Barnens vanliga promenader och mattransporter går 50 procent snabbare; de vuxnas hastigheter är oförändrade. Matönskemål pekar på en fast, tom dukning. Burna föremål får en uppgift först vid avlämningen, och befintliga etiketter flyttas inte undan för förbipasserande personer. Kraftigare kopplingslinjer har ljus kontur och ritas bakom alla etiketter.
+
+Spelarföräldern fortsätter de arga hoppen tills varje annan familjemedlem har slutfört sin enda hjälpuppgift. Färdiga hjälpare väntar och pågående måltider pausas under insatsen. Samma regel gäller om den fyrtionde uppgiften blir klar mitt i hjälpen. Övertagna svar tas fortfarande bort individuellt ur kön och familjens arbete ger inga poäng.
+
+Sängbordet har flyttats till en synlig plats vid sängens fot. Toaletten har tank, sockel och skål med sits i rummets isometriska perspektiv. Överskåp och kylskåp ritas framför köksbänken, stolarna sorteras separat så en hamnar bakom matbordet, och soffans bakre armstöd ritas före basen. Korta syntetiserade hushållsljud följer öppning/stängning, nedlagda tallrikar och förpackningar, kläder, leksaker, diskning, matlagning, hunger och arga nedstamp.
+
+Verifierat: samtliga 26 testsviter, inklusive 72 fullständiga hemmaomgångar med fördröjda svar, misstag, tystnad eller bara felsvar. Vid varje svårighet får vart och ett av de fem rummen och hallen minst 15 procent av alla skapade uppgifter sammantaget över de testade omgångarna; enskilda omgångar varierar. Separata kontroller täcker faktiska gångsträckor för barn och vuxna, fasta matetiketter och fysisk avlämning, hjälp som varar längre än tre hopp, avslut mitt i hjälpen, köreservationer och minst tio samtidiga uppgifter utan ilskestädning. De nya ljuden kontrolleras för begränsad varaktighet, dämpning vid tal och frigjorda ljudnoder. Lägenheten med en, två och tre barnsängar samt smal vy med tio etiketter har renderats och granskats.
+
+Home behåller v1 i klient, genererad Worker och tester. Den tidigare driftsatta Workern avvisade home trots att den publicerade klienten använde rätt version. Efter ägarens Worker-uppdatering returnerar den publika GET-begäran för `v1:home:swedish:gentle` HTTP 200, en giltig tom poänglista och rätt CORS-origin för GitHub Pages. Ingen produktionspoäng har skrivits. Klienten visar även ett begripligt fel om en framtida topplista ännu inte stöds av servern.
+
+---
+
 # Aktivare familj och verkliga matkedjor i Städa hemmet
 
 2026-09-08.

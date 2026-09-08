@@ -112,11 +112,11 @@
         o.connect(v);v.connect(c.destination);o.start(at);o.stop(at+duration+.01);
         o.onended=()=>{o.disconnect();v.disconnect();};
       };
-      const noise=(duration,cutoff,delay=0)=>{
+      const noise=(duration,cutoff,delay=0,volume=.055)=>{
         const n=c.createBufferSource(),b=c.createBuffer(1,Math.ceil(c.sampleRate*duration),c.sampleRate),data=b.getChannelData(0);
         for(let i=0;i<data.length;i++)data[i]=(Math.random()<.5?-1:1)*(1-i/data.length);
         n.buffer=b;const filter=c.createBiquadFilter(),v=c.createGain(),at=c.currentTime+delay;
-        filter.type='lowpass';filter.frequency.value=cutoff;v.gain.setValueAtTime(.055*scale,at);v.gain.exponentialRampToValueAtTime(.0001,at+duration);
+        filter.type='lowpass';filter.frequency.value=cutoff;v.gain.setValueAtTime(volume*scale,at);v.gain.exponentialRampToValueAtTime(.0001,at+duration);
         n.connect(filter);filter.connect(v);v.connect(c.destination);n.start(at);n.stop(at+duration);
         n.onended=()=>{n.disconnect();filter.disconnect();v.disconnect();};
       };
@@ -127,7 +127,17 @@
         else if(kind==='camp-toss')tone(115,65,.10,0,.010,'sine');
         else if(kind==='home-clean'){tone(740,880,.1,0,.011,'sine');tone(1100,1100,.15,.075,.009,'sine');}
         else if(kind==='home-help')tone(530,650,.09,0,.006,'sine');
-        else if(kind==='home-anger'){for(let i=0;i<3;i++){tone(105,62,.1,i*.32,.018,'sine');tone(210,150,.14,i*.32,.009,'triangle');}}
+        else if(kind==='home-anger'){tone(125,90,.24,0,.015,'triangle');tone(230,160,.28,0,.006,'sine');}
+        else if(kind==='home-stomp'){tone(105,55,.10,0,.016,'sine');noise(.055,400,0,.012);}
+        else if(kind==='home-open'){tone(240,350,.18,0,.006,'triangle');tone(470,510,.11,.09,.003,'sine');noise(.05,800,.18,.012);}
+        else if(kind==='home-shut'||kind==='home-handle'){tone(175,72,.09,0,.018,'sine');noise(.065,1100,.025,.018);}
+        else if(kind==='home-plate'){tone(1150,1090,.18,0,.014,'sine');tone(2270,2110,.12,.035,.005,'sine');}
+        else if(kind==='home-container'){tone(330,170,.07,0,.009,'triangle');noise(.09,1200,.035,.015);}
+        else if(kind==='home-rustle')noise(.22,1500,0,.021);
+        else if(kind==='home-toy'){tone(250,140,.07,0,.011,'triangle');tone(310,190,.06,.08,.006,'sine');}
+        else if(kind==='home-wash'){noise(.75,2400,0,.022);[700,940,790].forEach((f,i)=>tone(f,f*.64,.09,.12+i*.15,.004,'sine'));}
+        else if(kind==='home-cook'){noise(.65,3800,0,.018);noise(.07,2600,.19,.012);noise(.06,3000,.36,.01);}
+        else if(kind==='home-hungry'){tone(120,70,.28,0,.012,'sine');tone(160,95,.22,.13,.004,'triangle');}
         else if(kind==='home-together'){tone(440,590,.12,0,.01,'sine');tone(660,790,.15,.13,.01,'sine');}
         else if(kind==='egg-crack'){noise(.09,1300);tone(150,65,.12,.04,.018,'sine');}
         else if(kind==='egg-hatch'){noise(.32,1800);tone(220,80,.28,0,.019,'triangle');tone(920,470,.16,.12,.008,'sine');}

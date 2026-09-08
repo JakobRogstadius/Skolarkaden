@@ -72,10 +72,10 @@ class Element extends EventTarget{
   // reuse one ID/payload and results remain tied to the completed game's board.
   const elements=new Map(),get=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
   const nicknameStorage=new Map([['skolarkaden-nickname-v1','OLD NAME']]);
-  let posts=[],failOnce=false,boardData={scores:[],rank:1};
+  let posts=[],failOnce=false,unsupported=false,boardData={scores:[],rank:1};
   const context=vm.createContext({Starlight:{},console,crypto:webcrypto,Event,EventTarget,setTimeout,clearTimeout,AbortController,
     document:{getElementById:get,createElement:()=>new Element()},localStorage:{getItem:key=>nicknameStorage.get(key),setItem:(key,value)=>nicknameStorage.set(key,value),removeItem:key=>nicknameStorage.delete(key)},
-    fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));if(failOnce){failOnce=false;throw new Error('network');}return Response.json({ok:true});}return Response.json(boardData);}});
+    fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));if(failOnce){failOnce=false;throw new Error('network');}return Response.json({ok:true});}return unsupported?Response.json({error:'invalid_leaderboard'},{status:400}):Response.json(boardData);}});
   vm.runInContext(read('resources/highscore-policy.js'),context);vm.runInContext(read('resources/highscores.js'),context);
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),board);
@@ -89,6 +89,7 @@ class Element extends EventTarget{
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:home:swedish:gentle',score:20}))).status,400);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,input:'browser',lang:'zh-TW'}),board);
   const ui=new context.Starlight.Highscores({getSelection:()=>selection});
+  unsupported=true;await ui.open({...selection,kind:'home'});assert.equal(get('scores-status').textContent,'Topplistan är inte redo för det här spelet ännu.');unsupported=false;
   assert.equal(get('score-name').value,'');assert.equal(nicknameStorage.size,0,'discard legacy remembered names');
   ui.begin(selection);ui.finish(200);ui.open(selection,ui.result);get('score-name').value='f.u.c.k';await ui.submit();
   assert.equal(posts.length,0);assert.equal(get('score-status').textContent,'Resultatet är sparat.');

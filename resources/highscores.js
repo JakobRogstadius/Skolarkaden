@@ -12,10 +12,11 @@ async function request(path,options={}){
   try{
     const response=await fetch(API+path,{...options,signal:controller.signal,credentials:'omit'});
     if(!response.ok){
-      const error=new Error(response.status===429?'Många resultat skickas just nu. Vänta en minut och försök igen.':
+      const body=await response.json().catch(()=>({}));
+      const error=new Error(body.error==='invalid_leaderboard'?'Topplistan är inte redo för det här spelet ännu.':response.status===429?'Många resultat skickas just nu. Vänta en minut och försök igen.':
         response.status===409?'Det här resultatet har redan skickats med andra uppgifter.':
         'Topplistan kunde inte nås. Försök igen om en stund.');
-      error.status=response.status;throw error;
+      error.status=response.status;error.code=body.error;throw error;
     }
     return await response.json();
   }finally{clearTimeout(timeout);}
@@ -82,7 +83,7 @@ class Highscores{
       if(!Array.isArray(data.scores))throw new Error('Invalid response');
       this.data=data;this.render();
       status.textContent=result&&data.rank===undefined?'Din placering kan inte hämtas just nu.':data.scores.length?'':'Bli först på topplistan!';
-    }catch(_){if(current())status.textContent='Topplistan kunde inte hämtas. Du kan ändå spara eller spela igen.';}
+    }catch(error){if(current())status.textContent=error.code==='invalid_leaderboard'?error.message:'Topplistan kunde inte hämtas. Försök igen om en stund.';}
     finally{if(current())$('scores-refresh').disabled=false;}
   }
   async leave(action){

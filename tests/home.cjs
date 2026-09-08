@@ -10,6 +10,14 @@ let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
 test('Five rooms, two ordinary adults and 1/2/3 children with matching beds, shared models and fixed speeds',()=>{
  for(const [pace,count] of [['gentle',1],['steady',2],['brave',3]]){const {g}=setup({pace});assert.equal(g.layout.rooms.length,5);assert.equal(g.people.length,count+2);assert.equal(g.people.filter(p=>p.look.child).length,count);assert(g.people.slice(0,2).every(p=>!p.look.child&&!p.look.exotic));assert(g.people.slice(2).every(p=>!p.look.beard&&!p.look.exotic&&(p.look.feminine||p.look.hairStyle<2)));assert.equal(g.layout.furniture.filter(b=>b.child).length,count);assert.equal(g.people.filter(p=>p.player).length,1);assert.equal(g.playerSpeed,3.15);assert.equal(g.walkSpeed,1.3);assert.equal(g.messes.length,0);}
 });
+test('Children walk 50% faster on both household and meal routes; the adult speed stays the same',()=>{
+ const {g}=setup({pace:'steady'}),parent=g.people[1],child=g.people[2],goal={x:6.125,y:7.125};
+ for(const meal of [false,true])for(const p of [parent,child]){Object.assign(p,{x:6.125,y:10.125,wait:0});g.clearRoute(p);if(meal){g.startMeal(p,'snack');p.meal.seat=goal;}else p.activity={type:'toys',goal,stage:'walk',age:0,duration:1};const before=p.y;g.updateFamily(p,.05);assert(Math.abs(before-p.y-(p.look.child?1.95:1.3)*.05)<1e-9);p.activity=null;p.meal=null;}
+});
+test('Task anchors stay on dropped objects and place settings, never following the person',()=>{
+ const {g,events}=setup(),p=g.people[1],hunger=g.requestFood(p),anchor={...g.taskPosition(hunger)};Object.assign(p,g.nearest(g.spots.toys[0]));assert.deepEqual({...g.taskPosition(hunger)},anchor);assert.equal(hunger.room,'kitchen');
+ g.startMeal(p,'snack');p.hungry=null;g.messes=[];until(g,()=>p.meal.stage==='drop');assert.equal(g.messes.length,0);assert.equal(events.filter(e=>e.type==='home-container').length,0);until(g,()=>!p.meal);const dish=g.messes[0],at={...g.taskPosition(dish)};assert.equal(events.filter(e=>e.type==='home-container').length,1);Object.assign(p,g.nearest(g.spots.clothes[0]));assert.deepEqual({...g.taskPosition(dish)},at);
+});
 test('Parent pairs are 90% different gender and 10% same gender, with either gender equally likely',()=>{
  const g=new SC.HomeGame({random:rng(2026)});let same=0,women=0,men=0,femalePlayer=0;
  for(let i=0;i<10000;i++){const [a,b]=g.makeParents();assert(!a.child&&!b.child&&!a.exotic&&!b.exotic);if(a.feminine===b.feminine){same++;if(a.feminine)women++;else men++;}if(a.feminine)femalePlayer++;}
@@ -71,8 +79,14 @@ test('Helping interruptions preserve food and require returning to the seat or b
   g.updateFamily(p,.05);assert(p.meal);assert(!g.messes.some(t=>t.type==='dishes'));until(g,()=>!p.meal);const s=g.messes.find(t=>t.type==='dishes').station;assert(Math.hypot(p.x-s.x,p.y-s.y)<.4);assert.deepEqual([...s.items],['container']);
  }
 });
-test('No anger at six; seven triggers immediately, freezes the parent briefly and sends one job per relative',()=>{
+test('No anger at six; seven triggers immediately and sends one job per relative',()=>{
  const {g,events}=setup({pace:'brave'});for(let i=0;i<6;i++)g.createTask('toys',g.spots.toys[i%5]);g.update(.05);assert.equal(g.angerCount,0);g.createTask('clothes',g.spots.clothes[0]);g.queue.enqueue(g.getTargets()[0].item.answer);const before={x:g.player.x,y:g.player.y};g.update(.05);assert.equal(g.angerCount,1);assert.equal(g.angerLeft,1.2);assert.equal(events.filter(e=>e.type==='home-anger').length,1);assert.equal(new Set(g.people.slice(1).map(p=>p.job.target)).size,4);assert(g.people.slice(1).every(p=>p.fear>.95));assert.equal(g.player.x,before.x);assert.equal(g.player.y,before.y);assert.equal(g.score,0);until(g,()=>g.familyCleaned>=4);assert.equal(g.cleaned,g.hits+g.familyCleaned);
+});
+test('Anger lasts until every relative completes one job, including when cleanup number 40 happens mid-spree',()=>{
+ for(const beforeCount of [0,39]){const {g}=setup({pace:'brave'});g.cleaned=beforeCount;g.familyCleaned=beforeCount;for(const point of [...g.spots.clothes.slice(0,3),...g.spots.toys.slice(0,4)])g.createTask('toys',point);g.update(.05);const start={x:g.player.x,y:g.player.y};let sawLongAnger=false;
+  for(let i=0;i<1600&&g.familyCleaned<beforeCount+4;i++){g.update(.05);if(g.familyCleaned<beforeCount+4){assert(g.helping);assert.equal(g.player.x,start.x);assert.equal(g.player.y,start.y);if(g.angerAge>1.3)sawLongAnger=true;}}
+  assert(sawLongAnger);assert.equal(g.familyCleaned,beforeCount+4);assert.equal(g.helping,false);assert(g.people.slice(1).every(p=>!p.job));if(beforeCount){assert(g.closing);until(g,()=>g.state==='won',120);}
+ }
 });
 test('Family takeover removes exactly the queued reservation, including repeated Mandarin homophones',()=>{
  const item={label:'十',answer:'十',hint:'shí'}, {g}=setup({mode:'chinese',lang:'zh-TW',items:[item]}),a=g.createTask('toys',g.spots.toys[0]),b=g.createTask('toys',g.spots.toys[1]);
@@ -99,8 +113,8 @@ test('Compact labels stay inside the canvas and do not overlap across bed counts
   const before=JSON.stringify(r.labelBoxes);r.draw();assert.equal(JSON.stringify(r.labelBoxes),before,'stationary reading targets must not shuffle every frame');
  }
 });
-test('Finite full rounds with paced imperfect answers, silence or wrong answers; no losses or wall crossings',()=>{
- let rounds=0;
+test('Finite full rounds with paced imperfect answers, silence or wrong answers; balanced rooms and no wall crossings',()=>{
+ let rounds=0;const roomTotals={gentle:{},steady:{},brave:{}};
  for(const pace of ['gentle','steady','brave'])for(const style of ['letters','swedishLong','math3','chinese','silent','wrong'])for(let seed=1;seed<=4;seed++){
   const g=new SC.HomeGame({random:rng(seed)}),inputRng=rng(seed+411);g.start({pace,mode:['silent','wrong'].includes(style)?'letters':style,lang:style==='chinese'?'zh-TW':'sv-SE'});g.resize(seed%2?370:1100,740);g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,i)=>SC.matches(e.text,i,g.mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,g.mode,g.lang)});let due=0;
   for(let i=0;i<26000&&['playing','celebrating'].includes(g.state);i++){
@@ -109,8 +123,8 @@ test('Finite full rounds with paced imperfect answers, silence or wrong answers;
   }
   // The faster family causes more help on higher difficulties. Keep meaningful
   // player participation at these deliberately imperfect 5/8-second input rates.
-  assert.equal(g.state,'won',`${pace}/${style}/${seed} at ${g.elapsed}`);assert(g.cleaned>=40);assert.equal(g.messes.length,0);assert.equal(g.cleaned,g.hits+g.familyCleaned);assert(g.score>=10*g.hits&&g.score<=20*g.hits);assert(g.player.restAge>=2.5);if(['silent','wrong'].includes(style)){assert.equal(g.score,0);assert(g.angerCount>0);}else assert(g.hits>={gentle:28,steady:20,brave:14}[pace],`${pace}/${style}/${seed}: ${g.hits} player jobs`);rounds++;
+  assert.equal(g.state,'won',`${pace}/${style}/${seed} at ${g.elapsed}`);assert(g.cleaned>=40);assert.equal(g.messes.length,0);assert.equal(g.cleaned,g.hits+g.familyCleaned);assert(g.score>=10*g.hits&&g.score<=20*g.hits);assert(g.player.restAge>=2.5);if(['silent','wrong'].includes(style)){assert.equal(g.score,0);assert(g.angerCount>0);}else assert(g.hits>={gentle:28,steady:20,brave:14}[pace],`${pace}/${style}/${seed}: ${g.hits} player jobs`);for(const [room,n]of Object.entries(g.roomCounts))roomTotals[pace][room]=(roomTotals[pace][room]||0)+n;rounds++;
  }
- assert.equal(rounds,72);console.log('  72 complete rounds passed.');
+ assert.equal(rounds,72);for(const [pace,counts]of Object.entries(roomTotals)){const total=Object.values(counts).reduce((a,b)=>a+b,0);assert.equal(Object.keys(counts).length,6);for(const [room,n]of Object.entries(counts))assert(n/total>=.15,`${pace}/${room}: ${(100*n/total).toFixed(1)}% of generated tasks`);}console.log('  72 complete rounds passed; every room and the hallway receive at least 15% at each difficulty across the seeded rounds.');
 });
 console.log(`${checks} home checks passed.`);
