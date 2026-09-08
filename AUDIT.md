@@ -1,3 +1,17 @@
+# Aktivare familj och verkliga matkedjor i Städa hemmet
+
+2026-09-08.
+
+Föräldraparen har nu 90 procent sannolikhet att ha olika kön och 10 procent samma kön. Båda spelarkönen är lika sannolika och de gemensamma personmodellerna används. Familjen hoppar över vilopauser när högst fyra uppgifter finns. Lediga platser reserveras under aktiviteterna; redan öppna skåp, lådor och upptagna golvplatser väljs inte igen. Lägenheten har 16 golvplatser och 10 stationer, inklusive tre diskplatser och flera separata skåp/lådor.
+
+Den tidigare spontana disken ersätts med två matkedjor. Kylskåpsmellanmål lämnar dörren öppen, följs av ätande och en smutsig förpackning som bärs till köksbänken. Lagad mat hämtas från spisen, äts och lämnar en tallrik som bärs tillbaka. Disk skapas först vid avlämningen. En upptagen diskplats får den gående personen att välja en annan eller vänta. Mat och smutsdisk överlever hjälpinsatser och återupptar rätt gångväg; ingen avlämning kan ske från fel rum. Öppna dörrar/lådor, mat som väntar, burna tallrikar och separata diskhögar visas i scenen.
+
+Verifierat: 10 000 föräldrapar; 24 naturliga simuleringar som når minst tio samtidiga fysiska uppgifter med ilskestädningen avstängd; dörrvägar och möbelhinder; båda matkedjorna, avbruten ätning och avlämning; bibehållna köreservationer, bonusregler och slutstädning; 72 fullständiga omgångar över alla svårigheter med tidsfördröjda, felaktiga eller uteblivna svar. Den nya takten ger fler familjeinsatser på högre svårigheter, vilket omgångsprovens deltagandegränser tar hänsyn till. Alla 25 testsviter passerar. Stora och smala renderingar har granskats, inklusive tio samtidiga etiketter. Ingen produktionsdata skrivs i testerna.
+
+Ändrad takt och nya uppgifter använder topplisteversion v2 för home. Den uppdaterade Workern måste distribueras separat med befintlig DB-bindning. Övriga spelversioner, databasens schema och tidigare poängrader bevaras.
+
+---
+
 # Städa hemmet
 
 2026-09-08.

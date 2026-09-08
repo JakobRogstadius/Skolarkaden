@@ -3,7 +3,7 @@
 (function(root){
 'use strict';
 // Bump only the affected game's version when its scoring/rules change.
-const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1'});
+const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v2'});
 // Longer distinctive strings also match inside a name (including separated or
 // simple leetspeak spellings). Short/ambiguous words only match complete tokens.
 const substrings=`
