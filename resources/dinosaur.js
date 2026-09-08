@@ -64,6 +64,7 @@ class DinosaurGame{
   for(const p of eligible){if(p.group)continue;const near=eligible.filter(q=>q!==p&&!q.group&&this.distance(p,q)<180*this.scale());if(near.length)this.conversation([p,...near.slice(0,3)]);}
  }
  startle(p){
+  const points=p.look.exotic?25:5;this.score+=points;this.effects.push({x:p.x,y:p.y,age:0,text:'+'+points});this.emit('scare',{target:p,points});
   this.dissolve(p.group);p.entryGoal=null;p.status='startled';p.stateAge=0;p.fear=1;p.cooldown=4.5;p.chatCooldown=9;
   const dx=(p.x-this.dino.x)*this.width,dy=(p.y-this.dino.y)*this.height;let side=Math.abs(dx)>5?Math.sign(dx):p.direction;
   // Keep fleeing decisive at the top/bottom edges, rather than running in place.
@@ -107,8 +108,8 @@ class DinosaurGame{
    // Let the hop land and show a short fleeing burst before a close catch.
    if(arrived&&j.target.status!=='startled'&&!(j.target.status==='running'&&j.target.stateAge<.4))this.catch(j.target);
   }else if(j.stage==='eat'&&j.age>=1.15){
-   this.people=this.people.filter(p=>p!==j.target);this.score++;this.hits++;this.passed++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);
-   this.effects.push({x:d.x,y:d.y,age:0,text:'+1'});this.emit('hit',{entry:j.entry,target:j.target,points:1});this.job=null;
+   this.people=this.people.filter(p=>p!==j.target);const points=j.target.look.exotic?50:10;this.score+=points;this.hits++;this.passed++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);
+   this.effects.push({x:d.x,y:d.y,age:0,text:'+'+points});this.emit('hit',{entry:j.entry,target:j.target,points});this.job=null;
   }else if(j.stage==='confused'&&j.age>=1.25){this.emit('miss',{entry:j.entry,reason:'Dinosaurien letade och bet i luften.'});this.job=null;}
  }
  finish(){this.state='celebrating';this.celebration=0;this.dino.moving=false;this.emit('celebrate');}

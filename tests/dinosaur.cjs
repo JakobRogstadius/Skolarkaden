@@ -17,6 +17,13 @@ test('Target and bystander both jump straight up, show fear, flee, then stop bri
  tick(g,.15);for(const person of [p,q])assert(g.jumpHeight(person)>0);tick(g,.25);for(const person of [p,q]){assert.equal(person.status,'running');assert(person.fear>.9);}
  until(g,()=>p.status==='resting');const stopped={x:p.x,y:p.y};tick(g,.3);assert.equal(p.status,'resting');assert.deepEqual({x:p.x,y:p.y},stopped);until(g,()=>p.status==='walking');
 });
+test('Scares score for bystanders once per scare, including another scare after recovery',()=>{
+ const events=[],{g,p}=isolated({},e=>events.push(e));g.dino.x=.5;g.dino.y=.75;p.x=.57;p.y=.65;p.look.exotic=null;
+ g.update(.05);assert.equal(g.score,5);tick(g,.15);assert.equal(g.score,5);assert.equal(g.hits,0);
+ Object.assign(p,{status:'walking',cooldown:0,x:.57,y:.65});g.update(.05);assert.equal(g.score,10);
+ Object.assign(p,{status:'walking',cooldown:0,x:.57,y:.65});p.look.exotic='test';g.update(.05);assert.equal(g.score,35);
+ assert.deepEqual(events.filter(e=>e.type==='scare').map(e=>e.points),[5,5,25]);
+});
 test('Walkers form a circle, finish talking, and a nearby dinosaur interrupts the whole group',()=>{
  const {g,p}=isolated();assert(g.spawn());assert(g.spawn());const members=g.people.slice(0,3);g.dino.x=.95;g.dino.y=.9;members.forEach((p,i)=>{p.x=.28+i*.015;p.y=.57;p.entryGoal=null;p.chatCooldown=0;});g.findConversations();assert.equal(g.groups.length,1);const group=g.groups[0];assert.equal(group.members.length,3);
  until(g,()=>group.members.every(p=>p.status==='talking'));for(const p of members){assert.equal(p.x,p.chatGoal.x);assert.equal(p.y,p.chatGoal.y);assert(Math.abs(Math.hypot((p.x-group.center.x)*g.width/(38*g.scale()),(p.y-group.center.y)*g.height/(26*g.scale()))-1)<1e-9);}
@@ -25,19 +32,19 @@ test('Walkers form a circle, finish talking, and a nearby dinosaur interrupts th
 });
 test('A correct FIFO answer chases, catches, displays the same sprite, then scores once after swallowing',()=>{
  const events=[],{g,p}=isolated({},e=>events.push(e));g.queue.enqueue(p.item.answer);g.update(.05);assert.equal(g.job.stage,'chase');assert.equal(g.job.target,p);assert.equal(g.hits,0);assert(!g.getAvailableTargets().includes(p));assert.equal(g.getTaskStates().get(p),'active');
- const phases=new Set();until(g,()=>{phases.add(p.status);return g.job.stage==='eat';});assert(phases.has('startled'));assert(phases.has('running'));assert.equal(p.status,'eaten');assert(!g.getTargets().includes(p));assert(g.people.includes(p));assert.equal(g.passed,0);assert.equal(g.job.target.look,p.look);tick(g,.7);assert.equal(g.hits,0);until(g,()=>g.hits===1);assert(!g.people.includes(p));assert.equal(g.passed,1);assert.equal(g.score,1);assert.equal(g.escaped,0);tick(g,10);assert.equal(g.hits,1);assert.equal(events.filter(e=>e.type==='hit').length,1);assert(events.some(e=>e.type==='dino-chomp'));
+ const phases=new Set();until(g,()=>{phases.add(p.status);return g.job.stage==='eat';});assert(phases.has('startled'));assert(phases.has('running'));assert.equal(p.status,'eaten');assert(!g.getTargets().includes(p));assert(g.people.includes(p));assert.equal(g.passed,0);assert.equal(g.job.target.look,p.look);tick(g,.7);assert.equal(g.hits,0);until(g,()=>g.hits===1);assert(!g.people.includes(p));assert.equal(g.passed,1);assert.equal(g.score,15);assert.equal(g.escaped,0);tick(g,10);assert.equal(g.hits,1);assert.equal(events.filter(e=>e.type==='hit').length,1);assert(events.some(e=>e.type==='dino-chomp'));
 });
 test('Only one job runs; a wrong word occupies the dinosaur briefly, then the next answer works',()=>{
  const events=[],{g,p}=isolated({},e=>events.push(e));g.queue.enqueue('ett fel');g.queue.enqueue(p.item.answer);g.update(.05);assert.equal(g.job.stage,'confused');assert.equal(g.queue.length,1);const location={x:g.dino.x,y:g.dino.y};tick(g,.7);assert.deepEqual({x:g.dino.x,y:g.dino.y},location);assert.equal(g.score,0);until(g,()=>g.job?.stage==='chase');assert.equal(g.job.target,p);until(g,()=>g.hits===1);assert.equal(g.shots,2);assert.deepEqual(events.filter(e=>e.type==='work').map(e=>e.entry.text),['ett fel',p.item.answer]);assert.equal(events.filter(e=>e.type==='miss').length,1);
 });
 test('Spam filtering, target reservation and homophone revisions use the shared queue rules',()=>{
  const {g,p}=isolated({mode:'chinese',lang:'zh-CN'});p.item={label:'十',answer:'shi',hint:'shí'};policy(g);const entry=g.queue.enqueue('是','speech');assert(entry);assert.equal(g.queue.enqueue('事','speech'),undefined);assert.equal(g.getTaskStates().get(p),'queued');g.queue.revise(entry,'時');g.update(.05);assert.equal(g.job.target,p);assert.equal(g.queue.enqueue('十','speech'),undefined);
- assert(g.queue.enqueue('fel1'));assert(g.queue.enqueue('fel2'));assert.equal(g.queue.enqueue('fel3'),undefined);assert.equal(g.queue.length,2);until(g,()=>g.hits===1);assert.equal(g.score,1);
+ assert(g.queue.enqueue('fel1'));assert(g.queue.enqueue('fel2'));assert.equal(g.queue.enqueue('fel3'),undefined);assert.equal(g.queue.length,2);until(g,()=>g.hits===1);assert.equal(g.score,15);
 });
-test('The cast retains its shared probabilities; all eight rare creatures still score exactly one point',()=>{
+test('The cast retains its shared probabilities; all eight rare creatures earn five times the scare and eating points',()=>{
  const counts={};for(let i=0;i<10000;i++){let first=true;const p=SC.makePerson(()=>{if(first){first=false;return (i+.5)/10000;}return .5;});counts[p.kind]=(counts[p.kind]||0)+1;if(p.child){assert(!p.beard);assert(p.feminine||p.hairStyle<2);}}
  assert.deepEqual(counts,{man:4000,woman:4000,boy:950,girl:950,exotic:100});
- for(const rare of SC.rarePeople){const {g,p}=isolated();let first=true;p.look=SC.makePerson(()=>{if(first){first=false;return .995;}return .4;});p.look.exotic=rare.id;g.queue.enqueue(p.item.answer);until(g,()=>g.hits===1);assert.equal(g.score,1);}
+ for(const rare of SC.rarePeople){const {g,p}=isolated();let first=true;p.look=SC.makePerson(()=>{if(first){first=false;return .995;}return .4;});p.look.exotic=rare.id;g.queue.enqueue(p.item.answer);until(g,()=>g.hits===1);assert.equal(g.score,75);}
 });
 test('Pause freezes chasing, swallowing and queued input',()=>{
  for(const stage of ['chase','eat','confused']){const {g,p}=isolated();g.queue.enqueue(stage==='confused'?'felord':p.item.answer);g.update(.05);if(stage==='eat')until(g,()=>g.job.stage==='eat');g.queue.enqueue('senare');g.pause();const snapshot=JSON.stringify({dino:g.dino,people:g.people,job:g.job,clock:g.clock,elapsed:g.elapsed});tick(g,6);assert.equal(JSON.stringify({dino:g.dino,people:g.people,job:g.job,clock:g.clock,elapsed:g.elapsed}),snapshot);assert.equal(g.queue.length,1);g.resume();if(stage!=='confused')until(g,()=>g.hits===1);}
@@ -49,7 +56,7 @@ test('Catches at either exit keep the dinosaur and dangling legs inside the pict
  for(const width of [320,370,1100])for(const side of [-1,1]){const {g,p}=isolated();g.resize(width,700);p.x=side<0?.05:.95;p.y=.60;p.direction=side;g.queue.enqueue(p.item.answer);until(g,()=>g.job?.stage==='eat');const x=g.dino.x*width,s=g.scale();assert(x-174*s>=-1e-6&&x+174*s<=width+1e-6);until(g,()=>g.hits===1);assert.equal(g.escaped,0);}
 });
 test('All exercises work, including spoken numbers, Chinese pinyin and single letters',()=>{
- for(const mode of Object.keys(SC.modes)){const {g,p}=isolated({mode,lang:SC.modes[mode].lang,uppercase:true});g.queue.enqueue(p.item.answer);until(g,()=>g.hits===1);assert.equal(g.score,1);if(['swedish','english','swedishLong','englishLong','letters','food'].includes(mode))assert.equal(p.item.label,p.item.label.toUpperCase());}
+ for(const mode of Object.keys(SC.modes)){const {g,p}=isolated({mode,lang:SC.modes[mode].lang,uppercase:true});g.queue.enqueue(p.item.answer);until(g,()=>g.hits===1);assert.equal(g.score,15);if(['swedish','english','swedishLong','englishLong','letters','food'].includes(mode))assert.equal(p.item.label,p.item.label.toUpperCase());}
  for(const lang of ['sv-SE','en-US','zh-CN','zh-TW']){const {g,p}=isolated({mode:'math',lang});g.queue.enqueue(SC.numberName(Number(p.item.answer),lang),'speech');until(g,()=>g.hits===1);}
 });
 test('Every round resolves forty people and cannot lose, even with silence or only mistakes',()=>{
@@ -59,8 +66,8 @@ test('Every round resolves forty people and cannot lose, even with silence or on
    if(g.state==='playing'&&!g.job&&!g.queue.length){if(strategy==='wrong')g.queue.enqueue('felord');else if(strategy==='correct'){const p=g.getAvailableTargets()[0];if(p)g.queue.enqueue(p.item.answer);}}
    g.update(.05);peak=Math.max(peak,g.people.length);assert(g.people.length<=g.maxPeople);assert(g.spawned<=40);assert(g.passed<=40);assert.equal(g.hits+g.escaped,g.passed);
   }
-  assert.equal(g.state,'won',`${pace}/${strategy}/${width}/${seed}: ${g.passed} passed, ${g.spawned} spawned`);assert.equal(g.spawned,40);assert.equal(g.passed,40);assert.equal(g.people.length,0);assert.equal(g.score,g.hits);assert.equal(events.filter(e=>e.type==='end').length,1);assert(events.find(e=>e.type==='end').won);
-  if(strategy!=='correct')assert.equal(g.score,0);else assert(g.score>=20,`${pace}/${width}: only ${g.score} catches`);if(seed===1&&width===1000)report.push({pace,strategy,hits:g.hits,seconds:Math.round(g.elapsed),peak});
+  assert.equal(g.state,'won',`${pace}/${strategy}/${width}/${seed}: ${g.passed} passed, ${g.spawned} spawned`);assert.equal(g.spawned,40);assert.equal(g.passed,40);assert.equal(g.people.length,0);assert.equal(g.score,events.filter(e=>['scare','hit'].includes(e.type)).reduce((sum,e)=>sum+e.points,0));assert.equal(events.filter(e=>e.type==='end').length,1);assert(events.find(e=>e.type==='end').won);
+  if(strategy!=='correct')assert.equal(g.hits,0);else assert(g.hits>=20,`${pace}/${width}: only ${g.score} catches`);if(seed===1&&width===1000)report.push({pace,strategy,hits:g.hits,seconds:Math.round(g.elapsed),peak});
  }
  console.log(JSON.stringify(report));
 });
@@ -89,7 +96,7 @@ test('Bottom arrivals walk up smoothly, become matchable in view, and can be cau
  for(const width of [370,1000])for(const catchIt of [true,false]){
   const {g}=isolated();g.resize(width,700);g.people=[];g.spawned=0;g.dino.x=.90;g.dino.y=.53;const entrances=g.entrances.bind(g);g.entrances=()=>entrances().filter(e=>e.edge==='bottom');assert(g.spawn());const p=g.people[0];assert(p.y>1);assert(!g.getTargets().includes(p));
   const x=p.x;until(g,()=>g.getTargets().includes(p),12);assert.equal(p.x,x);assert(p.y<=.96&&p.y>.80);assert.equal(p.fear,0);
-  if(catchIt){g.queue.enqueue(p.item.answer);let previous=p.y;until(g,()=>{assert(Math.abs(p.y-previous)*g.height<=g.runSpeed*g.scale()*.05+.01,'no vertical snap from the bottom');previous=p.y;return g.hits===1;});assert.equal(g.score,1);}
+  if(catchIt){g.queue.enqueue(p.item.answer);let previous=p.y;until(g,()=>{assert(Math.abs(p.y-previous)*g.height<=g.runSpeed*g.scale()*.05+.01,'no vertical snap from the bottom');previous=p.y;return g.hits===1;});assert.equal(g.score,15);}
   else{until(g,()=>p.entryGoal===null,12);assert(Math.abs(p.y-.80)<1e-8);until(g,()=>g.escaped===1,55);assert.equal(g.passed,1);}
  }
 });

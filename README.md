@@ -82,6 +82,10 @@ I kinesiska teckenövningar visas pinyin automatiskt efter fem sekunder om teckn
 
 Svenskt tal kan delas upp när tjänsten skriver ihop två eller tre aktuella mål, exempelvis `hundmat`. Detta gäller inte matte. Vanliga engelska homofoner har uttryckliga talalias, exempelvis `see / sea / c`. Tangentbordsläget kräver korrekt stavning.
 
+## Hungrig dinosauries poäng
+
+Varje skrämsel ger 5 poäng och varje uppäten person ger 10 poäng. Båda beloppen multipliceras med fem för exotiska personer: 25 respektive 50 poäng. Även förbipasserande som skräms ger poäng, och en ny skrämsel efter återhämtning räknas igen. Ingen svit- eller slutbonus tillkommer. Hungrig dinosaurie använder poängversion v2.
+
 ## Färgballongernas poäng
 
 Träffar ger 10, 11, 12 poäng och så vidare i en obruten svit utan tak. En exotisk person ger ytterligare 50 poäng. Felaktiga svar och personer som går förbi utan att träffas bryter sviten; redan målade personer kan lämna utan att bryta den. Ingen slutbonus tillkommer. Färgballonger använder poängversion v2.
