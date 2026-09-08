@@ -1,3 +1,17 @@
+# Gradvis familjetempo, full ilskestädning och vila på plats
+
+2026-09-08.
+
+Alla andra familjemedlemmar hoppar över vilopauserna när högst tre uppgifter finns. För varje ytterligare uppgift återgår en person till de befintliga slumpmässiga pauserna. Roller roterar när nya uppgifter skapas; pågående promenader avbryts inte när antalet kontinuerligt aktiva minskar.
+
+Vid ilska fortsätter hjälparna ta nya uppgifter tills inget stök finns kvar, inklusive tvätt som uppstår när kläder plockas upp och återstående innehåll i korgar och soptunnor. Föräldern hoppar hela tiden. Även påbörjade spelaruppgifter tas över utan poäng. Burna kläder eller tvätt hämtas fysiskt hos föräldern och levereras vidare, utan att senare tillkommen tvätt försvinner. Köade svar tas bort endast för de övertagna uppgifterna; andra likalydande svar behålls. Måltider pausas som tidigare och fortsätter efter hjälpinsatsen. Avslutningen efter 40 städningar fullföljer även återstående matkedjor.
+
+När allt är klart lägger sig spelarföräldern precis där hen står och behåller 40 procent ilska i ansiktet under både firandet och resultatbilden. Home behåller v1.
+
+Verifierat: 29 hemmakontroller inklusive 84 fullständiga omgångar, med fysisk överlämning i samtliga relevanta arbetssteg, köreservationer, rumsfördelning, avslut mitt i ilskan och oförändrad viloposition. Full ilskestädning överför fler uppgifter till familjen än tidigare, så deltagandekontrollerna tar hänsyn till den avsiktliga förändringen. Vid ett korrekt svar varannan sekund gör spelaren minst 60 procent av städningarna, med högst två ilskeinsatser och mindre än tio sekunder till slutförande för spelarens egna uppgifter över tolv slumpfrön. Samtliga testade svårigheter behåller minst 15 procent av uppgifterna i varje rum och hallen sammantaget. Hushållsljud, poängindikatorer och fördröjda pinyinhintar passerar också. Slutposer har renderats och granskats på stor och smal skärm.
+
+---
+
 # Snabbare hjälp vid mycket stök och kompletta poänginställningar
 
 2026-09-08.

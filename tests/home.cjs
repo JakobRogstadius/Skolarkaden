@@ -26,10 +26,17 @@ test('Parent pairs are 90% different gender and 10% same gender, with either gen
  for(let i=0;i<10000;i++){const [a,b]=g.makeParents();assert(!a.child&&!b.child&&!a.exotic&&!b.exotic);if(a.feminine===b.feminine){same++;if(a.feminine)women++;else men++;}if(a.feminine)femalePlayer++;}
  assert(same>900&&same<1100);assert(women>400&&women<600);assert(men>400&&men<600);assert(femalePlayer>4800&&femalePlayer<5200);
 });
-test('Four or fewer messes bypass the pause for every idle relative; busy homes keep normal pauses',()=>{
- for(const count of [0,4,5]){const {g}=setup({pace:'brave'},true);g.people.slice(1).forEach(p=>{p.activity=null;p.wait=12;});for(let i=0;i<count;i++)g.createTask('toys',g.spots.toys[i]);
-  for(const p of g.people.slice(1)){g.updateFamily(p,.05);assert.equal(!!p.activity,count<=4);assert.equal(p.wait,count<=4?0:11.95);}
+test('All relatives skip rest up to three messes, then one fewer per additional mess at every difficulty',()=>{
+ for(const pace of ['gentle','steady','brave'])for(const count of [0,3,4,5,6,7]){const {g}=setup({pace},true),family=g.people.slice(1);family.forEach(p=>{p.activity=null;p.wait=12;});for(let i=0;i<count;i++)g.createTask('toys',g.spots.toys[i]);
+  for(const p of family)g.updateFamily(p,.05);
+  assert.equal(family.filter(p=>p.activity).length,Math.max(0,family.length-Math.max(0,count-3)),`${pace}/${count}`);
+  for(const p of family){assert.equal(p.wait,p.activity?0:11.95);if(!p.activity){p.wait=.025;g.updateFamily(p,.05);assert.equal(p.wait,0);g.updateFamily(p,.05);assert(p.activity,'probabilistic relatives still resume when their sampled rest ends');}}
  }
+});
+test('Continuous roles rotate and a switch to normal timing never interrupts an activity',()=>{
+ const {g}=setup({pace:'brave'},true),family=g.people.slice(1);for(let i=0;i<6;i++)g.createTask('toys',g.spots.toys[i]);const selected=new Set();
+ for(let n=0;n<family.length;n++){g.nextId++;const continuous=family.filter(p=>g.skipsRest(p));assert.equal(continuous.length,1);selected.add(continuous[0]);}assert.equal(selected.size,family.length);
+ const p=family.find(p=>!g.skipsRest(p));Object.assign(p,{x:6.125,y:10.125,wait:12,activity:{type:'toys',goal:{x:6.125,y:7.125},stage:'walk',age:0,duration:1}});g.clearRoute(p);g.updateFamily(p,.05);assert(p.y<10.125,'existing walks continue');assert.equal(p.wait,0);
 });
 test('Every cupboard, drawer and floor spot is reserved; occupied locations are excluded from new activities',()=>{
  const {g}=setup({pace:'brave'},true);g.people.slice(1).forEach(p=>p.activity=null);const a=g.people[1],b=g.people[2];
@@ -85,18 +92,41 @@ test('Helping interruptions preserve food and require returning to the seat or b
 test('No anger at six; seven triggers immediately and sends one job per relative',()=>{
  const {g,events}=setup({pace:'brave'});for(let i=0;i<6;i++)g.createTask('toys',g.spots.toys[i%5]);g.update(.05);assert.equal(g.angerCount,0);g.createTask('clothes',g.spots.clothes[0]);g.queue.enqueue(g.getTargets()[0].item.answer);const before={x:g.player.x,y:g.player.y};g.update(.05);assert.equal(g.angerCount,1);assert.equal(g.angerLeft,1.2);assert.equal(events.filter(e=>e.type==='home-anger').length,1);assert.equal(new Set(g.people.slice(1).map(p=>p.job.target)).size,4);assert(g.people.slice(1).every(p=>p.fear>.95));assert.equal(g.player.x,before.x);assert.equal(g.player.y,before.y);assert.equal(g.score,0);until(g,()=>g.familyCleaned>=4);assert.equal(g.cleaned,g.hits+g.familyCleaned);
 });
-test('Anger lasts until every relative completes one job, including when cleanup number 40 happens mid-spree',()=>{
+test('Anger lasts until every mess is cleared, including when cleanup number 40 happens mid-spree',()=>{
  for(const beforeCount of [0,39]){const {g}=setup({pace:'brave'});g.cleaned=beforeCount;g.familyCleaned=beforeCount;for(const point of [...g.spots.clothes.slice(0,3),...g.spots.toys.slice(0,4)])g.createTask('toys',point);g.update(.05);const start={x:g.player.x,y:g.player.y};let sawLongAnger=false;
-  for(let i=0;i<1600&&g.familyCleaned<beforeCount+4;i++){g.update(.05);if(g.familyCleaned<beforeCount+4){assert(g.helping);assert.equal(g.player.x,start.x);assert.equal(g.player.y,start.y);if(g.angerAge>1.3)sawLongAnger=true;}}
-  assert(sawLongAnger);assert.equal(g.familyCleaned,beforeCount+4);assert.equal(g.helping,false);assert(g.people.slice(1).every(p=>!p.job));if(beforeCount){assert(g.closing);until(g,()=>g.state==='won',120);}
+  for(let i=0;i<1600&&g.helping;i++){g.update(.05);if(g.messes.length){assert(g.helping);assert.equal(g.player.x,start.x);assert.equal(g.player.y,start.y);if(g.angerAge>1.3)sawLongAnger=true;}}
+  assert(sawLongAnger);assert.equal(g.familyCleaned,beforeCount+7);assert.equal(g.helping,false);assert.equal(g.messes.length,0);assert.equal(g.score,0);assert(g.people.slice(1).every(p=>!p.job));if(beforeCount){assert(g.closing);until(g,()=>g.state==='won',120);}
  }
 });
 test('Family takeover removes exactly the queued reservation, including repeated Mandarin homophones',()=>{
  const item={label:'十',answer:'十',hint:'shí'}, {g}=setup({mode:'chinese',lang:'zh-TW',items:[item]}),a=g.createTask('toys',g.spots.toys[0]),b=g.createTask('toys',g.spots.toys[1]);
  const first=g.queue.enqueue('是','speech'),second=g.queue.enqueue('事','speech'),wrong=g.queue.enqueue('wrong');assert(first&&second&&wrong);g.takeFamilyTask(g.people[1],b);assert.deepEqual([...g.queue.items],[first,wrong]);assert(!g.getTargets().includes(b));assert(g.getTargets().includes(a));assert.equal(g.getTaskStates().get(a),'queued');assert(!SC.pinyinHints(g).has(a));until(g,()=>g.familyCleaned===1);assert(!g.queue.items.includes(second));
 });
-test('An active player job stays with the player while relatives remove pending chores',()=>{
- const {g}=setup({pace:'steady'}),a=g.createTask('clothes',g.spots.clothes[0]);g.queue.enqueue(a.item.answer);g.work(g.player,.05);for(let i=0;i<6;i++){const t=g.createTask('toys',g.spots.toys[i%5]);g.queue.enqueue(t.item.answer);}g.update(.05);assert.equal(g.player.job.target,a);assert(g.people.slice(1).every(p=>p.job.target!==a));assert.equal(g.queue.length,3);assert.equal(g.getTaskStates().get(a),'active');
+test('Full family cleanup takes over active chores and physically collects carried clothes or laundry',()=>{
+ for(const type of ['toys','clothes','laundry'])for(const stage of (type==='toys'?['walk','clean']:['walk','clean',type==='clothes'?'deliver':'machine','finish'])){
+  const {g}=setup({pace:'steady'}),t=type==='laundry'?(g.addToStation('laundry',3)):g.createTask(type,g.spots[type][0]);
+  g.queue.enqueue(t.item.answer);until(g,()=>g.player.job?.stage===stage);
+  const carried=g.player.carry,at={x:g.player.x,y:g.player.y};
+  if(carried==='laundry')g.addToStation('laundry',1); // A later shirt must receive its own wash.
+  for(let i=0;i<6;i++){const task=g.createTask('toys',g.spots.toys[i]);g.queue.enqueue(task.item.answer);}
+  g.update(.05);assert(g.helping);assert(!g.player.job);assert(g.people.some(p=>p.job?.target===t));
+  if(carried){assert.equal(g.player.carry,carried);assert.equal(t.handoff,g.player);assert(!SC.HomeRenderer.prototype.messOnSite.call({game:g},t));
+   until(g,()=>!g.player.carry);const helper=g.people.find(p=>p.carry===carried);assert(helper);assert(Math.hypot(helper.x-at.x,helper.y-at.y)<.01,'handoff happens at the parent');
+  }
+  until(g,()=>!g.helping,120);assert.equal(g.messes.length,0);assert.equal(g.queue.length,0);assert.equal(g.hits,0);assert.equal(g.score,0);assert.equal(g.player.x,at.x);assert.equal(g.player.y,at.y);assert(g.people.every(p=>!p.carry&&!p.job));assert(Object.values(g.stations).every(s=>s.fill===0&&!s.task));
+  assert(g.cleaned>=7+(type==='clothes'||carried==='laundry'?1:0),'follow-up laundry is cleaned too');
+ }
+});
+test('Taking an active homophone never removes the queued answer for another matching task',()=>{
+ const item={label:'十',answer:'十',hint:'shí'},{g}=setup({mode:'chinese',lang:'zh-TW',items:[item]}),a=g.createTask('toys',g.spots.toys[0]),b=g.createTask('toys',g.spots.toys[1]);g.queue.enqueue('是','speech');g.work(g.player,.05);const pending=g.queue.enqueue('事','speech');
+ // Occupy the other helper so only the active task is taken in this call.
+ g.people[2].job={target:b,stage:'walk',age:0};b.owner=2;
+ g.becomeAngry();assert.equal(g.people[1].job.target,a);assert(g.queue.items.includes(pending));
+});
+test('The parent lies down at their final position with 40% anger throughout the ending',()=>{
+ for(const point of [{x:2,y:2},{x:9,y:8},{x:6,y:11}]){const {g}=setup();Object.assign(g.player,g.nearest(point));const at={x:g.player.x,y:g.player.y};g.finish();assert.equal(g.angerLevel(),.4);
+  until(g,()=>g.state==='won');assert.equal(g.player.x,at.x);assert.equal(g.player.y,at.y);assert.equal(g.angerLevel(),.4);assert(g.player.restAge>=2.5);
+ }
 });
 test('Pause freezes work, family activity, anger, bonus age and delayed pinyin; replay removes old queue listeners',()=>{
  const {g}=setup({mode:'chinese'}),t=g.createTask('toys',g.spots.toys[0]);g.clock=4;assert(!SC.pinyinHints(g).has(t));g.pause();const before=JSON.stringify([g.clock,g.people,g.messes]);tick(g,10);assert.equal(JSON.stringify([g.clock,g.people,g.messes]),before);g.resume();tick(g,1.1);assert(SC.pinyinHints(g).has(t));g.queue.enqueue(t.item.answer);assert(SC.pinyinHints(g).has(t));g.start({mode:'chinese'});assert.equal(g.cleaned,0);assert.equal(g.score,0);assert.equal(g.answerLocks.size,0);g.menu();assert.equal(g.queueListener,null);
@@ -118,8 +148,8 @@ test('Compact labels stay inside the canvas and do not overlap across bed counts
 });
 test('Three children remain manageable with a correct answer every two seconds',()=>{
  for(let seed=1;seed<=12;seed++){const g=new SC.HomeGame({random:rng(seed)});g.start({pace:'brave',mode:'swedish',uppercase:false});g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,i)=>SC.matches(e.text,i,g.mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,g.mode,g.lang)});let next=0,maxWait=0;const pending=new Map();
-  for(let i=0;i<24000&&['playing','celebrating'].includes(g.state);i++){if(g.state==='playing'&&g.clock>=next){const reserved=g.reservations(),t=g.getAvailableTargets().find(t=>!reserved.has(t)&&g.clock-t.appearedAt>=2);if(t){g.queue.enqueue(t.item.answer);pending.set(t,g.clock);next=g.clock+2;}}g.update(.05);for(const [t,at]of pending)if(t.done){maxWait=Math.max(maxWait,g.clock-at);pending.delete(t);}}
-  assert.equal(g.state,'won');assert(g.hits>=36,`seed ${seed}: ${g.hits} player cleanups`);assert(g.angerCount<=1,`seed ${seed}: ${g.angerCount} anger episodes`);assert(maxWait<10,`seed ${seed}: ${maxWait}s from answer to completion`);
+  for(let i=0;i<24000&&['playing','celebrating'].includes(g.state);i++){if(g.state==='playing'&&g.clock>=next){const reserved=g.reservations(),t=g.getAvailableTargets().find(t=>!reserved.has(t)&&g.clock-t.appearedAt>=2);if(t){g.queue.enqueue(t.item.answer);pending.set(t,g.clock);next=g.clock+2;}}g.update(.05);for(const [t,at]of pending)if(t.done){if(t.owner===0)maxWait=Math.max(maxWait,g.clock-at);pending.delete(t);}}
+  assert.equal(g.state,'won');assert(g.hits>=g.cleaned*.6,`seed ${seed}: ${g.hits} player cleanups`);assert(g.angerCount<=2,`seed ${seed}: ${g.angerCount} anger episodes`);assert(maxWait<10,`seed ${seed}: ${maxWait}s from answer to completion`);
  }console.log('  12 hard-mode capacity rounds passed.');
 });
 test('Finite full rounds with paced imperfect answers, silence or wrong answers; balanced rooms and no wall crossings',()=>{
@@ -130,9 +160,9 @@ test('Finite full rounds with paced imperfect answers, silence or wrong answers;
    if(g.state==='playing'&&g.clock>=due&&style!=='silent'){const reserved=g.reservations(),t=g.getAvailableTargets().find(t=>!reserved.has(t));if(t){g.queue.enqueue(style==='wrong'||inputRng()<.1?'wrong':t.item.answer);due=g.clock+(style==='math3'?8:5);}}
    g.update(.05);if(i%20===0)assert(g.people.every(p=>g.walkable(p)),`${pace}/${style}/${seed}: nobody crosses a wall`);
   }
-  // The faster family causes more help on higher difficulties. Keep meaningful
-  // player participation at these deliberately imperfect 5/8-second input rates.
-  assert.equal(g.state,'won',`${pace}/${style}/${seed} at ${g.elapsed}`);assert(g.cleaned>=40);assert.equal(g.messes.length,0);assert.equal(g.cleaned,g.hits+g.familyCleaned);assert(g.score>=10*g.hits&&g.score<=20*g.hits);assert(g.player.restAge>=2.5);if(['silent','wrong'].includes(style)){assert.equal(g.score,0);assert(g.angerCount>0);}else assert(g.hits>={gentle:28,steady:20,brave:14}[pace],`${pace}/${style}/${seed}: ${g.hits} player jobs`);for(const [room,n]of Object.entries(g.roomCounts))roomTotals[pace][room]=(roomTotals[pace][room]||0)+n;rounds++;
+  // Full anger cleanups now transfer every remaining chore to the family.
+  // Slower/imperfect answers still earn points, with more unpaid help on hard.
+  assert.equal(g.state,'won',`${pace}/${style}/${seed} at ${g.elapsed}`);assert(g.cleaned>=40);assert.equal(g.messes.length,0);assert.equal(g.cleaned,g.hits+g.familyCleaned);assert(g.score>=10*g.hits&&g.score<=20*g.hits);assert(g.player.restAge>=2.5);if(['silent','wrong'].includes(style)){assert.equal(g.score,0);assert(g.angerCount>0);}else assert(g.hits>={gentle:28,steady:10,brave:8}[pace],`${pace}/${style}/${seed}: ${g.hits} player jobs`);for(const [room,n]of Object.entries(g.roomCounts))roomTotals[pace][room]=(roomTotals[pace][room]||0)+n;rounds++;
  }
  assert.equal(rounds,72);for(const [pace,counts]of Object.entries(roomTotals)){const total=Object.values(counts).reduce((a,b)=>a+b,0);assert.equal(Object.keys(counts).length,6);for(const [room,n]of Object.entries(counts))assert(n/total>=.15,`${pace}/${room}: ${(100*n/total).toFixed(1)}% of generated tasks`);}console.log('  72 complete rounds passed; every room and the hallway receive at least 15% at each difficulty across the seeded rounds.');
 });

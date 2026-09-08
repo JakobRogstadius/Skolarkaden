@@ -103,8 +103,13 @@ class HomeGame{
  }
  clearRoute(p){p.path=[];p.goalKey='';p.moving=false;}
  familySpeed(p){return this.walkSpeed*(p.look.child?1.5:1);}
+ skipsRest(p){
+  const family=this.people.length-1,continuous=Math.max(0,family-Math.max(0,this.messes.length-3));
+  // Rotate the continuous roles when a new mess appears, not on every frame.
+  return !p.player&&(p.id-1+this.nextId)%family<continuous;
+ }
  playerRunSpeed(){return this.playerSpeed*(1+.7*this.messes.length);}
- angerLevel(){return this.helping?1:clamp(this.messes.length/7,0,1);}
+ angerLevel(){return ['celebrating','won'].includes(this.state)?0.4:this.helping?1:clamp(this.messes.length/7,0,1);}
  roomFor(position){return this.layout.rooms.find(r=>position.x>=r.x&&position.x<r.x+r.w&&position.y>=r.y&&position.y<r.y+r.d)?.id||'hall';}
  roomLoads(){
   const loads={...this.roomCounts};let laundry=this.stations.laundry.fill,trash=this.stations.trash.fill;
@@ -140,14 +145,22 @@ class HomeGame{
   // preserving any other target (including a homophone) using the same answer.
   const entry=this.reservations().get(t);t.owner=p.id;
   if(entry){this.queue.items=this.queue.items.filter(e=>e!==entry);this.answerLocks.delete(entry);this.queue.changed();}
-  p.activity=null;p.carry=null;this.suspendMeal(p);this.clearRoute(p);p.job={target:t,stage:'walk',age:0,entry:null,points:0};this.syncReservations();
+  p.activity=null;p.carry=null;this.suspendMeal(p);this.clearRoute(p);p.job={target:t,stage:t.handoff?'handoff':'walk',age:0,entry:null,points:0};this.syncReservations();
  }
  assignHelp(p){const choices=this.messes.filter(t=>!t.done&&t.owner===null);if(!choices.length)return false;
   choices.sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y)||a.id-b.id);this.takeFamilyTask(p,choices[0]);return true;
  }
  becomeAngry(){
   this.angerLeft=1.2;this.angerAge=0;this.angerCount++;this.helping=true;this.emit('home-anger');
-  for(const p of this.people.slice(1)){p.fear=1;p.activity=null;this.clearRoute(p);if(!p.job)this.assignHelp(p);}
+  // Relatives also take over the parent's current chore. Carried laundry stays
+  // with the parent until a helper physically comes to collect it.
+  const j=this.player.job;
+  if(j?.target){
+   if(this.player.carry)j.target.handoff=this.player;
+   this.answerLocks.delete(j.entry);this.player.job=null;this.job=null;
+  }
+  this.clearRoute(this.player);
+  for(const p of this.people.slice(1)){p.fear=1;p.activity=null;this.clearRoute(p);if(!p.job){if(j?.target?.owner===0)this.takeFamilyTask(p,j.target);else this.assignHelp(p);}}
  }
  taskGoal(t,stage){if(stage==='deliver')return this.stations.laundry;if(t.type==='hungry')return {x:3.65,y:1.75};if(t.type==='laundry'&&stage==='machine')return {x:10.2,y:12};return t;}
  work(p,dt){
@@ -164,6 +177,13 @@ class HomeGame{
   if(!j.target){j.age+=dt;if(j.age>=.75){this.emit('miss',{entry:j.entry});p.job=null;this.job=null;}return;}
   const t=j.target;if(t.done){p.job=null;if(p.player)this.job=null;return;}
   const speed=p.player?this.playerRunSpeed():this.helpSpeed;
+  if(j.stage==='handoff'){
+   const carrier=t.handoff;
+   if(this.go(p,carrier,speed,dt)){
+    p.carry=carrier.carry;carrier.carry=null;delete t.handoff;
+    j.stage=t.type==='clothes'?'deliver':'machine';j.age=0;this.clearRoute(p);
+   }return;
+  }
   if(['walk','deliver','machine'].includes(j.stage)){
    if(this.go(p,this.taskGoal(t,j.stage),speed,dt)){j.stage=j.stage==='walk'?'clean':'finish';j.age=0;p.moving=false;if(j.stage==='clean')this.emit(t.type==='hungry'?'home-cook':t.type==='dishes'?'home-wash':t.type==='clothes'||t.type==='toys'?'home-rustle':'home-handle');}
    return;
@@ -224,11 +244,11 @@ class HomeGame{
  updateFamily(p,dt){
   p.fear=Math.max(0,p.fear-dt*(this.angerLeft?0:.22));
   if(p.job){this.work(p,dt);return;}
-  if(this.helping)return;
+  if(this.helping){if(this.assignHelp(p))this.work(p,dt);return;}
   if(this.closing){if(this.assignHelp(p)){this.work(p,dt);return;}}
   if(p.meal){this.updateMeal(p,dt);return;}
   if(this.closing)return;
-  if(p.wait>0&&this.messes.length>4){p.wait=Math.max(0,p.wait-dt);return;}p.wait=0;if(!p.activity&&!this.chooseActivity(p))return;
+  if(!p.activity&&p.wait>0&&!this.skipsRest(p)){p.wait=Math.max(0,p.wait-dt);return;}p.wait=0;if(!p.activity&&!this.chooseActivity(p))return;
   const a=p.activity;if(a.stationId&&!this.stationFree(a.stationId,p)){p.activity=null;this.clearRoute(p);return;}
   if(a.stage==='walk'){if(this.go(p,a.goal,this.familySpeed(p),dt)){a.stage='use';a.age=0;p.moving=false;}return;}
   a.age+=dt;if(a.age<a.duration)return;
@@ -249,7 +269,7 @@ class HomeGame{
   dt=clamp(dt,0,.05);
   if(this.state==='celebrating'){
    this.clock+=dt;this.celebration+=dt;this.people.forEach(p=>{p.moving=false;p.fear=0;});
-   if(this.go(this.player,{x:3.9,y:10.75},this.playerSpeed,dt)){this.player.moving=false;this.player.restAge+=dt;}
+   this.player.restAge+=dt;
    if(this.celebration>=4&&this.player.restAge>=2.5){this.state='won';this.emit('end',{won:true,score:this.score,hits:this.hits,shots:this.shots,cleaned:this.cleaned,familyCleaned:this.familyCleaned,bestStreak:this.bestStreak});}return;
   }
   if(this.state!=='playing')return;this.clock+=dt;this.elapsed+=dt;this.effects=this.effects.filter(e=>this.clock-e.at<.7);this.people.forEach(p=>{p.moving=false;p.age+=dt;});this.angerLeft=Math.max(0,this.angerLeft-dt);
@@ -257,7 +277,8 @@ class HomeGame{
   this.syncReservations();
   if(!this.closing&&!this.helping&&this.messes.length>=7)this.becomeAngry();
   this.work(this.player,dt);for(const p of this.people.slice(1))this.updateFamily(p,dt);
-  if(this.helping&&this.people.slice(1).every(p=>!p.job)){this.helping=false;this.angerLeft=0;this.people.slice(1).forEach(p=>p.wait=Math.max(p.wait,1));}
+  if(this.helping&&!this.messes.length)this.flushStations();
+  if(this.helping&&!this.messes.length&&this.people.slice(1).every(p=>!p.job)){this.helping=false;this.angerLeft=0;this.people.slice(1).forEach(p=>p.wait=Math.max(p.wait,1));}
   if(!this.closing&&!this.helping&&this.messes.length>=7)this.becomeAngry();
   if(this.closing){this.flushStations();if(!this.messes.length&&!this.people.some(p=>p.meal||p.job))this.finish();}
  }

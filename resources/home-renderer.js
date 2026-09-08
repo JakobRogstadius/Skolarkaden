@@ -153,7 +153,7 @@ class HomeRenderer extends SC.SceneRenderer{
  clothes(x,y,z,color='#91adbe',size=.55){const q=this.point(x,y,z),c=this.ctx,s=this.view.s*size;c.save();c.translate(q.x,q.y);c.rotate(-.22);c.fillStyle=color;c.strokeStyle=tint(color,-.18);c.lineWidth=.7;c.beginPath();for(const [i,[xx,yy]] of [[-.25,-.45],[-.65,-.2],[-.43,.04],[-.28,-.03],[-.28,.5],[.33,.5],[.32,-.03],[.49,.06],[.66,-.2],[.28,-.45],[.13,-.27],[-.13,-.27]].entries()){if(i)c.lineTo(xx*s,yy*s);else c.moveTo(xx*s,yy*s);}c.closePath();c.fill();c.stroke();c.restore();}
  toy(x,y,z=0,size=.5){const s=size;this.box(x-.25*s,y-.15*s,.5*s,.3*s,.28*s,'#d75c49',z);this.box(x-.1*s,y-.12*s,.26*s,.25*s,.15*s,'#479bc5',z+.28*s);for(const side of [-1,1])this.oval(x+side*.17*s,y+.17*s,z+.06*s,.1*s,.08*s,'#3e535c');this.box(x+.4*s,y+.13*s,.24*s,.24*s,.23*s,'#f1bb43',z);}
  steam(x,y,z,t){const c=this.ctx;for(let i=0;i<3;i++){const a=this.point(x+(i-1)*.15,y,z),n=((t*.5+i*.3)%1);c.strokeStyle='#fcf1d699';c.lineWidth=1.2;c.beginPath();c.moveTo(a.x,a.y-n*this.view.s*.15);c.quadraticCurveTo(a.x+Math.sin(t*2+i)*5,a.y-this.view.s*.25-n*this.view.s*.15,a.x,a.y-this.view.s*.42);c.stroke();}}
- messOnSite(t){const j=t.owner===null?null:this.game.people[t.owner]?.job;return !(j?.target===t&&['deliver','machine','finish'].includes(j.stage));}
+ messOnSite(t){const j=t.owner===null?null:this.game.people[t.owner]?.job;return !t.handoff&&!(j?.target===t&&['deliver','machine','finish'].includes(j.stage));}
  mess(t){if(!this.messOnSite(t))return;if(t.type==='clothes')this.clothes(t.x,t.y,.07,['#429ecc','#de6755','#a47ad0'][t.id%3],.85);else this.toy(t.x,t.y,.06,1.12);}
  messHighlights(){
   const g=this.game,c=this.ctx,s=this.view.s,states=g.getTaskStates();
