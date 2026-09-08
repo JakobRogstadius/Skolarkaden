@@ -6,6 +6,18 @@
 
 All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och tangentbordsläget fungerar helt utan internet.
 
+## Gemensamma topplistor
+
+**Topplista** i menyn visar de 20 högsta resultaten för valt spel, övning och svårighet.
+Efter en omgång kan spelaren frivilligt spara sitt resultat med ett smeknamn.
+Tangentbord och röst delar topplista. Varje spel har en separat intern poängversion.
+Topplistor kräver internet; spel och lokala rekord fungerar även när tjänsten inte kan nås.
+
+API:t använder Cloudflare Worker + D1. Installationssteg och underhåll finns i
+[cloudflare/README.md](cloudflare/README.md). IP-adresser sparas för framtida moderering
+men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
+`resources/highscore-policy.js` och tillämpas både i spelet och i API:t.
+
 ## Spelen
 
 | Spel | Uppdrag |
@@ -120,7 +132,7 @@ Klassiska skript används så att `file://` fungerar utan modulladdare, externa 
 
 `AnswerQueue` innehåller `{id, text, source}`. Spelen tar emot kön via konstruktorn och hämtar svar med `take()`. En policy anger aktuella mål, redan påbörjade svar och matchningsregler. `AnswerInput` behöver ett textfält, ett formulär, en mikrofon och en kö; knappar är valfria. Värden kan aktivera fokusbevakning med `retainFocus`, som ska vara sann endast under aktivt spel utan öppna dialoger.
 
-Testerna använder endast Node.js standardbibliotek:
+Testerna använder endast Node.js standardbibliotek (Node 22.13+ för SQLite-testet):
 
 ```sh
 npm test
