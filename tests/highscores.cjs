@@ -70,6 +70,10 @@ class Element extends EventTarget{
   vm.runInContext(read('resources/highscore-policy.js'),context);vm.runInContext(read('resources/highscores.js'),context);
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),board);
+  assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'eggs'}),'v2:eggs:swedish:gentle');
+  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,game==='eggs'?'v2':'v1');
+  assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:eggs:swedish:gentle'}))).status,201);
+  assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:eggs:swedish:gentle'}))).status,400);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,input:'browser',lang:'zh-TW'}),board);
   const ui=new context.Starlight.Highscores({getSelection:()=>selection});
   ui.begin(selection);ui.finish(200);ui.open(selection,ui.result);get('score-name').value='f.u.c.k';await ui.submit();

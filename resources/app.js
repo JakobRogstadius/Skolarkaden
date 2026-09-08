@@ -41,7 +41,12 @@ input.addEventListener('status',e=>$('input-status').textContent=e.detail.text);
 // Hidden diagnostics must not hide a broken microphone. Pause with a recoverable error.
 input.addEventListener('fault',e=>{if(game?.state==='playing'){pause();$('resume-error').textContent=e.detail.text;}});
 queue.addEventListener('rejected',e=>{for(const entry of e.detail.entries)record({at:new Date().toISOString(),type:'queue-skipped',text:entry.text});});
-function bestKey(){return 'starlight-queue-v'+(kind==='food'?'1':'2')+':'+kind+':'+game.mode+':'+game.pace;}
+function bestKey(){
+  // Preserve legacy local records for games whose scoring has not changed.
+  const legacy='starlight-queue-v'+(kind==='food'?'1':'2')+':'+kind+':'+game.mode+':'+game.pace;
+  const version=root.SkolarkadenHighscorePolicy.versions[kind];
+  return version==='v1'?legacy:legacy+':'+version;
+}
 function onGameEvent(e){
   const mapped={early:'camp-check',think:kind==='marshmallows'?'camp-check':'think',fire:'laser',impact:'crash',hit:kind==='city'?'explosion':kind==='food'?'serve':kind==='hive'?'honey':kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-gulp':kind==='marshmallows'?'camp-good':null,miss:kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-air':'miss','customer-left':'miss','plant-dead':'crash',need:null,impatient:'tick'};
   const sound=Object.hasOwn(mapped,e.type)?mapped[e.type]:e.type;
@@ -60,7 +65,7 @@ function onGameEvent(e){
     $('result-kicker').textContent=['paint','dinosaur','marshmallows'].includes(kind)?'OMGÅNGEN ÄR KLAR':e.won?'DU KLARADE DET!':'EN NY CHANS VÄNTAR';
     $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Trädgården är klar.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!',eggs:'Skeppet är säkrat!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'Alla plantor vissnade.',hive:'Honungen räckte inte.',eggs:'Rymdkrypen tog över.'}[kind]);
     $('result-score').textContent=e.score.toLocaleString('sv-SE')+' poäng';
-    $('result-detail').textContent=kind==='eggs'?e.survivors+' av '+e.totalHumans+' överlevde · '+e.hits+' av '+e.total+' hot släckta.':kind==='marshmallows'?e.hits+' gyllene marshmallows · '+e.burnt+' brända.':kind==='city'?e.hits+' av '+SC.cityGoal+' kometer stoppade.':kind==='food'?e.hits+(e.hits===1?' glad gäst · ':' glada gäster · ')+e.lostCustomers+' gäster gick hem.':kind==='hive'?e.honey+' av '+e.honeyGoal+' lass nektar hann hem före vintern.':kind==='paint'?e.hits+' träffar · '+e.passed+' förbipasserande.':kind==='dinosaur'?e.hits+' uppätna · '+e.escaped+' gick vidare · '+e.passed+' totalt.':e.flowers+' blommade · '+e.dead+' vissnade.';
+    $('result-detail').textContent=kind==='eggs'?e.survivors+' av '+e.totalHumans+' överlevde · '+e.hits+' av '+e.total+' hot släckta · '+e.survivorBonus+' bonuspoäng för överlevande.':kind==='marshmallows'?e.hits+' gyllene marshmallows · '+e.burnt+' brända.':kind==='city'?e.hits+' av '+SC.cityGoal+' kometer stoppade.':kind==='food'?e.hits+(e.hits===1?' glad gäst · ':' glada gäster · ')+e.lostCustomers+' gäster gick hem.':kind==='hive'?e.honey+' av '+e.honeyGoal+' lass nektar hann hem före vintern.':kind==='paint'?e.hits+' träffar · '+e.passed+' förbipasserande.':kind==='dinosaur'?e.hits+' uppätna · '+e.escaped+' gick vidare · '+e.passed+' totalt.':e.flowers+' blommade · '+e.dead+' vissnade.';
     if(soundOn&&!(kind!=='city'&&e.won))sounds.play(e.won?'win':'miss');$('again').focus({preventScroll:true});
   }
   lastTargetKey=null;

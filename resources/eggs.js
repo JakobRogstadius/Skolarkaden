@@ -6,7 +6,7 @@ const harmless=e=>['burning','dying','dead'].includes(e.stage);
 class EggGame{
  constructor({queue=new SC.AnswerQueue(),onEvent=()=>{},random=Math.random}={}){Object.assign(this,{queue,onEvent,random,width:1000,height:700});this.menu();}
  emit(type,detail={}){this.onEvent({type,...detail});}
- menu(){Object.assign(this,{state:'menu',clock:0,elapsed:0,eggs:[],people:[],shells:[],effects:[],job:null,score:0,hits:0,shots:0,streak:0,bestStreak:0,nextId:0,celebration:0,scareSoundAt:-10});this.player=null;}
+ menu(){Object.assign(this,{state:'menu',clock:0,elapsed:0,eggs:[],people:[],shells:[],effects:[],job:null,score:0,survivorBonus:0,hits:0,shots:0,streak:0,bestStreak:0,nextId:0,celebration:0,scareSoundAt:-10});this.player=null;}
  resize(width,height){Object.assign(this,{width,height});}
  scale(){return clamp(this.width/1100,.5,.95);}
  distance(a,b){return Math.hypot((a.x-b.x)*this.width,(a.y-b.y)*this.height);}
@@ -43,7 +43,11 @@ class EggGame{
  }
  release(e){if(e.victim){const p=e.victim;if(p.status!=='dead'&&p.attacker===e){p.attacker=null;p.status=p.player?'ready':'running';p.age=0;p.goal=this.escapeGoal(p,e);}e.victim=null;}}
  ignite(e,entry){
-  if(harmless(e))return;this.release(e);e.entry=entry;e.stage='burning';e.age=0;e.goal=null;this.emit('egg-flame');
+  if(harmless(e))return;
+  // Capture rescue points before release clears the victim and chewing state.
+  const rescuing=e.stage==='chewing'&&e.victim?.status==='chewing'&&e.victim.attacker===e;
+  e.burnPoints=e.form==='egg'?10:rescuing?(e.victim.player?30:20):15;
+  this.release(e);e.entry=entry;e.stage='burning';e.age=0;e.goal=null;this.emit('egg-flame');
  }
  flamePose(e){const p=this.player,s=this.scale();return {x:p.x*this.width+p.facing*60*s,y:p.y*this.height-39*s,tx:e.x*this.width,ty:e.y*this.height-(e.stage==='chewing'&&e.victim?(54*e.victim.look.height+26)*SC.personScale(e.victim.look):e.form==='egg'?32:12)*s};}
  inFlameRange(e){const a=this.flamePose(e);return Math.hypot(a.tx-a.x,a.ty-a.y)<=this.flameRange*this.scale();}
@@ -115,12 +119,12 @@ class EggGame{
   if(e.stage==='burning'){if(e.age>=.9){e.stage=e.form==='alien'?'dying':'dead';e.age=0;if(e.stage==='dead')this.destroyed(e);}return true;}
   if(e.stage==='dying'){if(e.age>=.7){e.stage='dead';e.age=0;this.destroyed(e);}return true;}return false;
  }
- destroyed(e){this.hits++;this.score+=100;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.emit('hit',{entry:e.entry,target:e,points:100});}
- finish(won){if(this.state!=='playing')return;this.won=won;this.state=won?'celebrating':'mourning';this.celebration=0;this.job=null;this.emit(won?'celebrate':'loss-pause');}
+ destroyed(e){this.hits++;this.score+=e.burnPoints;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.emit('hit',{entry:e.entry,target:e,points:e.burnPoints});}
+ finish(won){if(this.state!=='playing')return;this.won=won;this.survivorBonus=this.living().length*20;this.score+=this.survivorBonus;this.state=won?'celebrating':'mourning';this.celebration=0;this.job=null;this.emit(won?'celebrate':'loss-pause');}
  update(dt){
   dt=clamp(dt,0,.05);
   if(['celebrating','mourning'].includes(this.state)){this.clock+=dt;this.celebration+=dt;for(const e of this.eggs)if(['burning','dying'].includes(e.stage)){e.age+=dt;this.advanceBurn(e);}for(const p of this.people)if(p.status==='dead')p.age+=dt;
-   if(this.celebration>=3){this.state=this.won?'won':'lost';this.emit('end',{won:this.won,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,survivors:this.living().length,totalHumans:this.people.length,total:this.total});}return;
+   if(this.celebration>=3){this.state=this.won?'won':'lost';this.emit('end',{won:this.won,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,survivors:this.living().length,survivorBonus:this.survivorBonus,totalHumans:this.people.length,total:this.total});}return;
   }
   if(this.state!=='playing')return;this.clock+=dt;this.elapsed+=dt;
   // Answers affect attackers before their movement/catch step this frame.

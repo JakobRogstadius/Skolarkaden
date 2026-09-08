@@ -23,7 +23,7 @@ test('Six human crew enter, investigate and keep speed rules; difficulty changes
 test('First cracks create labels; hatching preserves identity, answers, reservations and hint age',()=>{
  const {g,e}=setup({mode:'chinese',lang:'zh-TW'});assert(!g.getTargets().includes(e));g.crack(e);const item=e.item,at=e.appearedAt;assert.equal(e.stage,'cracking');assert(g.getTargets().includes(e));assert(!SC.pinyinHints(g).has(e));
  const entry=g.queue.enqueue(item.answer);assert.equal(g.getTaskStates().get(e),'queued');e.age=e.hatchTime*.64;g.updateEggs(.05);assert.equal(e.stage,'hatching');e.age=e.hatchTime*.36;g.updateEggs(.05);assert.equal(e.form,'alien');assert.equal(e.item,item);assert.equal(e.appearedAt,at);assert.equal(g.queue.items[0],entry);assert.equal(g.getTaskStates().get(e),'queued');
- g.work(.05);assert.equal(e.stage,'burning');assert(g.getActiveEntries().includes(entry));assert.equal(g.queue.enqueue(item.answer),undefined);tick(g,1.7);assert.equal(e.stage,'dead');assert.equal(g.hits,1);assert.equal(g.score,100);
+ g.work(.05);assert.equal(e.stage,'burning');assert(g.getActiveEntries().includes(entry));assert.equal(g.queue.enqueue(item.answer),undefined);tick(g,1.7);assert.equal(e.stage,'dead');assert.equal(g.hits,1);assert.equal(g.score,15);
 });
 test('Cracks and opening lobes naturally lead to hatching at each egg’s own time',()=>{
  const {g,e}=setup();g.crack(e);tick(g,e.hatchTime*.64-.1);assert.equal(e.stage,'cracking');tick(g,.2);assert.equal(e.stage,'hatching');tick(g,e.hatchTime*.36+.1);assert.equal(e.form,'alien');assert.equal(g.shells.length,1);assert(g.getTargets().includes(e));
@@ -49,7 +49,7 @@ test('Death animation already burning finishes even during a lost round',()=>{
  const {g,e}=setup();hatch(g,e);g.queue.enqueue(e.item.answer);g.work(.05);g.people.forEach(p=>p.status='dead');g.update(.05);assert.equal(g.state,'mourning');tick(g,1.75);assert.equal(e.stage,'dead');assert.equal(g.hits,1);finish(g);assert.equal(g.state,'lost');
 });
 test('Wrong answers obey queue limits; distinct matching targets allow duplicate answers',()=>{
- const {g,e}=setup();g.crack(e);g.crack(g.eggs[1]);g.eggs[1].item={...e.item};for(let i=0;i<15;i++)g.queue.enqueue('wrong '+i);assert.equal(g.queue.length,2);g.queue.enqueue(e.item.answer);g.queue.enqueue(e.item.answer);assert.equal(g.queue.length,4);assert.equal(g.queue.enqueue(e.item.answer),undefined);tick(g,4);assert.equal(g.hits,2);assert.equal(g.shots,4);assert.equal(g.score,200);
+ const {g,e}=setup();g.crack(e);g.crack(g.eggs[1]);g.eggs[1].item={...e.item};for(let i=0;i<15;i++)g.queue.enqueue('wrong '+i);assert.equal(g.queue.length,2);g.queue.enqueue(e.item.answer);g.queue.enqueue(e.item.answer);assert.equal(g.queue.length,4);assert.equal(g.queue.enqueue(e.item.answer),undefined);tick(g,4);assert.equal(g.hits,2);assert.equal(g.shots,4);assert.equal(g.score,20);
 });
 test('All exercises and Mandarin speech matching work; pinyin appears after five seconds and survives hatching',()=>{
  for(const mode of Object.keys(SC.modes)){const {g,e}=setup({mode});g.crack(e);g.queue.enqueue(e.item.answer);tick(g,1);assert.equal(g.hits,1,mode);}
@@ -60,6 +60,28 @@ test('All exercises and Mandarin speech matching work; pinyin appears after five
 test('Pause freezes simulation, flame and queue; replay clears bodies, eggs, scores and learned maths',()=>{
  const {g,e}=setup({mode:'math'});g.crack(e);g.queue.enqueue(e.item.answer);g.work(.05);g.pause();const snapshot=JSON.stringify([g.clock,g.eggs,g.people,g.job,g.score]);tick(g,4);assert.equal(JSON.stringify([g.clock,g.eggs,g.people,g.job,g.score]),snapshot);g.resume();tick(g,1);assert.equal(g.hits,1);g.start({mode:'math'});assert.equal(g.score,0);assert.equal(g.mathPractice,undefined);assert.equal(g.shells.length,0);assert(g.people.every(p=>p.status==='entering'));assert(g.eggs.every(e=>e.stage==='dormant'));
 });
+test('Eggs, roaming aliens and rescues award 10, 15, 20 and 30 points',()=>{
+ for(const [form,victimIndex,points] of [['egg',null,10],['alien',null,15],['alien',1,20],['alien',0,30]]){
+  const {g,e,events}=setup();g.crack(e);if(form==='alien')g.hatch(e);
+  if(victimIndex!==null)g.catch(e,g.people[victimIndex]);
+  g.ignite(e,{text:e.item.answer});assert.equal(e.victim,null,'rescue releases immediately');
+  assert.equal(g.score,0,'award after burn animation');
+  g.ignite(e,{text:e.item.answer}); // Repeated ignition must not replace rescue points.
+  e.age=.91;g.advanceBurn(e);if(form==='alien'){e.age=.71;g.advanceBurn(e);}
+  assert.equal(g.score,points);assert.equal(events.filter(e=>e.type==='hit').length,1);
+  assert.equal(events.find(e=>e.type==='hit').points,points);
+  g.advanceBurn(e);assert.equal(g.score,points,'no second award');
+ }
+});
+test('Survivor bonus includes the player, excludes casualties and is awarded once',()=>{
+ for(const survivors of [0,1,4,6]){
+  const {g,events}=setup();g.people.forEach((p,i)=>{if(i>=survivors)p.status='dead';});
+  g.finish(survivors>0);assert.equal(g.survivorBonus,survivors*20);assert.equal(g.score,survivors*20);
+  g.finish(survivors>0);finish(g);tick(g,5);assert.equal(g.score,survivors*20);
+  const end=events.filter(e=>e.type==='end');assert.equal(end.length,1);assert.equal(end[0].survivorBonus,survivors*20);assert.equal(end[0].score,survivors*20);
+  g.start();assert.equal(g.survivorBonus,0);assert.equal(g.score,0);
+ }
+});
 test('48 full rounds terminate across sizes, difficulties and lessons with both attentive and silent players',()=>{
  for(const width of [320,1100])for(const pace of ['gentle','steady','brave'])for(const mode of ['letters','math'])for(const bot of [false,true])for(let seed=1;seed<=2;seed++){
   const events=[],g=new SC.EggGame({random:rng(seed),onEvent:e=>events.push(e)});g.start({pace,mode});g.resize(width,650);policy(g);let due=0;
@@ -67,7 +89,7 @@ test('48 full rounds terminate across sizes, difficulties and lessons with both 
    if(bot&&g.state==='playing'&&g.clock>=due){const e=g.getTargets().find(e=>!g.getTaskStates().has(e));if(e){g.queue.enqueue(e.item.answer);due=g.clock+.7;}}
    g.update(.05);
   }
-  assert.equal(g.state,bot?'won':'lost',[width,pace,mode,bot,seed].join('/'));assert.equal(events.filter(e=>e.type==='end').length,1);assert.equal(g.score,g.hits*100);
+  assert.equal(g.state,bot?'won':'lost',[width,pace,mode,bot,seed].join('/'));assert.equal(events.filter(e=>e.type==='end').length,1);assert.equal(g.score,events.filter(e=>e.type==='hit').reduce((sum,e)=>sum+e.points,0)+g.living().length*20);
   if(bot){assert.equal(g.hits,g.total);assert(g.living().length>0);}else{assert.equal(g.hits,0);assert.equal(g.living().length,0);}
  }
 });
