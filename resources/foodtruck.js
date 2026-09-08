@@ -10,7 +10,7 @@
     emit(type,detail={}){this.onEvent({type,...detail});}
     resize(width,height){this.width=width;this.height=height;}
     menu(){this.state='menu';this.clock=0;this.customers=[];this.effects=[];this.waste=[];this.activeCook=null;this.lock=null;this.previewValue='';this.score=0;this.hits=0;}
-    start({mode='food',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
+    start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
       this.menu();Object.assign(this,{mode,pace,lang,uppercase});
       this.items=SC.beginPractice(this,items);
       if(!this.items.length)throw new Error('Menyn behöver minst ett svar.');
@@ -25,7 +25,7 @@
       const slots=[0,1,2].filter(slot=>!this.customers.some(c=>c.slot===slot));
       const pool=SC.practiceItems(this).filter(item=>!this.customers.some(c=>c.item.answer===item.answer));
       if(!slots.length||!pool.length)return false;
-      const base=pool[Math.floor(this.random()*pool.length)],item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};
+      const base=pool[Math.floor(this.random()*pool.length)],item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};
       item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
       const patience={gentle:27,steady:21,brave:16}[this.pace]*(.88+this.random()*.24);
       const c={id:++this.nextId,slot:slots[0],item,status:'arriving',motion:0,wait:0,patience,cooked:0,cookTime:1.2+this.random()*.8,look:this.appearance(),dish:({soppa:1,gryta:1,sallad:2,ris:2,nudlar:2,pasta:2,falafel:2,sushi:2,våffla:3,pannkaka:3,toast:3,omelett:3,pizza:4,paj:4,taco:5,korv:6})[base.answer]??Math.floor(this.random()*3),warned:false};
@@ -75,7 +75,7 @@
       if(this.state==='celebrating'){this.clock+=dt;this.celebrationLeft=Math.max(0,this.celebrationLeft-dt);if(this.celebrationLeft<1e-8){this.celebrationLeft=0;this.state='won';this.endResult(true);}return;}
       if(this.state==='menu'){this.clock+=dt;return;}
       if(this.state!=='playing')return;
-      const before=Math.ceil(this.timeLeft);dt=Math.min(dt,this.timeLeft);this.mathPractice?.update(dt);this.clock+=dt;this.elapsed+=dt;this.timeLeft=Math.max(0,90-this.elapsed);
+      const before=Math.ceil(this.timeLeft);dt=Math.min(dt,this.timeLeft);this.clock+=dt;this.elapsed+=dt;this.timeLeft=Math.max(0,90-this.elapsed);
       for(const e of this.effects)e.age+=dt;this.effects=this.effects.filter(e=>e.age<1.3);
       for(const c of [...this.customers]){
         if(c.status==='arriving'){
@@ -190,7 +190,7 @@
       SC.drawPerson(this,{x,feet,scale,look:a,walk,anger,carry:leaving&&p.happy?(xx,yy)=>this.dish(xx,yy,p.dish,.7):null});
       if(entering||g.state==='menu')return;
       if(leaving)return;
-      const font=['chinese','bopomofo'].includes(g.mode)?25:w<500?17:20;
+      const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?25:w<500?17:20;
       const bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',max:Math.min(176,w*.285),min:32}),bh=hint?59:44,bx=slotX-bw/2,by=feet+(headY-45)*visualScale-bh-8,remaining=g.patienceLeft(p);
       c.lineWidth=g.activeCook?.customer===p?2.5:1;
       this.round(bx,by,bw,bh,12,'#fff1d9',g.activeCook?.customer===p||p.look.exotic?'#ffc55e':'#cfb596');

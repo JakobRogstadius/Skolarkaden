@@ -14,7 +14,7 @@ class EggGame{
  point(){return {x:.1+this.random()*.8,y:.47+this.random()*.45};}
  start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
   this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Välj en övning med minst ett svar.');
-  this.timeScale=mode==='math'?1.4:1;this.total={gentle:10,steady:16,brave:21}[pace];this.walkSpeed=34/this.timeScale;this.runSpeed=88/this.timeScale;this.alienSpeed=this.runSpeed*2;this.playerSpeed=this.runSpeed*2;
+  this.timeScale=SC.isMath(mode)?1.4:1;this.total={gentle:10,steady:16,brave:21}[pace];this.walkSpeed=34/this.timeScale;this.runSpeed=88/this.timeScale;this.alienSpeed=this.runSpeed*2;this.playerSpeed=this.runSpeed*2;
   // A human crew, drawn by the shared parameterised cast (adult men and women).
   this.people=Array.from({length:6},(_,i)=>{let first=true;const look=SC.makePerson(()=>{if(first){first=false;return this.random()*.8;}return this.random();});look.hat=false;const goal=i===0?{x:.5,y:.86}:{x:.19+i*.12,y:.55+(i%3)*.12};return {id:i,x:.5+(i%2?.04:-.04),y:1.08+i*.10,status:'entering',age:0,goal,look,fear:0,facing:1,player:i===0,attacker:null,wait:0};});
   this.player=this.people[0];this.player.look.shirt='#e6ac5e';this.player.look.pants='#36444c';
@@ -36,7 +36,7 @@ class EggGame{
  workerStatus(){return this.player?.status==='dead'?'Besättningen försöker komma undan':this.job?'Eldkastaren arbetar':'Väntar på sprickor';}
  crack(e){
   if(e.stage!=='dormant')return;const items=SC.practiceItems(this),used=this.getTargets().map(t=>t.item.answer),pool=items.filter(i=>!used.includes(i.answer)),choices=pool.length?pool:items,base=choices[Math.floor(this.random()*choices.length)];
-  e.item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};e.item.label=SC.lessonLabel(e.item.label,this.mode,this.uppercase);e.stage='cracking';e.age=0;e.appearedAt=this.clock;SC.noteTargetAppearance(this);this.emit('egg-crack');
+  e.item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};e.item.label=SC.lessonLabel(e.item.label,this.mode,this.uppercase);e.stage='cracking';e.age=0;e.appearedAt=this.clock;SC.noteTargetAppearance(this);this.emit('egg-crack');
  }
  hatch(e){
   this.shells.push({x:e.home.x,y:e.home.y,phase:e.phase});e.form='alien';e.stage='wandering';e.age=0;e.goal=this.point();e.searchAge=0;this.emit('egg-hatch');
@@ -122,7 +122,7 @@ class EggGame{
   if(['celebrating','mourning'].includes(this.state)){this.clock+=dt;this.celebration+=dt;for(const e of this.eggs)if(['burning','dying'].includes(e.stage)){e.age+=dt;this.advanceBurn(e);}for(const p of this.people)if(p.status==='dead')p.age+=dt;
    if(this.celebration>=3){this.state=this.won?'won':'lost';this.emit('end',{won:this.won,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,survivors:this.living().length,totalHumans:this.people.length,total:this.total});}return;
   }
-  if(this.state!=='playing')return;this.clock+=dt;this.elapsed+=dt;if(this.player.status!=='dead')this.mathPractice?.update(dt);
+  if(this.state!=='playing')return;this.clock+=dt;this.elapsed+=dt;
   // Answers affect attackers before their movement/catch step this frame.
   this.work(dt);this.updatePeople(dt);this.updateEggs(dt);
   if(!this.living().length){this.finish(false);return;}
@@ -211,7 +211,7 @@ class EggRenderer extends SC.SceneRenderer{
  labels(){
   const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],targets=g.getTargets(),narrow=w<700,top=122,slotH=50,rows=Math.max(1,Math.floor((h-top-8)/slotH)),cols=Math.max(narrow?2:Math.max(3,Math.floor((w-16)/188)),Math.ceil(targets.length/rows)),maxWidth=Math.min(narrow?134:180,(w-16)/cols-8);
   const overlaps=(a,b)=>a.x<b.x+b.w+4&&a.x+a.w+4>b.x&&a.y<b.y+b.h+4&&a.y+a.h+4>b.y;
-  for(const e of targets){const hint=hints.has(e),font=['chinese','bopomofo'].includes(g.mode)?22:narrow?14:18,bw=SC.labelWidth(c,e.item.label,{font:'bold '+font+'px system-ui',hint:hint?e.item.hint:'',hintFont:'12px system-ui',max:maxWidth}),bh=hint?44:31,anchor={x:e.x*w,y:e.y*h-(e.form==='egg'?66:35)*g.scale()},candidates=[];
+  for(const e of targets){const hint=hints.has(e),font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:narrow?14:18,bw=SC.labelWidth(c,e.item.label,{font:'bold '+font+'px system-ui',hint:hint?e.item.hint:'',hintFont:'12px system-ui',max:maxWidth}),bh=hint?44:31,anchor={x:e.x*w,y:e.y*h-(e.form==='egg'?66:35)*g.scale()},candidates=[];
    // Use fixed-height lanes so delayed hints cannot close off the last slots.
    for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){const cell=(w-16)/cols;candidates.push({x:8+col*cell+(cell-bw)/2,y:top+row*slotH,w:bw,h:bh});}
    candidates.sort((a,b)=>Math.hypot(a.x+bw/2-anchor.x,a.y+bh-anchor.y)-Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y));

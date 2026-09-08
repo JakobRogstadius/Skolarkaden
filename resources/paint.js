@@ -10,7 +10,7 @@ class PaintGame{
  }
  start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
   this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Gatan behöver minst ett svar.');
-  this.child.look=SC.makeChild(this.random);this.state='playing';this.shots=0;this.streak=0;this.bestStreak=0;this.nextId=0;this.spawnIn=.3;this.timeScale=mode==='math'?1.3:1;
+  this.child.look=SC.makeChild(this.random);this.state='playing';this.shots=0;this.streak=0;this.bestStreak=0;this.nextId=0;this.spawnIn=.3;this.timeScale=SC.isMath(mode)?1.3:1;
   this.maxPeople={gentle:4,steady:6,brave:8}[pace];this.walkSpeed={gentle:.061,steady:.082,brave:.105}[pace]/this.timeScale;this.spawnInterval={gentle:4.5,steady:2.8,brave:1.8}[pace]*this.timeScale;
   this.spawn(true);this.emit('start');
  }
@@ -22,7 +22,7 @@ class PaintGame{
   const answers=this.people.filter(p=>['walking','targeted'].includes(p.status)).map(p=>p.item.answer),pool=SC.practiceItems(this).filter(i=>!answers.includes(i.answer));if(!pool.length)return false;
   const lanes=[0,1,2],dir=this.random()<.5?1:-1;lanes.sort((a,b)=>this.people.filter(p=>p.lane===a).length-this.people.filter(p=>p.lane===b).length);
   const lane=lanes.find(l=>!this.people.some(p=>p.lane===l&&(dir===1?p.x<.17:p.x>.83)));if(lane===undefined)return false;
-  const base=pool[Math.floor(this.random()*pool.length)],item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
+  const base=pool[Math.floor(this.random()*pool.length)],item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
   const p={id:++this.nextId,item,lane,x:initial?(dir===1?.13:.87):(dir===1?-.09:1.09),y:[.80,.865,.93][lane],direction:dir,speed:this.walkSpeed*(.9+this.random()*.2),status:'walking',age:0,reactionAge:0,jumps:0,paint:null,look:SC.makePerson(this.random)};
   this.people.push(p);this.spawned++;SC.noteTargetAppearance(this);this.emit('targets');return true;
  }
@@ -97,7 +97,7 @@ class PaintGame{
   dt=clamp(dt,0,.05);if(this.state==='paused')return;
   if(this.state==='celebrating'){this.clock+=dt;this.celebrationLeft=Math.max(0,this.celebrationLeft-dt);if(this.celebrationLeft<1e-8){this.state='won';this.emit('end',{won:true,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,passed:this.passed});}return;}
   if(this.state!=='playing'){if(this.state==='menu')this.clock+=dt;return;}
-  this.mathPractice?.update(dt);this.clock+=dt;this.elapsed+=dt;this.spawnIn-=dt;if(this.spawnIn<=0&&this.spawned<this.total)this.spawnIn=this.spawn()?this.spawnInterval:.3;
+  this.clock+=dt;this.elapsed+=dt;this.spawnIn-=dt;if(this.spawnIn<=0&&this.spawned<this.total)this.spawnIn=this.spawn()?this.spawnInterval:.3;
   this.updatePeople(dt);this.work(dt);
   for(const e of this.effects)e.age+=dt;this.effects=this.effects.filter(e=>e.age<.85);
   if(this.passed===this.total&&!this.job)this.finish();
@@ -145,7 +145,7 @@ class PaintRenderer extends SC.SceneRenderer{
   const child=g.child,blocked=[{x:child.x*w-38,y:child.y*h-100*g.childScale(),w:76,h:100*g.childScale()+12}];
   for(const person of g.people){const s=g.personScale(person);blocked.push({x:person.x*w-28*s,y:person.y*h-(54*person.look.height+52)*s,w:56*s,h:(54*person.look.height+54)*s});}
   for(const p of targets){
-   const maxWidth=Math.min(w<600?110:154,w-16),font=['chinese','bopomofo'].includes(g.mode)?22:w<600?13:17;
+   const maxWidth=Math.min(w<600?110:154,w-16),font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?13:17;
    const hint=hints.has(p),bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',hintFont:'11px system-ui',max:maxWidth}),bh=hint?47:33,s=g.personScale(p),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+54)*s},candidates=[];
    const top=Math.max(178,h*.50),bottom=h*.92-bh;
    // On narrow streets, aligned slots prevent eight moving labels from trapping

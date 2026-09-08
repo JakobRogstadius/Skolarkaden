@@ -27,7 +27,7 @@ const fire=(r,results,index=0)=>r.onresult({results,resultIndex:index});
  r.onerror({error:'network'});assert.equal(input.recognition,null);r.onend();assert.equal(input.wanted,false);assert.equal(timers.size,0);
  input.start();r=sessions.at(-1);r.stop=function(){this.onend();};input.stop();assert.equal(timers.size,0);input.start();assert(input.wanted);input.cancel();
  Recognition.available=async()=> 'available';Recognition.prototype.processLocally=false;
- input.configure({enabled:true,kind:'local',language:'en-US',lesson:'english'});await input.prepare();input.start();assert.equal(sessions.at(-1).processLocally,true);assert.equal(opens,1);
+ input.configure({enabled:true,kind:'local',language:'en-US',lesson:'english'});await input.prepare();input.start();assert.equal(sessions.at(-1).processLocally,false);assert.equal(opens,1);
  for(let i=0;i<4;i++){sessions.at(-1).onend();if(i<3){const fn=[...timers.values()][0];timers.clear();fn();}}assert.equal(input.wanted,false);assert.equal(timers.size,0);
  input.configure({enabled:false,kind:'typing',lesson:'swedish'});input.setEnabled(true);field.value='hela svaret';form.dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(queue.items.at(-1).text,'hela svaret');assert.equal(field.value,'');
  field.dispatchEvent(new Event('compositionstart'));field.value='pågående';const before=queue.length;form.dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(queue.length,before);field.dispatchEvent(new Event('compositionend'));form.dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(queue.length,before+1);

@@ -1,4 +1,4 @@
-/* Retained microphone capture, native local-language checks and installed-voice TTS. */
+/* Retained microphone capture for online speech recognition. */
 (function(root){
   'use strict';
   const SC=root.Starlight;
@@ -76,22 +76,9 @@
       this.onStateChange?.();
     }
   }
-  async function localSpeechStatus(lang,install=false){
-    const R=root.SpeechRecognition||root.webkitSpeechRecognition;
-    if(!R?.available||!('processLocally' in R.prototype))throw new Error('Lokal taligenkänning stöds inte här. Välj webbläsarens taligenkänning eller skriv svaren.');
-    let status=await R.available({langs:[lang],processLocally:true});
-    if(status==='available')return true;
-    if(install && (status==='downloadable'||status==='downloading')){
-      if(!R.install)throw new Error('Webbläsaren kan inte installera språkpaket.');
-      const ok=await R.install({langs:[lang],processLocally:true});
-      if(ok)return true;
-      throw new Error('Språkpaketet kunde inte installeras.');
-    }
-    throw new Error(status==='unavailable'?'Inget lokalt språkpaket finns för detta språk. Välj webbläsarens taligenkänning eller skriv svaren.':'Språket behöver ett talpaket. Välj ”Kontrollera språkpaket” för att installera det.');
-  }
   SC.audioStats=pcm=>{
     let sum=0,peak=0,clipped=0;for(const v of pcm.samples){sum+=v*v;peak=Math.max(peak,Math.abs(v));if(Math.abs(v)>=.99)clipped++;}
     const n=pcm.samples.length;return {durationMs:Math.round(n/pcm.sampleRate*1000),sampleRate:pcm.sampleRate,rms:n?Math.sqrt(sum/n):0,peak,clippedPercent:n?100*clipped/n:0};
   };
-  SC.Microphone=Microphone;SC.localSpeechStatus=localSpeechStatus;
+  SC.Microphone=Microphone;
 })(globalThis);

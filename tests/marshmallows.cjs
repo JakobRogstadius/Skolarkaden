@@ -29,12 +29,12 @@ test('Matching duplicate targets can still be answered separately',()=>{
 });
 test('Every exercise uses shared matching, including spoken numbers and tone-free Chinese aliases',()=>{
  for(const mode of Object.keys(SC.modes)){const {g,p}=setup({mode});p.roast=.9;g.queue.enqueue(p.item.answer);g.work();assert.equal(g.hits,1,mode);}
- for(const lang of ['sv-SE','en-US','zh-CN','zh-TW'])for(let n=0;n<=20;n++){const {g,p}=setup({mode:'math',lang});p.item=SC.makeMath(n,rng(4),4);p.roast=.9;g.queue.enqueue(SC.numberName(n,lang),'speech');g.work();assert.equal(g.hits,1,lang+'/'+n);}
+ for(const lang of ['sv-SE','en-US','zh-CN','zh-TW'])for(let n=0;n<=20;n++){const {g,p}=setup({mode:'math',lang});p.item=SC.makeMath(n,rng(4),1);p.roast=.9;g.queue.enqueue(SC.numberName(n,lang),'speech');g.work();assert.equal(g.hits,1,lang+'/'+n);}
  const {g,p}=setup({mode:'chinese',lang:'zh-TW'});p.item={label:'十',answer:'十',hint:'shí'};p.roast=.8;g.queue.enqueue('是','speech');g.work();assert.equal(g.hits,1);
 });
-test('Cooling slows roasting, pauses freeze everything, and arithmetic ignores deliberate waiting',()=>{
+test('Cooling slows roasting, pauses freeze everything, and arithmetic stays at the selected level',()=>{
  const {g,p}=setup({mode:'math'}),hot=g.cookingRate();g.elapsed=g.duration*.8;assert(g.cookingRate()<hot*.65&&g.cookingRate()>0);g.pause();const before=JSON.stringify({p,clock:g.clock,elapsed:g.elapsed});tick(g,10);assert.equal(JSON.stringify({p,clock:g.clock,elapsed:g.elapsed}),before);g.resume();
- g.mathPractice.level=3;p.item=SC.makeMath(6,rng(1),3);p.roast=0;g.mathPractice.update(30);assert.equal(g.mathPractice.level,3);assert.equal(g.mathPractice.thinking,0);p.roast=.8;g.mathPractice.update(30);assert.equal(g.mathPractice.level,2,'missed ready tasks must still count');
+ const item=p.item;p.roast=0;tick(g,5);assert.equal(p.item,item);assert.equal(p.item.mathLevel,0);assert.equal(g.mathPractice,undefined);
 });
 test('Dawn stops inputs, raises the sun for six seconds, extinguishes the fire and ends exactly once',()=>{
  const expired=setup();expired.p.roast=.8;expired.g.elapsed=expired.g.duration;expired.g.queue.enqueue(expired.p.item.answer);expired.g.update(.05);assert.equal(expired.g.hits,0);assert.equal(expired.g.state,'celebrating');

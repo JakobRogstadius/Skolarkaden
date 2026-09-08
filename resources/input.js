@@ -68,14 +68,13 @@ class AnswerInput extends EventTarget{
   transform(){if(this.voice.lesson==='bopomofo')this.field.value=SC.toBopomofo(this.field.value);}
   singleLetter(){return ['letters','bopomofo'].includes(this.voice.lesson);}
   autoSubmit(){if(!this.enabled||this.voice.enabled||this.composing||!this.singleLetter())return;const text=this.field.value.normalize('NFC');this.field.value='';for(const letter of text)if(letter.trim())this.queue.enqueue(letter);}
-  configure(voice){this.cancel();this.voice=voice;if(this.voiceButton)this.voiceButton.hidden=!voice.enabled;const submit=this.form.querySelector('[type=submit]');if(submit)submit.hidden=this.singleLetter();}
+  configure(voice){this.cancel();this.voice={...voice,kind:voice.enabled?'browser':'typing'};if(this.voiceButton)this.voiceButton.hidden=!voice.enabled;const submit=this.form.querySelector('[type=submit]');if(submit)submit.hidden=this.singleLetter();}
   setEnabled(enabled){this.enabled=enabled;this.field.disabled=!enabled||this.voice.enabled;const submit=this.form.querySelector('[type=submit]');if(submit)submit.disabled=!enabled||this.voice.enabled;if(this.voiceButton)this.voiceButton.disabled=!enabled;if(!enabled)this.cancel();else this.focus();}
   async prepare(){
     if(!this.voice.enabled)return;
     if(!(root.SpeechRecognition||root.webkitSpeechRecognition))throw new Error('Taligenkänning saknas i denna webbläsare.');
     const version=navigator.userAgentData?.brands?.find(b=>b.brand==='Chromium')?.version||navigator.userAgent?.match(/\b(?:Chrome|Chromium)\/(\d+)/)?.[1];
     if(!(Number(version)>=135))throw new Error('Röstläget behöver Chrome 135 eller senare för att återanvända den godkända mikrofonen.');
-    if(this.voice.kind==='local')await SC.localSpeechStatus(this.voice.language);
     await this.microphone.open();
   }
   start(){
@@ -90,7 +89,7 @@ class AnswerInput extends EventTarget{
     const stream=new SC.SpeechStream({getContext:()=>({...this.voice,candidates:this.getCandidates()}),enqueue:text=>this.queue.enqueue(text,'speech'),revise:(entry,text)=>this.queue.revise(entry,text),trace:(type,data)=>this.trace(type,data)});this.recognition=r;this.track=track;track.enabled=false;
     const valid=()=>epoch===this.epoch&&this.enabled&&this.recognition===r;
     r.lang=this.voice.language;r.continuous=true;r.interimResults=true;r.maxAlternatives=5;
-    if(this.voice.kind==='local')r.processLocally=true;
+    r.processLocally=false;
     this.status('Ansluter taligenkänning…');this.trace('session',{language:r.lang,engine:this.voice.kind});
     r.onstart=()=>{if(!valid()){track.stop();return;}track.enabled=true;this.listening=true;this.status('Lyssnar kontinuerligt · säg flera svar i följd');this.trace('start');};
     r.onaudiostart=()=>{if(valid())this.trace('audio-start');};

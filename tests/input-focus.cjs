@@ -39,6 +39,5 @@ const settle=()=>new Promise(resolve=>setImmediate(resolve));
  input.configure({enabled:true,lesson:'swedish'});input.setEnabled(true);const before=focusCalls;assert(field.disabled);assert(dispatch('keydown',{key:'Tab'}).defaultPrevented);other.focus();await settle();assert.equal(focusCalls,before+1,'voice mode never focuses its hidden text field');
  const n=queue.length;field.value='mat';form.dispatchEvent(new Event('submit'));assert.equal(queue.length,n,'hidden typing cannot submit in voice mode');
  input.destroy();assert(!dispatch('keydown',{key:'Tab'}).defaultPrevented,'destroy removes document listeners');
- const foods=Array.from(SC.modes.food.items,x=>x.answer);assert(foods.length>=60);assert.equal(new Set(foods).size,foods.length);assert(foods.every(word=>/^[a-zåäö]+$/u.test(word)));for(const word of ['soppa','taco','pizza','sushi','pannkaka','våffla','räka','köttbullar'])assert(foods.includes(word));
- console.log('PASS focus retention, native editing, shortcuts, IME, pause/dialog/window escape, optional controls, voice mode, cleanup and '+foods.length+' unique food words.');
+ console.log('PASS focus retention, native editing, shortcuts, IME, pause/dialog/window escape, optional controls, voice mode, cleanup.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

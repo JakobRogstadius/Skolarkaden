@@ -6,7 +6,7 @@ class BeehiveGame{
  menu(){this.state='menu';this.clock=0;this.elapsed=0;this.plants=[];this.bees=[];this.effects=[];this.hive={x:.83,y:.32};this.honey=0;this.score=0;this.hits=0;this.timeRate=1;this.lastJarAt=-10;this.meadow=[];}
  start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
   this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Ängen behöver minst ett svar.');
-  this.timeScale=mode==='math'?1.4:1;this.duration={gentle:150,steady:130,brave:115}[pace]*this.timeScale;this.honeyGoal={gentle:24,steady:30,brave:36}[pace];this.plantBudget={gentle:44,steady:56,brave:66}[pace];
+  this.timeScale=SC.isMath(mode)?1.4:1;this.duration={gentle:150,steady:130,brave:115}[pace]*this.timeScale;this.honeyGoal={gentle:24,steady:30,brave:36}[pace];this.plantBudget={gentle:44,steady:56,brave:66}[pace];
   this.state='playing';this.shots=0;this.streak=0;this.bestStreak=0;this.nextId=0;this.spawned=0;this.nextSpawn=1.4;this.lastSeason='Vår';this.fullAnnounced=false;this.keeperLook=SC.makePerson(this.random);
   this.bees=Array.from({length:5},(_,i)=>({id:i+1,x:this.hive.x,y:this.hive.y,stage:'idle',job:null,nectar:0,age:0,phase:i*1.8}));
   this.layoutSeed=Math.floor(this.random()*4294967296);this.layoutMeadow();
@@ -52,7 +52,7 @@ class BeehiveGame{
  }
  bloom(p){
   const used=this.getTargets().map(t=>t.item.answer),available=SC.practiceItems(this).filter(i=>!used.includes(i.answer));if(!available.length)return false;
-  const base=available[Math.floor(this.random()*available.length)],item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);Object.assign(p,{status:'flower',item,appearedAt:this.clock,pinyinRevealed:false,flowerAge:0,growth:1});
+  const base=available[Math.floor(this.random()*available.length)],item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);Object.assign(p,{status:'flower',item,appearedAt:this.clock,pinyinRevealed:false,flowerAge:0,growth:1});
   // Late-summer flowers remain available through autumn, until winter or a visit.
   if(this.progress()>=.50){p.lateSeason=true;p.bloomFor=Math.max(p.bloomFor,this.timeLeft()/this.timeScale+.1);}this.emit('bloom',{target:p});return true;
  }
@@ -108,7 +108,7 @@ class BeehiveGame{
   // Only advance empty time. Never shorten a visible task's life or a bee's trip.
   this.timeRate=this.clock>1&&!this.queue.length&&!this.getTargets().length&&this.bees.every(b=>b.stage==='idle')?4:1;
   dt=Math.min(dt,this.timeLeft()/this.timeRate);const yearDt=dt*this.timeRate;
-  this.mathPractice?.update(dt);this.clock+=dt;this.elapsed=Math.min(this.duration,this.elapsed+yearDt);
+  this.clock+=dt;this.elapsed=Math.min(this.duration,this.elapsed+yearDt);
   const season=this.season();if(season!==this.lastSeason){this.lastSeason=season;this.emit('season');}
   // Winter is the deadline: nectar still outside the hive cannot count.
   if(this.timeLeft()<1e-8){this.elapsed=this.duration;this.winter();return;}
@@ -187,7 +187,7 @@ class BeehiveRenderer extends SC.SceneRenderer{
  }
  labels(){
   const c=this.ctx,g=this.game,w=g.width,h=g.height,s=this.plantScale();if(g.progress()>=1){this.labelBoxes=[];return;}
-  const targets=g.getTargets().sort((a,b)=>a.id-b.id),hints=SC.pinyinHints(g),font=['chinese','bopomofo'].includes(g.mode)?22:w<600?14:17;
+  const targets=g.getTargets().sort((a,b)=>a.id-b.id),hints=SC.pinyinHints(g),font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?14:17;
   const key=[w,h,g.mode,...g.plants.map(p=>p.id+':'+p.status+':'+p.harvested+':'+p.item?.label+':'+p.item?.hint+':'+hints.has(p))].join('|');
   if(key!==this.labelKey){
    const previous=new Map((this.labelBoxes||[]).map(b=>[b.id,b])),boxes=[],top=Math.max(132,h*.43);

@@ -35,7 +35,7 @@ class GardenGame{
     // 30% more care traffic than City's base rate, with the same time ramp.
     // Finished pots retire their share of the traffic instead of overloading the last plant.
     const active=this.pots.filter(p=>!p.bloom&&!p.dead).length/this.pots.length;
-    return active?SC.citySpawnInterval(this.pace,SC.cityPressure(0,this.elapsed))*(this.mode==='math'?2:1)/(active*1.3):Infinity;
+    return active?SC.citySpawnInterval(this.pace,SC.cityPressure(0,this.elapsed))*(SC.isMath(this.mode)?2:1)/(active*1.3):Infinity;
   }
   decayProbability(){
     // Two 0.2 changes create a 0.4 request after care. One global trial, not one per pot.
@@ -65,7 +65,7 @@ class GardenGame{
       if(this.badness(p,property)<.4-1e-8){delete p.requests[property];continue;}
       if(p.requests[property])continue;
       const items=SC.practiceItems(this),used=this.getTargets().map(t=>t.item.answer),pool=items.filter(i=>!used.includes(i.answer)),choices=pool.length?pool:items;
-      const base=choices[Math.floor(this.random()*choices.length)],item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
+      const base=choices[Math.floor(this.random()*choices.length)],item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
       p.requests[property]={id:++this.nextId,pot:p,property,item,appearedAt:this.clock};this.emit('need',{pot:p,property});
     }
   }
@@ -106,7 +106,7 @@ class GardenGame{
     if(this.state==='celebrating'){this.clock+=dt;this.celebrationLeft=Math.max(0,this.celebrationLeft-dt);if(this.celebrationLeft<1e-8){this.celebrationLeft=0;this.state='won';this.endResult(true);}return;}
     if(this.state==='mourning'){this.clock+=dt;this.lossPauseLeft=Math.max(0,this.lossPauseLeft-dt);if(this.lossPauseLeft<1e-8){this.lossPauseLeft=0;this.state='lost';this.endResult(false);}return;}
     if(this.state!=='playing'){if(this.state==='menu')this.clock+=dt;return;}
-    this.mathPractice?.update(dt);this.clock+=dt;this.elapsed+=dt;for(const e of this.effects)e.age+=dt;this.effects=this.effects.filter(e=>e.age<1);
+    this.clock+=dt;this.elapsed+=dt;for(const e of this.effects)e.age+=dt;this.effects=this.effects.filter(e=>e.age<1);
     this.decayElapsed+=dt;if(this.decayElapsed>=this.decayInterval-1e-8){this.decayElapsed-=this.decayInterval;this.decayPlants();}
     for(const p of this.pots){
       if(p.bloom||p.dead)continue;
@@ -173,7 +173,7 @@ class GardenRenderer extends SC.SceneRenderer{
     const overlaps=(a,b)=>a.x<b.x+b.w+5&&a.x+a.w+5>b.x&&a.y<b.y+b.h+5&&a.y+a.h+5>b.y;
     for(const pot of g.pots){
       const reqs=Object.values(pot.requests);if(!reqs.length)continue;
-      const font='bold '+(['chinese','bopomofo'].includes(g.mode)?21:16)+'px system-ui';
+      const font='bold '+((SC.isChinese(g.mode)||g.mode==='bopomofo')?21:16)+'px system-ui';
       const widths=reqs.map(r=>{const main=SC.labelWidth(c,r.item.label,{font,padding:0,min:0,max:400});if(hints.has(r))return main+SC.labelWidth(c,r.item.hint||'',{font:'10px system-ui',padding:0,min:0,max:400})+43;return main+38;});
       const p=this.point(pot),bw=clamp(Math.max(...widths),48,w<500?144:180),row=28,bh=reqs.length*row+8,candidates=[];
       const bx=pot.x>=0?p.x+30*this.scale:p.x-bw-30*this.scale;
@@ -186,7 +186,7 @@ class GardenRenderer extends SC.SceneRenderer{
       for(let i=0;i<reqs.length;i++){
         const r=reqs[i],y=box.y+4+i*row,state=taskStates.get(r);
         if(state)this.round(box.x+3,y,bw-6,row,5,'#62df87',state==='active'?'#17683b':null);
-        SC.drawGardenTool(this,r.property,box.x+16,y+14,.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font='bold '+(g.mode==='chinese'||g.mode==='bopomofo'?21:16)+'px system-ui';if(hints.has(r)){c.fillText(r.item.label,box.x+40,y+21,24);c.font='10px system-ui';c.fillText(r.item.hint||'',box.x+51+(bw-57)/2,y+18,bw-57);}else c.fillText(r.item.label,box.x+30+(bw-36)/2,y+20,bw-36);
+        SC.drawGardenTool(this,r.property,box.x+16,y+14,.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font='bold '+(SC.isChinese(g.mode)||g.mode==='bopomofo'?21:16)+'px system-ui';if(hints.has(r)){c.fillText(r.item.label,box.x+40,y+21,24);c.font='10px system-ui';c.fillText(r.item.hint||'',box.x+51+(bw-57)/2,y+18,bw-57);}else c.fillText(r.item.label,box.x+30+(bw-36)/2,y+20,bw-36);
       }
     }
     this.bubbleBoxes=boxes;

@@ -3,7 +3,7 @@
    Revisions of the same span never fire a second job. */
 (function(root){'use strict';const SC=root.Starlight;
 SC.speechWords=(text,lesson)=>{
-  if(lesson==='chinese'||lesson==='bopomofo')return text.match(/[\p{Script=Han}\p{Script=Bopomofo}][\p{P}]*|[^\s\p{Script=Han}\p{Script=Bopomofo}]+/gu)||[];
+  if(SC.isChinese(lesson)||lesson==='bopomofo')return text.match(/[\p{Script=Han}\p{Script=Bopomofo}][\p{P}]*|[^\s\p{Script=Han}\p{Script=Bopomofo}]+/gu)||[];
   return text.match(/\S+/gu)||[];
 };
 SC.splitChineseDigits=function(text){
@@ -17,7 +17,7 @@ SC.splitChineseDigits=function(text){
   return parts;
 };
 SC.splitSwedish=function(text,{lesson,language,candidates=[]},history=[],offset=0){
-  if(language!=='sv-SE'||lesson==='math')return [text];
+  if(language!=='sv-SE'||SC.isMath(lesson))return [text];
   const matches=t=>candidates.some(item=>SC.matches(t,item,lesson,language,'speech'));
   if(matches(text))return [text]; // A displayed longer compound has priority.
   const m=text.match(/^([^\p{L}\p{M}]*)([\p{L}\p{M}]+)([^\p{L}\p{M}]*)$/u);if(!m)return [text];
@@ -33,11 +33,22 @@ SC.tokenizeSpeech=function(text,context,history=[],offset=0){
   for(let i=0;i<words.length;i++){
     let word=words[i],v=SC.speechNormalize(word);
     if(lesson==='letters'&&i+1<words.length){const phrase=word+' '+words[i+1];if(SC.letterNames[language]?.[SC.speechNormalize(phrase)]){word=phrase;i++;}}
-    if(lesson==='math'){
-      if(['minus','negative','negativ','negativt'].includes(v)&&i+1<words.length){word+=' '+words[++i];}
-      if(i+2<words.length&&['point','komma','punkt'].includes(SC.speechNormalize(words[i+1]))){word+=' '+words[++i]+' '+words[++i];}
+    if(SC.isMath(lesson)){
+      const numberEnd=start=>{
+        let end=start;
+        for(let j=start;j<Math.min(words.length,start+7);j++){
+          if(j>start&&/[,.!?;，。！？]$/.test(words[j-1]))break;
+          if(SC.spokenNumber(words.slice(start,j+1).join(' '),language)!==null)end=j;
+        }
+        return end;
+      };
+      const start=i,negative=['minus','negative','negativ','negativt'].includes(v);
+      if(negative&&i+1<words.length)i++;
+      i=numberEnd(i);
+      if(i+2<words.length&&['point','komma','punkt'].includes(SC.speechNormalize(words[i+1])))i=numberEnd(i+2);
+      word=words.slice(start,i+1).join(' ');
       out.push(word); // No compound-word splitting in number exercises.
-    }else out.push(...SC.splitSwedish(word,context,history,offset+out.length).flatMap(part=>lesson==='chinese'?SC.splitChineseDigits(part):[part]));
+    }else out.push(...SC.splitSwedish(word,context,history,offset+out.length).flatMap(part=>SC.isChinese(lesson)?SC.splitChineseDigits(part):[part]));
   }
   return out;
 };
@@ -77,7 +88,10 @@ class SpeechStream{
     }
     let frontier=-1;
     for(let k=0;k<merged.length;k++){
-      const t=merged[k];if(!t.ghost&&(t.final||context.candidates.some(item=>SC.matches(t.text,item,context.lesson,context.language,'speech'))))frontier=k;
+      // In lessons reaching 100 or more, the trailing interim "one" may still become "one
+      // hundred". Wait for its boundary; earlier complete answers still flow.
+      const t=merged[k],boundary=!['math3','math4','math5'].includes(context.lesson)||k<merged.length-1;
+      if(!t.ghost&&(t.final||boundary&&context.candidates.some(item=>SC.matches(t.text,item,context.lesson,context.language,'speech'))))frontier=k;
     }
     const added=[];
     for(let k=0;k<=frontier;k++){

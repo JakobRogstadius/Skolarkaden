@@ -14,7 +14,7 @@
   // The label's first appearance starts the clock, including walkers entering onscreen.
   SC.noteTargetAppearance=function(game){for(const target of game.getTargets())target.appearedAt??=game.clock;};
   SC.pinyinHints=function(game){
-    const hints=new Set();if(game.mode!=='chinese')return hints;
+    const hints=new Set();if(!SC.isChinese(game.mode))return hints;
     const targets=game.getTargets(),available=new Set(game.getAvailableTargets()),handled=new Set(targets.filter(t=>!available.has(t)));
     // Reserve exactly one remaining target per queued answer, using the speech aliases too.
     for(const entry of game.queue.items){const target=targets.find(t=>!handled.has(t)&&SC.matches(entry.text,t.item,game.mode,game.lang,entry.source));if(target)handled.add(target);}
@@ -128,7 +128,7 @@
       const available=SC.practiceItems(this).filter(i=>!this.threats.some(t=>t.item.answer===i.answer));
       if(!available.length || this.threats.length>=(this.width<540?4:7))return;
       const base=available[Math.floor(this.random()*available.length)];
-      const item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};
+      const item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};
       item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
       const destination=live[Math.floor(this.random()*live.length)];
       const margin=Math.min(76,this.width*.22);
@@ -161,7 +161,7 @@
       for(const b of this.lasers)b.life-=dt;
       this.lasers=this.lasers.filter(b=>b.life>0);
       if(this.state!=='playing')return;
-      this.mathPractice?.update(dt);this.elapsed+=dt;this.spawnIn-=dt;
+      this.elapsed+=dt;this.spawnIn-=dt;
       if(this.spawnIn<=0){this.spawn();this.spawnIn=SC.citySpawnInterval(this.pace,this.pressure());}
       for(const t of [...this.threats]){
         t.progress+=dt/t.duration;
@@ -230,7 +230,7 @@
       for(const t of g.turrets)this.turret(t);
       const labels=[],hints=SC.pinyinHints(g);
       for(const t of g.getTargets()){
-        const size=g.mode==='chinese'?26:g.width<600?20:23;
+        const size=SC.isChinese(g.mode)?26:g.width<600?20:23;
         c.font='700 '+size+'px "Trebuchet MS", system-ui, sans-serif';
         const hint=hints.has(t),bw=SC.labelWidth(c,t.item.label,{hint:hint?t.item.hint:'',hintFont:'13px system-ui',max:w-16}),bh=hint?62:40;
         let box;
@@ -281,7 +281,7 @@
       c.save();c.translate(t.x,t.y);
       const trail=c.createLinearGradient(0,0,-Math.cos(angle)*55,-Math.sin(angle)*55);trail.addColorStop(0,t.color+'99');trail.addColorStop(1,t.color+'00');
       c.strokeStyle=trail;c.lineCap='round';c.lineWidth=5;c.beginPath();c.moveTo(0,0);c.lineTo(-Math.cos(angle)*55,-Math.sin(angle)*55);c.stroke();c.lineCap='butt';
-      const size=g.mode==='chinese'?26:g.width<600?20:23;c.font='700 '+size+'px "Trebuchet MS", system-ui, sans-serif';
+      const size=SC.isChinese(g.mode)?26:g.width<600?20:23;c.font='700 '+size+'px "Trebuchet MS", system-ui, sans-serif';
       const label=t.item.label,bw=t.labelBox.w,bh=t.labelBox.h;
       const labelX=t.labelBox.x+bw/2-t.x,labelY=t.labelBox.y+20-t.y;
       c.lineWidth=1.5;

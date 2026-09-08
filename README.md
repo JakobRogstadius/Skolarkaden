@@ -19,7 +19,7 @@ All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och
 | Marshmallows | Ta in gyllene marshmallows innan solen går upp. |
 | Äggröra | Bränn spruckna rymdägg och rymdkryp för att skydda besättningen. |
 
-Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övning eller valt språk. Matövningen innehåller 70 svenska matord och väljs precis som övriga övningar.
+Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övning eller valt språk.
 
 ## Så svarar du
 
@@ -37,7 +37,22 @@ Tangentbordsfokus hålls i svarsfältet under aktivt spel. Tab och Shift+Tab fly
 
 Svenska och engelska har korta och längre ord. Bokstavsövningen väljer ett slumpmässigt block av tangenter för varje omgång: 3 × 3, 2 × 5 eller en hel bokstavsrad. Svenska använder svensk QWERTY med å, ä och ö. Latinska övningar visar antingen stora eller små bokstäver under hela omgången; båda accepteras som svar.
 
-Matte börjar med addition inom 0–5. Svårigheten höjs gradvis efter lyckade svar och sänks vid upprepade fel, långsammare svar eller för många obesvarade uppgifter. Högsta nivån är addition och subtraktion inom 0–20. Anpassningen återställs varje omgång och påverkar inte poängen.
+Varje svensk och engelsk ordlista innehåller 100 olika ord. Korta ord har högst fem bokstäver och långa ord har 6–12. Kinesiska har fyra nivåer med 100 tecken vardera i traditionell respektive förenklad skrift. Nivåerna börjar med tal, natur, djur och familj och fortsätter med tid, kropp, vardagsord, skola, mat och handlingar. De båda skrifterna har motsvarande tecken och samma pinyin. Val av talspråk ändrar inte tecknens skrift.
+
+Matematiken har sex fasta nivåer. Nivån ändras aldrig under en omgång och ger inte högre poäng för svårare uppgifter.
+
+| Övning | Uppgifter |
+| --- | --- |
+| Matematik 1 (+) | Addition med två tal 0–10; svar 0–20. |
+| Matematik 2 (+ och -) | Addition och subtraktion inom 0–20; inga negativa svar. |
+| Matematik 3 (10-100) | Två tal 10–100 med addition eller subtraktion; svar 0–200. |
+| Matematik 4 (x) | Multiplikationstabellerna 1–10. |
+| Matematik 5 (x och /) | Multiplikation och exakt division i tabellerna 1–10. |
+| Matematik 6 (ekvationer) | Lös x med en eller två av +, −, × och ÷, utan parenteser. Vanlig prioriteringsordning gäller. x är ett entydigt positivt heltal 1–20. |
+
+Menyn visar övning, tangentbord/röst, talspråk och svårighet i den ordningen. Talspråk är avstängt vid tangentbordsinmatning. Lätt, Medel och Svår styr spelets utmaning. Matematikens befintliga extra speltid gäller på alla sex nivåer.
+
+Talade heltal upp till 200 stöds på svenska, engelska och mandarin. Uttryck som ”one hundred twenty three” och ”ett hundra tjugo tre” hålls ihop. I Matematik 3–5 väntar det sista preliminära talet på nästa svar eller slutlig transkription, så att ”one” inte skickas innan det hinner bli ”one hundred”.
 
 I kinesiska teckenövningar visas pinyin automatiskt efter fem sekunder om tecknet ännu inte har besvarats. Tiden räknas från att uppgiften syns, och paus räknas inte. Köade och pågående korrekta svar behöver ingen ny ledtråd; en redan visad ledtråd ligger kvar tills uppgiften försvinner. Tal jämförs som pinyin utan toner; till exempel kan 是 eller 事 matcha 十. Olika stavelser som `si` och `shi` skiljs åt. I kinesiska teckenövningar kan en transkription som `38` bli två svar, medan `10` hålls ihop. Mattesvar delas inte på det sättet. Bopomofo har tangentkonvertering och en tangenthjälp under **Så spelar du**.
 
@@ -59,7 +74,7 @@ En omgång varar i två minuter, följt av sex sekunders soluppgång. Svårighet
 
 Ett för tidigt svar vrider underarmen och pinnen runt armbågen för en titt och återför pinnen med ett nytt ord. Grillningen står still under denna rörelse. Brända marshmallows kan börja brinna och kastas sedan tillbaka på marken, där de ligger kvar. Felmatchade svar ger en kort frågebubbla och hindrar inte andra pinnar. Omgången kan inte förloras.
 
-Alla övningar fungerar, inklusive bokstäver utan Enter, kontinuerligt tal och fem sekunders fördröjd pinyin. Den gyllene tidsluckan är drygt sju sekunder vid stark eld och blir längre när elden svalnar. Matte förlänger både natten och grillningstiden med 30 procent; avsiktlig väntan på grillningen räknas inte som långsamma mattesvar.
+Alla övningar fungerar, inklusive bokstäver utan Enter, kontinuerligt tal och fem sekunders fördröjd pinyin. Den gyllene tidsluckan är drygt sju sekunder vid stark eld och blir längre när elden svalnar. Matte förlänger både natten och grillningstiden med 30 procent.
 
 Stjärnor, moln, träd, växter, eldflugor, eld, armar och campingprylar ritas lokalt med Canvas. Växternas storlek följer avståndet i scenen, och förgrundsträden har kraftigare stammar utan lodräta ljusstreck. Sprakande ved, syrsor, antändning och tuppgalning syntetiseras utan inspelningar eller nedladdningar. Eldljudet tonar ned med elden och stängs av vid paus, meny, ljud av eller avslut. Alla nya ljud dämpas vid talinmatning.
 
@@ -71,7 +86,7 @@ En planta kan vissna utan att avsluta omgången. Döda plantor får inga fler up
 
 ## Äggröra
 
-En besättning på sex människor, inklusive spelaren med eldkastare, kommer in i ett mörkt rymdskepp med slemmiga ägg, kåda och våta nät. Vännerna strövar omkring och undersöker rummet. Lugn, Lagom och Utmaning ger 10, 16 respektive 21 ägg (cirka 30 procent fler). Äggen står slumpmässigt utspridda med avstånd mellan varandra, utan rutnätsrader. De spricker vid olika slumpmässiga tider och kläcks 15 procent snabbare: tiden från första sprickan till kläckning är 9–15 sekunder delat med 1,15. Sprickor och öppnade äggflikar visar kläckningen; inga förloppsmätare visas.
+En besättning på sex människor, inklusive spelaren med eldkastare, kommer in i ett mörkt rymdskepp med slemmiga ägg, kåda och våta nät. Vännerna strövar omkring och undersöker rummet. Lätt, Medel och Svår ger 10, 16 respektive 21 ägg (cirka 30 procent fler). Äggen står slumpmässigt utspridda med avstånd mellan varandra, utan rutnätsrader. De spricker vid olika slumpmässiga tider och kläcks 15 procent snabbare: tiden från första sprickan till kläckning är 9–15 sekunder delat med 1,15. Sprickor och öppnade äggflikar visar kläckningen; inga förloppsmätare visas.
 
 Äggets första sprickor gör det till ett mål. Ett kläckt kryp behåller exakt samma mål, ord, köreservation och ledtrådstid. Krypen vandrar omkring, jagar människor i närheten med dubbla flykthastigheten och fäster sig vid ansiktet när de kommer ikapp. Människorna hoppar till och flyr, utom spelaren. En oavbruten attack får människan att falla huvudlös i en blodpöl, varefter krypet fortsätter söka.
 
@@ -81,10 +96,7 @@ Spelet vinns när alla ägg och kryp är döda. Det förloras först när hela b
 
 ## Mikrofon
 
-Två tallägen finns:
-
-- **Mikrofon · internet:** webbläsarens taltjänst transkriberar ljudet.
-- **Mikrofon · lokalt:** webbläsarens installerade språkpaket transkriberar lokalt. Paketets tillgänglighet beror på webbläsare och språk. Första nedladdningen kräver internet. Ingen automatisk växling till internettjänsten sker.
+Röstläget använder alltid webbläsarens taltjänst över internet (`processLocally = false`). Lokala språkpaket och valet av talmotor är borttagna.
 
 Appens talläge kräver stöd för `SpeechRecognition.start(audioTrack)` och kontrollerar att Chrome är minst version 135. Mikrofonens godkända grundanslutning återanvänds mellan talavsnitt och pauser. Ett nytt tillstånd kan behövas när sidan öppnas på nytt eller mikrofonen uttryckligen stängts av.
 
@@ -100,8 +112,8 @@ Klassiska skript används så att `file://` fungerar utan modulladdare, externa 
 | --- | --- |
 | `resources/input.js` | Återanvändbar svarskö, text- och talinmatning samt valbar fokusbevakning. |
 | `resources/speech.js` | Tidig köning, rättningar, orddelning och deduplicering av tal. |
-| `resources/voice.js` | Mikrofonens livscykel och lokala språkpaket. |
-| `resources/data.js`, `pinyin.js` | Övningar, ordböcker, matteanpassning och svarsmatchning. |
+| `resources/voice.js` | Mikrofonens livscykel. |
+| `resources/data.js`, `pinyin.js` | Övningar, ordböcker, fasta matematiknivåer och svarsmatchning. |
 | `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js`, `marshmallows.js`, `eggs.js` | Åtta separata simuleringar och canvas-renderare. |
 | `resources/people.js`, `plants.js`, `sounds.js` | Gemensamma figurer, växter och syntetiska ljud. |
 | `resources/app.js` | Menyer, paus, HUD och anslutning av modulerna. |

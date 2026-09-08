@@ -17,7 +17,7 @@ class MarshmallowGame{
  menu(){Object.assign(this,{state:'menu',clock:0,elapsed:0,dawnAge:0,sticks:[],waste:[],effects:[],thought:null,score:0,hits:0,shots:0,early:0,burnt:0,wrong:0,spawned:0,streak:0,bestStreak:0});}
  start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
   this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Lägerelden behöver minst ett svar.');
-  this.timeScale=mode==='math'?1.3:1;this.duration=120*this.timeScale;this.dawnDuration=6;this.maxSticks={gentle:2,steady:4,brave:6}[pace];
+  this.timeScale=SC.isMath(mode)?1.3:1;this.duration=120*this.timeScale;this.dawnDuration=6;this.maxSticks={gentle:2,steady:4,brave:6}[pace];
   this.slots=[2,3,0,1,4,5].slice(0,this.maxSticks);this.nextId=0;this.spawnIn=3.4;this.insectsIn=2.5;this.lastWrongAt=-10;this.scene=scene(Math.floor(this.random()*4294967296));
   this.state='playing';this.spawn();this.emit('start');
  }
@@ -29,14 +29,12 @@ class MarshmallowGame{
  readiness(p){return p.roast<BURNT&&p.roast>=READY;}
  getTargets(){return this.sticks.filter(p=>p.stage==='roasting'||p.stage==='flaming').sort((a,b)=>b.roast-a.roast||a.id-b.id);}
  getAvailableTargets(){return this.getTargets();}
- // Waiting for a white marshmallow is not slow arithmetic or an unanswered backlog.
- getPracticeTargets(){return this.getTargets().filter(p=>this.readiness(p));}
  getActiveEntries(){return [...this.sticks.flatMap(p=>p.entry?[p.entry]:[]),...(this.thought?[this.thought.entry]:[])];}
  getTaskStates(){const states=new Map(),targets=this.getTargets();for(const entry of this.queue.items){const p=targets.find(p=>!states.has(p)&&SC.matches(entry.text,p.item,this.mode,this.lang,entry.source));if(p)states.set(p,'queued');}return states;}
  workerStatus(){return this.state==='playing'?'Ta in pinnen när marshmallowen är gyllene.':'God morgon!';}
  chooseItem(previous){
   const source=SC.practiceItems(this),different=source.filter(i=>i.answer!==previous),pool=different.length?different:source,used=this.getTargets().map(p=>p.item.answer),unique=pool.filter(i=>!used.includes(i.answer));
-  const choices=unique.length?unique:pool,base=choices[Math.floor(this.random()*choices.length)],item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};
+  const choices=unique.length?unique:pool,base=choices[Math.floor(this.random()*choices.length)],item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};
   item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);return item;
  }
  spawn(){
@@ -89,7 +87,7 @@ class MarshmallowGame{
   if(this.state!=='playing')return;
   if(this.timeLeft()<1e-8){this.dawn();return;}
   // Apply the FIFO before advancing cooking: there is no worker or animation wait.
-  this.work();dt=Math.min(dt,this.timeLeft());this.mathPractice?.update(dt);this.clock+=dt;this.elapsed+=dt;
+  this.work();dt=Math.min(dt,this.timeLeft());this.clock+=dt;this.elapsed+=dt;
   if(this.timeLeft()<1e-8){this.elapsed=this.duration;this.dawn();return;}
   for(const p of this.sticks)if(p.stage==='roasting'){
    p.roast+=this.cookingRate()*dt;
@@ -205,7 +203,7 @@ class MarshmallowRenderer extends SC.SceneRenderer{
  labels(){
   const c=this.ctx,g=this.game,w=g.width,states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[];
   for(const p of g.getTargets()){
-   const {tip,side,s}=this.pose(p),hint=hints.has(p),font=['chinese','bopomofo'].includes(g.mode)?24:w<600?17:20,bh=hint?51:36,bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',hintFont:'12px system-ui',max:Math.min(230,w*.44-12)}),x=clamp(w*(side<0?.22:.78)-bw/2,8,w-bw-8),y=Math.max(126,tip.y-bh-25*s),ready=g.readiness(p),burnt=p.roast>=BURNT;
+   const {tip,side,s}=this.pose(p),hint=hints.has(p),font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?24:w<600?17:20,bh=hint?51:36,bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',hintFont:'12px system-ui',max:Math.min(230,w*.44-12)}),x=clamp(w*(side<0?.22:.78)-bw/2,8,w-bw-8),y=Math.max(126,tip.y-bh-25*s),ready=g.readiness(p),burnt=p.roast>=BURNT;
    const box={id:p.id,x,y,w:bw,h:bh};boxes.push(box);c.strokeStyle='#b5956b75';c.lineWidth=1;c.beginPath();c.moveTo(x+bw/2,y+bh);c.lineTo(tip.x,tip.y-18*s);c.stroke();
    c.lineWidth=ready||states.has(p)?2.5:1.2;this.round(x,y,bw,bh,9,burnt?'#302723':ready?'#30392a':'#293330',states.has(p)?'#78ebbb':ready?'#bae685':'#75684c');c.lineWidth=1;c.font='bold '+font+'px system-ui';c.fillStyle=burnt?'#cda888':ready?'#ffe1a2':'#e9ddbf';c.textAlign='center';c.fillText(p.item.label,x+bw/2,y+25,bw-14);
    if(hint){c.font='12px system-ui';c.fillText(p.item.hint,x+bw/2,y+41,bw-14);}

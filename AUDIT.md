@@ -1,3 +1,19 @@
+# Övningsmeny, fasta matematiknivåer och onlinetal
+
+2026-09-08.
+
+Menyn har 20 övningar i önskad ordning: bokstäver, fyra ordlistor, bopomofo, fyra traditionella och fyra förenklade teckennivåer samt sex matematiknivåer. Varje ordlista innehåller exakt 100 olika ord. Varje kinesisk nivå har 100 tecken, utan upprepningar mellan nivåerna; skrifterna har motsvarande tecken och samma undervisningsuttal. Pinyin bygger på den tidigare licensierade och versionslåsta källan, med explicita vanliga läsningar av flertydiga tecken.
+
+Matteanpassningen är borttagen. Matematik 1 använder två termer 0–10 med plus, Matematik 2 plus/minus inom 0–20, Matematik 3 termer 10–100 och svar 0–200, Matematik 4 tabeller 1–10, Matematik 5 samma tabeller med exakt division. Ekvationer har x en gång, en eller två operatorer och vanlig prioriteringsordning utan parenteser. Svaret är ett entydigt positivt heltal 1–20. Poängreglerna är oförändrade.
+
+Talspråk är inaktiverat i tangentbordsläget. Lätt/Medel/Svår ersätter svårigheternas tidigare namn. Tal använder alltid online-API:t; lokala språkpaket och deras inställningar är borttagna. Talade heltal upp till 200 hålls ihop i transkriptionerna, inklusive engelska och svenska flerordsformer. Matematik 3–5 avvaktar det sista preliminära talet för att undvika att en del av ett längre tal skickas för tidigt.
+
+**Verifiering:** Alla 20 testsviter passerar. Den nya övningssviten kontrollerar alla genererade aritmetiska uttryck, alla genererade ekvationers rätta svar, stickprov med lösningssökning över 1–200, talformer 0–200 i fyra språkvarianter samt samtliga åtta spel med varje matematik- och kinesisk nivå. DOM-testet verifierar menyordning, alternativ, språkfältets tillstånd och onlineinställningen. Befintliga tester täcker fullständiga omgångar, köer, mikrofonens livscykel och fördröjd pinyin. Ingen manuell webbläsar- eller mikrofonprovning gjordes för denna uppdatering.
+
+**山 / shān:** Befintlig tabell mappar 山 till `shan`. Prov med 山, shān, shan, shan1 samt homofonerna 杉, 衫 och 善 accepteras i båda språklokalerna; 三 / san avvisas som en annan stavelse. Ingen specifik orsak till den rapporterade ljudtranskriptionen kunde fastställas och ingen ny fonetisk tolerans infördes.
+
+---
+
 # Marshmallows: perspektiv, händer och grillning utan mätare
 
 2026-09-07.

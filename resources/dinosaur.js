@@ -6,7 +6,7 @@ class DinosaurGame{
  menu(){Object.assign(this,{state:'menu',clock:0,elapsed:0,people:[],groups:[],effects:[],job:null,score:0,hits:0,passed:0,escaped:0,spawned:0,total:40,shots:0,streak:0,bestStreak:0});this.dino={x:.5,y:.77,facing:1,stride:0,moving:false};}
  start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
   this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Gläntan behöver minst ett svar.');
-  this.timeScale=mode==='math'?1.3:1;this.maxPeople={gentle:4,steady:6,brave:8}[pace];this.runSpeed={gentle:100,steady:122,brave:145}[pace]/this.timeScale;this.walkSpeed=this.runSpeed*.58;this.dinoSpeed=this.runSpeed*2;
+  this.timeScale=SC.isMath(mode)?1.3:1;this.maxPeople={gentle:4,steady:6,brave:8}[pace];this.runSpeed={gentle:100,steady:122,brave:145}[pace]/this.timeScale;this.walkSpeed=this.runSpeed*.58;this.dinoSpeed=this.runSpeed*2;
   this.spawnInterval={gentle:4.5,steady:2.8,brave:1.8}[pace]*this.timeScale;this.spawnIn=1.6;this.nextId=0;this.nextGroupId=0;this.startleSoundAt=-10;this.footstepIn=0;
   this.decor=Array.from({length:18},(_,i)=>({x:.03+this.random()*.94,y:i<10?.39+this.random()*.055:.93+this.random()*.06,size:.35+this.random()*.22,growth:.5+this.random()*.5,moisture:1,nutrition:1,infection:0,bloom:i%4===0,look:{hue:100+this.random()*40,phase:this.random()*TAU,flowers:1+i%3,petal:['#f9ce78','#e7acc4','#c8b4ef'][i%3]}}));
   this.state='playing';this.spawn(true);this.emit('start');
@@ -40,7 +40,7 @@ class DinosaurGame{
   if(this.spawned>=this.total||this.people.length>=this.maxPeople)return false;
   const used=this.people.filter(p=>p.status!=='eaten').map(p=>p.item.answer),pool=SC.practiceItems(this).filter(i=>!used.includes(i.answer));if(!pool.length)return false;
   const gates=this.entrances(initial);if(!gates.length)return false;const gate=gates[Math.floor(this.random()*gates.length)],direction=gate.direction||(this.random()<.5?1:-1);
-  const base=pool[Math.floor(this.random()*pool.length)],item=this.mode==='math'?SC.makeMath(base.answer,this.random,this.mathPractice.level):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
+  const base=pool[Math.floor(this.random()*pool.length)],item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
   const p={id:++this.nextId,item,...gate.from,entrance:gate.edge,entryGoal:gate.edge==='bottom'?{...gate.to}:null,direction,status:'walking',age:0,stateAge:0,cooldown:0,chatCooldown:1,chats:0,group:null,flee:null,fear:0,look:SC.makePerson(this.random)};
   this.people.push(p);this.spawned++;SC.noteTargetAppearance(this);if(p.look.exotic)this.emit('rare-arrival',{look:p.look});this.emit('targets');return true;
  }
@@ -114,7 +114,7 @@ class DinosaurGame{
  finish(){this.state='celebrating';this.celebration=0;this.dino.moving=false;this.emit('celebrate');}
  update(dt){
   dt=Math.max(0,Math.min(.05,dt));if(this.state==='celebrating'){this.clock+=dt;this.celebration+=dt;this.effects.forEach(e=>e.age+=dt);if(this.celebration>=2.5){this.state='won';this.emit('end',{won:true,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,passed:this.passed,escaped:this.escaped});}return;}
-  if(this.state!=='playing')return;this.mathPractice?.update(dt);this.clock+=dt;this.elapsed+=dt;this.effects.forEach(e=>e.age+=dt);this.effects=this.effects.filter(e=>e.age<1.3);
+  if(this.state!=='playing')return;this.clock+=dt;this.elapsed+=dt;this.effects.forEach(e=>e.age+=dt);this.effects=this.effects.filter(e=>e.age<1.3);
   this.updatePeople(dt);this.work(dt);if(this.passed>=this.total&&!this.job){this.finish();return;}
   this.spawnIn-=dt;if(this.spawnIn<=0){this.spawnIn=this.spawn()?this.spawnInterval:.45;}
  }
@@ -187,7 +187,7 @@ class DinosaurRenderer extends SC.SceneRenderer{
   for(const p of g.people)if(p.status!=='eaten'){const ps=s*SC.personScale(p.look);blocked.push({x:p.x*w-29*ps,y:p.y*h-(54*p.look.height+56)*ps,w:58*ps,h:(54*p.look.height+60)*ps});}
   blocked.push({x:g.dino.x*w-70*s,y:g.dino.y*h-196*s,w:190*s,h:202*s});
   for(const p of targets){
-   const font=['chinese','bopomofo'].includes(g.mode)?22:w<600?14:18,maxWidth=w<600?120:170,hint=hints.has(p);const bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',max:maxWidth}),bh=hint?48:34,ps=s*SC.personScale(p.look),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+59)*ps-g.jumpHeight(p)},candidates=[];
+   const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?14:18,maxWidth=w<600?120:170,hint=hints.has(p);const bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',max:maxWidth}),bh=hint?48:34,ps=s*SC.personScale(p.look),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+59)*ps-g.jumpHeight(p)},candidates=[];
    const top=154,bottom=h-38-bh,cols=Math.max(1,Math.floor((w-16+8)/(maxWidth+8))),dx=cols>1?(w-16-maxWidth)/(cols-1):0;
    // Fallback slots guarantee room for eight labels even on a narrow screen.
    for(let yy=top;yy<=bottom;yy+=bh+9)for(let col=0;col<cols;col++)candidates.push({x:8+col*dx+(maxWidth-bw)/2,y:yy,w:bw,h:bh});

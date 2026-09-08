@@ -11,13 +11,13 @@ try{localStorage.removeItem('starlight-friends-v1');}catch(_){}
 function notice(text){$('discovery-notice').textContent=text;$('discovery-notice').hidden=false;noticeUntil=performance.now()+6000;}
 for(const [value,m] of Object.entries(SC.modes))$('lesson').add(new Option(m.name,value));$('lesson').value='swedish';
 for(const [key,glyph] of Object.entries(SC.bopomofoKeys)){const el=document.createElement('span');el.textContent=glyph+' ';const small=document.createElement('small');small.textContent=key.toUpperCase();el.append(small);$('keyboard-grid').append(el);}
-function options(){return {mode:$('lesson').value,pace:$('pace').value,lang:$('language').value,uppercase:Math.random()<.5};}
-function speechOptions(){return {enabled:$('input-kind').value!=='typing',kind:$('input-kind').value,language:$('language').value,lesson:$('lesson').value};}
+function options(){return {mode:$('lesson').value,pace:$('pace').value,lang:$('input-kind').value==='typing'?SC.modes[$('lesson').value].lang:$('language').value,uppercase:Math.random()<.5};}
+function speechOptions(){return {enabled:$('input-kind').value!=='typing',kind:'browser',language:$('language').value,lesson:$('lesson').value};}
 function typingHint(){return ['letters','bopomofo'].includes($('lesson').value)?'Tryck på en bokstav.':'Skriv ett svar och tryck Enter.';}
 function menuUpdate(){
-  const voice=$('input-kind').value!=='typing';$('setup-note').textContent=kind==='marshmallows'?(voice?'Säg svaret när marshmallowen är gyllene.':['letters','bopomofo'].includes($('lesson').value)?'Tryck på bokstaven när marshmallowen är gyllene.':'Skriv svaret. Tryck Enter när marshmallowen är gyllene.'):voice?'Säg svaren efter varandra.':typingHint();
+  const voice=$('input-kind').value!=='typing';$('language').disabled=!voice;$('setup-note').textContent=kind==='marshmallows'?(voice?'Säg svaret när marshmallowen är gyllene.':['letters','bopomofo'].includes($('lesson').value)?'Tryck på bokstaven när marshmallowen är gyllene.':'Skriv svaret. Tryck Enter när marshmallowen är gyllene.'):voice?'Säg svaren efter varandra.':typingHint();
   $('mode-description').textContent=SC.modes[$('lesson').value].description;$('keyboard').hidden=$('lesson').value!=='bopomofo';
-  [...$('pace').options].forEach((o,i)=>o.textContent=['Lugn','Lagom','Utmaning'][i]);
+  [...$('pace').options].forEach((o,i)=>o.textContent=['Lätt','Medel','Svår'][i]);
 }
 $('lesson').addEventListener('change',()=>{$('language').value=SC.modes[$('lesson').value].lang;menuUpdate();});$('input-kind').addEventListener('change',menuUpdate);
 for(const radio of document.querySelectorAll('[name=game]'))radio.addEventListener('change',()=>{kind=radio.value;menuUpdate();});
@@ -108,7 +108,6 @@ async function refreshDevices(){try{const devices=await navigator.mediaDevices?.
 $('mic-activate').addEventListener('click',async()=>{const b=$('mic-activate');b.disabled=true;try{await microphone.configure({deviceId:$('device').value,processing:$('processing').checked});microphone.begin(true);await refreshDevices();$('mic-status').textContent='Mikrofonen är aktiv. Säg några ord och kontrollera nivån.';}catch(e){$('mic-status').textContent=e.message;}finally{b.disabled=false;}});
 $('mic-off').addEventListener('click',()=>{input.cancel();microphone.close();$('mic-status').textContent='Mikrofonen är avstängd. Nästa aktivering kan kräva ett nytt tillstånd.';});
 microphone.onStateChange=()=>{if(!microphone.ready){pause();$('mic-status').textContent='Mikrofonen är avstängd.';}};
-$('install-language').addEventListener('click',async()=>{const b=$('install-language');b.disabled=true;try{await SC.localSpeechStatus($('language').value,true);$('mic-status').textContent='Det lokala språkpaketet är klart.';}catch(e){$('mic-status').textContent=e.message;}finally{b.disabled=false;}});
 $('replay').addEventListener('click',async()=>{
   if(microphone.recording)input.capture();const pcm=input.lastAudio;if(!pcm?.samples.length){$('mic-status').textContent='Aktivera mikrofonen och säg något först.';return;}
   try{if(replaying)replaying.stop();const ac=microphone.context;if(!ac)throw new Error('Aktivera mikrofonen för att spela upp ljudet.');await ac.resume();const b=ac.createBuffer(1,pcm.samples.length,pcm.sampleRate);b.copyToChannel(pcm.samples,0);replaying=ac.createBufferSource();replaying.buffer=b;replaying.connect(ac.destination);replaying.start();$('mic-status').textContent='Spelar upp mikrofonens senaste '+(pcm.samples.length/pcm.sampleRate).toFixed(1)+' sekunder.';}catch(e){$('mic-status').textContent=e.message;}
