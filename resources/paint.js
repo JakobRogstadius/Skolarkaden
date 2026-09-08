@@ -35,7 +35,7 @@ class PaintGame{
   if(this.job||!this.queue.length||this.passed>=this.total)return;
   const entry=this.queue.take();if(!entry)return;
   const target=this.getTargets().find(p=>p.status==='walking'&&SC.matches(entry.text,p.item,this.mode,this.lang,entry.source)),color=PAINT[Math.floor(this.random()*PAINT.length)];
-  this.job={entry,target,color,stage:target?'run':'windup',age:0};if(target)target.status='targeted';this.emit('work',{entry});
+  this.job={entry,target,color,stage:target?'run':'windup',age:0};if(target)target.status='targeted';else this.streak=0;this.emit('work',{entry});
  }
  nearestRoof(x){let best=0,d=Infinity;this.buildings.forEach((r,i)=>{const distance=Math.abs(x-clamp(x,r.x+.025,r.right-.025));if(distance<d){d=distance;best=i;}});return best;}
  moveChild(targetX,dt){
@@ -61,9 +61,9 @@ class PaintGame{
  impact(){
   const b=this.balloon,p=b.target;this.balloon=null;this.job=null;
   if(p&&this.people.includes(p)&&p.status==='targeted'){
-   p.paint=this.paintMarks(b.color);p.status='angry';p.reactionAge=0;p.jumps=0;this.score++;this.hits++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.effects.push({x:p.x,y:p.y-.07,color:b.color,age:0,text:'+1'});this.emit('hit',{entry:b.entry,target:p,points:1});this.emit('paint-hop');
+   p.paint=this.paintMarks(b.color);p.status='angry';p.reactionAge=0;p.jumps=0;const points=10+this.streak+(p.look.exotic?50:0);this.score+=points;this.hits++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);this.effects.push({x:p.x,y:p.y-.07,color:b.color,age:0,text:'+'+points});this.emit('hit',{entry:b.entry,target:p,points});if(p.look.exotic)this.emit('rare-earned',{look:p.look,bonus:50});this.emit('paint-hop');
   }else{
-   this.puddles.push({x:b.x2,y:b.y2,...this.paintMarks(b.color)});this.effects.push({x:b.x2,y:b.y2,color:b.color,age:0,text:''});this.emit('miss',{entry:b.entry,reason:'Färgstänk på gatan.'});
+   this.streak=0;this.puddles.push({x:b.x2,y:b.y2,...this.paintMarks(b.color)});this.effects.push({x:b.x2,y:b.y2,color:b.color,age:0,text:''});this.emit('miss',{entry:b.entry,reason:'Färgstänk på gatan.'});
   }
  }
  work(dt){
@@ -89,7 +89,7 @@ class PaintGame{
     if(p.status==='targeted')p.x=clamp(p.x,.055,.945);
    }
   }
-  const departed=this.people.filter(p=>p.x<-.12||p.x>1.12);if(departed.length){this.people=this.people.filter(p=>!departed.includes(p));this.passed+=departed.length;this.emit('targets');}
+  const departed=this.people.filter(p=>p.x<-.12||p.x>1.12);if(departed.length){if(departed.some(p=>!p.paint))this.streak=0;this.people=this.people.filter(p=>!departed.includes(p));this.passed+=departed.length;this.emit('targets');}
   SC.noteTargetAppearance(this);
  }
  finish(){if(this.state!=='playing')return;this.state='celebrating';this.celebrationLeft=2;this.emit('celebrate');}

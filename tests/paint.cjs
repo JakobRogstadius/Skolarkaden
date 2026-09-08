@@ -13,7 +13,7 @@ test('The rooftop character is always a child, equally often a boy and a girl',(
 test('A popped answer reserves an exiting pedestrian; the child crosses the roof gap before throwing',()=>{
  const events=[],{g,p}=isolated({},e=>events.push(e));g.queue.enqueue(p.item.answer);g.update(.05);assert.equal(p.status,'targeted');assert.equal(g.job.stage,'run');assert.equal(g.shots,0);
  until(g,()=>!!g.child.jump);assert.equal(g.balloon,null);g.resize(390,700);until(g,()=>!!g.balloon);assert.equal(g.child.jump,null);assert.equal(g.child.roof,0);assert.equal(g.hits,0);
- until(g,()=>g.hits===1);assert.equal(p.status,'angry');assert(p.paint);assert.equal(g.score,1);assert.equal(g.passed,0);assert(p.x>=.055);assert(events.findIndex(e=>e.type==='roof-land')<events.findIndex(e=>e.type==='balloon-throw'));
+ until(g,()=>g.hits===1);assert.equal(p.status,'angry');assert(p.paint);assert.equal(g.score,10);assert.equal(g.passed,0);assert(p.x>=.055);assert(events.findIndex(e=>e.type==='roof-land')<events.findIndex(e=>e.type==='balloon-throw'));
 });
 test('A painted person completes exactly three hops, then walks out and counts once',()=>{
  const events=[],{g,p}=isolated({},e=>events.push(e));g.queue.enqueue(p.item.answer);until(g,()=>g.hits===1);tick(g,1.60);assert.equal(p.status,'angry');assert.equal(p.jumps,2);g.update(.05);assert.equal(p.jumps,3);assert.equal(p.status,'leaving');assert.equal(events.filter(e=>e.type==='paint-hop').length,3);assert(p.paint);until(g,()=>g.passed===1);tick(g,5);assert.equal(g.passed,1);assert.equal(g.hits,1);
@@ -21,10 +21,22 @@ test('A painted person completes exactly three hops, then walks out and counts o
 test('The FIFO handles one balloon at a time; wrong answers leave persistent splashes without lost points',()=>{
  const events=[],{g,p}=isolated({},e=>events.push(e));g.queue.enqueue('felord');g.queue.enqueue(p.item.answer);g.queue.enqueue('ett annat fel');g.update(.05);assert.equal(g.job.entry.text,'felord');assert.equal(g.queue.length,2);tick(g,.5);assert.equal(g.hits,0);assert.equal(p.status,'walking');until(g,()=>g.puddles.length===1);assert.equal(g.score,0);
  // Keep the queued pedestrian visible until the worker can pop its next answer.
- p.x=.3;p.direction=1;until(g,()=>g.hits===1);assert.equal(g.puddles.length,1);until(g,()=>g.puddles.length===2);assert.equal(g.score,1);assert.equal(g.streak,1);assert.equal(g.shots,3);assert.deepEqual(events.filter(e=>e.type==='work').map(e=>e.entry.text),['felord',p.item.answer,'ett annat fel']);assert.notEqual(g.puddles[0].x,g.puddles[1].x);tick(g,10);assert.equal(g.puddles.length,2);
+ p.x=.3;p.direction=1;until(g,()=>g.hits===1);assert.equal(g.puddles.length,1);until(g,()=>g.puddles.length===2);assert.equal(g.score,10);assert.equal(g.streak,0);assert.equal(g.shots,3);assert.deepEqual(events.filter(e=>e.type==='work').map(e=>e.entry.text),['felord',p.item.answer,'ett annat fel']);assert.notEqual(g.puddles[0].x,g.puddles[1].x);tick(g,10);assert.equal(g.puddles.length,2);
 });
-test('An exotic pedestrian still gives exactly one point',()=>{
- const {g,p}=isolated();let first=true;p.look=SC.makePerson(()=>{if(first){first=false;return .995;}return .4;});assert(p.look.exotic);g.queue.enqueue(p.item.answer);until(g,()=>g.hits===1);assert.equal(g.score,1);
+test('An exotic pedestrian gives an additional fifty points',()=>{
+ const {g,p}=isolated();let first=true;p.look=SC.makePerson(()=>{if(first){first=false;return .995;}return .4;});assert(p.look.exotic);g.queue.enqueue(p.item.answer);until(g,()=>g.hits===1);assert.equal(g.score,60);
+});
+test('Hits build an uncapped streak; only wrong answers and unpainted departures reset it',()=>{
+ const events=[],{g}=isolated({},e=>events.push(e));g.people=[];
+ function hit(exotic=false){const p={x:.5,y:.8,status:'targeted',look:{exotic}};g.people.push(p);g.balloon={target:p,color:'red',entry:{text:'hit'}};g.impact();return p;}
+ for(let i=0;i<12;i++){const before=g.score;hit();assert.equal(g.score-before,10+i);}
+ assert.equal(g.streak,12);assert.equal(g.bestStreak,12);
+ const before=g.score,painted=hit(true);assert.equal(g.score-before,72);assert.equal(events.filter(e=>e.type==='rare-earned').length,1);
+ painted.x=1.2;painted.status='leaving';painted.speed=0;g.updatePeople(0);assert.equal(g.streak,13);
+ g.people.push({x:1.2,y:.8,status:'walking',speed:0,direction:1});g.updatePeople(0);assert.equal(g.streak,0);
+ const resetScore=g.score;hit();assert.equal(g.score-resetScore,10);
+ g.queue.enqueue('incorrect');g.beginJob();assert.equal(g.streak,0);assert.equal(g.bestStreak,13);
+ g.queue.clear();g.start();assert.equal(g.score,0);assert.equal(g.streak,0);assert.equal(g.bestStreak,0);
 });
 test('Queue highlights honor speech aliases and revisions without claiming the same person twice',()=>{
  const {g,p}=isolated({mode:'english',lang:'en-US'});p.item={answer:'sea',label:'sea'};const entry=g.queue.enqueue('see','speech');assert.equal(g.getTaskStates().get(p),'queued');g.queue.revise(entry,'wrong');assert.equal(g.getTaskStates().get(p),undefined);g.queue.revise(entry,'sea');g.queue.enqueue('see','speech');g.update(.05);assert.equal(g.getTaskStates().get(p),'active');until(g,()=>g.hits===1);until(g,()=>g.puddles.length===1);assert.equal(g.hits,1);
@@ -33,7 +45,7 @@ test('Pause freezes walking, roof jumps, balloon flights and the pending FIFO',(
  for(const stage of ['run','jump','flight']){const {g,p}=isolated();g.queue.enqueue(p.item.answer);g.update(.05);if(stage==='jump')until(g,()=>!!g.child.jump);if(stage==='flight')until(g,()=>!!g.balloon);g.queue.enqueue('pending');g.pause();const snapshot=JSON.stringify({clock:g.clock,people:g.people,child:g.child,balloon:g.balloon,job:g.job});tick(g,5);assert.equal(JSON.stringify({clock:g.clock,people:g.people,child:g.child,balloon:g.balloon,job:g.job}),snapshot);assert.equal(g.queue.length,1);g.resume();until(g,()=>g.hits===1);}
 });
 test('Every exercise can target a pedestrian, including spoken math in all four language choices',()=>{
- for(const mode of Object.keys(SC.modes)){const opts={mode,lang:SC.modes[mode].lang,uppercase:true},{g,p}=isolated(opts);g.queue.enqueue(p.item.answer);until(g,()=>g.hits===1);assert.equal(g.score,1);if(['swedish','english','swedishLong','englishLong','letters','food'].includes(mode))assert.equal(p.item.label,p.item.label.toUpperCase());}
+ for(const mode of Object.keys(SC.modes)){const opts={mode,lang:SC.modes[mode].lang,uppercase:true},{g,p}=isolated(opts);g.queue.enqueue(p.item.answer);until(g,()=>g.hits===1);assert.equal(g.score,10);if(['swedish','english','swedishLong','englishLong','letters','food'].includes(mode))assert.equal(p.item.label,p.item.label.toUpperCase());}
  for(const lang of ['sv-SE','en-US','zh-CN','zh-TW']){const {g,p}=isolated({mode:'math',lang});g.queue.enqueue(SC.numberName(Number(p.item.answer),lang),'speech');until(g,()=>g.hits===1);}
 });
 test('Rounds finish after forty departures and cannot lose, with no answers, correct answers or only mistakes',()=>{
@@ -44,7 +56,7 @@ test('Rounds finish after forty departures and cannot lose, with no answers, cor
    if(g.state==='playing'&&!g.job&&!g.queue.length){if(strategy==='wrong')g.queue.enqueue('felord');else if(strategy==='correct'){const t=g.getTargets().find(p=>p.status==='walking');if(t)g.queue.enqueue(t.item.answer);}}
    g.update(.05);max=Math.max(max,g.people.length);assert(g.people.length<=g.maxPeople);assert(g.spawned<=40);assert(g.passed<=40);
   }
-  assert.equal(g.state,'won',`${pace}/${strategy}/${seed}`);assert.equal(g.passed,40);assert.equal(g.spawned,40);assert.equal(g.people.length,0);assert.equal(events.filter(e=>e.type==='end').length,1);assert(events.find(e=>e.type==='end').won);assert.equal(g.score,g.hits);
+  assert.equal(g.state,'won',`${pace}/${strategy}/${seed}`);assert.equal(g.passed,40);assert.equal(g.spawned,40);assert.equal(g.people.length,0);assert.equal(events.filter(e=>e.type==='end').length,1);assert(events.find(e=>e.type==='end').won);assert.equal(g.score,events.filter(e=>e.type==='hit').reduce((sum,e)=>sum+e.points,0));
   if(strategy==='none'||strategy==='wrong')assert.equal(g.hits,0);else assert(g.hits>=30,`${pace} too few hits: ${g.hits}`);
   if(strategy==='none'&&seed===1){peak[pace]=max;durations[pace]=g.elapsed;}
  }

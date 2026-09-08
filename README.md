@@ -82,6 +82,10 @@ I kinesiska teckenövningar visas pinyin automatiskt efter fem sekunder om teckn
 
 Svenskt tal kan delas upp när tjänsten skriver ihop två eller tre aktuella mål, exempelvis `hundmat`. Detta gäller inte matte. Vanliga engelska homofoner har uttryckliga talalias, exempelvis `see / sea / c`. Tangentbordsläget kräver korrekt stavning.
 
+## Färgballongernas poäng
+
+Träffar ger 10, 11, 12 poäng och så vidare i en obruten svit utan tak. En exotisk person ger ytterligare 50 poäng. Felaktiga svar och personer som går förbi utan att träffas bryter sviten; redan målade personer kan lämna utan att bryta den. Ingen slutbonus tillkommer. Färgballonger använder poängversion v2.
+
 ## Bikupans äng
 
 Blommorna står utspridda på en ny, oregelbunden äng varje omgång. Växterna delar modell med Odla blommor: fyra stamformer, fem bladformer och sex blomformer kombineras med olika höjd, färg, bredd och antal blommor. Torr jord blir ljusare och plantan slokar, näringsbrist bleker bladverket och ohyra syns som allt fler och större kryp.
