@@ -242,7 +242,7 @@
   };
   SC.makeDiagram=function(answer,rng=Math.random){
     const pick=values=>values[Math.floor(rng()*values.length)],values=Array.from({length:10},(_,i)=>i+1);
-    const pieValues=values.filter(n=>n+answer<=10&&[2,3,4,5].includes((n+answer)/Math.min(n,answer)));
+    const pieValues=values.filter(n=>n===answer?n+answer<=10:n+answer===4);
     const barValues=values.filter(n=>[1,1.5,2,3,4].includes(Math.max(n,answer)/Math.min(n,answer)));
     const lines=[];
     for(let notches=3;notches<=4;notches++)for(let unknown=1;unknown<=notches;unknown++){

@@ -7,7 +7,7 @@ const diagrams=SC.mathLevel('math-diagrams'),equations=SC.mathLevel('math-simple
 const math=Object.entries(SC.modes).filter(([id])=>SC.isMath(id));
 assert.deepEqual(math.map(([,m])=>m.name),['Matematik 1 (+)','Matematik 2 (+ och −)','Matematik 3 (enkla diagram)','Matematik 4 (enkla ekvationer)','Matematik 5 (10–100)','Matematik 6 (×)','Matematik 7 (× och ÷)','Matematik 8 (ekvationer)']);
 assert.deepEqual(Array.from(SC.mathPool(diagrams).keys()),[1,2,3,4,5,6,7,8,9,10]);
-const kinds=new Set(),orientations=new Set(),colors=new Set(),notchCounts=new Set(),barRatios=new Set(),pieFractions=new Set(),answerKinds=new Map();
+const kinds=new Set(),orientations=new Set(),colors=new Set(),notchCounts=new Set(),barRatios=new Set(),piePairs=new Set(),answerKinds=new Map();
 for(let n=1;n<=10;n++)for(let seed=1;seed<=300;seed++){
  const item=SC.makeMath(n,rng(seed*103+n),diagrams),d=item.diagram;
  assert.equal(item.answer,String(n));assert.equal(item.label,'?');assert.equal(d.answer,n);kinds.add(d.kind);d.colors.forEach(c=>colors.add(c));
@@ -17,7 +17,9 @@ for(let n=1;n<=10;n++)for(let seed=1;seed<=300;seed++){
   if(d.kind==='bars'){
    const ratio=Math.max(n,d.known)/Math.min(n,d.known);assert([1,1.5,2,3,4].includes(ratio),JSON.stringify(d));barRatios.add(ratio);orientations.add(d.horizontal);
   }else{
-   const total=n+d.known,denominator=total/Math.min(n,d.known);assert(total<=10);assert([2,3,4,5].includes(denominator),JSON.stringify(d));pieFractions.add(denominator);
+   const total=n+d.known;
+   if(n===d.known){assert(total<=10);assert.equal(total%2,0);}else assert.equal(total,4);
+   piePairs.add([n,d.known].sort((a,b)=>a-b).join('+'));
   }
  }else if(d.kind==='dots'){
   assert.equal(d.dots.length,n);
@@ -33,9 +35,9 @@ for(let n=1;n<=10;n++)for(let seed=1;seed<=300;seed++){
  for(const lang of ['sv-SE','en-US','zh-CN','zh-TW'])assert(SC.matches(SC.numberName(n,lang),item,'math-diagrams',lang,'speech'));
 }
 assert.equal(kinds.size,4);assert.equal(orientations.size,2);assert.equal(colors.size,6);assert.equal(notchCounts.size,2);
-assert.deepEqual([...barRatios].sort((a,b)=>a-b),[1,1.5,2,3,4]);assert.deepEqual([...pieFractions].sort(),[2,3,4,5]);
+assert.deepEqual([...barRatios].sort((a,b)=>a-b),[1,1.5,2,3,4]);assert.deepEqual([...piePairs].sort(),['1+1','1+3','2+2','3+3','4+4','5+5']);
 for(let n=1;n<=10;n++){
- assert.equal(answerKinds.get(n).has('pie'),![7,9,10].includes(n));
+ assert.equal(answerKinds.get(n).has('pie'),n<=5);
  assert.equal(answerKinds.get(n).has('number-line'),n<10);
  assert(answerKinds.get(n).has('bars')&&answerKinds.get(n).has('dots'));
 }
