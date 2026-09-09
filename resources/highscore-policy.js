@@ -5,8 +5,7 @@
 // Bump only the affected game's version when its scoring/rules change.
 // Home stays on v1 during its initial tuning, by the owner's decision.
 const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1'});
-const legacyMathIds=Object.freeze({math:'math-addition',math2:'math-addition-subtraction',math3:'math-large-numbers',math4:'math-multiplication',math5:'math-multiplication-division',math6:'math-equations'});
-const canonicalExercise=exercise=>Object.hasOwn(legacyMathIds,exercise)?legacyMathIds[exercise]:exercise;
+const mathExercises=Object.freeze(['math-addition','math-diagrams','math-addition-subtraction','math-simple-equations','math-large-numbers','math-multiplication','math-multiplication-division','math-equations']);
 // Longer distinctive strings also match inside a name (including separated or
 // simple leetspeak spellings). Short/ambiguous words only match complete tokens.
 const substrings=`
@@ -67,5 +66,5 @@ function isBannedName(value){
   return fragments.some(fragment=>joined.includes(fragment)) ||
     normalized.split(/[^a-z]+/).some(token=>words.has(token)) || words.has(joined);
 }
-root.SkolarkadenHighscorePolicy=Object.freeze({versions,legacyMathIds,canonicalExercise,isBannedName});
+root.SkolarkadenHighscorePolicy=Object.freeze({versions,mathExercises,isBannedName});
 })(globalThis);

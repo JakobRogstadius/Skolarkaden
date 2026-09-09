@@ -1,4 +1,5 @@
--- Run in D1 > skolarkaden > Console after deploying the updated worker.mjs.
+-- For unmigrated installations: run in D1 > skolarkaden > Console before
+-- deploying worker.mjs, which accepts only the current exercise IDs.
 -- Requires settings_json (see add-score-settings.sql for older installations).
 -- One atomic UPDATE; safe to run again. No rows are deleted or merged.
 -- Scores, names, submission IDs, timestamps, IPs, game versions and difficulties

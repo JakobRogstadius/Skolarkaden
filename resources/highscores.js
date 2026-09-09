@@ -5,8 +5,8 @@ const SC=root.Starlight, API='https://skolarkaden-api.jakob-rogstadius.workers.d
 const $=id=>document.getElementById(id);
 const policy=root.SkolarkadenHighscorePolicy;
 const boardKey=selection=>[policy.versions[selection.kind],selection.kind].join(':');
-const storedKey=selection=>boardKey(selection)+':'+policy.canonicalExercise(selection.mode)+':'+selection.pace;
-const scoreSettings=s=>({game_version:policy.versions[s.kind],game:s.kind,exercise:policy.canonicalExercise(s.mode),difficulty:s.pace,
+const storedKey=selection=>boardKey(selection)+':'+selection.mode+':'+selection.pace;
+const scoreSettings=s=>({game_version:policy.versions[s.kind],game:s.kind,exercise:s.mode,difficulty:s.pace,
   input_mode:s.input==='typing'?'keyboard':s.input==='browser'?'voice':null,
   spoken_language:s.spokenLanguage||s.lang||null,exercise_language:s.lang||null,
   uppercase:typeof s.uppercase==='boolean'?s.uppercase:null,letter_keys:s.letterKeys||null,
@@ -99,7 +99,7 @@ class Highscores{
     name.textContent=row?displayName(row.player_name):'—';score.textContent=row?String(Number(row.score)):'—';
     if(row?.is_player&&this.shownResult&&!this.shownResult.saved){name.textContent='';$('score-entry').hidden=false;name.append($('score-entry'));}
     difficulty.className='board-difficulty';difficulty.textContent=difficultyName(row?.difficulty);
-    exercise.className='board-exercise';exercise.textContent=SC.modes[policy.canonicalExercise(row?.exercise)]?.name||'—';exercise.title=exercise.textContent;
+    exercise.className='board-exercise';exercise.textContent=SC.modes[row?.exercise]?.name||'—';exercise.title=exercise.textContent;
     item.append(number,name,exercise,difficulty,score);list.append(item);
   }
   async load(token){
