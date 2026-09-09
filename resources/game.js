@@ -28,9 +28,8 @@
     const labels=diagram.unknownFirst?['?',diagram.known]:[diagram.known,'?'];
     if(diagram.kind==='pie'){
       const total=values[0]+values[1],radius=29;
-      // Center the smaller slice to the right, leaving space for an outside label.
-      const small=values[0]<=values[1]?0:1,smallAngle=values[small]/total*Math.PI*2;
-      let angle=small===0?-smallAngle/2:smallAngle/2;
+      // Anchor the first slice boundary at twelve o'clock.
+      let angle=-Math.PI/2;
       for(let i=0;i<2;i++){
         const sweep=values[i]/total*Math.PI*2,mid=angle+sweep/2;
         c.fillStyle=diagram.colors[i];c.beginPath();c.moveTo(48,36);c.arc(48,36,radius,angle,angle+sweep);c.closePath();c.fill();c.stroke();
