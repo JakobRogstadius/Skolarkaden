@@ -41,9 +41,21 @@
     const description=level<2?`${items.length} tecken${level?' · 50 nya':' · tal och grunder'}`:`80 tecken + ${items.length-80} ord`;
     SC.modes[id]={...lesson((traditional?'傳統中文 (trad.) ':'简体中文 (simpl.) ')+(level+1),traditional?'zh-TW':'zh-CN',items,description+' · pinyin och svenska efter fem sekunder','字'),type:'chinese'};
   }
-  const mathNames=['Matematik 1 (+)','Matematik 2 (+ och -)','Matematik 3 (10-100)','Matematik 4 (x)','Matematik 5 (x och /)','Matematik 6 (ekvationer)'];
-  const mathDescriptions=['Addition med talen 0–10','Addition och subtraktion inom 0–20','Addition och subtraktion med talen 10–100','Multiplikationstabellerna 1–10','Multiplikation och division i tabellerna 1–10','Skriv det positiva heltal som x står för'];
-  mathNames.forEach((name,i)=>{SC.modes[i?'math'+(i+1):'math']={...lesson(name,'sv-SE',[],mathDescriptions[i],'±'),type:'math',mathLevel:i};});
+  // Generator levels are stable; menu numbers can change without moving scores.
+  const mathLessons=[
+    ['addition',0,'+','Addition med talen 0–10','math'],
+    ['diagrams',6,'enkla diagram','Räkna prickar och läs diagram och tallinjer · svar 1–10'],
+    ['addition-subtraction',1,'+ och −','Addition och subtraktion inom 0–20','math2'],
+    ['simple-equations',7,'enkla ekvationer','Vilket tal gör båda sidor lika? Till exempel 7 + 5 = 10 + ?'],
+    ['large-numbers',2,'10–100','Addition och subtraktion med talen 10–100','math3'],
+    ['multiplication',3,'×','Multiplikationstabellerna 1–10','math4'],
+    ['multiplication-division',4,'× och ÷','Multiplikation och division i tabellerna 1–10','math5'],
+    ['equations',5,'ekvationer','Skriv det positiva heltal som x står för','math6']
+  ];
+  SC.legacyMathIds=Object.freeze(Object.fromEntries(mathLessons.filter(m=>m[4]).map(m=>[m[4],'math-'+m[0]])));
+  SC.canonicalLesson=mode=>Object.hasOwn(SC.legacyMathIds,mode)?SC.legacyMathIds[mode]:mode;
+  SC.legacyLesson=mode=>Object.keys(SC.legacyMathIds).find(key=>SC.legacyMathIds[key]===mode)||mode;
+  mathLessons.forEach(([id,mathLevel,label,description],i)=>{SC.modes['math-'+id]={...lesson(`Matematik ${i+1} (${label})`,'sv-SE',[],description,'±'),type:'math',mathLevel};});
   SC.isMath=mode=>SC.modes[mode]?.type==='math';
   SC.isChinese=mode=>SC.modes[mode]?.type==='chinese';
   SC.mathLevel=mode=>SC.modes[mode].mathLevel;
@@ -212,6 +224,10 @@
           const labels=[a,b];labels.splice(position,0,'x');add(n,labels[0]+' '+first+' '+labels[1]+' '+second+' '+labels[2]+' = '+value);
         }
       }
+    }else if(level===6){
+      for(let n=1;n<=10;n++)add(n,'?');
+    }else if(level===7){
+      for(let a=0;a<=9;a++)for(let b=0;b<=9;b++)add(Math.abs(a+b-10),`${a} + ${b} = 10 ${a+b<10?'−':'+'} ?`);
     }else throw new RangeError('Unknown mathematics lesson');
     // Keep one-operator equations as common as two-operator equations.
     if(level===5)for(const [n,labels] of pool){const simple=labels.filter(label=>label.split(' = ')[0].split(' ').length===3),complex=labels.filter(label=>label.split(' = ')[0].split(' ').length===5);pool.set(n,[simple,complex]);}
@@ -221,7 +237,35 @@
     let choices=SC.mathPool(level).get(Number(answer));
     if(!choices)throw new RangeError('Answer outside selected mathematics lesson');
     if(level===5)choices=choices[rng()<.5?0:1];
+    if(level===6)return {...word(String(answer)),label:'?',diagram:SC.makeDiagram(Number(answer),rng),mathLevel:level};
     return {...word(String(answer)),label:choices[Math.floor(rng()*choices.length)],mathLevel:level};
+  };
+  SC.makeDiagram=function(answer,rng=Math.random){
+    const pick=values=>values[Math.floor(rng()*values.length)],kind=pick(['pie','bars','dots','number-line']);
+    const palette=['#c6d6bd','#e0c3ad','#bfcddd','#d5c0d5','#dfd5ac','#b6d2cd'];
+    const first=pick(palette),colors=[first,pick(palette.filter(color=>color!==first))];
+    if(kind==='pie'||kind==='bars'){
+      const known=pick(Array.from({length:10},(_,i)=>i+1).filter(n=>n<=5&&answer<=5||Math.max(n,answer)%Math.min(n,answer)===0));
+      return {kind,answer,known,colors,unknownFirst:rng()<.5,horizontal:rng()<.5};
+    }
+    if(kind==='dots'){
+      const dots=[];
+      for(let attempts=0;dots.length<answer&&attempts<300;attempts++){
+        const angle=rng()*Math.PI*2,radius=Math.sqrt(rng()),point={x:52+39*radius*Math.cos(angle),y:36+25*radius*Math.sin(angle)};
+        if(dots.every(p=>Math.hypot(p.x-point.x,p.y-point.y)>=14))dots.push(point);
+      }
+      // A bounded fallback also works with constant random sources, and never overlaps.
+      if(dots.length<answer){
+        const scatter=[[-25,-14],[-8,-20],[12,-18],[29,-10],[-32,4],[-15,-2],[3,0],[20,6],[-14,20],[5,20]],angle=(rng()-.5)*.4,flip=rng()<.5?-1:1;
+        dots.length=0;for(const [x,y] of scatter.slice(0,answer))dots.push({x:52+flip*(x*Math.cos(angle)-y*Math.sin(angle)),y:36+x*Math.sin(angle)+y*Math.cos(angle)});
+      }
+      return {kind,answer,colors,dots};
+    }
+    const options=[];
+    for(let notches=3;notches<=5;notches++)for(let step=1;step<=2;step++)for(let unknown=1;unknown<=notches;unknown++){
+      const start=answer-unknown*step;if(start>=0)options.push({notches,step,unknown,start,end:start+(notches+1)*step});
+    }
+    return {kind,answer,colors,...pick(options)};
   };
   SC.beginPractice=(game,items)=>items||(game.mode==='letters'?SC.letterSubset(game.lang,game.random):SC.vocabulary(game.mode,game.lang));
   SC.practiceItems=game=>game.items;

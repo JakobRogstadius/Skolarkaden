@@ -117,7 +117,7 @@ class SpeechStream{
     for(let k=0;k<merged.length;k++){
       // In lessons reaching 100 or more, the trailing interim "one" may still become "one
       // hundred". Wait for its boundary; earlier complete answers still flow.
-      const t=merged[k],last=k===merged.length-1,boundary=(!['math3','math4','math5'].includes(context.lesson)||!last)&&(!SC.isChinese(context.lesson)||!last||!SC.chineseCompoundPrefix(t.text,context));
+      const t=merged[k],last=k===merged.length-1,boundary=(!['math-large-numbers','math-multiplication','math-multiplication-division'].includes(context.lesson)||!last)&&(!SC.isChinese(context.lesson)||!last||!SC.chineseCompoundPrefix(t.text,context));
       if(!t.ghost&&(t.final||boundary&&context.candidates.some(item=>SC.matches(t.text,item,context.lesson,context.language,'speech'))))frontier=k;
     }
     const added=[];

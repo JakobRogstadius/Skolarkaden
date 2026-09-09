@@ -46,7 +46,7 @@ test('Pause freezes walking, roof jumps, balloon flights and the pending FIFO',(
 });
 test('Every exercise can target a pedestrian, including spoken math in all four language choices',()=>{
  for(const mode of Object.keys(SC.modes)){const opts={mode,lang:SC.modes[mode].lang,uppercase:true},{g,p}=isolated(opts);g.queue.enqueue(p.item.answer);until(g,()=>g.hits===1);assert.equal(g.score,10);if(['swedish','english','swedishLong','englishLong','letters','food'].includes(mode))assert.equal(p.item.label,p.item.label.toUpperCase());}
- for(const lang of ['sv-SE','en-US','zh-CN','zh-TW']){const {g,p}=isolated({mode:'math',lang});g.queue.enqueue(SC.numberName(Number(p.item.answer),lang),'speech');until(g,()=>g.hits===1);}
+ for(const lang of ['sv-SE','en-US','zh-CN','zh-TW']){const {g,p}=isolated({mode:'math-addition',lang});g.queue.enqueue(SC.numberName(Number(p.item.answer),lang),'speech');until(g,()=>g.hits===1);}
 });
 test('Rounds finish after forty departures and cannot lose, with no answers, correct answers or only mistakes',()=>{
  const peak={},durations={};

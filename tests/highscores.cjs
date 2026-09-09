@@ -42,8 +42,6 @@ class Element extends EventTarget{
   assert.equal((await call('POST','/scores',{...first,score:999})).status,409);
   assert.equal((await call('POST','/scores',{...first,settings:{...settings,input_mode:'keyboard'}})).status,409);
   for(const change of [{difficulty:'brave'},{spoken_language:'unexpected'},{uppercase:'yes'},{letter_keys:['a']}])assert.equal((await call('POST','/scores',payload({settings:{...settings,...change}}))).status,400);
-  db.prepare('UPDATE highscores SET settings_json=NULL WHERE submission_id=?').run(first.submission_id);
-  assert.equal((await call('POST','/scores',first)).status,200);assert.deepEqual(JSON.parse(db.prepare('SELECT settings_json FROM highscores').get().settings_json),settings,'a deployment-crossing retry enriches the same score');
   for(const score of [-1,1.5,'123',1000001])assert.equal((await call('POST','/scores',payload({score}))).status,400);
   for(const key of ['v1:city:swedish:sv-SE:typing:gentle','v1:city:swedish:gentle:','v1:bogus:swedish:gentle','v1:city:swedish:gentle']){
     assert.equal((await call('POST','/scores',payload({leaderboard_key:key}))).status,400);
@@ -78,12 +76,12 @@ class Element extends EventTarget{
   await call('POST','/scores',medium);await call('POST','/scores',hard);
   db.prepare('INSERT INTO highscores(submission_id,leaderboard_key,player_name,score) VALUES(?,?,?,?)').run(webcrypto.randomUUID(),'v1:city:swedish:brave','OLD',9000);
   await call('POST','/scores',payload({leaderboard_key:'v2:city:english:brave',score:8000}));
-  for(const key of ['v2:city','v2:city:english','v2:city:swedish','v2:city:swedish:gentle','v2:city:swedish:steady','v2:city:swedish:brave']){
+  for(const key of ['v2:city','v2:city:swedish:gentle','v2:city:swedish:steady','v2:city:swedish:brave']){
     const mixed=await (await call('GET','/scores?leaderboard='+key+'&score=999&submission='+winner.submission_id)).json();
     assert.equal(mixed.rank,4);assert.deepEqual(mixed.scores.slice(0,4).map(r=>r.difficulty),['brave','steady','brave','gentle']);assert.deepEqual(mixed.scores.slice(0,4).map(r=>r.exercise),['english','swedish','swedish','swedish']);assert.equal(mixed.scores[3].is_player,1);
   }
-  assert.equal((await (await call('GET','/scores?leaderboard=v2:city:swedish&score=1100')).json()).rank,4);
-  for(const key of ['v2:city:swedish:bogus','v2:city:swedish:brave:extra','v1:city:swedish'])assert.equal((await call('GET','/scores?leaderboard='+key)).status,400);
+  assert.equal((await (await call('GET','/scores?leaderboard=v2:city&score=1100')).json()).rank,4);
+  for(const key of ['v2:city:swedish','v2:city:english','v2:city:swedish:bogus','v2:city:swedish:brave:extra','v1:city:swedish'])assert.equal((await call('GET','/scores?leaderboard='+key)).status,400);
   const plan=db.prepare('EXPLAIN QUERY PLAN SELECT player_name,score,created_at FROM highscores WHERE leaderboard_key IN (?,?,?) ORDER BY score DESC,created_at ASC,submission_id ASC LIMIT 10').all(board,'v2:city:swedish:steady','v2:city:swedish:brave');
   assert(plan.some(row=>row.detail.includes('idx_highscores_leaderboard')));
   db.prepare('UPDATE score_rate_limits SET attempts=120').run();

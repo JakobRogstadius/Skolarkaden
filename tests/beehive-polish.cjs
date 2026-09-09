@@ -31,7 +31,7 @@ test('Both games use all stalk, leaf and flower families; health stays separate 
  }
 });
 test('First task appears promptly; empty time speeds up but visible tasks, flights and queues never do',()=>{
- for(const mode of ['swedish','math']){const g=new SC.BeehiveGame({random:rng(3)});g.start({mode});tick(g,1.5);assert(g.getTargets().length>0);}
+ for(const mode of ['swedish','math-addition']){const g=new SC.BeehiveGame({random:rng(3)});g.start({mode});tick(g,1.5);assert(g.getTargets().length>0);}
  const empty=new SC.BeehiveGame();empty.start();empty.plants=[];empty.nextSpawn=10000;empty.clock=2;empty.elapsed=10;empty.update(.05);assert.equal(empty.timeRate,4);assert(Math.abs(empty.elapsed-10.2)<1e-8);
  const active=new SC.BeehiveGame();active.start();active.bloom(active.plants[0]);active.clock=2;const target=active.getTargets()[0],age=target.flowerAge;active.update(.05);assert.equal(active.timeRate,1);assert.equal(target.flowerAge,age+.05);
  for(const state of ['outbound','gather','return','confused']){const g=new SC.BeehiveGame();g.start();g.clock=2;g.plants=[];g.nextSpawn=10000;g.bees[0].stage=state;g.update(.05);assert.equal(g.timeRate,1,state);}

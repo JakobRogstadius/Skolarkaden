@@ -50,6 +50,6 @@ test('The existing queue allows repeated compounds only when another matching ta
 });
 test('Mixed digits in compounds work without changing character-number or math splitting',()=>{
  const h=harness(['一天']);h.stream.update([result('1天')]);assert.equal(h.queue.length,1);assert(SC.matches(h.queue.items[0].text,item('一天'),'chineseTrad4','zh-TW','speech'));
- const c={lesson:'chinese',language:'zh-CN',candidates:[item('三'),item('八')]};assert.deepEqual(Array.from(SC.tokenizeSpeech('38',c)),['3','8']);assert.deepEqual(Array.from(SC.tokenizeSpeech('38',{lesson:'math3',language:'zh-CN'})),['38']);
+ const c={lesson:'chinese',language:'zh-CN',candidates:[item('三'),item('八')]};assert.deepEqual(Array.from(SC.tokenizeSpeech('38',c)),['3','8']);assert.deepEqual(Array.from(SC.tokenizeSpeech('38',{lesson:'math-large-numbers',language:'zh-CN'})),['38']);
 });
 console.log(checks+' Mandarin compound checks passed.');

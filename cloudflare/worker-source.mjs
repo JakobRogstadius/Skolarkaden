@@ -3,13 +3,14 @@
 // new databases use schema.sql. No browser API key is used.
 const ALLOWED_ORIGIN = 'https://jakobrogstadius.github.io';
 const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home']);
+const { mathExercises } = globalThis.SkolarkadenHighscorePolicy;
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',
   'chineseSimpl1', 'chineseSimpl2', 'chineseSimpl3', 'chineseSimpl4',
-  'math', 'math2', 'math3', 'math4', 'math5', 'math6']);
+  ...mathExercises]);
 const PACES = new Set(['gentle', 'steady', 'brave']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1 };
+const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1 };
 const LANGUAGES = new Set(['sv-SE', 'en-US', 'zh-TW', 'zh-CN']);
 
 function validBoard(value) {
@@ -109,8 +110,7 @@ export default {
         const board = url.searchParams.get('leaderboard');
         // Read every exercise and difficulty for this game version; stored keys stay intact.
         const group = typeof board === 'string' ? board.split(':').slice(0, 2).join(':') : '';
-        if (!(board === group ? validBoard(group + ':letters:gentle') :
-            board?.split(':').length === 3 ? validBoard(board + ':gentle') : validBoard(board))) return reply({ error: 'invalid_leaderboard' }, 400);
+        if (!(board === group ? validBoard(group + ':letters:gentle') : validBoard(board))) return reply({ error: 'invalid_leaderboard' }, 400);
         const boards = [...LESSONS].flatMap(lesson => [...PACES].map(pace => group + ':' + lesson + ':' + pace));
         const slots = boards.map(() => '?').join(',');
         const submission = url.searchParams.get('submission') || '';
@@ -163,12 +163,9 @@ export default {
         const existing = await env.DB.prepare(`
           SELECT leaderboard_key, player_name, score, settings_json FROM highscores WHERE submission_id = ?
         `).bind(id).first();
-        if (existing.leaderboard_key !== board || existing.player_name !== name || existing.score !== score ||
-            body.settings && existing.settings_json && existing.settings_json !== settings) {
+        if (existing.leaderboard_key !== board || existing.player_name !== name || existing.score !== score || existing.settings_json !== settings) {
           return reply({ error: 'submission_conflict' }, 409);
         }
-        // A retry crossing the deployment can fill metadata on the original row.
-        if (body.settings && !existing.settings_json) await env.DB.prepare('UPDATE highscores SET settings_json = ? WHERE submission_id = ? AND settings_json IS NULL').bind(settings, id).run();
       }
       return reply({ ok: true, settings_saved: true }, result.meta.changes ? 201 : 200);
     } catch (error) {

@@ -5,6 +5,37 @@ The website remains on GitHub Pages. No API token belongs in the frontend.
 
 ## Update the existing installation
 
+### Named mathematics IDs
+
+The frontend and database now use named mathematics IDs. Deploy the generated
+[worker.mjs](worker.mjs) with the existing **DB** binding; `/health` includes
+`named_math_ids: 1`. The Worker accepts only the current exercise IDs.
+
+For an installation that still has old IDs, run
+[migrate-math-exercise-ids.sql](migrate-math-exercise-ids.sql) in **D1 → skolarkaden → Console**
+before deploying this Worker. An already migrated database needs no further SQL update.
+
+| Previous database ID | New database ID | Current exercise |
+| --- | --- | --- |
+| `math` | `math-addition` | Matematik 1 (+) |
+| — | `math-diagrams` | Matematik 2 (enkla diagram) |
+| `math2` | `math-addition-subtraction` | Matematik 3 (+ och −) |
+| — | `math-simple-equations` | Matematik 4 (enkla ekvationer) |
+| `math3` | `math-large-numbers` | Matematik 5 (10–100) |
+| `math4` | `math-multiplication` | Matematik 6 (×) |
+| `math5` | `math-multiplication-division` | Matematik 7 (× och ÷) |
+| `math6` | `math-equations` | Matematik 8 (ekvationer) |
+
+The migration renames the exercise inside `leaderboard_key` and `settings_json`.
+It preserves every row and all other fields, works across old game versions,
+and is safe to run repeatedly. Null or malformed settings remain untouched.
+Old math IDs are rejected rather than translated, and rankings use the current IDs.
+Retries must match the stored leaderboard key, name, score and settings exactly;
+the Worker does not rewrite metadata during retries. Local best scores remain
+independent of the database migration.
+
+### Existing settings column
+
 The stored score format and four-part leaderboard keys are retained. Home stays
 on `v1`. One nullable column stores the settings which were previously omitted:
 
@@ -18,13 +49,6 @@ on `v1`. One nullable column stores the settings which were previously omitted:
 3. `/health` should include `capabilities` with `combined_boards: true`, `game_boards: true`,
    `submission_lookup: true` and `score_settings: 1`.
    `/scores?leaderboard=v1:home` should return `scores`, `rank` and `saved`.
-
-The previously deployed Worker accepted only four-part GET keys and did not
-return player ranks or submission identity. The page now loads those older
-endpoints and combines their exercise/difficulty top-ten lists if necessary. Exact low ranks
-and identification of an already saved player's row require the updated Worker.
-POST retains its existing fields and adds `settings`; older Workers ignore that
-extra data, so settings preservation requires the deployment above.
 
 ## Finish the existing dashboard setup
 
@@ -59,8 +83,9 @@ available, but that origin cannot submit to the production leaderboard.
   `v2:city:swedish:gentle`. Input mode and language are not separate key components.
   The exercise still distinguishes Swedish, English and Chinese exercises.
   Public leaderboard reads use **game version : game** and combine every stored
-  exercise/difficulty key for that game version. Existing rows remain included without a migration.
-  Older three- and four-part GET keys also return this combined board. Every returned score
+  exercise/difficulty key with current exercise IDs for that game version.
+  The frontend's four-part GET keys also return this combined board; obsolete
+  three-part exercise queries are rejected. Every returned score
   includes `exercise` and `difficulty` (`gentle`, `steady`, or `brave`). Player ranks use the same
   combined set; POST continues to store the difficulty that was actually played.
 - Each new row also stores validated `settings_json`: game version, game,
@@ -69,7 +94,7 @@ available, but that origin cannot submit to the production leaderboard.
   setting and reduced-motion setting. These are snapshotted when the round starts.
   Presentation can change later without losing the conditions of the score.
   Existing rows keep their known conditions in the key; previously unrecorded
-  settings remain unknown. Old clients are still accepted with those values null.
+  settings remain unknown. Optional metadata fields can be null.
 - Game versions live in `resources/highscore-policy.js`. Increment the affected
   game's value only when a change is likely to materially affect score comparability; deploy Worker and frontend together.
   Old rows remain stored but the current API only accepts current versions.
@@ -79,7 +104,6 @@ available, but that origin cannot submit to the production leaderboard.
 - The result screen only submits on Enter in the name input or the replay/menu buttons. Closing the browser never schedules an upload. Failed saves leave the screen open for retry.
 - Each game has a UUID. Duplicate delivery of the same payload succeeds without
   adding another row; changing the payload under an existing UUID is rejected.
-  A retry spanning deployment can add missing settings to the same original row.
   A timed-out submission can be retried while that result remains open; there is
   no persistent offline upload queue.
 - `ip` is taken exclusively from Cloudflare's `CF-Connecting-IP` header. A supplied

@@ -146,7 +146,7 @@ class PaintRenderer extends SC.SceneRenderer{
   for(const person of g.people){const s=g.personScale(person);blocked.push({x:person.x*w-28*s,y:person.y*h-(54*person.look.height+52)*s,w:56*s,h:(54*person.look.height+54)*s});}
   for(const p of targets){
    const maxWidth=Math.min(w<600?110:154,w-16),font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?13:17;
-   const hint=hints.has(p),bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',hintFont:'11px system-ui',max:maxWidth}),bh=hint?61:33,s=g.personScale(p),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+54)*s},candidates=[];
+   const hint=hints.has(p),bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',hintFont:'11px system-ui',max:maxWidth}),bh=SC.labelHeight(p.item,hint?61:33),s=g.personScale(p),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+54)*s},candidates=[];
    const top=Math.max(178,h*.50),bottom=h*.92-bh;
    // On narrow streets, aligned slots prevent eight moving labels from trapping
    // one another in the gaps left by greedy free placement.

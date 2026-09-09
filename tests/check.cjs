@@ -44,7 +44,7 @@ test('Food bot finishes full 90-second rounds with automatic service',()=>{for(c
 test('Garden has one global 0.1-second chance trial, and math halves the probability',()=>{
  for(const pace of ['gentle','steady','brave']){
   const g=new SC.GardenGame({random:rng(4)});g.start({pace});const expected=2*.1/(60/{gentle:6,steady:9,brave:12}[pace]);assert(Math.abs(g.decayProbability()-expected)<1e-10);
-  const math=new SC.GardenGame({random:rng(4)});math.start({pace,mode:'math'});assert(Math.abs(math.decayProbability()*2-g.decayProbability())<1e-10);
+  const math=new SC.GardenGame({random:rng(4)});math.start({pace,mode:'math-addition'});assert(Math.abs(math.decayProbability()*2-g.decayProbability())<1e-10);
   const ticks=[];g.onEvent=e=>{if(e.type==='care-tick')ticks.push(e);};g.random=()=>0;const before=g.pots.map(p=>p.moisture);
   g.update(.05);assert.equal(ticks.length,0);g.update(.05);assert.equal(ticks.length,1);assert.equal(ticks[0].pots.length,1);assert.equal(g.pots.filter((p,i)=>p.moisture!==before[i]).length,1);
   g.random=()=>.9999;tick(g,.5);assert.equal(ticks.length,1);
@@ -52,7 +52,7 @@ test('Garden has one global 0.1-second chance trial, and math halves the probabi
  const g=new SC.GardenGame();g.start();const before=g.decayProbability();g.pots.slice(0,3).forEach(p=>p.bloom=true);assert(Math.abs(g.decayProbability()*2-before)<1e-10);const p=g.pots[3];p.moisture=.8;g.syncRequests(p);assert(!p.requests.moisture);p.moisture=.6;g.syncRequests(p);assert(p.requests.moisture);
 });
 test('Garden measured request inflow follows its steady per-plant target rate',()=>{
- for(const pace of ['gentle','steady','brave'])for(const mode of ['letters','math'])for(const elapsed of [0,60,120]){
+ for(const pace of ['gentle','steady','brave'])for(const mode of ['letters','math-addition'])for(const elapsed of [0,60,120]){
   const g=new SC.GardenGame({random:rng(45)});g.start({pace,mode});g.elapsed=elapsed;
   let needs=0;g.onEvent=e=>{if(e.type==='need')needs++;};const seconds=2000,expected=seconds/g.requestInterval();
   for(let i=0;i<seconds/.1;i++){g.decayPlants();for(const p of g.pots)for(const t of Object.values(p.requests)){p[t.property]=t.property==='infection'?0:1;g.syncRequests(p);}}
@@ -118,11 +118,11 @@ test('Longer word lessons are distinct, case-varying dictionaries usable by ever
  for(const mode of ['swedishLong','englishLong']){const items=SC.vocabulary(mode,SC.modes[mode].lang);assert(items.length>=40);assert.equal(new Set(items.map(i=>i.answer)).size,items.length);assert(items.every(i=>i.answer.length>=6&&i.answer.length<=12));assert.equal(SC.lessonLabel(items[0].label,mode,true),items[0].label.toUpperCase());for(const Game of [SC.CityGame,SC.FoodTruckGame,SC.GardenGame]){const g=new Game({random:rng(5)});g.start({mode});assert.equal(g.items,items);}}
 });
 test('Math rounds accept spoken answers through all three game engines',()=>{
- for(const Game of [SC.CityGame,SC.FoodTruckGame,SC.GardenGame]){const g=new Game({random:rng(21)});g.start({mode:'math',pace:'brave',lang:'sv-SE'});
+ for(const Game of [SC.CityGame,SC.FoodTruckGame,SC.GardenGame]){const g=new Game({random:rng(21)});g.start({mode:'math-addition',pace:'brave',lang:'sv-SE'});
  for(let i=0;i<18000&&['playing','celebrating'].includes(g.state);i++){
   if(!g.queue.length){let t;if(g instanceof SC.CityGame)t=g.getTargets().find(t=>!g.turrets.some(gun=>gun.job?.target===t));else if(g instanceof SC.FoodTruckGame)t=g.getTargets().find(t=>t.status==='waiting');else if(!g.job)t=g.getTargets()[0];if(t)g.queue.enqueue(SC.numberName(Number(t.item.answer),'sv-SE'),'speech');}
   g.update(.05);
  }assert.equal(g.state,'won',Game.name);assert(g.hits>0);}
 });
-test('Case, math aliases, bopomofo and static package references',()=>{assert(SC.matches('SOL!',SC.modes.swedish.items[0],'swedish'));assert(SC.matches('två',{answer:'2'},'math','sv-SE','speech'));assert.equal(SC.toBopomofo('1qaz'),'ㄅㄆㄇㄈ');const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(ids.length,new Set(ids).size);for(const m of html.matchAll(/(?:src|href)="(resources\/[^"]+)"/g))assert(fs.existsSync(path.join(__dirname,'..',m[1].split(/[?#]/)[0])));assert(!/skyhop/i.test(html));});
+test('Case, math aliases, bopomofo and static package references',()=>{assert(SC.matches('SOL!',SC.modes.swedish.items[0],'swedish'));assert(SC.matches('två',{answer:'2'},'math-addition','sv-SE','speech'));assert.equal(SC.toBopomofo('1qaz'),'ㄅㄆㄇㄈ');const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(ids.length,new Set(ids).size);for(const m of html.matchAll(/(?:src|href)="(resources\/[^"]+)"/g))assert(fs.existsSync(path.join(__dirname,'..',m[1].split(/[?#]/)[0])));assert(!/skyhop/i.test(html));});
 console.log(checks+' engine/queue checks passed.');

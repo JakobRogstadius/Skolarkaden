@@ -191,7 +191,7 @@
       if(entering||g.state==='menu')return;
       if(leaving)return;
       const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?25:w<500?17:20;
-      const bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:Math.min(176,w*.285),min:32}),bh=hint?78:44,bx=slotX-bw/2,by=feet+(headY-45)*visualScale-44-8-(bh-44)/2,remaining=g.patienceLeft(p);
+      const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:Math.min(176,w*.285),min:32}),bh=SC.labelHeight(p.item,hint?78:44,8),bx=slotX-bw/2,by=feet+(headY-45)*visualScale-44-8-(bh-44)/2,remaining=g.patienceLeft(p);
       this.rememberScoreAnchor(p,{x:bx,y:by,w:bw,h:bh},'#f0d8ad','#304b4e');
       c.lineWidth=g.activeCook?.customer===p?2.5:1;
       this.round(bx,by,bw,bh,12,'#fff1d9',g.activeCook?.customer===p||p.look.exotic?'#ffc55e':'#cfb596');
