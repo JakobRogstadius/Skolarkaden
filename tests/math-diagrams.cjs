@@ -5,7 +5,7 @@ for(const file of ['data','game'])vm.runInContext(fs.readFileSync(path.join(__di
 const SC=context.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
 const diagrams=SC.mathLevel('math-diagrams'),equations=SC.mathLevel('math-simple-equations');
 const math=Object.entries(SC.modes).filter(([id])=>SC.isMath(id));
-assert.deepEqual(math.map(([,m])=>m.name),['Matematik 1 (+)','Matematik 2 (enkla diagram)','Matematik 3 (+ och −)','Matematik 4 (enkla ekvationer)','Matematik 5 (10–100)','Matematik 6 (×)','Matematik 7 (× och ÷)','Matematik 8 (ekvationer)']);
+assert.deepEqual(math.map(([,m])=>m.name),['Matematik 1 (+)','Matematik 2 (+ och −)','Matematik 3 (enkla diagram)','Matematik 4 (enkla ekvationer)','Matematik 5 (10–100)','Matematik 6 (×)','Matematik 7 (× och ÷)','Matematik 8 (ekvationer)']);
 assert.deepEqual(Array.from(SC.mathPool(diagrams).keys()),[1,2,3,4,5,6,7,8,9,10]);
 const kinds=new Set(),orientations=new Set(),colors=new Set(),notchCounts=new Set(),barRatios=new Set(),pieFractions=new Set(),answerKinds=new Map();
 for(let n=1;n<=10;n++)for(let seed=1;seed<=300;seed++){

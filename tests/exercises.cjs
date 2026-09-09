@@ -8,7 +8,7 @@ const tick=(g,t)=>{for(let i=0;i<Math.round(t/.05);i++)g.update(.05);};
 let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
 const modes=Object.keys(SC.modes),math=modes.filter(SC.isMath),chinese=modes.filter(SC.isChinese);
 test('Twenty-two exercises have the requested order and complete, distinct dictionaries',()=>{
- assert.deepEqual(modes,['letters','swedish','swedishLong','english','englishLong','bopomofo','chinese','chineseTrad2','chineseTrad3','chineseTrad4','chineseSimpl1','chineseSimpl2','chineseSimpl3','chineseSimpl4','math-addition','math-diagrams','math-addition-subtraction','math-simple-equations','math-large-numbers','math-multiplication','math-multiplication-division','math-equations']);
+ assert.deepEqual(modes,['letters','swedish','swedishLong','english','englishLong','bopomofo','chinese','chineseTrad2','chineseTrad3','chineseTrad4','chineseSimpl1','chineseSimpl2','chineseSimpl3','chineseSimpl4','math-addition','math-addition-subtraction','math-diagrams','math-simple-equations','math-large-numbers','math-multiplication','math-multiplication-division','math-equations']);
  for(const mode of ['swedish','swedishLong','english','englishLong',...chinese]){
   const items=SC.modes[mode].items,count=SC.isChinese(mode)?[30,80,155,255][chinese.indexOf(mode)%4]:100;assert.equal(items.length,count,mode);assert.equal(new Set(items.map(i=>i.answer)).size,count,mode);
   for(const i of items){assert.equal(i.answer,i.label);assert(SC.matches(i.answer,i,mode));}

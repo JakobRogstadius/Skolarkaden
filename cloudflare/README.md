@@ -18,8 +18,8 @@ before deploying this Worker. An already migrated database needs no further SQL 
 | Previous database ID | New database ID | Current exercise |
 | --- | --- | --- |
 | `math` | `math-addition` | Matematik 1 (+) |
-| — | `math-diagrams` | Matematik 2 (enkla diagram) |
-| `math2` | `math-addition-subtraction` | Matematik 3 (+ och −) |
+| `math2` | `math-addition-subtraction` | Matematik 2 (+ och −) |
+| — | `math-diagrams` | Matematik 3 (enkla diagram) |
 | — | `math-simple-equations` | Matematik 4 (enkla ekvationer) |
 | `math3` | `math-large-numbers` | Matematik 5 (10–100) |
 | `math4` | `math-multiplication` | Matematik 6 (×) |

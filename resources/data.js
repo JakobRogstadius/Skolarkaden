@@ -44,8 +44,8 @@
   // Generator levels are stable; menu numbers can change without moving scores.
   const mathLessons=[
     ['addition',0,'+','Addition med talen 0–10','math'],
-    ['diagrams',6,'enkla diagram','Räkna prickar och läs diagram och tallinjer · svar 1–10'],
     ['addition-subtraction',1,'+ och −','Addition och subtraktion inom 0–20','math2'],
+    ['diagrams',6,'enkla diagram','Räkna prickar och läs diagram och tallinjer · svar 1–10'],
     ['simple-equations',7,'enkla ekvationer','Vilket tal gör båda sidor lika? Till exempel 7 + 5 = 10 + ?'],
     ['large-numbers',2,'10–100','Addition och subtraktion med talen 10–100','math3'],
     ['multiplication',3,'×','Multiplikationstabellerna 1–10','math4'],

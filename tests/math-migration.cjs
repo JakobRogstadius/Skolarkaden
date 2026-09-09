@@ -5,7 +5,7 @@ const read=file=>fs.readFileSync(path.join(__dirname,'..',file),'utf8'),db=new D
 db.exec(read('cloudflare/schema.sql'));
 const context=vm.createContext({});vm.runInContext(read('resources/data.js'),context);vm.runInContext(read('resources/highscore-policy.js'),context);
 const ids=context.Starlight.legacyMathIds,currentIds=context.SkolarkadenHighscorePolicy.mathExercises;
-assert.deepEqual(Array.from(currentIds),Object.keys(context.Starlight.modes).filter(context.Starlight.isMath));
+assert.deepEqual(Array.from(currentIds).sort(),Object.keys(context.Starlight.modes).filter(context.Starlight.isMath).sort());
 const insert=db.prepare('INSERT INTO highscores(submission_id,leaderboard_key,player_name,score,ip,settings_json,created_at) VALUES(?,?,?,?,?,?,?)');
 for(const [old,id] of Object.entries(ids))for(const version of ['v1','v2'])for(const pace of ['gentle','steady','brave']){
  const board=`${version}:city:${old}:${pace}`;
