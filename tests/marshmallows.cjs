@@ -7,7 +7,7 @@ let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
 function setup(options={}){const events=[],g=new SC.MarshmallowGame({random:rng(5),onEvent:e=>events.push(e)});g.start(options);g.resize(1000,740);g.spawnIn=10000;tick(g,.85);return {g,p:g.getTargets()[0],events};}
 function policy(g){g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(p=>p.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,i)=>SC.matches(e.text,i,g.mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,g.mode,g.lang)});}
 test('Timing scores peak at the time midpoint and fall equally towards both edges as the fire cools',()=>{
- for(const mode of ['swedish','math'])for(const start of [20,70])for(const [fraction,points] of [[0,25],[.2,35],[.5,50],[.8,35],[.999999,25]]){
+ for(const mode of ['swedish','math-addition'])for(const start of [20,70])for(const [fraction,points] of [[0,25],[.2,35],[.5,50],[.8,35],[.999999,25]]){
   const {g,p,events}=setup({mode});g.elapsed=start;
   const rate=g.cookingRate(),cooling=.092*.48/(g.duration*g.timeScale);
   const window=2*(1.28-.62)/(rate+Math.sqrt(rate*rate-2*cooling*(1.28-.62))),dt=window*fraction;
@@ -41,11 +41,11 @@ test('Matching duplicate targets can still be answered separately',()=>{
 });
 test('Every exercise uses shared matching, including spoken numbers and tone-free Chinese aliases',()=>{
  for(const mode of Object.keys(SC.modes)){const {g,p}=setup({mode});p.roast=.9;g.queue.enqueue(p.item.answer);g.work();assert.equal(g.hits,1,mode);}
- for(const lang of ['sv-SE','en-US','zh-CN','zh-TW'])for(let n=0;n<=20;n++){const {g,p}=setup({mode:'math',lang});p.item=SC.makeMath(n,rng(4),1);p.roast=.9;g.queue.enqueue(SC.numberName(n,lang),'speech');g.work();assert.equal(g.hits,1,lang+'/'+n);}
+ for(const lang of ['sv-SE','en-US','zh-CN','zh-TW'])for(let n=0;n<=20;n++){const {g,p}=setup({mode:'math-addition',lang});p.item=SC.makeMath(n,rng(4),1);p.roast=.9;g.queue.enqueue(SC.numberName(n,lang),'speech');g.work();assert.equal(g.hits,1,lang+'/'+n);}
  const {g,p}=setup({mode:'chinese',lang:'zh-TW'});p.item={label:'十',answer:'十',hint:'shí'};p.roast=.8;g.queue.enqueue('是','speech');g.work();assert.equal(g.hits,1);
 });
 test('Cooling slows roasting, pauses freeze everything, and arithmetic stays at the selected level',()=>{
- const {g,p}=setup({mode:'math'}),hot=g.cookingRate();g.elapsed=g.duration*.8;assert(g.cookingRate()<hot*.65&&g.cookingRate()>0);g.pause();const before=JSON.stringify({p,clock:g.clock,elapsed:g.elapsed});tick(g,10);assert.equal(JSON.stringify({p,clock:g.clock,elapsed:g.elapsed}),before);g.resume();
+ const {g,p}=setup({mode:'math-addition'}),hot=g.cookingRate();g.elapsed=g.duration*.8;assert(g.cookingRate()<hot*.65&&g.cookingRate()>0);g.pause();const before=JSON.stringify({p,clock:g.clock,elapsed:g.elapsed});tick(g,10);assert.equal(JSON.stringify({p,clock:g.clock,elapsed:g.elapsed}),before);g.resume();
  const item=p.item;p.roast=0;tick(g,5);assert.equal(p.item,item);assert.equal(p.item.mathLevel,0);assert.equal(g.mathPractice,undefined);
 });
 test('Dawn stops inputs, raises the sun for six seconds, extinguishes the fire and ends exactly once',()=>{
@@ -53,7 +53,7 @@ test('Dawn stops inputs, raises the sun for six seconds, extinguishes the fire a
  const {g,p,events}=setup();p.roast=.8;g.elapsed=g.duration-.05;g.update(.05);assert.equal(g.state,'celebrating');assert.equal(events.filter(e=>e.type==='daybreak').length,1);g.queue.enqueue(p.item.answer);tick(g,4.7);assert(g.fireStrength()<1e-8);assert.equal(g.state,'celebrating');assert.equal(g.hits,0);tick(g,1.3);assert.equal(g.state,'won');assert.equal(events.filter(e=>e.type==='end').length,1);assert.equal(g.queue.length,1);tick(g,5);assert.equal(events.filter(e=>e.type==='end').length,1);
 });
 test('Full nights finish on all difficulties with silent, timed, early and wrong-input players',()=>{
- for(const pace of ['gentle','steady','brave'])for(const mode of ['swedish','math'])for(const strategy of ['silent','timed','early','wrong'])for(let seed=1;seed<=2;seed++){
+ for(const pace of ['gentle','steady','brave'])for(const mode of ['swedish','math-addition'])for(const strategy of ['silent','timed','early','wrong'])for(let seed=1;seed<=2;seed++){
   const events=[],g=new SC.MarshmallowGame({random:rng(seed),onEvent:e=>events.push(e)});g.start({pace,mode});policy(g);let due=0,max=0;
   for(let i=0;i<3600&&g.state!=='won';i++){
    if(g.state==='playing'&&g.clock>=due){const p=g.getTargets().find(p=>strategy==='early'||strategy==='timed'&&p.roast>=.8&&p.roast<1.1);if(strategy==='wrong')g.queue.enqueue('wrong');else if(p)g.queue.enqueue(p.item.answer);due=g.clock+.6;}
@@ -80,7 +80,7 @@ test('Inspection pivots about a fixed elbow, preserves arm and stick lengths, an
 });
 test('Six labels stay separate with short letters, long words, math and mixed pinyin at narrow and wide sizes',()=>{
  const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
- for(const [width,height] of [[320,540],[370,740],[1100,540],[1100,740]])for(const mode of ['letters','swedishLong','englishLong','math','chinese']){
+ for(const [width,height] of [[320,540],[370,740],[1100,540],[1100,740]])for(const mode of ['letters','swedishLong','englishLong','math-addition','chinese']){
   const {g}=setup({mode,pace:'brave'});g.resize(width,height);while(g.spawn());tick(g,.85);g.clock+=6;g.getTargets().forEach((p,i)=>{p.appearedAt=i%2?g.clock:0;p.roast=.2+i*.25;});
   const c=new Proxy({font:'16px system-ui',measureText(text){const size=Number(this.font.match(/([\d.]+)px/)?.[1]||16);return {width:Array.from(text).reduce((n,ch)=>n+size*(/\p{Script=Han}/u.test(ch)?1:.6),0)};},fillText(text,x,y,max){assert(Number.isFinite(x)&&Number.isFinite(y));if(max!==undefined)assert(max>0);}},{get:(o,k)=>k in o?o[k]:k==='createLinearGradient'||k==='createRadialGradient'?()=>({addColorStop(){}}):()=>{}});
   const r=Object.create(SC.MarshmallowRenderer.prototype);Object.assign(r,{ctx:c,game:g,dpr:1,reduced:false});r.draw();assert.equal(r.labelBoxes.length,6);

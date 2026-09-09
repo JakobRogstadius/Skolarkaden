@@ -7,8 +7,8 @@ const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>
 const tick=(g,t)=>{for(let i=0;i<Math.round(t/.05);i++)g.update(.05);};
 let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
 const modes=Object.keys(SC.modes),math=modes.filter(SC.isMath),chinese=modes.filter(SC.isChinese);
-test('Twenty exercises have the requested order and complete, distinct dictionaries',()=>{
- assert.deepEqual(modes,['letters','swedish','swedishLong','english','englishLong','bopomofo','chinese','chineseTrad2','chineseTrad3','chineseTrad4','chineseSimpl1','chineseSimpl2','chineseSimpl3','chineseSimpl4','math','math2','math3','math4','math5','math6']);
+test('Twenty-two exercises have the requested order and complete, distinct dictionaries',()=>{
+ assert.deepEqual(modes,['letters','swedish','swedishLong','english','englishLong','bopomofo','chinese','chineseTrad2','chineseTrad3','chineseTrad4','chineseSimpl1','chineseSimpl2','chineseSimpl3','chineseSimpl4','math-addition','math-diagrams','math-addition-subtraction','math-simple-equations','math-large-numbers','math-multiplication','math-multiplication-division','math-equations']);
  for(const mode of ['swedish','swedishLong','english','englishLong',...chinese]){
   const items=SC.modes[mode].items,count=SC.isChinese(mode)?[30,80,155,255][chinese.indexOf(mode)%4]:100;assert.equal(items.length,count,mode);assert.equal(new Set(items.map(i=>i.answer)).size,count,mode);
   for(const i of items){assert.equal(i.answer,i.label);assert(SC.matches(i.answer,i,mode));}
@@ -87,19 +87,19 @@ test('Equations use normal precedence, one or two operators, and a unique positi
 });
 test('Spoken integers 0–200 round-trip and multiword numbers stay intact',()=>{
  for(const lang of ['sv-SE','en-US','zh-CN','zh-TW'])for(let n=0;n<=200;n++){
-  const item={answer:String(n)},spoken=SC.numberName(n,lang);assert(SC.matches(spoken,item,'math3',lang,'speech'),lang+' '+spoken);
-  assert.deepEqual(Array.from(SC.tokenizeSpeech(spoken,{lesson:'math3',language:lang})),[spoken]);
+  const item={answer:String(n)},spoken=SC.numberName(n,lang);assert(SC.matches(spoken,item,'math-large-numbers',lang,'speech'),lang+' '+spoken);
+  assert.deepEqual(Array.from(SC.tokenizeSpeech(spoken,{lesson:'math-large-numbers',language:lang})),[spoken]);
  }
  const samples=[['en-US','one hundred and twenty three',123],['sv-SE','ett hundra tjugo tre',123],['zh-CN','一百零八',108],['zh-TW','兩',2]];
- for(const [language,phrase,n] of samples){assert.equal(SC.spokenNumber(phrase,language),n);assert.deepEqual(Array.from(SC.tokenizeSpeech(phrase,{lesson:'math3',language})),[phrase]);}
- const context={lesson:'math3',language:'en-US'};
+ for(const [language,phrase,n] of samples){assert.equal(SC.spokenNumber(phrase,language),n);assert.deepEqual(Array.from(SC.tokenizeSpeech(phrase,{lesson:'math-large-numbers',language})),[phrase]);}
+ const context={lesson:'math-large-numbers',language:'en-US'};
  assert.deepEqual(Array.from(SC.tokenizeSpeech('twenty three, four one hundred five',context)),['twenty three,','four','one hundred five']);
  assert.deepEqual(Array.from(SC.tokenizeSpeech('one two',context)),['one','two']);
  assert.deepEqual(Array.from(SC.tokenizeSpeech('minus one hundred twenty three point five',context)),['minus one hundred twenty three point five']);
  for(const text of ['-123','123.5','123cats','minus one hundred','201'])assert.equal(SC.spokenNumber(text,'en-US'),null);
  const out=[],stream=new SC.SpeechStream({getContext:()=>({...context,candidates:[{answer:'1'},{answer:'100'},{answer:'123'}]}),enqueue:text=>{out.push(text);return {text};}}),result=(text,final=false)=>Object.assign([{transcript:text}],{isFinal:final});
  stream.update([result('one')]);stream.update([result('one hundred')]);stream.update([result('one hundred twenty three')]);assert.equal(out.length,0);stream.update([result('123',true)]);assert.deepEqual(out,['123']);
- for(const lesson of ['math4','math5']){const sent=[],s=new SC.SpeechStream({getContext:()=>({lesson,language:'en-US',candidates:[{answer:'1'},{answer:'100'}]}),enqueue:text=>{sent.push(text);return {text};}});s.update([result('one')]);s.update([result('one hundred')]);assert.equal(sent.length,0);s.update([result('100',true)]);assert.deepEqual(sent,['100']);}
+ for(const lesson of ['math-multiplication','math-multiplication-division']){const sent=[],s=new SC.SpeechStream({getContext:()=>({lesson,language:'en-US',candidates:[{answer:'1'},{answer:'100'}]}),enqueue:text=>{sent.push(text);return {text};}});s.update([result('one')]);s.update([result('one hundred')]);assert.equal(sent.length,0);s.update([result('100',true)]);assert.deepEqual(sent,['100']);}
 });
 function firstTarget(name,mode){
  const g=new SC[name+'Game']({random:rng(9)});g.start({mode,lang:SC.modes[mode].lang});g.resize(1000,740);

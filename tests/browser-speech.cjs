@@ -13,8 +13,8 @@ const SC=context.Starlight,queue=new SC.AnswerQueue(),field=new Element(),form=n
 const input=new SC.AnswerInput({field,form,voiceButton:button,queue,microphone:mic});let diagnostic=[];input.addEventListener('diagnostic',e=>diagnostic.push(e.detail));
 const result=(text,final=false)=>Object.assign([{transcript:text,confidence:.4}],{isFinal:final});
 const fire=(r,results,index=0)=>r.onresult({results,resultIndex:index});
-for(const lesson of ['letters','swedish','english','bopomofo','math','math2','math6','chinese','chineseTrad2','chineseTrad3','chineseSimpl1','chineseSimpl2','chineseSimpl3'])assert.equal(SC.shortSpeechLesson(lesson),true,lesson);
-for(const lesson of ['swedishLong','englishLong','math3','math4','math5','chineseTrad4','chineseSimpl4'])assert.equal(SC.shortSpeechLesson(lesson),false,lesson);
+for(const lesson of ['letters','swedish','english','bopomofo','math-addition','math-diagrams','math-addition-subtraction','math-simple-equations','math-equations','chinese','chineseTrad2','chineseTrad3','chineseSimpl1','chineseSimpl2','chineseSimpl3'])assert.equal(SC.shortSpeechLesson(lesson),true,lesson);
+for(const lesson of ['swedishLong','englishLong','math-large-numbers','math-multiplication','math-multiplication-division','chineseTrad4','chineseSimpl4'])assert.equal(SC.shortSpeechLesson(lesson),false,lesson);
 SC.modes.compoundTest={type:'chinese',items:[{answer:'人'},{answer:'人口'},{answer:'大人'}]};
 assert.equal(SC.shortSpeechLesson('compoundTest'),false);delete SC.modes.compoundTest;
 (async()=>{

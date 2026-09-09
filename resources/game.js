@@ -7,12 +7,58 @@
   const PALETTE=['#85f0c4','#ffdc88','#97c6ff','#f3a8d2','#c4afff'];
   // Fit the actual glyphs (and optional pinyin/Swedish meaning), with seven pixels on each side.
   SC.labelWidth=function(c,text,{font=c.font,hint='',translation='',hintFont='12px system-ui',padding=7,min=28,max=220}={}){
+    if(text?.diagram)return clamp(112,min,max);
+    if(typeof text==='object')text=text.label;
     c.save();c.font=font;let width=c.measureText(text).width;
     if(hint||translation){c.font=hintFont;width=Math.max(width,c.measureText(hint).width,c.measureText(translation).width);}c.restore();
     return clamp(Math.ceil(width)+padding*2,min,max);
   };
+  SC.labelHeight=(item,height,footer=0)=>item.diagram?80+footer:height;
+  SC.drawMathDiagram=function(c,diagram,box){
+    c.save();
+    // A pale panel keeps black chart ink legible in every game's task bubble.
+    c.fillStyle='#faf9f5';c.beginPath();c.roundRect(box.x+2,box.y+2,box.w-4,box.h-4,5);c.fill();
+    const scale=Math.min((box.w-8)/104,(box.h-8)/72,1);
+    c.translate(box.x+box.w/2,box.y+box.h/2);c.scale(scale,scale);c.translate(-52,-36);
+    c.strokeStyle='#000';c.fillStyle='#000';c.lineWidth=1.5;c.setLineDash([]);
+    c.font='bold 16px sans-serif';c.textAlign='center';c.textBaseline='middle';
+    const line=(x1,y1,x2,y2)=>{c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();};
+    const label=(text,x,y)=>{c.fillStyle='#000';c.fillText(String(text),x,y);};
+    const values=diagram.unknownFirst?[diagram.answer,diagram.known]:[diagram.known,diagram.answer];
+    const labels=diagram.unknownFirst?['?',diagram.known]:[diagram.known,'?'];
+    if(diagram.kind==='pie'){
+      const total=values[0]+values[1],radius=29;
+      // Center the smaller slice to the right, leaving space for an outside label.
+      const small=values[0]<=values[1]?0:1,smallAngle=values[small]/total*Math.PI*2;
+      let angle=small===0?-smallAngle/2:smallAngle/2;
+      for(let i=0;i<2;i++){
+        const sweep=values[i]/total*Math.PI*2,mid=angle+sweep/2;
+        c.fillStyle=diagram.colors[i];c.beginPath();c.moveTo(48,36);c.arc(48,36,radius,angle,angle+sweep);c.closePath();c.fill();c.stroke();
+        const outside=values[i]/total<.2,offset=outside?44:17;
+        if(outside)line(48+Math.cos(mid)*radius,36+Math.sin(mid)*radius,48+Math.cos(mid)*36,36+Math.sin(mid)*36);
+        label(labels[i],48+Math.cos(mid)*offset,36+Math.sin(mid)*offset);angle+=sweep;
+      }
+    }else if(diagram.kind==='bars'){
+      const max=Math.max(...values);
+      if(diagram.horizontal){
+        values.forEach((n,i)=>{const width=n/max*70,y=12+i*28;c.fillStyle=diagram.colors[i];c.fillRect(10,y,width,20);c.strokeRect(10,y,width,20);label(labels[i],width>=27?10+width/2:10+width+12,y+10);});
+        line(10,7,10,65);
+      }else{
+        values.forEach((n,i)=>{const height=n/max*48,x=21+i*40;c.fillStyle=diagram.colors[i];c.fillRect(x,62-height,24,height);c.strokeRect(x,62-height,24,height);label(labels[i],x+12,height>=24?62-height/2:62-height-10);});
+        line(10,62,96,62);
+      }
+    }else if(diagram.kind==='dots'){
+      c.fillStyle=diagram.colors[0];for(const p of diagram.dots){c.beginPath();c.arc(p.x,p.y,5.5,0,Math.PI*2);c.fill();c.stroke();}
+    }else{
+      line(9,34,95,34);
+      for(let i=0;i<=diagram.notches+1;i++){const x=9+i*86/(diagram.notches+1);line(x,29,x,39);if(i===diagram.unknown)label('?',x,16);}
+      label(diagram.start,9,53);label(diagram.end,95,53);
+    }
+    c.restore();
+  };
   // Keep the answer at the center; reveal guidance symmetrically around it.
   SC.drawLabelText=function(c,item,box,{hint=false,hintFont='12px system-ui',hintColor=c.fillStyle}={}){
+    if(item.diagram){SC.drawMathDiagram(c,item.diagram,box);return;}
     c.save();c.textAlign='center';c.textBaseline='middle';
     const x=box.x+box.w/2,y=box.y+box.h/2,max=Math.max(1,box.w-14),mainSize=Number(String(c.font).match(/([\d.]+)px/)?.[1]||22);
     c.fillText(item.label,x,y,max);
@@ -282,7 +328,7 @@
       for(const t of g.getTargets()){
         const size=SC.isChinese(g.mode)?26:g.width<600?20:23;
         c.font='700 '+size+'px "Trebuchet MS", system-ui, sans-serif';
-        const hint=hints.has(t),bw=SC.labelWidth(c,t.item.label,{hint:hint?t.item.hint:'',translation:hint?t.item.translation:'',hintFont:'13px system-ui',max:w-16}),bh=hint?78:40;
+        const hint=hints.has(t),bw=SC.labelWidth(c,t.item,{hint:hint?t.item.hint:'',translation:hint?t.item.translation:'',hintFont:'13px system-ui',max:w-16}),bh=SC.labelHeight(t.item,hint?78:40);
         let box;
         const candidates=[];
         for(const dy of [0,-50,50,-100,100])for(const dx of [0,-bw-8,bw+8,-2*bw,2*bw])candidates.push({x:clamp(t.x+dx-bw/2,8,w-bw-8),y:clamp(t.y+dy-20,122,g.ground-bh-7),w:bw,h:bh});

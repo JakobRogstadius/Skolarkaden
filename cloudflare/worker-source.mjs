@@ -3,13 +3,14 @@
 // new databases use schema.sql. No browser API key is used.
 const ALLOWED_ORIGIN = 'https://jakobrogstadius.github.io';
 const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home']);
+const { legacyMathIds, canonicalExercise } = globalThis.SkolarkadenHighscorePolicy;
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',
   'chineseSimpl1', 'chineseSimpl2', 'chineseSimpl3', 'chineseSimpl4',
-  'math', 'math2', 'math3', 'math4', 'math5', 'math6']);
+  ...Object.keys(legacyMathIds), ...Object.values(legacyMathIds), 'math-diagrams', 'math-simple-equations']);
 const PACES = new Set(['gentle', 'steady', 'brave']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1 };
+const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1 };
 const LANGUAGES = new Set(['sv-SE', 'en-US', 'zh-TW', 'zh-CN']);
 
 function validBoard(value) {
@@ -19,12 +20,23 @@ function validBoard(value) {
     LESSONS.has(lesson) && PACES.has(pace) && extra === undefined;
 }
 
+function canonicalBoard(board) {
+  if (typeof board !== 'string') return board;
+  const parts = board.split(':'); parts[2] = canonicalExercise(parts[2]); return parts.join(':');
+}
+
+function canonicalSettings(json) {
+  try { const settings = JSON.parse(json); settings.exercise = canonicalExercise(settings.exercise); return JSON.stringify(settings); }
+  catch { return json; }
+}
+
 function settingsFor(body, board) {
   const raw = body.settings ?? {};
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('invalid_settings');
   const [game_version, game, exercise, difficulty] = board.split(':');
   const settings = { game_version, game, exercise, difficulty };
-  for (const [key, value] of Object.entries(settings)) if (raw[key] !== undefined && raw[key] !== value) throw new Error('invalid_settings');
+  for (const [key, value] of Object.entries(settings)) if (raw[key] !== undefined &&
+      (key === 'exercise' ? canonicalExercise(raw[key]) : raw[key]) !== value) throw new Error('invalid_settings');
   for (const key of ['input_mode', 'spoken_language', 'exercise_language']) {
     const value = raw[key] ?? null;
     if (value !== null && !(key === 'input_mode' ? ['keyboard', 'voice'].includes(value) : LANGUAGES.has(value))) throw new Error('invalid_settings');
@@ -135,7 +147,7 @@ export default {
           rank = row.n + 1;
         }
         return reply({ leaderboard: group, capabilities: CAPABILITIES, scores: results.map(({ leaderboard_key, ...row }) =>
-          ({ ...row, exercise: leaderboard_key.split(':')[2], difficulty: leaderboard_key.split(':')[3] })), rank, saved: Boolean(own) });
+          ({ ...row, exercise: canonicalExercise(leaderboard_key.split(':')[2]), difficulty: leaderboard_key.split(':')[3] })), rank, saved: Boolean(own) });
       }
       if (request.method !== 'POST') return reply({ error: 'method_not_allowed' }, 405, { Allow: 'GET, POST, OPTIONS' });
       if (origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_required' }, 403);
@@ -144,7 +156,7 @@ export default {
       }
       const body = await readBody(request);
       if (!body || typeof body !== 'object' || Array.isArray(body)) return reply({ error: 'invalid_score' }, 400);
-      const { submission_id: id, leaderboard_key: board, score } = body;
+      const { submission_id: id, score } = body, board = canonicalBoard(body.leaderboard_key);
       const name = typeof body.player_name === 'string' ? body.player_name.normalize('NFC').trim().toUpperCase() || 'ANONYM' : 'ANONYM';
       // Mirror the browser's silent drop; direct API calls cannot bypass it.
       if (globalThis.SkolarkadenHighscorePolicy.isBannedName(name)) return reply({ ok: true });
@@ -163,8 +175,8 @@ export default {
         const existing = await env.DB.prepare(`
           SELECT leaderboard_key, player_name, score, settings_json FROM highscores WHERE submission_id = ?
         `).bind(id).first();
-        if (existing.leaderboard_key !== board || existing.player_name !== name || existing.score !== score ||
-            body.settings && existing.settings_json && existing.settings_json !== settings) {
+        if (canonicalBoard(existing.leaderboard_key) !== board || existing.player_name !== name || existing.score !== score ||
+            body.settings && existing.settings_json && canonicalSettings(existing.settings_json) !== settings) {
           return reply({ error: 'submission_conflict' }, 409);
         }
         // A retry crossing the deployment can fill metadata on the original row.

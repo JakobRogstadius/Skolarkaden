@@ -58,7 +58,7 @@ test('All exercises and Mandarin speech matching work; pinyin appears after five
  const stream=new SC.SpeechStream({getContext:()=>({lesson:'chinese',language:'zh-CN',candidates:numbers.g.getTargets().map(t=>t.item)}),enqueue:text=>numbers.g.queue.enqueue(text,'speech'),revise:(e,text)=>numbers.g.queue.revise(e,text)});stream.update([Object.assign([{transcript:'38'}],{isFinal:false})]);tick(numbers.g,2);assert.equal(numbers.g.hits,2);
 });
 test('Pause freezes simulation, flame and queue; replay clears bodies, eggs, scores and learned maths',()=>{
- const {g,e}=setup({mode:'math'});g.crack(e);g.queue.enqueue(e.item.answer);g.work(.05);g.pause();const snapshot=JSON.stringify([g.clock,g.eggs,g.people,g.job,g.score]);tick(g,4);assert.equal(JSON.stringify([g.clock,g.eggs,g.people,g.job,g.score]),snapshot);g.resume();tick(g,1);assert.equal(g.hits,1);g.start({mode:'math'});assert.equal(g.score,0);assert.equal(g.mathPractice,undefined);assert.equal(g.shells.length,0);assert(g.people.every(p=>p.status==='entering'));assert(g.eggs.every(e=>e.stage==='dormant'));
+ const {g,e}=setup({mode:'math-addition'});g.crack(e);g.queue.enqueue(e.item.answer);g.work(.05);g.pause();const snapshot=JSON.stringify([g.clock,g.eggs,g.people,g.job,g.score]);tick(g,4);assert.equal(JSON.stringify([g.clock,g.eggs,g.people,g.job,g.score]),snapshot);g.resume();tick(g,1);assert.equal(g.hits,1);g.start({mode:'math-addition'});assert.equal(g.score,0);assert.equal(g.mathPractice,undefined);assert.equal(g.shells.length,0);assert(g.people.every(p=>p.status==='entering'));assert(g.eggs.every(e=>e.stage==='dormant'));
 });
 test('Eggs, roaming aliens and rescues award 10, 15, 20 and 30 points',()=>{
  for(const [form,victimIndex,points] of [['egg',null,10],['alien',null,15],['alien',1,20],['alien',0,30]]){
@@ -83,7 +83,7 @@ test('Survivor bonus includes the player, excludes casualties and is awarded onc
  }
 });
 test('48 full rounds terminate across sizes, difficulties and lessons with both attentive and silent players',()=>{
- for(const width of [320,1100])for(const pace of ['gentle','steady','brave'])for(const mode of ['letters','math'])for(const bot of [false,true])for(let seed=1;seed<=2;seed++){
+ for(const width of [320,1100])for(const pace of ['gentle','steady','brave'])for(const mode of ['letters','math-addition'])for(const bot of [false,true])for(let seed=1;seed<=2;seed++){
   const events=[],g=new SC.EggGame({random:rng(seed),onEvent:e=>events.push(e)});g.start({pace,mode});g.resize(width,650);policy(g);let due=0;
   for(let i=0;i<8000&&['playing','celebrating','mourning'].includes(g.state);i++){
    if(bot&&g.state==='playing'&&g.clock>=due){const e=g.getTargets().find(e=>!g.getTaskStates().has(e));if(e){g.queue.enqueue(e.item.answer);due=g.clock+.7;}}
@@ -93,13 +93,14 @@ test('48 full rounds terminate across sizes, difficulties and lessons with both 
   if(bot){assert.equal(g.hits,g.total);assert(g.living().length>0);}else{assert.equal(g.hits,0);assert.equal(g.living().length,0);}
  }
 });
-function drawing(g){const stack=[],texts=[],c=new Proxy({font:'16px system-ui',save(){stack.push(this.font);},restore(){assert(stack.length);this.font=stack.pop();},measureText(s){return {width:Array.from(s).length*Number(this.font.match(/([\d.]+)px/)?.[1]||16)*.6};},fillText(s,x,y,max){assert(Number.isFinite(x)&&Number.isFinite(y)&&max>0);texts.push(s);}},{get:(o,k)=>k in o?o[k]:k==='createLinearGradient'||k==='createRadialGradient'?()=>({addColorStop(){}}):(...args)=>{for(const a of args)if(typeof a==='number')assert(Number.isFinite(a),k+' non-finite coordinate');}});
+function drawing(g){const stack=[],texts=[],c=new Proxy({font:'16px system-ui',save(){stack.push(this.font);},restore(){assert(stack.length);this.font=stack.pop();},measureText(s){return {width:Array.from(s).length*Number(this.font.match(/([\d.]+)px/)?.[1]||16)*.6};},fillText(s,x,y,max){assert(Number.isFinite(x)&&Number.isFinite(y)&&(max===undefined||max>0));texts.push(s);}},{get:(o,k)=>k in o?o[k]:k==='createLinearGradient'||k==='createRadialGradient'?()=>({addColorStop(){}}):(...args)=>{for(const a of args)if(typeof a==='number')assert(Number.isFinite(a),k+' non-finite coordinate');}});
  const r=Object.create(SC.EggRenderer.prototype);Object.assign(r,{ctx:c,game:g,dpr:1,reduced:false});return {r,stack,texts};}
 test('Twenty-one dark labels fit at minimum height, including delayed hints and long words',()=>{
  const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
- for(const [w,h] of [[320,540],[370,740],[620,540],[700,540],[800,540],[1100,540]])for(const mode of ['letters','swedishLong','chinese']){
-  const g=new SC.EggGame({random:rng(8)});g.start({pace:'brave',mode});g.resize(w,h);for(const e of g.eggs){g.crack(e);if(e.id%2)g.hatch(e);}g.clock+=6;const {r,stack}=drawing(g);r.draw();assert.equal(stack.length,0);assert.equal(r.labelBoxes.length,21);
-  for(const [i,b] of r.labelBoxes.entries()){assert(b.x>=0&&b.y>=120&&b.x+b.w<=w&&b.y+b.h<=h);assert(r.labelBoxes.slice(i+1).every(a=>!overlap(a,b)),[w,h,mode,i].join('/'));if(mode==='letters')assert(b.w<=34);}
+ for(const [w,h] of [[320,540],[370,740],[620,540],[700,540],[800,540],[1100,540]])for(const mode of ['letters','swedishLong','chinese','math-diagrams']){
+  const diagramHeight=mode==='math-diagrams'&&w<600?Math.max(h,740):h;
+  const g=new SC.EggGame({random:rng(8)});g.start({pace:'brave',mode});g.resize(w,diagramHeight);for(const e of g.eggs){g.crack(e);if(e.id%2)g.hatch(e);}g.clock+=6;const {r,stack}=drawing(g);r.draw();assert.equal(stack.length,0);assert.equal(r.labelBoxes.length,21);
+  for(const [i,b] of r.labelBoxes.entries()){assert(b.x>=0&&b.y>=120&&b.x+b.w<=w&&b.y+b.h<=diagramHeight);assert(r.labelBoxes.slice(i+1).every(a=>!overlap(a,b)),[w,h,mode,i].join('/'));if(mode==='letters')assert(b.w<=34);}
   const e=g.eggs[0];g.catch(e,g.people[1]);r.draw();g.killHuman(e);r.draw();g.queue.enqueue(e.item.answer);g.work(.05);r.draw();tick(g,1);r.draw();g.finish(false);tick(g,.5);r.draw();assert.equal(stack.length,0);
  }
 });

@@ -28,8 +28,8 @@ test('Only tone differences are relaxed; syllables, syllable count and distinct 
 });
 test('Typing and arithmetic retain their original matching rules',()=>{
  assert(!matches('是','十','text'));assert(!matches('SHI4','十','text'));assert(matches('shi','十','text'));assert(matches('shi2','十','text'));
- for(const text of ['把','爸','ba4'])assert(!SC.matches(text,{answer:'8'},'math','zh-CN','speech'));
- assert(SC.matches('8',{answer:'8'},'math','zh-CN','speech'));assert.equal(SC.speechIdentity('see','english','en-US'),'sea');
+ for(const text of ['把','爸','ba4'])assert(!SC.matches(text,{answer:'8'},'math-addition','zh-CN','speech'));
+ assert(SC.matches('8',{answer:'8'},'math-addition','zh-CN','speech'));assert.equal(SC.speechIdentity('see','english','en-US'),'sea');
 });
 test('Equivalent speech spans keep raw text, deduplicate revisions and consume one target per answer',()=>{
  const q=new SC.AnswerQueue(),active=[],log=[];let candidates=[item('十'),item('水')];

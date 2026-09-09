@@ -57,7 +57,7 @@ test('Catches at either exit keep the dinosaur and dangling legs inside the pict
 });
 test('All exercises work, including spoken numbers, Chinese pinyin and single letters',()=>{
  for(const mode of Object.keys(SC.modes)){const {g,p}=isolated({mode,lang:SC.modes[mode].lang,uppercase:true});g.queue.enqueue(p.item.answer);until(g,()=>g.hits===1);assert.equal(g.score,15);if(['swedish','english','swedishLong','englishLong','letters','food'].includes(mode))assert.equal(p.item.label,p.item.label.toUpperCase());}
- for(const lang of ['sv-SE','en-US','zh-CN','zh-TW']){const {g,p}=isolated({mode:'math',lang});g.queue.enqueue(SC.numberName(Number(p.item.answer),lang),'speech');until(g,()=>g.hits===1);}
+ for(const lang of ['sv-SE','en-US','zh-CN','zh-TW']){const {g,p}=isolated({mode:'math-addition',lang});g.queue.enqueue(SC.numberName(Number(p.item.answer),lang),'speech');until(g,()=>g.hits===1);}
 });
 test('Every round resolves forty people and cannot lose, even with silence or only mistakes',()=>{
  const report=[];for(const pace of ['gentle','steady','brave'])for(const strategy of ['none','correct','wrong'])for(const width of [1000,370])for(let seed=1;seed<=3;seed++){

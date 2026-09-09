@@ -94,8 +94,24 @@ test('Expanding a label preserves its center and follows target movement, within
 });
 test('Restart clears revealed hints, and other exercises never show pinyin',()=>{
  for(const name of names){const {g,p}=game(name);g.clock+=6;SC.pinyinHints(g);assert(p.pinyinRevealed);g.queue.clear();g.start({mode:'chinese'});assert.equal(SC.pinyinHints(g).size,0,name+' restart');
-  for(const mode of ['letters','bopomofo','math','swedish']){g.start({mode});g.clock+=30;assert.equal(SC.pinyinHints(g).size,0,name+'/'+mode);}
+  for(const mode of ['letters','bopomofo','math-addition','swedish']){g.start({mode});g.clock+=30;assert.equal(SC.pinyinHints(g).size,0,name+'/'+mode);}
  }
  const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8'),app=fs.readFileSync(path.join(__dirname,'../resources/app.js'),'utf8');assert.doesNotMatch(html,/id="hints"|Visa pinyin/);assert.doesNotMatch(app,/\$\('hints'\)/);
 });
+
+test('Every renderer fits a diagram in its task bubble without changing the task between frames',()=>{
+ for(const width of [320,1100])for(const name of [...names,'Home']){
+  let g,p;
+  if(name==='Home'){g=new SC.HomeGame({random:rng(5)});g.start({mode:'math-diagrams'});g.resize(width,740);p=g.createTask('toys',g.spots.toys[0]);}
+  else ({g,p}=game(name,width));
+  g.mode='math-diagrams';p.item=SC.makeMath(10,rng(21),SC.mathLevel(g.mode));
+  const before=JSON.stringify(p.item),{r}=renderer(name,g),draw=SC.drawMathDiagram,boxes=[];
+  SC.drawMathDiagram=(c,d,box)=>{boxes.push(box);draw(c,d,box);};
+  try{r.draw();r.draw();}finally{SC.drawMathDiagram=draw;}
+  assert(boxes.length>=2,name+' diagram was not drawn');
+  for(const box of boxes){assert(box.h>=72,name+' diagram height');assert(box.w>=90,name+' diagram width');}
+  assert.equal(JSON.stringify(p.item),before,name+' drawing changed the task');
+ }
+});
+
 console.log(checks+' delayed-hint checks passed, including all nine renderers.');

@@ -8,7 +8,7 @@ let checks=0;const test=(name,fn)=>{fn();checks++;console.log('PASS '+name);};
 const tick=(g,seconds)=>{for(let i=0;i<Math.round(seconds/.05);i++)g.update(.05);};
 const texts=q=>Array.from(q.items,e=>e.text);
 function connect(g){g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,item)=>SC.matches(e.text,item,g.mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,g.mode,g.lang)});}
-function fixture(mode='math',lang='sv-SE'){
+function fixture(mode='math-addition',lang='sv-SE'){
   const g={mode,lang,state:'playing',queue:new SC.AnswerQueue(),targets:[],active:[],random:rng(55),getAvailableTargets(){return this.targets;},getActiveEntries(){return this.active;}};
   g.items=SC.beginPractice(g);connect(g);return g;
 }
@@ -21,7 +21,7 @@ test('Only copies backed by remaining targets enter the FIFO, including active w
   g.active=[];g.targets=[];q.clear();const wrong=q.enqueue('fel');q.take();g.active=[wrong];assert.equal(q.enqueue('fel'),undefined);assert(q.enqueue('annat'));
 });
 test('Speech aliases, numeral variants and Chinese pinyin cannot duplicate already assigned work',()=>{
-  for(const [mode,lang,answer,a,b] of [['english','en-US','sea','see','sea'],['letters','sv-SE','å','Å','å'],['math','sv-SE','2','två','02'],['chinese','zh-CN','一','yi1','一']]){
+  for(const [mode,lang,answer,a,b] of [['english','en-US','sea','see','sea'],['letters','sv-SE','å','Å','å'],['math-addition','sv-SE','2','två','02'],['chinese','zh-CN','一','yi1','一']]){
     const g=fixture(mode,lang),item=mode==='chinese'?SC.modes.chinese.items[0]:{answer};g.targets=[{item}];
     const e=g.queue.enqueue(a,'speech');assert(e);assert.equal(g.queue.enqueue(b,'speech'),undefined);
     g.queue.take();g.targets=[];g.active=[e];assert.equal(g.queue.enqueue(b,'speech'),undefined);

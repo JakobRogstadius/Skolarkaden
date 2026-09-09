@@ -5,6 +5,34 @@ The website remains on GitHub Pages. No API token belongs in the frontend.
 
 ## Update the existing installation
 
+### Named mathematics IDs
+
+Deploy the generated [worker.mjs](worker.mjs) first, then run
+[migrate-math-exercise-ids.sql](migrate-math-exercise-ids.sql) in **D1 → skolarkaden → Console**.
+The health response includes `named_math_ids: 1` when this Worker is deployed.
+Publish the frontend after the Worker update; the new exercise IDs require it.
+
+| Previous database ID | New database ID | Current exercise |
+| --- | --- | --- |
+| `math` | `math-addition` | Matematik 1 (+) |
+| — | `math-diagrams` | Matematik 2 (enkla diagram) |
+| `math2` | `math-addition-subtraction` | Matematik 3 (+ och −) |
+| — | `math-simple-equations` | Matematik 4 (enkla ekvationer) |
+| `math3` | `math-large-numbers` | Matematik 5 (10–100) |
+| `math4` | `math-multiplication` | Matematik 6 (×) |
+| `math5` | `math-multiplication-division` | Matematik 7 (× och ÷) |
+| `math6` | `math-equations` | Matematik 8 (ekvationer) |
+
+The migration renames the exercise inside `leaderboard_key` and `settings_json`.
+It preserves every row and all other fields, works across old game versions,
+and is safe to run repeatedly. Null or malformed settings remain untouched.
+The Worker reads both ID formats and stores incoming scores under the new IDs,
+including submissions from old browser tabs. Retrying a score across migration
+does not duplicate it. The browser also labels old rows with the new names and
+preserves existing local best scores.
+
+### Existing settings column
+
 The stored score format and four-part leaderboard keys are retained. Home stays
 on `v1`. One nullable column stores the settings which were previously omitted:
 

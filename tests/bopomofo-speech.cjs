@@ -44,7 +44,7 @@ test('Unspaced Hanzi submit early; pinyin, tone and symbol revisions do not crea
 test('Spoken digit runs and literal tone marks retain token boundaries, while maths stays intact',()=>{
  const h=harness(['ㄧ','ㄑ','ㄙ','ㄕ']);h.stream.update([result('17410')]);assert.deepEqual(Array.from(h.q.items,e=>e.text),['1','7','4','10']);h.stream.update([result('一七四十',true)]);assert.equal(h.q.length,4);
  assert.deepEqual(Array.from(SC.tokenizeSpeech('˙ㄅ ㄆˊ ㄇˇ ㄈˋ',{lesson:'bopomofo',language:'zh-TW'})),['˙ㄅ','ㄆˊ','ㄇˇ','ㄈˋ']);
- assert.deepEqual(Array.from(SC.tokenizeSpeech('17410',{lesson:'math3',language:'zh-TW'})),['17410']);
+ assert.deepEqual(Array.from(SC.tokenizeSpeech('17410',{lesson:'math-large-numbers',language:'zh-TW'})),['17410']);
  const wrong=harness(['ㄅ']);wrong.stream.update([result('山水火波',true)]);assert.equal(wrong.q.length,3);assert(SC.matches(wrong.q.items.at(-1).text,item('ㄅ'),'bopomofo','zh-TW','speech'));
 });
 test('Every game consumes a recognized bopomofo answer through the shared speech queue',()=>{

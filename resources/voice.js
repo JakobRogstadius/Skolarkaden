@@ -4,7 +4,7 @@
   const SC=root.Starlight;
   // Short word/sound practice, plus arithmetic with answers up to 20.
   // Inspect Mandarin items so future compound-word lessons keep normal processing.
-  SC.shortSpeechLesson=lesson=>['letters','swedish','english','bopomofo','math','math2','math6'].includes(lesson)||
+  SC.shortSpeechLesson=lesson=>['letters','swedish','english','bopomofo','math-addition','math-diagrams','math-addition-subtraction','math-simple-equations','math-equations'].includes(lesson)||
     (SC.isChinese(lesson)&&SC.modes[lesson].items.filter(item=>Array.from(item.answer).length===1).length>SC.modes[lesson].items.length/2);
   class Microphone {
     constructor(){this.stream=null;this.context=null;this.chunks=[];this.recording=false;this.generation=0;this.options={deviceId:'',processing:true,shortInput:false};this.level=0;}

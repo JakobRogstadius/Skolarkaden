@@ -9,16 +9,16 @@ for(const [pace,count,interval] of [['gentle',6,10],['steady',9,60/9],['brave',1
  for(const time of [0,60,120,300]){g.elapsed=time;assert.equal(g.requestInterval(),interval,'no late-round acceleration');}
  g.gardener.x=0;g.gardener.y=0;g.moveTo({x:1,y:0},.25);assert(Math.abs(g.gardener.x-.14)<1e-9,'walking speed unchanged');
  g.pots[0].bloom=true;g.pots[1].dead=true;assert.equal(g.requestInterval(),60/(count-2));g.pots.forEach(p=>p.bloom=true);assert.equal(g.requestInterval(),Infinity);assert.equal(g.decayProbability(),0);
- for(const mode of ['math','math2','math3','math4','math5','math6']){g.start({pace,mode});assert.equal(g.requestInterval(),interval*2);}
+ for(const mode of ['math-addition','math-addition-subtraction','math-large-numbers','math-multiplication','math-multiplication-division','math-equations']){g.start({pace,mode});assert.equal(g.requestInterval(),interval*2);}
 }
 console.log('PASS fixed plant counts and walking speed; constant per-plant rate; finished plants retire their traffic; all maths levels keep extra time');
 let rounds=0;
-for(const pace of ['gentle','steady','brave'])for(const mode of ['swedishLong','math3']){
+for(const pace of ['gentle','steady','brave'])for(const mode of ['swedishLong','math-large-numbers']){
  let allBloom=0,flowers=0,maxBacklog=0;const expected={gentle:6,steady:9,brave:12}[pace];
  for(const width of [370,1000])for(let seed=1;seed<=12;seed++){
   const g=new SC.GardenGame({random:rng(seed)}),inputRandom=rng(seed+777);g.start({pace,mode});g.resize(width,680);
   g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,i)=>SC.matches(e.text,i,g.mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,g.mode,g.lang)});
-  const answerDelay=mode==='math3'?8:5;let due=answerDelay;
+  const answerDelay=mode==='math-large-numbers'?8:5;let due=answerDelay;
   // Finite full rounds with realistic input time and 10% deliberately wrong
   // answers. Never heal plants, skip travel, or bypass the shared FIFO.
   for(let i=0;i<8000&&['playing','celebrating'].includes(g.state);i++){

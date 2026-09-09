@@ -178,8 +178,8 @@ class GardenRenderer extends SC.SceneRenderer{
     for(const pot of g.pots){
       const reqs=Object.values(pot.requests);if(!reqs.length)continue;
       const font='bold '+((SC.isChinese(g.mode)||g.mode==='bopomofo')?21:16)+'px system-ui';
-      const widths=reqs.map(r=>SC.labelWidth(c,r.item.label,{font,hint:hints.has(r)?r.item.hint:'',translation:hints.has(r)?r.item.translation:'',hintFont:'11px system-ui',padding:0,min:0,max:400})+38);
-      const rows=reqs.map(r=>hints.has(r)?62:28),p=this.point(pot),bw=clamp(Math.max(...widths),48,w<500?144:180),bh=rows.reduce((sum,row)=>sum+row,8),candidates=[];
+      const widths=reqs.map(r=>SC.labelWidth(c,r.item,{font,hint:hints.has(r)?r.item.hint:'',translation:hints.has(r)?r.item.translation:'',hintFont:'11px system-ui',padding:0,min:0,max:400})+38);
+      const rows=reqs.map(r=>SC.labelHeight(r.item,hints.has(r)?62:28)),p=this.point(pot),bw=clamp(Math.max(...widths),48,w<500?144:180),bh=rows.reduce((sum,row)=>sum+row,8),candidates=[];
       const bx=pot.x>=0?p.x+30*this.scale:p.x-bw-30*this.scale;
       for(const [x,y] of [[bx,p.y-bh/2],[p.x-bw/2,p.y-(42+pot.growth*75)*this.scale-bh],[p.x-bw/2,p.y+40*this.scale],[w/2-bw/2,135]])candidates.push({x:clamp(x,7,w-bw-7),y:clamp(y,120,h-bh-9),w:bw,h:bh});
       for(let y=120;y<h-bh-8;y+=16)for(let x=7;x<w-bw;x+=22)candidates.push({x,y,w:bw,h:bh});

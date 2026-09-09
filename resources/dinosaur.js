@@ -187,7 +187,7 @@ class DinosaurRenderer extends SC.SceneRenderer{
   for(const p of g.people)if(p.status!=='eaten'){const ps=s*SC.personScale(p.look);blocked.push({x:p.x*w-29*ps,y:p.y*h-(54*p.look.height+56)*ps,w:58*ps,h:(54*p.look.height+60)*ps});}
   blocked.push({x:g.dino.x*w-70*s,y:g.dino.y*h-196*s,w:190*s,h:202*s});
   for(const p of targets){
-   const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?14:18,maxWidth=w<600?120:170,hint=hints.has(p);const bw=SC.labelWidth(c,p.item.label,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:maxWidth}),bh=hint?63:34,ps=s*SC.personScale(p.look),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+59)*ps-g.jumpHeight(p)},candidates=[];
+   const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?14:18,maxWidth=w<600?120:170,hint=hints.has(p);const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:maxWidth}),bh=SC.labelHeight(p.item,hint?63:34),ps=s*SC.personScale(p.look),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+59)*ps-g.jumpHeight(p)},candidates=[];
    const top=154,bottom=h-38-bh,cols=Math.max(1,Math.floor((w-16+8)/(maxWidth+8))),dx=cols>1?(w-16-maxWidth)/(cols-1):0;
    // Fallback slots guarantee room for eight labels even on a narrow screen.
    for(let yy=top;yy<=bottom;yy+=bh+9)for(let col=0;col<cols;col++)candidates.push({x:8+col*dx+(maxWidth-bw)/2,y:yy,w:bw,h:bh});

@@ -160,7 +160,7 @@ test('All exercises and Mandarin/bopomofo speech use the common queue and delaye
 });
 test('Compact labels stay inside the canvas and do not overlap across bed counts, widths, hints and queue states',()=>{
  const canvas=new Proxy({measureText:text=>({width:[...text].length*9})},{get:(o,k)=>k in o?o[k]:String(k).includes('Gradient')?()=>({addColorStop(){}}):()=>{}});
- for(const pace of ['gentle','steady','brave'])for(const width of [320,370,620,1100])for(const mode of ['swedishLong','chinese','math6']){
+ for(const pace of ['gentle','steady','brave'])for(const width of [320,370,620,1100])for(const mode of ['swedishLong','chinese','math-equations','math-diagrams']){
   const {g}=setup({pace,mode});g.resize(width,width<600?620:820);for(let i=0;i<10;i++)g.createTask(i%2?'clothes':'toys',g.spots[i%2?'clothes':'toys'][Math.floor(i/2)]);g.clock=6;g.queue.enqueue(g.getTargets()[0].item.answer);
   const r=Object.create(SC.HomeRenderer.prototype);Object.assign(r,{game:g,ctx:canvas,dpr:1,reduced:true,scoreNotices:[]});r.draw();assert.equal(r.labelBoxes.length,10);for(const [i,a] of r.labelBoxes.entries()){assert(a.x>=6&&a.y>=115&&a.x+a.w<=width-6&&a.y+a.h<=g.height-6);for(const b of r.labelBoxes.slice(i+1))assert(a.x+a.w<=b.x||b.x+b.w<=a.x||a.y+a.h<=b.y||b.y+b.h<=a.y,`${pace}/${width}/${mode}: overlapping labels`);}
   const before=JSON.stringify(r.labelBoxes);r.draw();assert.equal(JSON.stringify(r.labelBoxes),before,'stationary reading targets must not shuffle every frame');
@@ -174,10 +174,10 @@ test('Three children remain manageable with a correct answer every two seconds',
 });
 test('Finite full rounds with paced imperfect answers, silence or wrong answers; balanced rooms and no wall crossings',()=>{
  let rounds=0;const roomTotals={gentle:{},steady:{},brave:{}};
- for(const pace of ['gentle','steady','brave'])for(const style of ['letters','swedishLong','math3','chinese','silent','wrong'])for(let seed=1;seed<=4;seed++){
+ for(const pace of ['gentle','steady','brave'])for(const style of ['letters','swedishLong','math-large-numbers','chinese','silent','wrong'])for(let seed=1;seed<=4;seed++){
   const g=new SC.HomeGame({random:rng(seed)}),inputRng=rng(seed+411);g.start({pace,mode:['silent','wrong'].includes(style)?'letters':style,lang:style==='chinese'?'zh-TW':'sv-SE'});g.resize(seed%2?370:1100,740);g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,i)=>SC.matches(e.text,i,g.mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,g.mode,g.lang)});let due=0;
   for(let i=0;i<26000&&['playing','celebrating'].includes(g.state);i++){
-   if(g.state==='playing'&&g.clock>=due&&style!=='silent'){const reserved=g.reservations(),t=g.getAvailableTargets().find(t=>!reserved.has(t));if(t){g.queue.enqueue(style==='wrong'||inputRng()<.1?'wrong':t.item.answer);due=g.clock+(style==='math3'?8:5);}}
+   if(g.state==='playing'&&g.clock>=due&&style!=='silent'){const reserved=g.reservations(),t=g.getAvailableTargets().find(t=>!reserved.has(t));if(t){g.queue.enqueue(style==='wrong'||inputRng()<.1?'wrong':t.item.answer);due=g.clock+(style==='math-large-numbers'?8:5);}}
    g.update(.05);if(i%20===0)assert(g.people.every(p=>g.walkable(p)),`${pace}/${style}/${seed}: nobody crosses a wall`);
   }
   // Fast-input capacity is checked above. These deliberately slow/imperfect

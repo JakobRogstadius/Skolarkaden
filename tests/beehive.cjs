@@ -33,16 +33,16 @@ test('Pause freezes the year, flower life, flights and pending answers',()=>{
 });
 test('Spring and summer grow plants; autumn stops new growth; math extends the year and flower lifetime',()=>{
  const g=new SC.BeehiveGame({random:rng(8)});g.start();assert.equal(g.season(),'Vår');assert(g.plants.every(p=>p.status==='young'));tick(g,15);assert(g.getTargets().length>0);g.elapsed=g.duration*.3;assert.equal(g.season(),'Sommar');g.elapsed=g.duration*.64;assert.equal(g.season(),'Höst');const count=g.spawned;tick(g,20);assert.equal(g.spawned,count);
- const math=new SC.BeehiveGame({random:rng(8)});math.start({mode:'math'});assert.equal(math.duration,g.duration*1.4);const p=flowers(math,1)[0];tick(math,7);assert(Math.abs(p.flowerAge-5)<1e-7);
+ const math=new SC.BeehiveGame({random:rng(8)});math.start({mode:'math-addition'});assert.equal(math.duration,g.duration*1.4);const p=flowers(math,1)[0];tick(math,7);assert(Math.abs(p.flowerAge-5)<1e-7);
 });
 test('Winter is the strict delivery deadline, with one delayed result and no early win',()=>{
  const events=[],g=new SC.BeehiveGame({onEvent:e=>events.push(e)});g.start();g.honey=g.honeyGoal;g.update(.05);assert.equal(g.state,'playing');g.elapsed=g.duration-.05;g.queue.enqueue('pending');g.update(.05);assert.equal(g.state,'celebrating');assert.equal(g.season(),'Vinter');assert(!events.some(e=>e.type==='end'));tick(g,3.95);assert.equal(g.state,'celebrating');g.update(.05);assert.equal(g.state,'won');assert.equal(g.queue.length,1);assert.equal(events.filter(e=>e.type==='end').length,1);
  const lost=new SC.BeehiveGame();lost.start();lost.honey=lost.honeyGoal-1;Object.assign(lost.bees[0],{stage:'return',nectar:1,job:{entry:{text:'late'},target:null}});lost.elapsed=lost.duration-.05;lost.update(.05);assert.equal(lost.honey,lost.honeyGoal-1);assert.equal(lost.state,'mourning');tick(lost,3);assert.equal(lost.state,'lost');assert(lost.bees.every(b=>b.stage==='hungry'));
 });
 test('Beehive rounds win at calibrated answer rates with 10% wrong answers, on desktop and narrow layouts',()=>{
- for(const width of [1000,390])for(const pace of ['gentle','steady','brave'])for(const mode of ['swedish','math'])for(let seed=1;seed<=6;seed++){
-  const g=new SC.BeehiveGame({random:rng(seed)});g.start({pace,mode});g.resize(width,width<600?1200:740);let due=0,n=0;const interval={gentle:3,steady:2,brave:1.5}[pace]*(mode==='math'?1.3:1);
-  for(let i=0;i<6000&&['playing','celebrating','mourning'].includes(g.state);i++){if(g.state==='playing'&&g.elapsed>=due&&!g.queue.length){const t=g.getTargets().find(t=>!t.claimedBy);if(t){g.queue.enqueue(++n%10===0?'wrong':mode==='math'?SC.numberName(Number(t.item.answer),'sv-SE'):t.item.answer,mode==='math'?'speech':'text');due=g.elapsed+interval;}}g.update(.05);}
+ for(const width of [1000,390])for(const pace of ['gentle','steady','brave'])for(const mode of ['swedish','math-addition'])for(let seed=1;seed<=6;seed++){
+  const g=new SC.BeehiveGame({random:rng(seed)});g.start({pace,mode});g.resize(width,width<600?1200:740);let due=0,n=0;const interval={gentle:3,steady:2,brave:1.5}[pace]*(mode==='math-addition'?1.3:1);
+  for(let i=0;i<6000&&['playing','celebrating','mourning'].includes(g.state);i++){if(g.state==='playing'&&g.elapsed>=due&&!g.queue.length){const t=g.getTargets().find(t=>!t.claimedBy);if(t){g.queue.enqueue(++n%10===0?'wrong':mode==='math-addition'?SC.numberName(Number(t.item.answer),'sv-SE'):t.item.answer,mode==='math-addition'?'speech':'text');due=g.elapsed+interval;}}g.update(.05);}
   assert.equal(g.state,'won',`${width}/${pace}/${mode}/${seed}: ${g.honey}/${g.honeyGoal}`);assert(g.honey>=g.honeyGoal);
  }
 });

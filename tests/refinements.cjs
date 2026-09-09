@@ -14,7 +14,7 @@ test('Latin letters and bopomofo submit immediately; IME commits once, and words
  field.value='Bc D';field.dispatchEvent(new Event('input'));assert.deepEqual(texts(queue),['a','B','c','D']);
  input.configure({enabled:false,lesson:'bopomofo'});field.dispatchEvent(new Event('compositionstart'));field.value='ㄆ';field.dispatchEvent(new Event('input'));assert.equal(queue.length,4);field.dispatchEvent(new Event('compositionend'));field.dispatchEvent(new Event('input'));assert.deepEqual(texts(queue).slice(-1),['ㄆ']);
  field.value='1qaz';field.dispatchEvent(new Event('input'));assert.deepEqual(texts(queue).slice(-4),['ㄅ','ㄆ','ㄇ','ㄈ']);
- for(const [lesson,value] of [['swedish','hej'],['math','12'],['chinese','ni']]){input.configure({enabled:false,lesson});assert(!form.button.hidden);const before=queue.length;field.value=value;field.dispatchEvent(new Event('input'));assert.equal(queue.length,before);form.dispatchEvent(new Event('submit'));assert.equal(queue.length,before+1);assert.equal(queue.items.at(-1).text,value);}
+ for(const [lesson,value] of [['swedish','hej'],['math-addition','12'],['chinese','ni']]){input.configure({enabled:false,lesson});assert(!form.button.hidden);const before=queue.length;field.value=value;field.dispatchEvent(new Event('input'));assert.equal(queue.length,before);form.dispatchEvent(new Event('submit'));assert.equal(queue.length,before+1);assert.equal(queue.items.at(-1).text,value);}
  input.configure({enabled:false,lesson:'letters'});input.setEnabled(false);const n=queue.length;field.value='x';field.dispatchEvent(new Event('input'));assert.equal(queue.length,n);input.destroy();
 });
 test('A burst of mistakes leaves only two pending, while new correct answers remain admissible',()=>{
@@ -41,7 +41,7 @@ test('Children never generate the balding hairstyle or a beard; category probabi
  const random=rng(6);let children=0;for(let i=0;i<10000;i++){const p=SC.makePerson(random);if(p.child){children++;assert.equal(p.beard,false);if(!p.feminine)assert.notEqual(p.hairStyle,2);}}assert(children>1700&&children<2100);
 });
 test('Late-summer flowers remain alive until winter; early flowers still wilt and visited flowers retire',()=>{
- for(const mode of ['swedish','math']){const g=new SC.BeehiveGame({random:rng(7)});g.start({mode});g.elapsed=g.duration*.64;g.nextSpawn=10000;g.plants=g.plants.slice(0,1);const p=g.plants[0];g.bloom(p);assert(p.lateSeason);tick(g,g.timeLeft()-1);assert.equal(p.status,'flower');assert(g.getTargets().includes(p));tick(g,1.1);assert(['mourning','celebrating'].includes(g.state));}
+ for(const mode of ['swedish','math-addition']){const g=new SC.BeehiveGame({random:rng(7)});g.start({mode});g.elapsed=g.duration*.64;g.nextSpawn=10000;g.plants=g.plants.slice(0,1);const p=g.plants[0];g.bloom(p);assert(p.lateSeason);tick(g,g.timeLeft()-1);assert.equal(p.status,'flower');assert(g.getTargets().includes(p));tick(g,1.1);assert(['mourning','celebrating'].includes(g.state));}
  const early=new SC.BeehiveGame();early.start();early.nextSpawn=10000;const p=early.plants[0];early.bloom(p);tick(early,p.bloomFor+.1);assert.equal(p.status,'wilt');
  const visited=new SC.BeehiveGame();visited.start();visited.elapsed=visited.duration*.65;visited.plants=visited.plants.slice(0,1);const flower=visited.plants[0];visited.bloom(flower);const b=visited.bees[0];b.stage='gather';b.age=.79;b.job={entry:{text:flower.item.answer},target:flower};visited.work(.05);assert(flower.harvested);assert(flower.bloomFor-flower.flowerAge<=4);tick(visited,4.1);assert.equal(flower.status,'wilt');
 });
