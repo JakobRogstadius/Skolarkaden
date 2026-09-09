@@ -70,7 +70,7 @@ Matematiken har åtta fasta nivåer. Nivån ändras aldrig under en omgång och 
 | Övning | Uppgifter |
 | --- | --- |
 | Matematik 1 (+) | Addition med två tal 0–10; svar 0–20. |
-| Matematik 2 (enkla diagram) | Tvådelade cirkeldiagram, lodräta/vågräta staplar, prickar och tallinjer. Svar 1–10. Cirklar och staplar använder två tal 1–5 eller heltalsförhållanden. |
+| Matematik 2 (enkla diagram) | Tvådelade cirkeldiagram med summa högst 10 och minsta del 1/2, 1/3, 1/4 eller 1/5 av helheten. Lodräta/vågräta staplar med storleksförhållande 1, 1,5, 2, 3 eller 4. Prickar och tallinjer med steg 1, 3–4 inre markeringar och ändpunkter inom 0–10. Svar 1–10; diagramtypen väljs bland dem som kan visa det aktuella svaret. |
 | Matematik 3 (+ och −) | Addition och subtraktion inom 0–20; inga negativa svar. |
 | Matematik 4 (enkla ekvationer) | Två tal 0–9 till vänster: a + b = 10 + ? eller a + b = 10 − ?. Svar 0–10. |
 | Matematik 5 (10–100) | Två tal 10–100 med addition eller subtraktion; svar 0–200. |

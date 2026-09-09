@@ -241,11 +241,21 @@
     return {...word(String(answer)),label:choices[Math.floor(rng()*choices.length)],mathLevel:level};
   };
   SC.makeDiagram=function(answer,rng=Math.random){
-    const pick=values=>values[Math.floor(rng()*values.length)],kind=pick(['pie','bars','dots','number-line']);
+    const pick=values=>values[Math.floor(rng()*values.length)],values=Array.from({length:10},(_,i)=>i+1);
+    const pieValues=values.filter(n=>n+answer<=10&&[2,3,4,5].includes((n+answer)/Math.min(n,answer)));
+    const barValues=values.filter(n=>[1,1.5,2,3,4].includes(Math.max(n,answer)/Math.min(n,answer)));
+    const lines=[];
+    for(let notches=3;notches<=4;notches++)for(let unknown=1;unknown<=notches;unknown++){
+      const start=answer-unknown,end=start+notches+1;
+      if(start>=0&&end<=10)lines.push({notches,step:1,unknown,start,end});
+    }
+    // Some answers cannot occur in a valid pie or at an interior number-line notch.
+    // Select only feasible chart types, preserving the answer chosen by the game.
+    const kind=pick(['pie','bars','dots','number-line'].filter(kind=>kind==='pie'?pieValues.length:kind==='bars'?barValues.length:kind==='number-line'?lines.length:true));
     const palette=['#c6d6bd','#e0c3ad','#bfcddd','#d5c0d5','#dfd5ac','#b6d2cd'];
     const first=pick(palette),colors=[first,pick(palette.filter(color=>color!==first))];
     if(kind==='pie'||kind==='bars'){
-      const known=pick(Array.from({length:10},(_,i)=>i+1).filter(n=>n<=5&&answer<=5||Math.max(n,answer)%Math.min(n,answer)===0));
+      const known=pick(kind==='pie'?pieValues:barValues);
       return {kind,answer,known,colors,unknownFirst:rng()<.5,horizontal:rng()<.5};
     }
     if(kind==='dots'){
@@ -261,11 +271,7 @@
       }
       return {kind,answer,colors,dots};
     }
-    const options=[];
-    for(let notches=3;notches<=5;notches++)for(let step=1;step<=2;step++)for(let unknown=1;unknown<=notches;unknown++){
-      const start=answer-unknown*step;if(start>=0)options.push({notches,step,unknown,start,end:start+(notches+1)*step});
-    }
-    return {kind,answer,colors,...pick(options)};
+    return {kind,answer,colors,...pick(lines)};
   };
   SC.beginPractice=(game,items)=>items||(game.mode==='letters'?SC.letterSubset(game.lang,game.random):SC.vocabulary(game.mode,game.lang));
   SC.practiceItems=game=>game.items;
