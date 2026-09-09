@@ -38,13 +38,18 @@
         label(labels[i],48+Math.cos(mid)*offset,36+Math.sin(mid)*offset);angle+=sweep;
       }
     }else if(diagram.kind==='bars'){
-      const max=Math.max(...values);
+      const max=Math.max(...values),border=c.lineWidth,inset=border/2;
+      // Dimensions describe the outside of the border, including the baseline.
+      const bar=(x,y,width,height,color)=>{
+        c.fillStyle=color;c.fillRect(x+inset,y+inset,width-border,height-border);
+        c.strokeRect(x+inset,y+inset,width-border,height-border);
+      };
       if(diagram.horizontal){
-        values.forEach((n,i)=>{const width=n/max*70,y=12+i*28;c.fillStyle=diagram.colors[i];c.fillRect(10,y,width,20);c.strokeRect(10,y,width,20);label(labels[i],width>=27?10+width/2:10+width+12,y+10);});
-        line(10,7,10,65);
+        values.forEach((n,i)=>{const width=n/max*70,y=12+i*28;bar(10,y,width,20,diagram.colors[i]);label(labels[i],width>=27?10+width/2:10+width+12,y+10);});
+        line(10+inset,7,10+inset,65);
       }else{
-        values.forEach((n,i)=>{const height=n/max*48,x=21+i*40;c.fillStyle=diagram.colors[i];c.fillRect(x,62-height,24,height);c.strokeRect(x,62-height,24,height);label(labels[i],x+12,height>=24?62-height/2:62-height-10);});
-        line(10,62,96,62);
+        values.forEach((n,i)=>{const height=n/max*48,x=21+i*40;bar(x,62-height,24,height,diagram.colors[i]);label(labels[i],x+12,height>=24?62-height/2:62-height-10);});
+        line(10,62-inset,96,62-inset);
       }
     }else if(diagram.kind==='dots'){
       c.fillStyle=diagram.colors[0];for(const p of diagram.dots){c.beginPath();c.arc(p.x,p.y,5.5,0,Math.PI*2);c.fill();c.stroke();}
