@@ -29,7 +29,7 @@ Omgången avslutas när alla 40 meteorer har skjutits ned eller landat, även om
 
 ## Laga mats poäng
 
-Varje serverad måltid ger 10 poäng plus 0–10 i dricks, avrundat efter gästens återstående tålamod vid servering. Sviten ger +0 för första måltiden, +1 för nästa och upp till +5 från den sjätte. Felaktiga beställningar och gäster som går utan mat bryter sviten. En exotisk gäst ger ytterligare 40 poäng. Ingen slutbonus tillkommer. Laga mat använder poängversion v2.
+Varje serverad måltid ger 10 poäng plus 0–10 i dricks, avrundat efter gästens återstående tålamod vid servering. Sviten ger +0 för första måltiden, +1 för nästa och upp till +5 från den sjätte. Felaktiga beställningar och gäster som går utan mat bryter sviten. En exotisk gäst ger ytterligare 40 poäng. Ingen slutbonus tillkommer. Laga mat använder poängversion v2. Varje omgång har 40 gäster. Den första finns från start; därefter används Meteorregns slumpmässiga intervall: i medeltal 5/3/1,5 sekunder på Lätt/Medel/Svår, ±25 procent, med halva intervallet för de sista sex gästerna. Gäster fortsätter komma även om fem har gått utan mat. Omgången slutar när alla gäster har lämnat och kocken är klar; färre än fem förlorade gäster ger vinst. Köade uppgifter har grön fyllning, mörkgrön kant och märket KÖ; pågående matlagning är gul.
 
 ## Odla blommors poäng
 
@@ -40,7 +40,7 @@ Varje slutförd skötselåtgärd ger 10 poäng. Flera åtgärder av samma typ i 
 | Spel | Uppdrag |
 | --- | --- |
 | Meteorregn | Låt tre lasrar skydda staden från 40 kometer. |
-| Laga mat | Servera hungriga gäster i 90 sekunder. |
+| Laga mat | Servera 40 hungriga gäster. |
 | Odla blommor | Hjälp alla plantor att blomma. |
 | Bikupan | Samla tillräckligt med honung före vintern. |
 | Färgballonger | Träffa så många av de 40 förbipasserande som möjligt. |
@@ -110,7 +110,7 @@ Uppgiftsbubblorna anpassar bredden efter ordet, tecknet och eventuell pinyin och
 
 ## Marshmallows
 
-En omgång varar i två minuter, följt av sex sekunders soluppgång. Svårigheten styr bara antalet samtidiga pinnar: 2, 4 eller 6. Elden svalnar under natten, vilket gör grillningen långsammare. Gyllene marshmallows har en tydlig grön kant runt ordet och ger 25–50 poäng beroende på svarstid: 50 mitt i det godkända tidsfönstret och linjärt avtagande till 25 vid kanterna, avrundat till heltal. Beräkningen tar hänsyn till att elden svalnar och att soluppgången avslutar tidsfönstret. Marshmallows använder poängversion v2. Marshmallowens egen färg och form visar grillningen: först blek och mjuk, sedan gyllene med rostade fläckar, till sist svartnad och sprucken. Etiketterna har mörk bakgrund. Inga grillmätare, färdighalor eller tidsmätare visas. Nya pinnar slutar komma när det inte finns tid att grilla dem före morgonen.
+En omgång innehåller exakt 40 pinnar. När den sista har tagits in eller brunnit upp följer sex sekunders soluppgång med ett tuppgal. Svårigheten styr bara antalet samtidiga pinnar: 2, 4 eller 6. Elden svalnar i takt med att pinnar blir klara. Varje ny pinne behåller sin grillhastighet, så sena pinnar grillas långsammare. Gyllene marshmallows har en tydlig grön kant runt ordet och ger 25–50 poäng beroende på svarstid: 50 mitt i det godkända tidsfönstret och linjärt avtagande till 25 vid kanterna, avrundat till heltal. Varje pinne får hela sitt grillfönster innan soluppgången. Marshmallows använder poängversion v2. Marshmallowens egen färg och form visar grillningen: först blek och mjuk, sedan gyllene med rostade fläckar, till sist svartnad och sprucken. Etiketterna har mörk bakgrund. Inga grillmätare, färdighalor eller tidsmätare visas. Inga fler pinnar kommer efter den fyrtionde. För tidiga svar byter uppgift på samma pinne och räknas inte som en ny pinne.
 
 Ett för tidigt svar vrider underarmen och pinnen runt armbågen för en titt och återför pinnen med ett nytt ord. Grillningen står still under denna rörelse. Brända marshmallows kan börja brinna och kastas sedan tillbaka på marken, där de ligger kvar. Felmatchade svar ger en kort frågebubbla och hindrar inte andra pinnar. Omgången kan inte förloras.
 

@@ -14,22 +14,29 @@
       this.menu();Object.assign(this,{mode,pace,lang,uppercase});
       this.items=SC.beginPractice(this,items);
       if(!this.items.length)throw new Error('Menyn behöver minst ett svar.');
-      this.state='playing';this.lives=5;this.elapsed=0;this.timeLeft=90;this.shots=0;this.streak=0;this.bestStreak=0;this.tips=0;this.lostCustomers=0;this.nextId=0;this.spawnIn=3;
+      this.state='playing';this.lives=5;this.elapsed=0;this.total=40;this.spawned=0;this.shots=0;this.streak=0;this.bestStreak=0;this.tips=0;this.lostCustomers=0;this.nextId=0;this.spawnIn=SC.citySpawnInterval(pace,1,this.random);
       this.spawn();this.emit('start');
     }
     getAvailableTargets(){return this.getTargets().filter(c=>c.status==='waiting');}
     getActiveEntries(){return this.activeCook?[this.activeCook.entry]:[];}
     getTargets(){return this.customers.filter(c=>WAITING.has(c.status));}
+    get resolved(){return this.hits+this.lostCustomers;}
+    getTaskStates(){
+      const states=new Map(),targets=this.getTargets();
+      if(this.activeCook?.customer&&targets.includes(this.activeCook.customer))states.set(this.activeCook.customer,'active');
+      for(const entry of this.queue.items){const target=targets.find(c=>!states.has(c)&&SC.matches(entry.text,c.item,this.mode,this.lang,entry.source));if(target)states.set(target,'queued');}
+      return states;
+    }
     appearance(){return SC.makePerson(this.random);}
     spawn(){
-      const slots=[0,1,2].filter(slot=>!this.customers.some(c=>c.slot===slot));
-      const pool=SC.practiceItems(this).filter(item=>!this.customers.some(c=>c.item.answer===item.answer));
-      if(!slots.length||!pool.length)return false;
+      if(this.state!=='playing'||this.spawned>=this.total)return false;
+      const slots=Array.from({length:this.total},(_,i)=>i).filter(slot=>!this.customers.some(c=>c.slot===slot));
+      const items=SC.practiceItems(this),unused=items.filter(item=>!this.customers.some(c=>c.item.answer===item.answer)),pool=unused.length?unused:items;
       const base=pool[Math.floor(this.random()*pool.length)],item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};
       item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
       const patience={gentle:27,steady:21,brave:16}[this.pace]*(.88+this.random()*.24);
       const c={id:++this.nextId,slot:slots[0],item,status:'arriving',motion:0,wait:0,patience,cooked:0,cookTime:1.2+this.random()*.8,look:this.appearance(),dish:({soppa:1,gryta:1,sallad:2,ris:2,nudlar:2,pasta:2,falafel:2,sushi:2,våffla:3,pannkaka:3,toast:3,omelett:3,pizza:4,paj:4,taco:5,korv:6})[base.answer]??Math.floor(this.random()*3),warned:false};
-      this.customers.push(c);return true;
+      this.customers.push(c);this.spawned++;return true;
     }
     patienceLeft(c){return clamp(1-c.wait/c.patience,0,1);}
     expression(c){return c.status==='leaving'?(c.happy?0:1):clamp(c.wait/c.patience,0,1);}
@@ -57,10 +64,10 @@
       this.emit('targets');
     }
     loseCustomer(c){
-      c.status='leaving';c.happy=false;c.motion=0;this.lives--;this.lostCustomers++;this.streak=0;
+      c.status='leaving';c.happy=false;c.motion=0;this.lives=Math.max(0,this.lives-1);this.lostCustomers++;this.streak=0;
       if(this.lock===c)this.lock=null;
       this.emit('customer-left',{customer:c});this.emit('targets');
-      if(this.lives===0)this.finish();
+
     }
     pause(){if(this.state==='playing'){this.state='paused';this.emit('pause');}}
     resume(){if(this.state==='paused'){this.state='playing';this.emit('resume');}}
@@ -76,7 +83,7 @@
       if(this.state==='celebrating'){this.clock+=dt;this.celebrationLeft=Math.max(0,this.celebrationLeft-dt);if(this.celebrationLeft<1e-8){this.celebrationLeft=0;this.state='won';this.endResult(true);}return;}
       if(this.state==='menu'){this.clock+=dt;return;}
       if(this.state!=='playing')return;
-      const before=Math.ceil(this.timeLeft);dt=Math.min(dt,this.timeLeft);this.clock+=dt;this.elapsed+=dt;this.timeLeft=Math.max(0,90-this.elapsed);
+      this.clock+=dt;this.elapsed+=dt;
       for(const e of this.effects)e.age+=dt;this.effects=this.effects.filter(e=>e.age<1.3);
       for(const c of [...this.customers]){
         if(c.status==='arriving'){
@@ -90,14 +97,14 @@
 
         }
       }
-      if(this.timeLeft<=0){this.finish();return;}
-      this.spawnIn-=dt;
-      if(this.spawnIn<=0){
-        const spawned=this.spawn();this.spawnIn=spawned?Math.max(1.5,{gentle:5.8,steady:4.5,brave:3.4}[this.pace]-this.elapsed/45):.35;
+      if(this.spawned<this.total){
+        this.spawnIn-=dt;
+        if(this.spawnIn<=0){this.spawn();if(this.spawned<this.total)this.spawnIn+=SC.citySpawnInterval(this.pace,this.spawned,this.random);}
       }
+      if(this.spawned===this.total&&!this.customers.length&&!this.activeCook){this.finish();return;}
       this.work(dt);
       for(const dish of this.waste)dish.age+=dt;
-      if(this.timeLeft<=10&&Math.ceil(this.timeLeft)<before)this.emit('tick');
+      if(this.spawned===this.total&&!this.customers.length&&!this.activeCook)this.finish();
     }
   }
 
@@ -123,7 +130,7 @@
         c.save();c.translate(x,y);c.rotate(p.angle*t);this.dish(0,0,p.dish,.65);c.restore();
       }
       for(const e of g.effects){
-        const t=clamp(e.age/.35,0,1),x=counter.x+([.18,.5,.82][e.slot]*w-counter.x)*t,y=counter.y+(h*.80-counter.y)*t-Math.sin(t*Math.PI)*35;
+        const t=clamp(e.age/.35,0,1),x=counter.x+(this.customerPosition(e.slot,w,h).x-counter.x)*t,y=counter.y+(this.customerPosition(e.slot,w,h).feet-25-counter.y)*t-Math.sin(t*Math.PI)*35;
         if(e.age<.35)this.dish(x,y,e.dish,.7);
       }
       if(g.state==='celebrating'){const bw=Math.min(300,w-24);this.round((w-bw)/2,h-55,bw,39,12,'#3e6654','#9fe8b9');c.font='bold 19px system-ui';c.fillStyle='#fff3d9';c.textAlign='center';c.fillText('Tack för idag!',w/2,h-29);}
@@ -181,22 +188,30 @@
       else{this.round(-18,-9,36,15,4,'#c8dbd2');for(let i=0;i<3;i++)this.circle(-10+i*10,-10,6,['#b2d68f','#edb267','#db7767'][i]);}
       c.restore();
     }
+    customerPosition(slot,w,h){
+      const last=Math.max(2,...this.game.customers.map(p=>p.slot)),cols=w<600?3:5,rows=Math.ceil((last+1)/cols);
+      if(last<3)return {x:[.18,.5,.82][slot]*w,feet:h*.90,cell:w/3,rowHeight:h*.50,dense:false};
+      const top=Math.max(140,h*.24)+Math.min(570,w*.84)/570*180+18,rowHeight=(h-top)/rows;
+      return {x:(slot%cols+.5)*w/cols,feet:top+(Math.floor(slot/cols)+1)*rowHeight-8,cell:w/cols,rowHeight,dense:true};
+    }
     person(p,w,h,hint=false){
-      const c=this.ctx,g=this.game,a=p.look,slotX=[.18,.5,.82][p.slot]*w;
+      const c=this.ctx,g=this.game,a=p.look,pos=this.customerPosition(p.slot,w,h),slotX=pos.x;
       const entering=p.status==='arriving',leaving=p.status==='leaving',phase=entering?clamp(p.motion/.8,0,1):leaving?clamp(p.motion/1.2,0,1):1;
       const edge=p.slot%2?w+60:-60,x=entering?edge+(slotX-edge)*phase:leaving?slotX+(edge-slotX)*phase:slotX;
-      const feet=h*.90,scale=Math.min(1.13,w/430),visualScale=scale*SC.personScale(a),bodyHeight=54*a.height,headY=-bodyHeight-26;
+      const feet=pos.feet,scale=pos.dense?Math.min(.65,pos.rowHeight/240):Math.min(1.13,w/430),visualScale=scale*SC.personScale(a),bodyHeight=54*a.height,headY=-bodyHeight-26;
       const walk=(entering||leaving)&&!this.reduced?Math.sin(g.clock*13+a.phase)*5:0,anger=g.expression(p);
       SC.drawPerson(this,{x,feet,scale,look:a,walk,anger,carry:leaving&&p.happy?(xx,yy)=>this.dish(xx,yy,p.dish,.7):null});
       if(entering||g.state==='menu')return;
       if(leaving)return;
-      const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?25:w<500?17:20;
-      const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:Math.min(176,w*.285),min:32}),bh=SC.labelHeight(p.item,hint?78:44,8),bx=slotX-bw/2,by=feet+(headY-45)*visualScale-44-8-(bh-44)/2,remaining=g.patienceLeft(p);
+      const font=pos.dense?16:(SC.isChinese(g.mode)||g.mode==='bopomofo')?25:w<500?17:20;
+      const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:Math.min(176,pos.cell-10),min:32}),bh=SC.labelHeight(p.item,hint?78:44,8),bx=slotX-bw/2,by=pos.dense?feet-pos.rowHeight+6:feet+(headY-45)*visualScale-44-8-(bh-44)/2,remaining=g.patienceLeft(p);
       this.rememberScoreAnchor(p,{x:bx,y:by,w:bw,h:bh},'#f0d8ad','#304b4e');
-      c.lineWidth=g.activeCook?.customer===p?2.5:1;
-      this.round(bx,by,bw,bh,12,'#fff1d9',g.activeCook?.customer===p||p.look.exotic?'#ffc55e':'#cfb596');
-      c.fillStyle='#fff1d9';c.beginPath();c.moveTo(slotX-7,by+bh-1);c.lineTo(slotX,by+bh+8);c.lineTo(slotX+7,by+bh-1);c.fill();
-      c.font='bold '+font+'px system-ui';
+      const state=g.getTaskStates().get(p),fill=state==='queued'?'#bdeedc':state==='active'?'#ffe1a2':'#fff1d9';
+      c.lineWidth=state?3:1;
+      this.round(bx,by,bw,bh,12,fill,state==='queued'?'#167358':state==='active'?'#b77919':p.look.exotic?'#ffc55e':'#cfb596');
+      c.fillStyle=fill;c.beginPath();c.moveTo(slotX-7,by+bh-1);c.lineTo(slotX,by+bh+8);c.lineTo(slotX+7,by+bh-1);c.fill();
+      if(state){this.round(bx+bw-27,by-9,26,16,5,state==='queued'?'#167358':'#805711');c.font='bold 10px system-ui';c.textAlign='center';c.fillStyle='#ffffff';c.fillText(state==='queued'?'KÖ':'…',bx+bw-14,by+3);}
+      c.lineWidth=1;c.font='bold '+font+'px system-ui';
       c.textAlign='center';c.fillStyle='#30434a';SC.drawLabelText(c,p.item,{x:bx,y:by,w:bw,h:bh-8},{hint,hintColor:'#63544f'});
       this.round(bx+10,by+bh-9,bw-20,4,2,'#d9cbb6');this.round(bx+10,by+bh-9,Math.max(.1,(bw-20)*remaining),4,2,remaining<.25?'#d56a51':remaining<.55?'#d6a951':'#62ae90');
     }

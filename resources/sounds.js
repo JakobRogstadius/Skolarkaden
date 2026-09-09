@@ -46,7 +46,7 @@
   function synthesizeCampSound(kind,sampleRate=24000,random=Math.random){
     const length={'camp-crackle':8,'camp-insects':.78,'camp-ignite':.62,'daybreak':1.95}[kind];if(!length)throw new Error('Okänt lägerljud.');
     const data=new Float32Array(Math.ceil(length*sampleRate)),tau=Math.PI*2;
-    const crow=[[0,.17,640,850],[.23,.15,890,790],[.45,.18,940,1120],[.70,.17,1060,920],[.96,.85,970,700]];
+    const crow=[[0,.17,480,650],[.23,.15,610,580],[.45,.18,680,790],[.70,.17,740,690],[.96,.85,760,430]];
     let low=0,air=0,pop=0,phase=0;
     for(let i=0;i<data.length;i++){
       const t=i/sampleRate,u=t/length,n=random()*2-1;low+=.04*(n-low);air+=.28*(n-air);let value=0;
@@ -60,9 +60,20 @@
         const envelope=Math.sin(Math.PI*u)**1.2;value=(air*.80+low*.9+Math.sin(tau*t*110)*.06)*envelope;
       }else{
         const part=crow.find(([at,duration])=>t>=at&&t<at+duration);
-        if(part){const [at,duration,start,end]=part,v=(t-at)/duration,f0=(start+(end-start)*v)*(1+.014*Math.sin(tau*t*23));phase+=tau*f0/sampleRate;let voice=0;
-          for(let k=1;k<=9;k++){const resonance=.12+1/(1+((f0*k-1900)/560)**2);voice+=Math.sin(phase*k)*resonance/Math.sqrt(k);}
-          const attack=Math.min(1,(t-at)/.025),release=Math.min(1,(at+duration-t)/.06);value=(voice*.55+air*.08)*Math.sin(attack*Math.PI/2)**2*Math.sin(release*Math.PI/2)**2;
+        if(part){
+          const [at,duration,start,end]=part,v=(t-at)/duration,last=at>.9;
+          // A nasal, rough crow: abrupt syllables followed by a long breaking tail.
+          // Glottal harmonics and a subharmonic avoid the previous whistle-like melody.
+          const glide=last?Math.max(0,(v-.25)/.75)**.65:v,
+            f0=(start+(end-start)*glide)*(1+.025*Math.sin(tau*t*31)+.009*n);
+          phase+=tau*f0/sampleRate;let voice=0;
+          for(let k=1;k<=16;k++){
+            const hz=f0*k,resonance=.10+1.4/(1+((hz-1250)/360)**2)+.9/(1+((hz-2600)/650)**2);
+            voice+=Math.sin(phase*k+.18*Math.sin(phase*.5))*resonance/k;
+          }
+          const rasp=.7+.3*Math.sin(phase*.5),flutter=last?1-.24*v*(.5+.5*Math.sin(tau*t*43)):1;
+          const attack=Math.min(1,(t-at)/.012),release=Math.min(1,(at+duration-t)/(last?.16:.025));
+          value=(voice*.85*rasp+Math.sin(phase*.5)*.15+air*.22)*flutter*attack*release;
         }
       }
       const edge=Math.min(1,t/.025,(length-t)/.04);data[i]=.8*Math.tanh(value)*Math.max(0,edge);

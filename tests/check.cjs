@@ -40,7 +40,7 @@ test('Food scoring uses patience, capped streaks and exotic bonuses; failures br
  g.loseCustomer({status:'waiting'});assert.equal(g.streak,0);assert.equal(serve(.5),15);
  const final=g.score;g.finish();assert.equal(g.score,final,'no end bonus');
 });
-test('Food bot finishes full 90-second rounds with automatic service',()=>{for(const pace of ['gentle','steady','brave']){const g=new SC.FoodTruckGame({random:rng(5)});g.start({pace});for(let i=0;i<2000&&['playing','celebrating'].includes(g.state);i++){for(const c of g.getTargets())if(c.status==='waiting'&&!g.queue.items.some(e=>e.text===c.item.answer))g.queue.enqueue(c.item.answer);g.update(.05);}assert.equal(g.state,'won');assert.equal(g.lives,5);assert(g.hits>12);}});
+test('Food bot finishes all 40 customers with automatic service',()=>{for(const pace of ['gentle','steady','brave']){const g=new SC.FoodTruckGame({random:rng(5)});g.start({pace});for(let i=0;i<6000&&['playing','celebrating'].includes(g.state);i++){for(const c of g.getTargets())if(c.status==='waiting'&&!g.queue.items.some(e=>e.text===c.item.answer))g.queue.enqueue(c.item.answer);g.update(.05);}assert.equal(g.state,'won');assert.equal(g.lives,5);assert.equal(g.hits,40);}});
 test('Garden has one global 0.1-second chance trial, and math halves the probability',()=>{
  for(const pace of ['gentle','steady','brave']){
   const g=new SC.GardenGame({random:rng(4)});g.start({pace});const expected=2*.1/(60/{gentle:6,steady:9,brave:12}[pace]);assert(Math.abs(g.decayProbability()-expected)<1e-10);
@@ -103,7 +103,7 @@ test('Garden highlights one request per queued match, plus active work, and resp
  const pending=g.queue.enqueue('c','speech');assert.equal(g.getTaskStates().get(t),'queued');g.queue.revise(pending,'wrong');assert.equal(g.getTaskStates().size,1);g.queue.revise(pending,'sea');assert.equal(g.getTaskStates().size,2);g.queue.clear();assert.equal(g.getTaskStates().get(r),'active');
 });
 test('Food victory waves for four seconds before one result; customers, lives and queue stay frozen',()=>{
- const events=[],g=new SC.FoodTruckGame({random:rng(3),onEvent:e=>events.push(e)});g.start();g.elapsed=89.95;g.timeLeft=.05;g.queue.enqueue('last');g.update(.05);assert.equal(g.state,'celebrating');assert.equal(g.celebrationLeft,4);assert(!events.some(e=>e.type==='end'));assert(events.some(e=>e.type==='celebrate'));assert.equal(g.activeCook,null);
+ const events=[],g=new SC.FoodTruckGame({random:rng(3),onEvent:e=>events.push(e)});g.start();g.spawned=40;g.hits=40;g.customers=[];g.queue.enqueue('last');g.update(.05);assert.equal(g.state,'celebrating');assert.equal(g.celebrationLeft,4);assert(!events.some(e=>e.type==='end'));assert(events.some(e=>e.type==='celebrate'));assert.equal(g.activeCook,null);
  const before=JSON.stringify(g.customers);tick(g,3.95);assert.equal(g.state,'celebrating');assert.equal(g.queue.length,1);assert.equal(JSON.stringify(g.customers),before);assert.equal(g.lives,5);g.update(.05);assert.equal(g.state,'won');assert.equal(events.filter(e=>e.type==='end').length,1);tick(g,2);assert.equal(events.filter(e=>e.type==='end').length,1);
  const lost=new SC.FoodTruckGame();lost.start();lost.lives=0;lost.finish();assert.equal(lost.state,'lost');
 });

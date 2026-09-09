@@ -103,7 +103,12 @@ function renderUi(){
   $('score').textContent=game.score.toLocaleString('sv-SE');$('best').textContent='BÄSTA '+best.toLocaleString('sv-SE');$('score').setAttribute('aria-label',game.score+' poäng');
   let objective,secondary,value;
   if(kind==='city'){objective=game.resolved+' / '+SC.cityGoal;secondary='';value=game.resolved/SC.cityGoal*100;}
-  else if(kind==='food'){objective='◷ '+Math.ceil(game.timeLeft);secondary='♥ '.repeat(game.lives)+'♡ '.repeat(Math.max(0,5-game.lives));value=game.elapsed/90*100;}
+  else if(kind==='food'){
+    objective=game.resolved+' / '+game.total;secondary='♥ '.repeat(game.lives)+'♡ '.repeat(Math.max(0,5-game.lives));value=game.resolved/game.total*100;
+    const last=Math.max(2,...game.customers.map(c=>c.slot)),cols=game.width<600?3:5,rows=Math.ceil((last+1)/cols);
+    const needed=last<3?540:Math.max(540,Math.ceil((rows*125+Math.min(570,game.width*.84)/570*180+18)/.76));
+    $('arena').style.setProperty('--food-min-height',needed+'px');
+  }
   else if(kind==='hive'){objective=Math.min(100,Math.floor(game.honey/game.honeyGoal*100))+'% 🍯';secondary=game.season()+' · '+Math.ceil(game.timeLeft())+' s ❄';value=game.honey/game.honeyGoal*100;}
   else if(kind==='marshmallows'||kind==='eggs'){objective='';secondary='';value=0;}
   else if(kind==='home'){objective=Math.min(game.cleaned,game.total)+' / '+game.total;secondary='';value=Math.min(100,game.cleaned/game.total*100);}

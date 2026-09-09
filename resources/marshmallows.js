@@ -14,25 +14,20 @@ function scene(seed){
 class MarshmallowGame{
  constructor({queue=new SC.AnswerQueue(),onEvent=()=>{},random=Math.random}={}){Object.assign(this,{queue,onEvent,random,width:1000,height:740});this.menu();}
  emit(type,detail={}){this.onEvent({type,...detail});}
- menu(){Object.assign(this,{state:'menu',clock:0,elapsed:0,dawnAge:0,sticks:[],waste:[],effects:[],thought:null,score:0,hits:0,shots:0,early:0,burnt:0,wrong:0,spawned:0,streak:0,bestStreak:0});}
+ menu(){Object.assign(this,{state:'menu',clock:0,elapsed:0,dawnAge:0,sticks:[],waste:[],effects:[],thought:null,score:0,hits:0,shots:0,early:0,burnt:0,wrong:0,spawned:0,resolved:0,total:40,streak:0,bestStreak:0});}
  start({mode='swedish',pace='gentle',lang='sv-SE',items=null,uppercase=Math.random()<.5}={}){
   this.menu();Object.assign(this,{mode,pace,lang,uppercase});this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Lägerelden behöver minst ett svar.');
-  this.timeScale=SC.isMath(mode)?1.3:1;this.duration=120*this.timeScale;this.dawnDuration=6;this.maxSticks={gentle:2,steady:4,brave:6}[pace];
+  this.timeScale=SC.isMath(mode)?1.3:1;this.dawnDuration=6;this.maxSticks={gentle:2,steady:4,brave:6}[pace];
   this.slots=[2,3,0,1,4,5].slice(0,this.maxSticks);this.nextId=0;this.spawnIn=3.4;this.insectsIn=2.5;this.lastWrongAt=-10;this.scene=scene(Math.floor(this.random()*4294967296));
   this.state='playing';this.spawn();this.emit('start');
  }
  resize(width,height){Object.assign(this,{width,height});}
- progress(){return this.duration?clamp(this.elapsed/this.duration,0,1):0;}
- timeLeft(){return Math.max(0,this.duration-this.elapsed);}
+ progress(){return clamp(this.resolved/this.total,0,1);}
  fireStrength(){return this.state==='won'?0:(1-.48*this.progress())*(1-ease(this.dawnAge/4.7));}
  cookingRate(){return ROAST_RATE*this.fireStrength()/this.timeScale;}
  timingPoints(p){
-  // The fire cools linearly: convert roast distance to seconds so the peak
-  // follows the middle of the actual time window, even late in the night.
-  const rate=this.cookingRate(),cooling=ROAST_RATE*.48/(this.duration*this.timeScale);
-  const seconds=delta=>2*delta/(rate+Math.sqrt(Math.max(0,rate*rate-2*cooling*delta)));
-  const sinceReady=-seconds(READY-p.roast),untilEnd=Math.min(this.timeLeft(),seconds(BURNT-p.roast));
-  const position=clamp(sinceReady/(sinceReady+untilEnd),0,1);
+  // Each stick keeps its entry cooking rate; the golden window has a stable midpoint.
+  const position=clamp((p.roast-READY)/(BURNT-READY),0,1);
   return Math.round(25+25*(1-Math.abs(2*position-1)));
  }
  readiness(p){return p.roast<BURNT&&p.roast>=READY;}
@@ -48,9 +43,8 @@ class MarshmallowGame{
  }
  spawn(){
   const slot=this.slots.find(slot=>!this.sticks.some(p=>p.slot===slot));
-  // Leave enough of the cooling night for the final batch to become golden.
-  if(slot===undefined||this.state!=='playing'||this.timeLeft()<(READY+.1)/Math.max(.001,this.cookingRate())+4)return false;
-  this.sticks.push({id:++this.nextId,slot,stage:'entering',age:0,roast:0,item:this.chooseItem(),entry:null,look:SC.makePerson(this.random),phase:this.random()*TAU});this.spawned++;return true;
+  if(slot===undefined||this.state!=='playing'||this.spawned>=this.total)return false;
+  this.sticks.push({id:++this.nextId,slot,stage:'entering',age:0,roast:0,rate:this.cookingRate(),item:this.chooseItem(),entry:null,look:SC.makePerson(this.random),phase:this.random()*TAU});this.spawned++;return true;
  }
  showTask(p){p.stage='roasting';p.age=0;p.appearedAt=this.clock;p.pinyinRevealed=false;p.entry=null;this.emit('targets');}
  withdraw(p,outcome){
@@ -77,14 +71,14 @@ class MarshmallowGame{
    else if(p.stage==='flaming'&&p.age>=1.05)this.withdraw(p,'burnt');
    else if(p.stage==='withdrawing'&&p.age>=.8){
     if(p.outcome==='burnt'){this.waste.push({side:p.slot%2?1:-1,x:.28+this.random()*.44,y:.87+this.random()*.10,rotation:this.random()*TAU,age:0});this.emit('camp-toss');}
-    p.stage='gone';
+    p.stage='gone';this.resolved++;
    }
   }this.sticks=this.sticks.filter(p=>p.stage!=='gone');
   for(const p of this.waste)p.age+=dt;for(const e of this.effects)e.age+=dt;this.effects=this.effects.filter(e=>e.age<1.1);
   if(this.thought){this.thought.age+=dt;if(this.thought.age>=1.2)this.thought=null;}
  }
  dawn(){
-  this.state='celebrating';this.dawnAge=0;this.thought=null;
+  if(this.state!=='playing')return;this.state='celebrating';this.dawnAge=0;this.thought=null;
   for(const p of this.sticks)if(p.stage!=='withdrawing')this.withdraw(p,p.roast>=BURNT?'burnt':'morning');
   this.emit('celebrate');this.emit('daybreak');
  }
@@ -94,15 +88,13 @@ class MarshmallowGame{
   dt=clamp(dt,0,.05);if(this.state==='paused')return;
   if(this.state==='celebrating'){this.clock+=dt;this.dawnAge=Math.min(this.dawnDuration,this.dawnAge+dt);this.animate(dt);if(this.dawnAge>=this.dawnDuration-1e-8){this.state='won';this.emit('end',{won:true,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,burnt:this.burnt,early:this.early,spawned:this.spawned});}return;}
   if(this.state!=='playing')return;
-  if(this.timeLeft()<1e-8){this.dawn();return;}
   // Apply the FIFO before advancing cooking: there is no worker or animation wait.
-  this.work();dt=Math.min(dt,this.timeLeft());this.clock+=dt;this.elapsed+=dt;
-  if(this.timeLeft()<1e-8){this.elapsed=this.duration;this.dawn();return;}
+  this.work();this.clock+=dt;this.elapsed+=dt;
   for(const p of this.sticks)if(p.stage==='roasting'){
-   p.roast+=this.cookingRate()*dt;
+   p.roast+=p.rate*dt;
    if(p.roast>=IGNITE){p.stage='flaming';p.age=0;this.emit('camp-ignite');}
   }
-  this.animate(dt);this.spawnIn-=dt;if(this.spawnIn<=0)this.spawnIn=this.spawn()?2.8+this.random()*1.8:.6;
+  this.animate(dt);if(this.resolved===this.total&&!this.sticks.length){this.dawn();return;}this.spawnIn-=dt;if(this.spawnIn<=0)this.spawnIn=this.spawn()?2.8+this.random()*1.8:.6;
   this.insectsIn-=dt;if(this.insectsIn<=0){this.insectsIn=5+this.random()*6;this.emit('camp-insects');}
  }
 }

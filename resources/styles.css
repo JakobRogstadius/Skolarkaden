@@ -82,3 +82,6 @@ body.playing.voice-play .arena{height:clamp(540px,calc(100dvh - 82px),900px)}
 
 /* Keep 21 diagram bubbles readable in the narrow egg arena. */
 @media(max-width:599px){.arena.eggs[data-exercise="math-diagrams"]{min-height:740px}.arena.home[data-exercise="math-diagrams"]{min-height:560px}}
+
+/* Room for the fixed customer wave without shrinking task text. */
+.arena.food{min-height:var(--food-min-height,540px)}
