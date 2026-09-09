@@ -102,7 +102,7 @@ function renderUi(){
   if(game.state==='playing')queue.reconcile();
   $('score').textContent=game.score.toLocaleString('sv-SE');$('best').textContent='BÄSTA '+best.toLocaleString('sv-SE');$('score').setAttribute('aria-label',game.score+' poäng');
   let objective,secondary,value;
-  if(kind==='city'){objective=game.hits+' / '+SC.cityGoal;secondary='';value=game.hits/SC.cityGoal*100;}
+  if(kind==='city'){objective=game.resolved+' / '+SC.cityGoal;secondary='';value=game.resolved/SC.cityGoal*100;}
   else if(kind==='food'){objective='◷ '+Math.ceil(game.timeLeft);secondary='♥ '.repeat(game.lives)+'♡ '.repeat(Math.max(0,5-game.lives));value=game.elapsed/90*100;}
   else if(kind==='hive'){objective=Math.min(100,Math.floor(game.honey/game.honeyGoal*100))+'% 🍯';secondary=game.season()+' · '+Math.ceil(game.timeLeft())+' s ❄';value=game.honey/game.honeyGoal*100;}
   else if(kind==='marshmallows'||kind==='eggs'){objective='';secondary='';value=0;}

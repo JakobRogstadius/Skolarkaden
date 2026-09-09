@@ -86,7 +86,7 @@
   };
   SC.cityGoal=40;
   SC.cityPressure=(progress,elapsed)=>clamp(progress+elapsed/216,0,1);
-  SC.citySpawnInterval=(pace,pressure)=>({gentle:4.8,steady:3.2,brave:2.3}[pace])*(1-.63*pressure);
+  SC.citySpawnInterval=(pace,spawned,rng=Math.random)=>({gentle:5,steady:3,brave:1.5}[pace])*(spawned>=34?.5:1)*(.75+.5*rng());
   class CityGame {
     constructor({onEvent=()=>{},random=Math.random,queue=new SC.AnswerQueue()}={}){
       this.onEvent=onEvent;this.random=random;this.queue=queue;this.width=1000;this.height=600;
@@ -116,7 +116,7 @@
       this.items=SC.beginPractice(this,items);
       if(!this.items.length)throw new Error('En övning behöver minst ett svar.');
       this.resetCity();this.threats=[];this.effects=[];this.lasers=[];
-      this.hits=0;this.shots=0;this.score=0;this.streak=0;this.bestStreak=0;
+      this.hits=0;this.shots=0;this.score=0;this.streak=0;this.bestStreak=0;this.spawned=0;this.resolved=0;
       this.elapsed=0;this.spawnIn=.65;this.nextId=0;this.previewValue='';this.previewSource='text';
       this.lock=null;this.lastMissTurret=0;this.state='playing';this.emit('start');
     }
@@ -171,10 +171,13 @@
       this.lasers.push({x1:gun.x,y1:gun.y,x2:target?target.x:gun.x+Math.cos(gun.angle)*this.height*1.8,y2:target?target.y:gun.y+Math.sin(gun.angle)*this.height*1.8,life:.25,max:.25,hit:!!target});
       this.emit('fire',{entry});
       if(target){
-        this.threats=this.threats.filter(t=>t!==target);this.hits++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);
+        this.threats=this.threats.filter(t=>t!==target);this.hits++;this.resolved++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);
         const points=30+this.streak-1;this.score+=points;this.burst(target.x,target.y,target.color,22);this.emit('hit',{target,points,entry});
-        if(this.hits===SC.cityGoal)this.finish(true);
+        this.checkWaveComplete();
       }else{this.streak=0;this.emit('miss',{entry,reason:'Lasern letade en stund och sköt i luften.'});}
+    }
+    checkWaveComplete(){
+      if(this.spawned===SC.cityGoal&&!this.threats.length)this.finish(this.buildings.some(b=>b.alive));
     }
     finish(won){
       if(this.state!=='playing')return;
@@ -184,13 +187,13 @@
       this.emit('end',{won,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,buildings:this.buildings.filter(b=>b.alive).length});
     }
     spawn(){
-      const live=this.livingCity();if(!live.length)return;
-      const available=SC.practiceItems(this).filter(i=>!this.threats.some(t=>t.item.answer===i.answer));
-      if(!available.length || this.threats.length>=(this.width<540?4:7))return;
-      const base=available[Math.floor(this.random()*available.length)];
+      if(this.state!=='playing'||this.spawned>=SC.cityGoal)return false;
+      const live=this.livingCity(),destinations=live.length?live:[...this.buildings,...this.turrets];
+      const items=SC.practiceItems(this),available=items.filter(i=>!this.threats.some(t=>t.item.answer===i.answer)),choices=available.length?available:items;
+      const base=choices[Math.floor(this.random()*choices.length)];
       const item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};
       item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
-      const destination=live[Math.floor(this.random()*live.length)];
+      const destination=destinations[Math.floor(this.random()*destinations.length)];
       const margin=Math.min(76,this.width*.22);
       const slots=Array.from({length:7},(_,i)=>margin+i*(this.width-2*margin)/6);
       slots.sort((a,b)=>{
@@ -202,7 +205,7 @@
       const baseDuration={gentle:25,steady:18,brave:13}[this.pace];
       const duration=baseDuration*(1-.38*this.pressure())*(.95+.1*this.random());
       const t={id:++this.nextId,item,appearedAt:this.clock,destination,startX,progress:0,duration,color:PALETTE[this.nextId%5],x:startX,y:145};
-      this.threats.push(t);this.position(t);this.emit('targets');
+      this.spawned++;this.threats.push(t);this.position(t);this.emit('targets');return true;
     }
     position(t){
       t.x=t.startX+(t.destination.x-t.startX)*t.progress;
@@ -221,20 +224,23 @@
       for(const b of this.lasers)b.life-=dt;
       this.lasers=this.lasers.filter(b=>b.life>0);
       if(this.state!=='playing')return;
-      this.elapsed+=dt;this.spawnIn-=dt;
-      if(this.spawnIn<=0){this.spawn();this.spawnIn=SC.citySpawnInterval(this.pace,this.pressure());}
+      this.elapsed+=dt;
+      if(this.spawned<SC.cityGoal){
+        this.spawnIn-=dt;
+        if(this.spawnIn<=0){this.spawn();if(this.spawned<SC.cityGoal)this.spawnIn+=SC.citySpawnInterval(this.pace,this.spawned,this.random);}
+      }
       for(const t of [...this.threats]){
         t.progress+=dt/t.duration;
         this.position(t);
         if(t.progress>=1){
-          this.threats=this.threats.filter(v=>v!==t);
+          this.threats=this.threats.filter(v=>v!==t);this.resolved++;
           if(t.destination.alive){
             t.destination.alive=false;this.streak=0;
             this.burst(t.x,t.y,'#ffb89e',20);this.emit('impact',{destination:t.destination});
           }else this.burst(t.x,t.y,'#7e849e',5);
-          if(!this.buildings.some(b=>b.alive)){this.finish(false);break;}
         }
       }
+      this.checkWaveComplete();
       if(this.state==='playing')this.work(dt);
     }
   }

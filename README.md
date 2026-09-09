@@ -23,6 +23,10 @@ men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 
 Första meteoren ger 30 poäng, sedan 31, 32 och så vidare utan tak. Sviten bryts av ett missat skott eller en förstörd byggnad/kanon. Vid omgångens slut ger varje kvarvarande byggnad och kanon 50 bonuspoäng, även vid förlust. Meteorregn använder poängversion v2.
 
+Varje omgång släpper exakt 40 meteorer. Mellan meteor 1–34 är medelintervallet 5 sekunder på Lätt, 3 på Medel och 1,5 på Svår. Intervallen varierar slumpmässigt ±25 procent. De sista sex meteorerna kommer dubbelt så tätt: medelintervallet är då 2,5, 1,5 respektive 0,75 sekunder. Den första meteoren kommer efter 0,65 sekunder. Antalet samtidiga meteorer begränsar inte släpptakten. Om alla övningens svar redan är aktiva kan ett svar återanvändas.
+
+Omgången avslutas när alla 40 meteorer har skjutits ned eller landat, även om staden förstörs tidigare. Minst en kvarvarande byggnad ger vinst. Räknaren visar avklarade meteorer av 40, inklusive dem som landat; poängen räknar fortfarande träffar och sviter.
+
 ## Laga mats poäng
 
 Varje serverad måltid ger 10 poäng plus 0–10 i dricks, avrundat efter gästens återstående tålamod vid servering. Sviten ger +0 för första måltiden, +1 för nästa och upp till +5 från den sjätte. Felaktiga beställningar och gäster som går utan mat bryter sviten. En exotisk gäst ger ytterligare 40 poäng. Ingen slutbonus tillkommer. Laga mat använder poängversion v2.
