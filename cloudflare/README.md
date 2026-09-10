@@ -5,6 +5,39 @@ The website remains on GitHub Pages. No API token belongs in the frontend.
 
 ## Update the existing installation
 
+### Browsable scoreboards and popularity rankings
+
+Deploy the complete generated [worker.mjs](worker.mjs) to **skolarkaden-api**,
+keeping the existing **DB** binding. This feature needs no schema change and
+does not change game versions. Previously required migrations below still apply
+if they have not been run. Updating GitHub Pages alone does not deploy the Worker.
+
+After deployment, `/health` includes `popularity_boards: 1` and these public reads work:
+
+- `/stats?group=games`: all games, ranked by saved play count.
+- `/stats?group=exercises`: all current exercises, ranked by saved play count.
+
+Each response contains `group` and `entries` with `id`, `plays`, `player_name`
+and `score`. Counts include anonymous results and historical game versions;
+closing the browser or abandoning a round does not submit a result and therefore
+does not increase a count. Retries of the same submission are counted once.
+Game counts include retired exercise IDs, but exercise rankings list only current
+IDs (run the mathematics migration below to retain their historical counts).
+
+Record holders are chosen from current game versions and current exercise IDs,
+using the same score/time/submission-ID tie-break as the game leaderboard. For an
+exercise, this is the highest raw score across games, not a normalized comparison.
+If there is no eligible score, the name and score are null. Zero-play games and
+exercises are included, and tied play counts follow menu order. No IPs, settings
+or submission IDs are exposed. Responses can be cached for 60 seconds.
+
+The main-menu dialog opens on the currently selected game. Its buttons and
+Left/Right keys cycle through menu-order games, then games-by-plays, then
+exercises-by-plays, and wrap to the first game. Browsing does not change the game
+selected in the menu. The end-of-game dialog and score submission are unchanged.
+Before Worker deployment, the game boards still work and the two new lists show
+an explicit server-update message instead of misleading partial counts.
+
 ### Named mathematics IDs
 
 The frontend and database now use named mathematics IDs. Deploy the generated

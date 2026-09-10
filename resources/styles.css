@@ -70,6 +70,12 @@ body.playing.voice-play .arena{height:clamp(540px,calc(100dvh - 82px),900px)}
 /* The same uppercase dot-matrix face and column grid for every scoreboard cell. */
 .end-scoreboard{width:min(760px,100%);max-width:760px}
 #leaderboard{max-width:760px}
+.score-navigation{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:none;flex-wrap:nowrap}
+.score-navigation button{min-width:44px;min-height:44px;font-size:24px;padding:2px 14px}
+#scores-page{font-size:13px;text-align:center;color:var(--muted)}
+#scores-note{font-size:12px;line-height:1.4;color:var(--muted);margin:10px 0}
+#scores-table.popularity-table .board-row{grid-template-columns:4ch minmax(14ch,1fr) 8ch 10ch 7ch}
+#scores-table .board-plays{text-align:right}
 .score-table{overflow-x:auto;margin:12px 0;padding:6px 10px;border:1px solid var(--board-accent,#789a94);border-radius:8px;background:var(--board-bg,#142931);color:var(--board-accent,#d2e6c8)}
 .score-table .arcade-board{padding:0;margin:0;border:0;border-radius:0;background:none;min-width:550px}
 .score-table .board-row{display:grid;grid-template-columns:4ch 10ch minmax(14ch,1fr) 5ch 7ch;column-gap:8px;min-width:550px;min-height:30px;align-items:center;text-align:left;font:20px/1.4 SkolarkadenLED,ui-monospace,monospace;font-weight:400;text-transform:uppercase;letter-spacing:0}

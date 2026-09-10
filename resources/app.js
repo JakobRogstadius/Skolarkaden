@@ -5,7 +5,7 @@ const queue=new SC.AnswerQueue(),microphone=new SC.Microphone(),sounds=new SC.Ga
 const input=new SC.AnswerInput({field:$('answer'),form:$('answer-form'),queue,microphone,retainFocus:()=>game?.state==='playing'&&!document.querySelector('dialog[open]'),getCandidates:()=>game?.state==='playing'?game.getTargets().map(t=>t.item):[]});
 let game,renderer,kind='city',busy=false,soundOn=true,lastOptions=null,log=[],lastTargetKey=null,lastUi=0,uiFrame,replaying=null,lifecycle=0;
 const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer],home:[SC.HomeGame,SC.HomeRenderer]};
-const highscores=new SC.Highscores({getSelection:()=>scoreSelection()});
+const highscores=new SC.Highscores({getSelection:()=>scoreSelection(),games:names});
 function scoreSelection(selected=options()){
   return {kind,mode:selected.mode,pace:selected.pace,input:$('input-kind').value,lang:selected.lang,spokenLanguage:$('language').value,uppercase:selected.uppercase,soundEnabled:soundOn,reducedMotion:root.matchMedia('(prefers-reduced-motion: reduce)').matches,
     label:[names[kind],SC.modes[selected.mode].name,

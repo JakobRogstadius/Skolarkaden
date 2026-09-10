@@ -49,13 +49,20 @@ async function readBoard(selection,result){
 }
 
 class Highscores{
-  constructor({getSelection}){
+  constructor({getSelection,games={}}){
     this.getSelection=getSelection;this.run=null;this.result=null;this.view=0;this.readGeneration=0;
+    this.games=games;this.pages=[...Object.keys(games),'games','exercises'];
     $('score-name').value='';
     try{localStorage.removeItem('skolarkaden-nickname-v1');}catch(_){}
     $('score-name').addEventListener('input',()=>{if(!$('score-name').readOnly)$('score-name').value=displayName($('score-name').value);});
     $('leaderboard-open').addEventListener('click',()=>this.open(this.getSelection()));
-    $('scores-refresh').addEventListener('click',()=>this.load(this.view));
+    $('scores-refresh').addEventListener('click',()=>this.load(this.view,true));
+    $('scores-previous').addEventListener('click',()=>this.navigate(-1));
+    $('scores-next').addEventListener('click',()=>this.navigate(1));
+    $('leaderboard').addEventListener('keydown',e=>{
+      if(!['ArrowLeft','ArrowRight'].includes(e.key)||e.altKey||e.ctrlKey||e.metaKey||e.target.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;
+      if(!this.endView&&$('leaderboard').open){e.preventDefault();this.navigate(e.key==='ArrowLeft'?-1:1);}
+    });
     $('score-form').addEventListener('submit',e=>{e.preventDefault();this.pendingSave=this.submit().finally(()=>{this.pendingSave=null;});});
     $('leaderboard').addEventListener('close',()=>this.dismiss());
     $('end-overlay').addEventListener('keydown',e=>{
@@ -67,10 +74,33 @@ class Highscores{
   begin(selection){this.dismiss();$('score-name').value='';$('score-name').readOnly=false;this.result=null;this.run={selection:JSON.parse(JSON.stringify(selection)),id:root.crypto?.randomUUID?.()||null};}
   finish(score){this.result=this.run?{...this.run,score,saved:false,payload:null,pending:false}:null;}
   showEnd(){this.open(this.result?.selection||this.getSelection(),this.result);}
+  isPopularity(){return !this.endView&&['games','exercises'].includes(this.page);}
+  configureMenu(){
+    const popularity=this.isPopularity(),games=this.page==='games';
+    const title=popularity?'Mest spelade '+(games?'spel':'övningar'):'Topplista: '+(this.games[this.page]||this.selection.label.split(' · ')[0]);
+    $('leaderboard-title').textContent=title;
+    $('scores-page').textContent=(this.pages.indexOf(this.page)+1)+' / '+this.pages.length;
+    $('scores-page').setAttribute('aria-label',title+', '+$('scores-page').textContent);
+    $('scores-table').className='score-table'+(popularity?' popularity-table':'');
+    $('scores-table').scrollLeft=0;
+    $('scores-note').hidden=!popularity;
+    $('scores-note').textContent='Omgångar = sparade resultat, även anonyma och äldre spelversioner. Rekord = högsta poäng i aktuella spelversioner.'+(games?'':' Poängen jämförs direkt mellan spelen.');
+    const headings=popularity?['NR',games?'SPEL':'ÖVNING','OMGÅNGAR','NAMN','REKORD']:['NR','NAMN','ÖVNING','NIVÅ','POÄNG'];
+    $('scores-heading').replaceChildren(...headings.map(text=>{const span=document.createElement('span');span.textContent=text;return span;}));
+    $('scores-list').setAttribute('aria-label',popularity?title+' med antal sparade omgångar och rekordhållare':'De 10 högsta resultaten');
+  }
+  navigate(direction){
+    if(this.endView||!$('leaderboard').open)return;
+    const index=this.pages.indexOf(this.page);
+    this.page=this.pages[(index+direction+this.pages.length)%this.pages.length];
+    if(!this.isPopularity())this.selection={...this.selection,kind:this.page};
+    this.data=null;const token=++this.view;this.configureMenu();this.render();return this.load(token);
+  }
   open(selection,result=null){
     this.selection={...selection};this.shownResult=result;this.endView=Boolean(result);this.data=null;
+    this.page=selection.kind;
     const token=++this.view;
-    if(!result){$('leaderboard-title').textContent='Topplista: '+selection.label.split(' · ')[0];$('leaderboard').showModal();}
+    if(!result){this.configureMenu();$('leaderboard').showModal();}
     else{
       $('score-name').readOnly=Boolean(result.payload);
       if(result.payload)$('score-name').value=result.payload.player_name;
@@ -80,6 +110,7 @@ class Highscores{
     this.render();if(result){$(result.saved||!result.id?'again':'score-name').focus({preventScroll:true});}return this.load(token);
   }
   render(){
+    if(this.isPopularity()){this.renderPopularity();return;}
     const result=this.shownResult,list=$(this.endView?'end-scores-list':'scores-list'),rows=(this.data?.scores||[]).slice(0,10);
     // Park the same input node before rebuilding rows, preserving its value and payload.
     const focused=document.activeElement===$('score-name'),selection=$('score-name').selectionStart;
@@ -102,16 +133,26 @@ class Highscores{
     exercise.className='board-exercise';exercise.textContent=SC.modes[row?.exercise]?.name||'—';exercise.title=exercise.textContent;
     item.append(number,name,exercise,difficulty,score);list.append(item);
   }
-  async load(token){
-    const result=this.shownResult,generation=++this.readGeneration,status=$(this.endView?'end-scores-status':'scores-status');
+  renderPopularity(){
+    const list=$('scores-list');list.replaceChildren();
+    for(const [index,row] of (this.data?.entries||[]).entries()){
+      const item=document.createElement('li');item.className='board-row';
+      const label=this.page==='games'?this.games[row.id]:SC.modes[row.id]?.name;
+      const cells=[['board-rank',String(index+1)],['board-exercise',label||row.id],['board-plays',String(row.plays)],['board-name',row.player_name?displayName(row.player_name):'—'],['board-points',row.score===null?'—':String(row.score)]];
+      for(const [className,text] of cells){const span=document.createElement('span');span.className=className;span.textContent=text;item.append(span);}
+      list.append(item);
+    }
+  }
+  async load(token,refresh=false){
+    const result=this.shownResult,popularity=this.isPopularity(),page=this.page,generation=++this.readGeneration,status=$(this.endView?'end-scores-status':'scores-status');
     const current=()=>token===this.view&&generation===this.readGeneration;
     status.textContent='Hämtar topplistan…';$('scores-refresh').disabled=true;
     try{
-      const data=await readBoard(this.selection,result);if(!current())return;
-      if(!Array.isArray(data.scores))throw new Error('Invalid response');
+      const data=await (popularity?request('/stats?group='+page,refresh?{cache:'reload'}:{}):readBoard(this.selection,result));if(!current())return;
+      if(popularity?data.group!==page||!Array.isArray(data.entries):!Array.isArray(data.scores))throw new Error('Invalid response');
       this.data=data;this.render();
-      status.textContent=result&&data.rank==null?'Din placering kan inte hämtas just nu.':data.scores.length?'':'Bli först på topplistan!';
-    }catch(error){if(current())status.textContent=error.code==='invalid_leaderboard'?error.message:'Topplistan kunde inte hämtas. Försök igen om en stund.';}
+      status.textContent=popularity?(data.entries.some(row=>row.plays>0)?'':'Inga sparade omgångar ännu.'):result&&data.rank==null?'Din placering kan inte hämtas just nu.':data.scores.length?'':'Bli först på topplistan!';
+    }catch(error){if(current())status.textContent=popularity&&error.status===404?'Statistiken kräver en uppdatering av topplistans server.':error.code==='invalid_leaderboard'?error.message:'Topplistan kunde inte hämtas. Försök igen om en stund.';}
     finally{if(current())$('scores-refresh').disabled=false;}
   }
   async leave(action){

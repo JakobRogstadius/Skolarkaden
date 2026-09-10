@@ -20,6 +20,7 @@ class Element extends EventTarget{
   constructor(){super();this.dataset={};this.value='';this.textContent='';this.children=[];this.open=false;}
   focus(){focused=this;}
   setSelectionRange(start,end){this.selectionStart=start;this.selectionEnd=end;}
+  setAttribute(key,value){this[key]=value;}
   append(...items){this.children.push(...items);}replaceChildren(){this.children=[];}showModal(){this.open=true;}
   close(){this.open=false;this.dispatchEvent(new Event('close'));}
 }
@@ -154,5 +155,47 @@ class Element extends EventTarget{
   ui.begin(configured);configured.letterKeys.push('x');ui.finish(250);await ui.open(configured,ui.result);get('score-name').value='TEST';await ui.submit();
   const sent=posts.at(-1);assert.deepEqual(sent.settings.letter_keys,['å','ä','ö'],'snapshot actual practice keys at round start');assert.equal(sent.settings.input_mode,'voice');assert.equal(sent.settings.uppercase,true);assert.equal(sent.settings.sound_enabled,false);assert.equal(sent.settings.reduced_motion,true);
   assert.equal((await call('POST','/scores',sent)).status,201,'the actual frontend payload is accepted by the Worker');assert.deepEqual(JSON.parse(db.prepare('SELECT settings_json FROM highscores WHERE submission_id=?').get(sent.submission_id).settings_json),sent.settings);
-  db.close();console.log('PASS highscores: real SQLite, privacy, filtering, ranking, CORS, limits, keys, browser submission and retries.');
+  // Popularity uses every saved round, not just the top ten or non-anonymous names.
+  db.exec('DELETE FROM highscores');
+  const emptyStats=await (await call('GET','/stats?group=games')).json();
+  assert.equal(emptyStats.entries.length,9);assert(emptyStats.entries.every(r=>r.plays===0&&r.score===null&&r.player_name===null));
+  const fixtures=[
+    ['v2:city:swedish:gentle','ANONYM',10],
+    ['v2:city:swedish:steady','TOP CITY',100],
+    ['v2:city:swedish:brave','TIED',100],
+    ['v2:city:english:gentle','EN WIN',80],
+    ['v1:city:swedish:brave','OLD',9999],
+    ['v1:city:math:brave','RETIRED',10000],
+    ['v2:city:swedish:gentle','LATER',100,'2026-02-01'],
+    ['v2:food:swedish:brave','FOOD WIN',500],
+    ['v2:food:english:steady','FOOD EN',60],
+    ['v1:garden:swedish:gentle','OLD ONLY',1000],
+    ['vgarbage:city:swedish:gentle','INVALID',100000],
+    ['v2:city:swedish:gentle:extra','EXTRA',100000],
+    ['v2:bogus:swedish:gentle','UNKNOWN',100000],
+  ];
+  fixtures.forEach(([key,name,score,date='2026-01-01'],i)=>db.prepare('INSERT INTO highscores(submission_id,leaderboard_key,player_name,score,created_at,ip) VALUES(?,?,?,?,?,?)')
+    .run('00000000-0000-4000-8000-'+String(i).padStart(12,'0'),key,name,score,date,'192.0.2.123'));
+  const statsResponse=await call('GET','/stats?group=games'),gameStats=await statsResponse.json();
+  assert.equal(statsResponse.headers.get('Cache-Control'),'public, max-age=60');
+  assert.equal(statsResponse.headers.get('Access-Control-Allow-Origin'),origin);
+  assert.deepEqual(gameStats.entries.slice(0,3),[
+    {id:'city',plays:7,player_name:'TOP CITY',score:100},
+    {id:'food',plays:2,player_name:'FOOD WIN',score:500},
+    {id:'garden',plays:1,player_name:null,score:null}
+  ]);
+  assert.deepEqual(Object.keys(gameStats.entries[0]).sort(),['id','player_name','plays','score'],'only aggregate public fields');
+  const exerciseStats=await (await call('GET','/stats?group=exercises')).json();
+  assert.equal(exerciseStats.entries.length,Object.keys(context.Starlight.modes).length);
+  assert.deepEqual(exerciseStats.entries.slice(0,2),[
+    {id:'swedish',plays:7,player_name:'FOOD WIN',score:500},
+    {id:'english',plays:2,player_name:'EN WIN',score:80}
+  ]);
+  assert.equal(exerciseStats.entries[2].id,'letters','zero-count ties follow menu order');
+  assert.equal((await call('GET','/stats?group=wrong')).status,400);
+  assert.equal((await call('POST','/stats?group=games',{})).status,405);
+  assert.equal((await call('OPTIONS','/stats')).status,204);
+  assert.equal((await call('GET','/stats?group=games',undefined,{Origin:'https://unrelated.example'})).status,403);
+  assert.equal((await (await call('GET','/health')).json()).capabilities.popularity_boards,1);
+  db.close();console.log('PASS highscores: real SQLite, privacy, filtering, ranking, CORS, limits, keys, browser submission, retries and popularity aggregates.');
 })().catch(error=>{console.error(error);process.exitCode=1;});
