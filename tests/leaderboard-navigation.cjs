@@ -52,6 +52,7 @@ const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:t
     }else{
       assert.equal(requests.at(-1).pathname,'/stats');assert.equal(requests.at(-1).searchParams.get('group'),ui.page);
       assert.equal(get('scores-heading').children[2].textContent,'OMGÅNGAR');
+      assert.equal(get('scores-heading').children[3].textContent,'LEDARE');
       const list=get('scores-list'),count=ui.page==='games'?9:22;
       assert.equal(list.children.length,count,'popularity is not limited to ten rows');
       assert.equal(list.children[0].children[2].textContent,'42');assert.equal(list.children[0].children[3].textContent,'ÅSA');
@@ -59,7 +60,7 @@ const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:t
       if(ui.page==='games'){
         assert.equal(get('scores-heading').children[4].textContent,'REKORD');assert.equal(list.children[0].children[4].textContent,'500');
       }else{
-        assert.deepEqual(get('scores-heading').children.map(cell=>cell.textContent),['NR','ÖVNING','OMGÅNGAR','BÄSTA SPELARE']);
+        assert.deepEqual(get('scores-heading').children.map(cell=>cell.textContent),['NR','ÖVNING','OMGÅNGAR','LEDARE']);
         assert(list.children.every(row=>row.children.length===4));assert.equal(list.children[0].children[3].title,undefined);
       }
     }

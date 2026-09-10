@@ -45,7 +45,7 @@ bump is needed. `/stats?group=exercises` reports
 `ranking_method: "top-five-game-percentiles-v1"`. Until that version is deployed, the
 frontend still shows play counts but hides the old incomparable record holders.
 
-The list stays ordered by exercise popularity. Its **BÄSTA SPELARE** column shows
+The list stays ordered by exercise popularity. Its **LEDARE** column shows
 only the leading name. The winner is calculated from its average of the
 **five best percentiles** for that exercise; the average is not displayed:
 

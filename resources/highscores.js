@@ -83,7 +83,7 @@ class Highscores{
     $('scores-page').setAttribute('aria-label',title+', '+$('scores-page').textContent);
     $('scores-table').className='score-table'+(popularity?' popularity-table'+(games?'':' exercise-popularity-table'):'');
     $('scores-table').scrollLeft=0;
-    const headings=popularity?(games?['NR','SPEL','OMGÅNGAR','NAMN','REKORD']:['NR','ÖVNING','OMGÅNGAR','BÄSTA SPELARE']):['NR','NAMN','ÖVNING','NIVÅ','POÄNG'];
+    const headings=popularity?(games?['NR','SPEL','OMGÅNGAR','LEDARE','REKORD']:['NR','ÖVNING','OMGÅNGAR','LEDARE']):['NR','NAMN','ÖVNING','NIVÅ','POÄNG'];
     $('scores-heading').replaceChildren(...headings.map(text=>{const span=document.createElement('span');span.textContent=text;return span;}));
     $('scores-list').setAttribute('aria-label',popularity?title+' med antal sparade omgångar och '+(games?'rekordhållare':'bästa spelare'):'De 10 högsta resultaten');
   }
