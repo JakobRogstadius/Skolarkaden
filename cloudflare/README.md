@@ -12,7 +12,7 @@ keeping the existing **DB** binding. This feature needs no schema change and
 does not change game versions. Previously required migrations below still apply
 if they have not been run. Updating GitHub Pages alone does not deploy the Worker.
 
-After deployment, `/health` includes `popularity_boards: 1` and these public reads work:
+After deployment, `/health` includes `popularity_boards: 1` and `exercise_ratings: 1`, and these public reads work:
 
 - `/stats?group=games`: all games, ranked by saved play count.
 - `/stats?group=exercises`: all current exercises, ranked by saved play count.
@@ -24,12 +24,12 @@ does not increase a count. Retries of the same submission are counted once.
 Game counts include retired exercise IDs, but exercise rankings list only current
 IDs (run the mathematics migration below to retain their historical counts).
 
-Record holders are chosen from current game versions and current exercise IDs,
-using the same score/time/submission-ID tie-break as the game leaderboard. For an
-exercise, this is the highest raw score across games, not a normalized comparison.
-If there is no eligible score, the name and score are null. Zero-play games and
-exercises are included, and tied play counts follow menu order. No IPs, settings
-or submission IDs are exposed. Responses can be cached for 60 seconds.
+Game record holders are chosen from current game versions and current exercise
+IDs, using the same score/time/submission-ID tie-break as the game leaderboard.
+Exercise leaders instead use the relative rating described below; their `score`
+is always null and their `rating` is separate from raw game points. Zero-play
+games and exercises are included, and tied play counts follow menu order.
+No IPs, settings or submission IDs are exposed. Responses can be cached for 60 seconds.
 
 The main-menu dialog opens on the currently selected game. Its buttons and
 Left/Right keys cycle through menu-order games, then games-by-plays, then
@@ -37,6 +37,46 @@ exercises-by-plays, and wrap to the first game. Browsing does not change the gam
 selected in the menu. The end-of-game dialog and score submission are unchanged.
 Before Worker deployment, the game boards still work and the two new lists show
 an explicit server-update message instead of misleading partial counts.
+
+### Relative exercise ratings
+
+Deploy the updated generated Worker; no additional SQL migration or game-version
+bump is needed. `/stats?group=exercises` reports
+`ranking_method: "top-five-game-percentiles-v1"`. Until that version is deployed, the
+frontend still shows play counts but hides the old incomparable record holders.
+
+The list stays ordered by exercise popularity. Its **SNITT** column shows the
+leading name's average of its **five best percentiles** for that exercise:
+
+1. Calculate each saved score's percentile within its **game and current game
+   version**, combining **all exercises and difficulty levels, including ANONYM**.
+   Every result has equal weight, including the candidate's own results. Use the
+   same current exercise IDs as the game leaderboard; migrate old math IDs if needed.
+2. Use mid-ranks for tied scores:
+   `percentile = 100 × (number of lower scores + 0.5 × number of equal scores) / total scores`.
+   The equal-score count includes the result itself. Five identical scores alone
+   therefore all have percentile 50, not 100.
+3. For each non-anonymous name and exercise, take the **five highest percentiles**
+   and calculate their arithmetic mean. They can come from one game or several,
+   and from any difficulty. Five results for that same name and exercise are
+   required; otherwise the name does not yet qualify. There is no recent-only
+   window, shrinkage factor or requirement to play different games.
+4. Display one winner: highest mean, then whoever completed their selected best
+   five first (timestamp, then submission ID for deterministic same-time ordering).
+   Round means to eight decimal places before this tie-break to suppress floating
+   point noise. The UI displays one decimal, but that display rounding does not
+   decide the winner. Raw cross-game points never break ties.
+
+Percentiles are recalculated from the saved data when requested, so new scores
+can change existing percentiles. More attempts provide more opportunities to
+improve the best five. Anonymous results affect comparison pools and popularity,
+but can never be an exercise winner. Ordinary game scoreboards remain unchanged.
+
+Each exercise entry has `rating` (0–100, or null); a qualifying winner additionally
+has `sample_count: 5`. `player_name` is null when nobody qualifies, and `score` is
+always null on the exercise overview. Only one winner is returned or displayed.
+Names are not authenticated identities: colliding names are grouped and aliases
+are separate. No accounts, IP-based identity or remembered names are introduced.
 
 ### Named mathematics IDs
 

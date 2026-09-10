@@ -188,9 +188,11 @@ class Element extends EventTarget{
   const exerciseStats=await (await call('GET','/stats?group=exercises')).json();
   assert.equal(exerciseStats.entries.length,Object.keys(context.Starlight.modes).length);
   assert.deepEqual(exerciseStats.entries.slice(0,2),[
-    {id:'swedish',plays:7,player_name:'FOOD WIN',score:500},
-    {id:'english',plays:2,player_name:'EN WIN',score:80}
+    {id:'swedish',plays:7,player_name:null,score:null,rating:null},
+    {id:'english',plays:2,player_name:null,score:null,rating:null}
   ]);
+  assert.equal(exerciseStats.ranking_method,'top-five-game-percentiles-v1');
+  assert.equal((await (await call('GET','/health')).json()).capabilities.exercise_ratings,1);
   assert.equal(exerciseStats.entries[2].id,'letters','zero-count ties follow menu order');
   assert.equal((await call('GET','/stats?group=wrong')).status,400);
   assert.equal((await call('POST','/stats?group=games',{})).status,405);

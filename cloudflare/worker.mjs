@@ -82,7 +82,8 @@ const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englis
   ...mathExercises]);
 const PACES = new Set(['gentle', 'steady', 'brave']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1 };
+const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1 };
+const EXERCISE_RATING_METHOD = 'top-five-game-percentiles-v1';
 const LANGUAGES = new Set(['sv-SE', 'en-US', 'zh-TW', 'zh-CN']);
 
 function validBoard(value) {
@@ -162,7 +163,7 @@ async function popularity(db, group) {
   // Count saved rounds across versions, but don't make obsolete scores record holders.
   // Decode the original keys, including rows predating settings_json. Only public
   // aggregate fields leave this query; IPs, settings and submission IDs stay private.
-  const { results } = await db.prepare(`
+  const scope = `
     WITH game_versions(game, current_version) AS (VALUES ${versions.map(() => '(?, ?)').join(',')}),
     version_parts AS (
       SELECT submission_id, player_name, score, created_at,
@@ -183,18 +184,51 @@ async function popularity(db, group) {
       SELECT *, ${group === 'games' ? 'game' : 'exercise'} AS id,
         version = current_version AND known_exercise AS is_current
       FROM known ${group === 'exercises' ? 'WHERE known_exercise' : ''}
-    ), ranked AS (
+    )`;
+  const bindings = [...versions.flat(), ...LESSONS, ...PACES];
+  const { results } = await db.prepare(scope + (group === 'exercises' ? `
+    SELECT id, count(*) AS plays, NULL AS player_name, NULL AS score FROM eligible GROUP BY id
+  ` : `, ranked AS (
       SELECT *, count(*) OVER (PARTITION BY id) AS plays,
         row_number() OVER (PARTITION BY id ORDER BY is_current DESC, score DESC, created_at ASC, submission_id ASC) AS position
       FROM eligible
     )
     SELECT id, plays, CASE WHEN is_current THEN player_name END AS player_name,
       CASE WHEN is_current THEN score END AS score FROM ranked WHERE position = 1
-  `).bind(...versions.flat(), ...LESSONS, ...PACES).all();
+  `)).bind(...bindings).all();
+  let leaders = new Map();
+  if (group === 'exercises') {
+    // Calculate game-wide percentiles BEFORE selecting names or exercises.
+    // The pool includes the player's own scores, anonymous results, every
+    // supported exercise and every difficulty, within the current game version.
+    const best = await db.prepare(scope + `, game_ranks AS (
+      SELECT *, rank() OVER (PARTITION BY game ORDER BY score ASC) AS score_rank,
+        count(*) OVER (PARTITION BY game, score) AS score_ties,
+        count(*) OVER (PARTITION BY game) AS game_samples
+      FROM eligible WHERE is_current
+    ), percentiles AS (
+      SELECT *, 100.0 * (score_rank - 1 + 0.5 * score_ties) / game_samples AS percentile
+      FROM game_ranks
+    ), personal_best AS (
+      SELECT *, row_number() OVER (PARTITION BY exercise, player_name
+        ORDER BY percentile DESC, created_at ASC, submission_id ASC) AS position
+      FROM percentiles WHERE player_name <> 'ANONYM' AND trim(player_name) <> ''
+    ), averages AS (
+      SELECT exercise AS id, player_name, round(avg(percentile), 8) AS rating,
+        max(created_at || ':' || submission_id) AS completed_order
+      FROM personal_best WHERE position <= 5
+      GROUP BY exercise, player_name HAVING count(*) = 5
+    ), leaders AS (
+      SELECT *, row_number() OVER (PARTITION BY id ORDER BY rating DESC, completed_order ASC) AS place FROM averages
+    ) SELECT id, player_name, rating FROM leaders WHERE place = 1
+    `).bind(...bindings).all();
+    leaders = new Map(best.results.map(({ id, ...row }) => [id, { ...row, sample_count: 5 }]));
+  }
   const byId = new Map(results.map(row => [row.id, row]));
-  return [...(group === 'games' ? GAMES : LESSONS)].map(id =>
-    byId.get(id) || { id, plays: 0, player_name: null, score: null }
-  ).sort((a, b) => b.plays - a.plays); // Stable ties follow the menu order.
+  return [...(group === 'games' ? GAMES : LESSONS)].map(id => ({
+    ...(byId.get(id) || { id, plays: 0, player_name: null, score: null }),
+    ...(group === 'exercises' ? { rating: null, ...(leaders.get(id) || {}) } : {})
+  })).sort((a, b) => b.plays - a.plays); // Stable ties follow the menu order.
 }
 
 export default {
@@ -221,7 +255,7 @@ export default {
         if (request.method !== 'GET') return reply({ error: 'method_not_allowed' }, 405, { Allow: 'GET, OPTIONS' });
         const group = url.searchParams.get('group');
         if (!['games', 'exercises'].includes(group)) return reply({ error: 'invalid_group' }, 400);
-        return reply({ group, entries: await popularity(env.DB, group) }, 200, { 'Cache-Control': 'public, max-age=60' });
+        return reply({ group, ...(group === 'exercises' ? { ranking_method: EXERCISE_RATING_METHOD } : {}), entries: await popularity(env.DB, group) }, 200, { 'Cache-Control': 'public, max-age=60' });
       }
       if (url.pathname !== '/scores') return reply({ error: 'not_found' }, 404);
       if (request.method === 'GET') {

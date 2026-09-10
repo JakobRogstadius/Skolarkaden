@@ -17,7 +17,7 @@ const get=id=>{assert(elements.has(id),'missing HTML element '+id);return elemen
 get('pace').options=Array.from(html.match(/<select id="pace">([\s\S]*?)<\/select>/)[1].matchAll(/<option value="([^"]+)">([^<]+)<\/option>/g),m=>({value:m[1],textContent:m[2]}));
 const games=Object.fromEntries([...html.matchAll(/<label class="game-card[^\"]*">[\s\S]*?name="game" value="([^"]+)"[\s\S]*?class="card-title">([^<]+)<\/span><\/label>/g)].map(([,id,name])=>[id,name]));
 assert.equal(Object.keys(games).length,9);
-let delayed=false,failStats=false,unavailableStats=false;const pending=[],requests=[],requestOptions=[],posts=[];
+let delayed=false,failStats=false,unavailableStats=false,oldStats=false;const pending=[],requests=[],requestOptions=[],posts=[];
 const context=vm.createContext({console,Event,EventTarget,crypto:webcrypto,AbortController,setTimeout,clearTimeout,
   document:{getElementById:get,createElement:()=>new Element(),get activeElement(){return focused;}},localStorage:{removeItem(){}},
   fetch:async(url,options={})=>{
@@ -29,7 +29,7 @@ const context=vm.createContext({console,Event,EventTarget,crypto:webcrypto,Abort
       if(unavailableStats)return Response.json({error:'not_found'},{status:404});
       if(failStats)throw Error('network');
       const group=parsed.searchParams.get('group'),ids=group==='games'?Object.keys(games):Object.keys(context.Starlight.modes);
-      return Response.json({group,entries:ids.map((id,i)=>({id,plays:i===0?42:0,player_name:i===0?'Åsa':null,score:i===0?500:null}))});
+      return Response.json({group,...(!oldStats?{ranking_method:'top-five-game-percentiles-v1'}:{}),entries:ids.map((id,i)=>({id,plays:i===0?42:0,player_name:i===0?'Åsa':null,score:i===0?500:null,...(!oldStats?{rating:i===0?68.125:null,sample_count:5}:{})}))});
     }
     return Response.json({leaderboard:parsed.searchParams.get('leaderboard').split(':').slice(0,2).join(':'),scores:[],rank:1});
   }});
@@ -56,6 +56,9 @@ const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:t
       assert.equal(list.children.length,count,'popularity is not limited to ten rows');
       assert.equal(list.children[0].children[2].textContent,'42');assert.equal(list.children[0].children[3].textContent,'ÅSA');
       assert.equal(list.children[1].children[2].textContent,'0');assert.equal(list.children[1].children[3].textContent,'—');
+      assert.equal(get('scores-heading').children[4].textContent,ui.page==='games'?'REKORD':'SNITT');
+      assert.equal(list.children[0].children[4].textContent,ui.page==='games'?'500':'68.1');
+      if(ui.page==='exercises')assert.match(list.children[0].children[4].title,/fem bästa percentilerna/);
     }
   }
   assert.equal(selection.kind,'dinosaur','browsing must not change the menu game');
@@ -71,9 +74,10 @@ const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:t
   unavailableStats=true;await ui.load(ui.view);assert.match(get('scores-status').textContent,/uppdatering/);
   unavailableStats=false;failStats=true;await ui.load(ui.view);assert.match(get('scores-status').textContent,/kunde inte hämtas/);
   failStats=false;await click('scores-refresh');assert.equal(get('scores-status').textContent,'');assert.equal(requestOptions.at(-1).cache,'reload');
+  oldStats=true;await ui.load(ui.view);assert.match(get('scores-status').textContent,/uppdatering/);assert.equal(get('scores-list').children[0].children[3].textContent,'—');assert.equal(get('scores-list').children[0].children[4].textContent,'—');assert.equal(get('scores-list').children[0].children[2].textContent,'42');oldStats=false;
   // Resolve older requests after newer pages: neither data nor errors may leak.
   delayed=true;const older=ui.open({...selection,kind:'city'}),newer=ui.navigate(-1);
-  pending[1].resolve(Response.json({group:'exercises',entries:[{id:'swedish',plays:3,player_name:'NY',score:9}]}));await newer;
+  pending[1].resolve(Response.json({group:'exercises',ranking_method:'top-five-game-percentiles-v1',entries:[{id:'swedish',plays:5,player_name:'NY',score:null,rating:58,sample_count:5}]}));await newer;
   pending[0].resolve(Response.json({leaderboard:'v2:city',scores:[{player_name:'OLD',score:999}]}));await older;
   assert.equal(ui.page,'exercises');assert.equal(get('scores-list').children[0].children[3].textContent,'NY');
   const olderStats=ui.navigate(-1),newerGame=ui.navigate(2);
