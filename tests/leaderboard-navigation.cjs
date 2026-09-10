@@ -48,17 +48,20 @@ const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:t
     if(Object.hasOwn(games,ui.page)){
       assert.equal(requests.at(-1).searchParams.get('leaderboard').split(':')[1],ui.page);
       assert.equal(get('leaderboard-title').textContent,'Topplista: '+games[ui.page]);
-      assert.equal(get('scores-list').children.length,10);assert.equal(get('scores-note').hidden,true);
+      assert.equal(get('scores-list').children.length,10);
     }else{
       assert.equal(requests.at(-1).pathname,'/stats');assert.equal(requests.at(-1).searchParams.get('group'),ui.page);
-      assert.equal(get('scores-note').hidden,false);assert.equal(get('scores-heading').children[2].textContent,'OMGÅNGAR');
+      assert.equal(get('scores-heading').children[2].textContent,'OMGÅNGAR');
       const list=get('scores-list'),count=ui.page==='games'?9:22;
       assert.equal(list.children.length,count,'popularity is not limited to ten rows');
       assert.equal(list.children[0].children[2].textContent,'42');assert.equal(list.children[0].children[3].textContent,'ÅSA');
       assert.equal(list.children[1].children[2].textContent,'0');assert.equal(list.children[1].children[3].textContent,'—');
-      assert.equal(get('scores-heading').children[4].textContent,ui.page==='games'?'REKORD':'SNITT');
-      assert.equal(list.children[0].children[4].textContent,ui.page==='games'?'500':'68.1');
-      if(ui.page==='exercises')assert.match(list.children[0].children[4].title,/fem bästa percentilerna/);
+      if(ui.page==='games'){
+        assert.equal(get('scores-heading').children[4].textContent,'REKORD');assert.equal(list.children[0].children[4].textContent,'500');
+      }else{
+        assert.deepEqual(get('scores-heading').children.map(cell=>cell.textContent),['NR','ÖVNING','OMGÅNGAR','BÄSTA SPELARE']);
+        assert(list.children.every(row=>row.children.length===4));assert.equal(list.children[0].children[3].title,undefined);
+      }
     }
   }
   assert.equal(selection.kind,'dinosaur','browsing must not change the menu game');
@@ -74,7 +77,7 @@ const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:t
   unavailableStats=true;await ui.load(ui.view);assert.match(get('scores-status').textContent,/uppdatering/);
   unavailableStats=false;failStats=true;await ui.load(ui.view);assert.match(get('scores-status').textContent,/kunde inte hämtas/);
   failStats=false;await click('scores-refresh');assert.equal(get('scores-status').textContent,'');assert.equal(requestOptions.at(-1).cache,'reload');
-  oldStats=true;await ui.load(ui.view);assert.match(get('scores-status').textContent,/uppdatering/);assert.equal(get('scores-list').children[0].children[3].textContent,'—');assert.equal(get('scores-list').children[0].children[4].textContent,'—');assert.equal(get('scores-list').children[0].children[2].textContent,'42');oldStats=false;
+  oldStats=true;await ui.load(ui.view);assert.match(get('scores-status').textContent,/uppdatering/);assert.equal(get('scores-list').children[0].children[3].textContent,'—');assert.equal(get('scores-list').children[0].children.length,4);assert.equal(get('scores-list').children[0].children[2].textContent,'42');oldStats=false;
   // Resolve older requests after newer pages: neither data nor errors may leak.
   delayed=true;const older=ui.open({...selection,kind:'city'}),newer=ui.navigate(-1);
   pending[1].resolve(Response.json({group:'exercises',ranking_method:'top-five-game-percentiles-v1',entries:[{id:'swedish',plays:5,player_name:'NY',score:null,rating:58,sample_count:5}]}));await newer;

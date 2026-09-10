@@ -81,13 +81,11 @@ class Highscores{
     $('leaderboard-title').textContent=title;
     $('scores-page').textContent=(this.pages.indexOf(this.page)+1)+' / '+this.pages.length;
     $('scores-page').setAttribute('aria-label',title+', '+$('scores-page').textContent);
-    $('scores-table').className='score-table'+(popularity?' popularity-table':'');
+    $('scores-table').className='score-table'+(popularity?' popularity-table'+(games?'':' exercise-popularity-table'):'');
     $('scores-table').scrollLeft=0;
-    $('scores-note').hidden=!popularity;
-    $('scores-note').textContent=games?'Omgångar = sparade resultat, även anonyma och äldre spelversioner. Rekord = högsta poäng i aktuella spelversioner.':'Snitt 0–100 = dina fem bästa percentiler för övningen. Varje percentil jämförs med alla resultat i samma spel och aktuella version, inklusive andra övningar, svårigheter och ANONYM. Fem namngivna resultat krävs; samma spel går bra.';
-    const headings=popularity?['NR',games?'SPEL':'ÖVNING','OMGÅNGAR','NAMN',games?'REKORD':'SNITT']:['NR','NAMN','ÖVNING','NIVÅ','POÄNG'];
+    const headings=popularity?(games?['NR','SPEL','OMGÅNGAR','NAMN','REKORD']:['NR','ÖVNING','OMGÅNGAR','BÄSTA SPELARE']):['NR','NAMN','ÖVNING','NIVÅ','POÄNG'];
     $('scores-heading').replaceChildren(...headings.map(text=>{const span=document.createElement('span');span.textContent=text;return span;}));
-    $('scores-list').setAttribute('aria-label',popularity?title+' med antal sparade omgångar och '+(games?'rekordhållare':'snitt av de fem bästa percentilerna'):'De 10 högsta resultaten');
+    $('scores-list').setAttribute('aria-label',popularity?title+' med antal sparade omgångar och '+(games?'rekordhållare':'bästa spelare'):'De 10 högsta resultaten');
   }
   navigate(direction){
     if(this.endView||!$('leaderboard').open)return;
@@ -139,11 +137,10 @@ class Highscores{
       const item=document.createElement('li');item.className='board-row';
       const label=this.page==='games'?this.games[row.id]:SC.modes[row.id]?.name;
       const relative=this.page==='exercises',hasRating=relative&&Number.isFinite(row.rating);
-      const value=relative?(hasRating?row.rating.toFixed(1):'—'):(row.score===null?'—':String(row.score));
       const name=relative&&!hasRating?'—':row.player_name?displayName(row.player_name):'—';
-      const details=hasRating?'Medelvärde av de fem bästa percentilerna för övningen':relative?'Fem sparade resultat med samma namn i övningen krävs.':'';
-      const cells=[['board-rank',String(index+1)],['board-exercise',label||row.id],['board-plays',String(row.plays)],['board-name',name],['board-points',value]];
-      for(const [className,text] of cells){const span=document.createElement('span');span.className=className;span.textContent=text;if(relative&&['board-name','board-points'].includes(className)){span.title=details;span.setAttribute('aria-label',text+' · '+details);}item.append(span);}
+      const cells=[['board-rank',String(index+1)],['board-exercise',label||row.id],['board-plays',String(row.plays)],['board-name',name]];
+      if(!relative)cells.push(['board-points',row.score===null?'—':String(row.score)]);
+      for(const [className,text] of cells){const span=document.createElement('span');span.className=className;span.textContent=text;item.append(span);}
       list.append(item);
     }
   }

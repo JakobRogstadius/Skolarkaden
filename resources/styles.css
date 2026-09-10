@@ -73,18 +73,21 @@ body.playing.voice-play .arena{height:clamp(540px,calc(100dvh - 82px),900px)}
 .score-navigation{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:none;flex-wrap:nowrap}
 .score-navigation button{min-width:44px;min-height:44px;font-size:24px;padding:2px 14px}
 #scores-page{font-size:13px;text-align:center;color:var(--muted)}
-#scores-note{font-size:12px;line-height:1.4;color:var(--muted);margin:10px 0}
+#scores-table.popularity-table{--board-min-width:600px}
+#scores-table.exercise-popularity-table{--board-min-width:540px}
 #scores-table.popularity-table .board-row{grid-template-columns:4ch minmax(14ch,1fr) 8ch 10ch 7ch}
+#scores-table.exercise-popularity-table .board-row{grid-template-columns:4ch minmax(14ch,1fr) 8ch 13ch}
+#scores-table.exercise-popularity-table .board-row>span:last-child{text-align:left}
 #scores-table .board-plays{text-align:right}
-.score-table{overflow-x:auto;margin:12px 0;padding:6px 10px;border:1px solid var(--board-accent,#789a94);border-radius:8px;background:var(--board-bg,#142931);color:var(--board-accent,#d2e6c8)}
-.score-table .arcade-board{padding:0;margin:0;border:0;border-radius:0;background:none;min-width:550px}
-.score-table .board-row{display:grid;grid-template-columns:4ch 10ch minmax(14ch,1fr) 5ch 7ch;column-gap:8px;min-width:550px;min-height:30px;align-items:center;text-align:left;font:20px/1.4 SkolarkadenLED,ui-monospace,monospace;font-weight:400;text-transform:uppercase;letter-spacing:0}
+.score-table{--board-min-width:570px;overflow-x:auto;margin:12px 0;padding:6px 10px;border:1px solid var(--board-accent,#789a94);border-radius:8px;background:var(--board-bg,#142931);color:var(--board-accent,#d2e6c8)}
+.score-table .arcade-board{padding:0;margin:0;border:0;border-radius:0;background:none;min-width:var(--board-min-width)}
+.score-table .board-row{display:grid;grid-template-columns:4ch 10ch minmax(14ch,1fr) 5ch 7ch;column-gap:16px;min-width:var(--board-min-width);min-height:30px;align-items:center;text-align:left;font:20px/1.4 SkolarkadenLED,ui-monospace,monospace;font-weight:400;text-transform:uppercase;letter-spacing:0}
 .score-table .board-row>span{font:inherit;letter-spacing:0;white-space:nowrap;min-width:0}
 .score-table .board-heading{opacity:.65;border-bottom:1px solid #ffffff30;padding-bottom:5px;margin-bottom:3px}
 .score-table .board-row>span:first-child,.score-table .board-row>span:last-child{text-align:right}
 .score-table .board-difficulty{text-align:center;opacity:.85}.score-table .board-name{width:10ch;overflow:hidden}.score-table .board-row>.board-exercise{white-space:normal;overflow-wrap:anywhere;padding:3px 0}
 .score-table #score-name{font:inherit;height:28px;width:10ch;max-width:100%;letter-spacing:0}.score-table #score-name::placeholder{font:inherit}
-@media(max-width:600px){.end-scoreboard{padding:16px 12px}.score-table{padding:6px 8px}.score-table .board-row{font-size:18px;column-gap:6px;min-width:494px}.score-table .arcade-board{min-width:494px}}
+@media(max-width:600px){.end-scoreboard{padding:16px 12px}.score-table{--board-min-width:500px;padding:6px 8px}#scores-table.popularity-table{--board-min-width:534px}#scores-table.exercise-popularity-table{--board-min-width:476px}.score-table .board-row{font-size:18px;column-gap:12px}}
 
 /* Keep 21 diagram bubbles readable in the narrow egg arena. */
 @media(max-width:599px){.arena.eggs[data-exercise="math-diagrams"]{min-height:740px}.arena.home[data-exercise="math-diagrams"]{min-height:560px}}

@@ -45,8 +45,9 @@ bump is needed. `/stats?group=exercises` reports
 `ranking_method: "top-five-game-percentiles-v1"`. Until that version is deployed, the
 frontend still shows play counts but hides the old incomparable record holders.
 
-The list stays ordered by exercise popularity. Its **SNITT** column shows the
-leading name's average of its **five best percentiles** for that exercise:
+The list stays ordered by exercise popularity. Its **BÄSTA SPELARE** column shows
+only the leading name. The winner is calculated from its average of the
+**five best percentiles** for that exercise; the average is not displayed:
 
 1. Calculate each saved score's percentile within its **game and current game
    version**, combining **all exercises and difficulty levels, including ANONYM**.
@@ -64,8 +65,7 @@ leading name's average of its **five best percentiles** for that exercise:
 4. Display one winner: highest mean, then whoever completed their selected best
    five first (timestamp, then submission ID for deterministic same-time ordering).
    Round means to eight decimal places before this tie-break to suppress floating
-   point noise. The UI displays one decimal, but that display rounding does not
-   decide the winner. Raw cross-game points never break ties.
+   point noise. Raw cross-game points never break ties.
 
 Percentiles are recalculated from the saved data when requested, so new scores
 can change existing percentiles. More attempts provide more opportunities to
