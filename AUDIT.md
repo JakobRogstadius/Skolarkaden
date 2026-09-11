@@ -1,3 +1,15 @@
+# Stabil kundstorlek och närliggande pratbubblor i Laga mat
+
+2026-09-11.
+
+Den fjärde kunden utlöste tidigare en separat tät rutnätslayout: alla kunder fick en mindre skala, positionerna räknades om efter sista upptagna platsen och bubblorna placerades överst i rutorna oberoende av huvudena. Detta gav plötsligt små personer och stora avstånd till etiketterna.
+
+Layouten använder nu samma personskala och fasta, lätt förskjutna väntplatser från första kunden. Ytterligare rader utökar scenen utan att flytta befintliga kunder eller matbilen. Bubblorna är centrerade över respektive huvud, med samma nära ankare för barn, vuxna, diagram och fördröjda mandarinledtrådar. Matleveranser använder samma kundpositioner. Antalet kunder, ankomsttider, tålamod, köstatus, poäng och spelversion ändras inte.
+
+Verifierat: tolv kompletta kundomgångar, 36 etikettlayouter med 3–18 kunder, tre skärmbredder och blandade övningar. Nya prov låser befintliga positioner och full personskala vid övergången från tre till fyra kunder och vid fler/färre rader, samt bubblornas avstånd till huvudena. Befintliga motor-, fördröjda hint- och appkopplingstester passerar. Renderade scener med tre, fyra och nio kunder har kontrollerats på stor och smal skärm.
+
+---
+
 # Pinyin ovanför och svensk betydelse under mandarinuppgifter
 
 2026-09-08.

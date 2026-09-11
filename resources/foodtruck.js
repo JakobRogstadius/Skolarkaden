@@ -3,6 +3,12 @@
   'use strict';
   const SC=root.Starlight,clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
   const WAITING=new Set(['waiting','cooking']);
+  // Geometry depends on the viewport, never on how many customers are waiting.
+  SC.foodLayout=function(width){
+    const cols=width<600?3:5,scale=Math.min(1.13,width/430),truckWidth=Math.min(570,width*.84),truckY=150;
+    return {cols,scale,truckWidth,truckY,cell:width/cols,firstFeet:truckY+truckWidth/570*180+140*scale+112,pitch:Math.ceil(140*scale+112)};
+  };
+  SC.foodSceneHeight=function(width,lastSlot){const l=SC.foodLayout(width);return Math.max(540,Math.ceil(l.firstFeet+Math.floor(Math.max(0,lastSlot)/l.cols)*l.pitch+38));};
   class FoodTruckGame{
     constructor({onEvent=()=>{},random=Math.random,queue=new SC.AnswerQueue()}={}){
       this.onEvent=onEvent;this.random=random;this.queue=queue;this.width=1000;this.height=600;this.menu();
@@ -137,7 +143,7 @@
     }
     circle(x,y,r,fill){const c=this.ctx;c.fillStyle=fill;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();}
     truck(w,h,menu){
-      const c=this.ctx,g=this.game,tw=Math.min(570,w*.84),th=tw*193/570,x=(w-tw)/2,y=menu?h-th-35:Math.max(140,h*.24),scale=tw/570;
+      const c=this.ctx,g=this.game,tw=Math.min(570,w*.84),th=tw*193/570,x=(w-tw)/2,y=menu?h-th-35:SC.foodLayout(w).truckY,scale=tw/570;
       c.save();c.translate(x,y);c.scale(scale,th/193);
       this.round(0,8,570,164,20,'#ecb16e');this.round(10,19,400,137,12,'#d87957');
       this.round(426,21,129,86,13,'#345467');this.round(440,30,89,56,9,'#789ba6');
@@ -170,7 +176,7 @@
       if(g.queue.length>plates.visible){c.font='bold 11px system-ui';c.fillStyle='#fff0d1';c.textAlign='left';c.fillText('+'+(g.queue.length-plates.visible),378,143);}
       c.restore();
     }
-    cookingPosition(w,h){const tw=Math.min(570,w*.84),scale=tw/570,plates=this.plateLayout();return {x:(w-tw)/2+plates.activeX*scale,y:Math.max(140,h*.24)+plates.y*scale};}
+    cookingPosition(w,h){const tw=Math.min(570,w*.84),scale=tw/570,plates=this.plateLayout();return {x:(w-tw)/2+plates.activeX*scale,y:SC.foodLayout(w).truckY+plates.y*scale};}
     plateLayout(){return {activeX:55,y:145,step:70,scale:.8,visible:4};}
     emptyPlate(x,y,text,scale=.8){
       this.dish(x,y,null,scale);const c=this.ctx;c.textAlign='center';c.font='bold 11px system-ui';c.fillStyle='#fff3dc';c.fillText(text,x,y-19,66);
@@ -189,22 +195,22 @@
       c.restore();
     }
     customerPosition(slot,w,h){
-      const last=Math.max(2,...this.game.customers.map(p=>p.slot)),cols=w<600?3:5,rows=Math.ceil((last+1)/cols);
-      if(last<3)return {x:[.18,.5,.82][slot]*w,feet:h*.90,cell:w/3,rowHeight:h*.50,dense:false};
-      const top=Math.max(140,h*.24)+Math.min(570,w*.84)/570*180+18,rowHeight=(h-top)/rows;
-      return {x:(slot%cols+.5)*w/cols,feet:top+(Math.floor(slot/cols)+1)*rowHeight-8,cell:w/cols,rowHeight,dense:true};
+      const l=SC.foodLayout(w),row=Math.floor(slot/l.cols),order=l.cols===3?[1,0,2]:[2,1,3,0,4],col=order[slot%l.cols];
+      // Small, repeatable offsets make a waiting crowd without moving existing people.
+      const dx=(((slot*37+11)%17)/16-.5)*l.cell*.08,dy=[-8,14,-16,6,0][slot%5];
+      return {x:(col+.5)*l.cell+dx,feet:l.firstFeet+row*l.pitch+dy,cell:l.cell,scale:l.scale};
     }
     person(p,w,h,hint=false){
       const c=this.ctx,g=this.game,a=p.look,pos=this.customerPosition(p.slot,w,h),slotX=pos.x;
       const entering=p.status==='arriving',leaving=p.status==='leaving',phase=entering?clamp(p.motion/.8,0,1):leaving?clamp(p.motion/1.2,0,1):1;
       const edge=p.slot%2?w+60:-60,x=entering?edge+(slotX-edge)*phase:leaving?slotX+(edge-slotX)*phase:slotX;
-      const feet=pos.feet,scale=pos.dense?Math.min(.65,pos.rowHeight/240):Math.min(1.13,w/430),visualScale=scale*SC.personScale(a),bodyHeight=54*a.height,headY=-bodyHeight-26;
+      const feet=pos.feet,scale=pos.scale,visualScale=scale*SC.personScale(a),bodyHeight=54*a.height,headY=-bodyHeight-26;
       const walk=(entering||leaving)&&!this.reduced?Math.sin(g.clock*13+a.phase)*5:0,anger=g.expression(p);
       SC.drawPerson(this,{x,feet,scale,look:a,walk,anger,carry:leaving&&p.happy?(xx,yy)=>this.dish(xx,yy,p.dish,.7):null});
       if(entering||g.state==='menu')return;
       if(leaving)return;
-      const font=pos.dense?16:(SC.isChinese(g.mode)||g.mode==='bopomofo')?25:w<500?17:20;
-      const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:Math.min(176,pos.cell-10),min:32}),bh=SC.labelHeight(p.item,hint?78:44,8),bx=slotX-bw/2,by=pos.dense?feet-pos.rowHeight+6:feet+(headY-45)*visualScale-44-8-(bh-44)/2,remaining=g.patienceLeft(p);
+      const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?25:w<500?17:20;
+      const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:Math.min(176,pos.cell-14),min:32}),bh=SC.labelHeight(p.item,hint?78:44,8),bx=slotX-bw/2,by=feet+(headY-28)*visualScale-76-14-(bh-76)/2,remaining=g.patienceLeft(p);
       this.rememberScoreAnchor(p,{x:bx,y:by,w:bw,h:bh},'#f0d8ad','#304b4e');
       const state=g.getTaskStates().get(p),fill=state==='queued'?'#bdeedc':state==='active'?'#ffe1a2':'#fff1d9';
       c.lineWidth=state?3:1;

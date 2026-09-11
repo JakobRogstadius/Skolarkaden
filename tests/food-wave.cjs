@@ -23,12 +23,41 @@ const a=g.queue.enqueue('a'),b=g.queue.enqueue('a');assert.equal(g.getTaskStates
 g.queue.revise(b,'wrong');assert.equal(g.getTaskStates().size,1);g.pause();const before=JSON.stringify({clock:g.clock,spawnIn:g.spawnIn,customers:g.customers});g.update(.05);assert.equal(JSON.stringify({clock:g.clock,spawnIn:g.spawnIn,customers:g.customers}),before);
 console.log('PASS food: 12 complete waves, exact 34+6 arrival intervals, served/lost counts, duplicate reservations, pause and replay.');
 // Queued labels remain separate even when arrivals outpace the cook.
-for(const width of [320,390,1100])for(const count of [3,6,12,18])for(const mode of ['swedishLong','math-diagrams']){
+for(const width of [320,390,1100])for(const count of [3,6,12,18])for(const mode of ['swedishLong','math-diagrams','chineseTrad4']){
  const g=new SC.FoodTruckGame({random:rng(17)});g.start({pace:'brave',mode});while(g.customers.length<count)g.spawn();
- const cols=width<600?3:5,rows=Math.ceil(count/cols),height=count===3?540:Math.max(540,Math.ceil((rows*125+Math.min(570,width*.84)/570*180+18)/.76));g.resize(width,height);
- g.customers.forEach(p=>p.status='waiting');g.queue.enqueue(g.customers[0].item.answer);g.work(.05);g.queue.enqueue(g.customers[1].item.answer);
+ const height=SC.foodSceneHeight(width,count-1);g.resize(width,height);
+ g.customers.forEach(p=>{p.status='waiting';p.appearedAt=0;});g.clock=6;g.queue.enqueue(g.customers[0].item.answer);g.work(.05);g.queue.enqueue(g.customers[1].item.answer);
  const boxes=[],badges=[],c=new Proxy({font:'16px system-ui',measureText(s){return {width:[...s].length*9};},fillText(s){if(s==='KÖ')badges.push(s);}},{get:(o,k)=>k in o?o[k]:k==='createLinearGradient'||k==='createRadialGradient'?()=>({addColorStop(){}}):()=>{}});
  const r=Object.create(SC.FoodTruckRenderer.prototype);Object.assign(r,{ctx:c,game:g,dpr:1,reduced:true,rememberScoreAnchor(p,box){boxes.push(box);}});r.draw();assert.equal(boxes.length,count);assert.equal(badges.length,1);
  for(const [i,b] of boxes.entries()){assert(b.x>=0&&b.x+b.w<=width&&b.y>=140&&b.y+b.h<=height);for(const a of boxes.slice(i+1))assert(!(a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y),'overlapping food labels');}
 }
-console.log('PASS food label geometry and queued badges across 24 narrow/wide layouts.');
+console.log('PASS food label geometry and queued badges across 36 narrow/wide layouts, including delayed Mandarin hints.');
+
+// Crossing the old three-customer threshold and adding rows must not move or shrink anyone.
+for(const width of [320,390,1100]){
+ const g=new SC.FoodTruckGame({random:rng(23)});g.start({pace:'brave'});while(g.customers.length<3)g.spawn();
+ const r=Object.create(SC.FoodTruckRenderer.prototype);r.game=g;
+ const original=g.customers.map(p=>r.customerPosition(p.slot,width,SC.foodSceneHeight(width,2)));
+ for(const count of [4,6,12,18]){
+  while(g.customers.length<count)g.spawn();const height=SC.foodSceneHeight(width,count-1);
+  for(let i=0;i<3;i++)assert.deepEqual(r.customerPosition(g.customers[i].slot,width,height),original[i]);
+ }
+ g.customers=g.customers.slice(0,3);assert.deepEqual(r.customerPosition(0,width,540),original[0]);
+ assert.equal(original[0].scale,Math.min(1.13,width/430));
+}
+console.log('PASS customers retain position and full size when the fourth customer or additional rows arrive and leave.');
+
+// Check rendered head-to-bubble distance, including children and expanding hints/diagrams.
+for(const width of [320,1100])for(const mode of ['swedishLong','chineseTrad4','math-diagrams']){
+ const g=new SC.FoodTruckGame({random:rng(17)});g.start({pace:'brave',mode});while(g.customers.length<12)g.spawn();g.resize(width,SC.foodSceneHeight(width,11));
+ const c=new Proxy({font:'16px system-ui',measureText:s=>({width:[...s].length*9})},{get:(o,k)=>k in o?o[k]:()=>{}}),r=Object.create(SC.FoodTruckRenderer.prototype),bodies=[],boxes=[];
+ Object.assign(r,{ctx:c,game:g,reduced:true,rememberScoreAnchor(p,box){boxes.push(box);}});
+ const draw=SC.drawPerson;SC.drawPerson=(renderer,body)=>bodies.push(body);
+ try{for(const p of g.customers){p.status='waiting';r.person(p,width,g.height,SC.isChinese(mode));}}finally{SC.drawPerson=draw;}
+ for(let i=0;i<bodies.length;i++){
+  const body=bodies[i],box=boxes[i],head=body.feet-(54*body.look.height+54)*body.scale*SC.personScale(body.look),gap=head-box.y-box.h;
+  assert(gap>=7.9&&gap<=30.1,mode+' detached bubble: '+gap);assert.equal(box.x+box.w/2,body.x);
+  assert.equal(body.scale,Math.min(1.13,width/430),'crowd size changed sprite scale');
+ }
+}
+console.log('PASS bubbles stay 8–30 pixels above each head, with matching horizontal anchors and full-size sprites.');
