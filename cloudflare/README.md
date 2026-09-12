@@ -5,10 +5,53 @@ The website remains on GitHub Pages. No API token belongs in the frontend.
 
 ## Update the existing installation
 
+### Indexed score dimensions
+
+Run [add-score-dimensions.sql](add-score-dimensions.sql) in **D1 → skolarkaden →
+Console**, then deploy the complete generated [worker.mjs](worker.mjs) to
+**skolarkaden-api**, keeping the **DB** binding. Updating GitHub alone does not
+deploy the Worker. `/health` must return `ok: true` and `score_dimensions: 1`.
+An installation already using `settings_json` needs only this new SQL file.
+
+The migration adds `game_version`, `game`, `exercise` and `difficulty` as
+[D1 generated columns](https://developers.cloudflare.com/d1/reference/generated-columns/)
+derived from `leaderboard_key`. For example, `v2:city:swedish:gentle` produces
+`v2`, `city`, `swedish`, `gentle`. They immediately work for every existing
+four-part key, including older game versions and records with no settings JSON.
+There is no separate backfill UPDATE, and missing historical input/settings
+information remains unknown. Do not insert or update the generated columns
+directly; change `leaderboard_key` to correct a game's settings.
+
+`idx_highscores_game` stores the derived game/version values followed by score,
+timestamp and submission ID in leaderboard order. Exercise and difficulty are
+also included for filtering current exercises directly from the index. The Worker
+now reads one game/version range for combined boards and uses the dimensions for
+popularity queries. The old index remains usable by the previous Worker, so SQL
+can be applied before deployment while submissions continue. Database indexes
+and generated values also follow manual score edits, deletions and the maths-ID
+migration automatically.
+
+Each ALTER is a one-time statement. Inspect `PRAGMA table_xinfo(highscores)`
+before running the file; `table_info` omits generated columns. If a run was
+interrupted, skip the ALTERs for columns already present, then run the remaining
+statements in order. The index creation and `PRAGMA optimize` can be repeated.
+The final checks list the columns/indexes and report the count of keys that do
+not have four non-empty parts. Those records are preserved and remain excluded
+by the Worker's existing validation; investigate them before changing their keys.
+
+Complete raw submissions remain the source for future play-count summaries,
+score-frequency tables and each name's five best candidates per exercise,
+game and version. No new tracking fields, summary tables or scheduled jobs are
+needed yet: all of these summaries can be rebuilt from the retained records.
+Do not store a submission-time percentile, because later scores change it.
+Popularity/percentile calculations still run on demand, and exact low placements
+still require counting higher results. This preparation improves the common
+top-ten read; it does not make every query independent of history size.
+
 ### Browsable scoreboards and popularity rankings
 
 Deploy the complete generated [worker.mjs](worker.mjs) to **skolarkaden-api**,
-keeping the existing **DB** binding. This feature needs no schema change and
+keeping the existing **DB** binding, after the dimension migration above. This
 does not change game versions. Previously required migrations below still apply
 if they have not been run. Updating GitHub Pages alone does not deploy the Worker.
 
@@ -40,8 +83,8 @@ an explicit server-update message instead of misleading partial counts.
 
 ### Relative exercise ratings
 
-Deploy the updated generated Worker; no additional SQL migration or game-version
-bump is needed. `/stats?group=exercises` reports
+After applying the dimension migration above, deploy the updated generated Worker;
+the rating rule needs no separate SQL migration or game-version bump. `/stats?group=exercises` reports
 `ranking_method: "top-five-game-percentiles-v1"`. Until that version is deployed, the
 frontend still shows play counts but hides the old incomparable record holders.
 
@@ -125,8 +168,9 @@ on `v1`. One nullable column stores the settings which were previously omitted:
 
 ## Finish the existing dashboard setup
 
-1. Open the existing D1 database **skolarkaden → Console**. Run the statements in
-   [schema.sql](schema.sql). They preserve existing scores and add the rate-limit
+1. Open the existing D1 database **skolarkaden → Console**. Apply
+   [add-score-dimensions.sql](add-score-dimensions.sql) first if its columns are
+   absent, then run [schema.sql](schema.sql). They preserve existing scores and add the rate-limit
    table and indexes. The `highscores.ip` column has already been added by the owner;
    it does not need to be added again. Apply the existing-installation update above
    if `settings_json` is absent. For older installations without the IP column,
@@ -138,7 +182,8 @@ on `v1`. One nullable column stores the settings which were previously omitted:
 3. Keep the existing D1 binding named **DB**, pointing to **skolarkaden**. Deploy.
 4. Open `/health`. Expected response:
    It reports `ok: true`, `database: "connected"`, `api: "highscores-v1"` and the
-   capabilities listed above. The check includes both tables, `ip` and `settings_json`.
+   capabilities listed above. The check includes both tables, `ip`, `settings_json`
+   and the four generated score dimensions.
 5. Open `/scores?leaderboard=v2:city:swedish:gentle`. Initially this returns an empty
    `scores` array. Reading the URL directly does not create a test score.
 6. Merge the accompanying frontend change into `main` and let GitHub Pages publish.

@@ -17,7 +17,7 @@ const rows=()=>db.prepare('SELECT * FROM highscores ORDER BY submission_id').all
 const before=rows();db.exec(read('cloudflare/migrate-math-exercise-ids.sql'));const after=rows();
 assert.equal(before.length,after.length);
 for(let i=0;i<before.length;i++){
- const expected={...before[i]},parts=expected.leaderboard_key.split(':');parts[2]=ids[parts[2]]||parts[2];expected.leaderboard_key=parts.join(':');
+ const expected={...before[i]},parts=expected.leaderboard_key.split(':');parts[2]=ids[parts[2]]||parts[2];expected.leaderboard_key=parts.join(':');expected.exercise=parts[2];
  try{const settings=JSON.parse(expected.settings_json);if(settings&&ids[settings.exercise]){settings.exercise=ids[settings.exercise];expected.settings_json=JSON.stringify(settings);}}catch{}
  assert.deepEqual({...after[i]},expected);
 }

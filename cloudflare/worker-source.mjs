@@ -1,5 +1,6 @@
 // Paste this entire file into skolarkaden-api's Cloudflare editor and deploy.
-// Required D1 binding: DB. Existing databases need add-score-settings.sql first;
+// Required D1 binding: DB. Existing databases need add-score-dimensions.sql first
+// (also add-score-settings.sql if settings_json is absent);
 // new databases use schema.sql. No browser API key is used.
 const ALLOWED_ORIGIN = 'https://jakobrogstadius.github.io';
 const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home']);
@@ -10,7 +11,7 @@ const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englis
   ...mathExercises, ...languageExercises]);
 const PACES = new Set(['gentle', 'steady', 'brave']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1 };
+const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1, score_dimensions: 1 };
 const EXERCISE_RATING_METHOD = 'top-five-game-percentiles-v1';
 const LANGUAGES = new Set(['sv-SE', 'en-US', 'zh-TW', 'zh-CN']);
 
@@ -89,25 +90,16 @@ async function allowSubmission(request, db) {
 async function popularity(db, group) {
   const versions = Object.entries(globalThis.SkolarkadenHighscorePolicy.versions);
   // Count saved rounds across versions, but don't make obsolete scores record holders.
-  // Decode the original keys, including rows predating settings_json. Only public
+  // Generated dimensions also cover rows predating settings_json. Only public
   // aggregate fields leave this query; IPs, settings and submission IDs stay private.
   const scope = `
     WITH game_versions(game, current_version) AS (VALUES ${versions.map(() => '(?, ?)').join(',')}),
-    version_parts AS (
-      SELECT submission_id, player_name, score, created_at,
-        substr(leaderboard_key, 1, instr(leaderboard_key, ':') - 1) AS version,
-        substr(leaderboard_key, instr(leaderboard_key, ':') + 1) AS rest FROM highscores
-    ), game_parts AS (
-      SELECT *, substr(rest, 1, instr(rest, ':') - 1) AS game,
-        substr(rest, instr(rest, ':') + 1) AS exercise_pace FROM version_parts
-    ), parts AS (
-      SELECT *, substr(exercise_pace, 1, instr(exercise_pace, ':') - 1) AS exercise,
-        substr(exercise_pace, instr(exercise_pace, ':') + 1) AS pace FROM game_parts
-    ), known AS (
-      SELECT parts.*, current_version, exercise IN (${[...LESSONS].map(() => '?').join(',')}) AS known_exercise
-      FROM parts JOIN game_versions USING (game)
-      WHERE version GLOB 'v[0-9]*' AND substr(version, 2) NOT GLOB '*[^0-9]*'
-        AND exercise <> '' AND pace IN (${[...PACES].map(() => '?').join(',')})
+    known AS (
+      SELECT submission_id, player_name, score, created_at, game_version AS version, game, exercise,
+        current_version, exercise IN (${[...LESSONS].map(() => '?').join(',')}) AS known_exercise
+      FROM highscores JOIN game_versions USING (game)
+      WHERE game_version GLOB 'v[0-9]*' AND substr(game_version, 2) NOT GLOB '*[^0-9]*'
+        AND exercise <> '' AND difficulty IN (${[...PACES].map(() => '?').join(',')})
     ), eligible AS (
       SELECT *, ${group === 'games' ? 'game' : 'exercise'} AS id,
         version = current_version AND known_exercise AS is_current
@@ -175,7 +167,7 @@ export default {
     }
     try {
       if (request.method === 'GET' && url.pathname === '/health') {
-        await env.DB.prepare('SELECT submission_id, ip, settings_json FROM highscores LIMIT 1').all();
+        await env.DB.prepare('SELECT submission_id, ip, settings_json, game, game_version, exercise, difficulty FROM highscores LIMIT 1').all();
         await env.DB.prepare('SELECT client_key FROM score_rate_limits LIMIT 1').all();
         return reply({ ok: true, database: 'connected', api: 'highscores-v1', capabilities: CAPABILITIES });
       }
@@ -191,31 +183,34 @@ export default {
         // Read every exercise and difficulty for this game version; stored keys stay intact.
         const group = typeof board === 'string' ? board.split(':').slice(0, 2).join(':') : '';
         if (!(board === group ? validBoard(group + ':letters:gentle') : validBoard(board))) return reply({ error: 'invalid_leaderboard' }, 400);
-        const boards = [...LESSONS].flatMap(lesson => [...PACES].map(pace => group + ':' + lesson + ':' + pace));
-        const slots = boards.map(() => '?').join(',');
+        const [version, game] = group.split(':');
+        const scope = `game = ? AND game_version = ? AND exercise IN (${[...LESSONS].map(() => '?').join(',')})
+          AND difficulty IN (${[...PACES].map(() => '?').join(',')})`;
+        const bindings = [game, version, ...LESSONS, ...PACES];
         const submission = url.searchParams.get('submission') || '';
         const rawScore = url.searchParams.get('score');
         if ((submission && !UUID.test(submission)) || (rawScore !== null &&
             (!/^\d+$/.test(rawScore) || Number(rawScore) > 1000000))) return reply({ error: 'invalid_score' }, 400);
         const { results } = await env.DB.prepare(`
-          SELECT player_name, score, created_at, leaderboard_key, submission_id = ? AS is_player FROM highscores
-          WHERE leaderboard_key IN (${slots}) ORDER BY score DESC, created_at ASC, submission_id ASC LIMIT 10
-        `).bind(submission, ...boards).all();
+          SELECT player_name, score, created_at, exercise, difficulty, submission_id = ? AS is_player FROM highscores
+          WHERE ${scope} ORDER BY score DESC, created_at ASC, submission_id ASC LIMIT 10
+        `).bind(submission, ...bindings).all();
         const own = submission ? await env.DB.prepare(`SELECT score, created_at, submission_id FROM highscores
-          WHERE leaderboard_key IN (${slots}) AND submission_id = ?`).bind(...boards, submission).first() : null;
+          WHERE ${scope} AND submission_id = ?`).bind(...bindings, submission).first() : null;
         let rank = null;
         if (own) {
-          const row = await env.DB.prepare(`SELECT count(*) AS n FROM highscores WHERE leaderboard_key IN (${slots}) AND
-            (score > ? OR (score = ? AND (created_at < ? OR (created_at = ? AND submission_id <= ?))))`)
-            .bind(...boards, own.score, own.score, own.created_at, own.created_at, own.submission_id).first();
+          // The score range uses idx_highscores_game; preserve exact ordering among ties.
+          // Counting a low placement still grows with the number of higher results.
+          const row = await env.DB.prepare(`SELECT count(*) AS n FROM highscores WHERE ${scope} AND score >= ? AND
+            (score > ? OR (created_at, submission_id) <= (?, ?))`)
+            .bind(...bindings, own.score, own.score, own.created_at, own.submission_id).first();
           rank = row.n;
         } else if (rawScore !== null) {
-          const row = await env.DB.prepare(`SELECT count(*) AS n FROM highscores WHERE leaderboard_key IN (${slots}) AND score >= ?`)
-            .bind(...boards, Number(rawScore)).first();
+          const row = await env.DB.prepare(`SELECT count(*) AS n FROM highscores WHERE ${scope} AND score >= ?`)
+            .bind(...bindings, Number(rawScore)).first();
           rank = row.n + 1;
         }
-        return reply({ leaderboard: group, capabilities: CAPABILITIES, scores: results.map(({ leaderboard_key, ...row }) =>
-          ({ ...row, exercise: leaderboard_key.split(':')[2], difficulty: leaderboard_key.split(':')[3] })), rank, saved: Boolean(own) });
+        return reply({ leaderboard: group, capabilities: CAPABILITIES, scores: results, rank, saved: Boolean(own) });
       }
       if (request.method !== 'POST') return reply({ error: 'method_not_allowed' }, 405, { Allow: 'GET, POST, OPTIONS' });
       if (origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_required' }, 403);
@@ -235,6 +230,8 @@ export default {
       }
       const settings = settingsFor(body, board);
       if (!await allowSubmission(request, env.DB)) return reply({ error: 'rate_limited' }, 429, { 'Retry-After': '60' });
+      // D1 derives and indexes the four dimensions from leaderboard_key, including
+      // for old Worker writes. Retain complete raw scores so summaries can be rebuilt later.
       const result = await env.DB.prepare(`
         INSERT INTO highscores (submission_id, leaderboard_key, player_name, score, ip, settings_json)
         VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(submission_id) DO NOTHING
