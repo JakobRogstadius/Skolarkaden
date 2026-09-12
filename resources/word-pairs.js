@@ -70,7 +70,7 @@ SC.wordPairs={
     ["konstig","märklig",["märklig","underlig","besynnerlig","egendomlig","udda"],["konstig","underlig","besynnerlig","egendomlig","udda"]],
     ["vacker","snygg",["fin","snygg","skön","fager","tjusig","prydlig","stilig"],["vacker","skön","fager","tjusig","fin"]],
     ["enorm","jättelik",["jättelik","väldig","gigantisk","stor","jättestor"],["enorm","väldig","gigantisk","stor","jättestor"]],
-    ["minimal","pytteliten",["ytterst liten","mycket liten","mikroskopisk"],["ytterst liten","mycket liten","mikroskopisk"]],
+    ["hemlig","dold",["gömd","förborgad"],["förtrolig","konfidentiell","förborgad"]],
     ["snabb","kvick",["kvick","rask","blixtsnabb","hastig"],["snabb","rask","hastig"]],
     ["långsam","trög",["trög","seg","saktfärdig","sakta"],["långsam","seg","saktfärdig","sakta"]],
     ["enkel","okomplicerad",["lätt","okomplicerad","simpel"],["enkel","simpel","lätt"]],
