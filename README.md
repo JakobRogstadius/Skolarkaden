@@ -6,6 +6,8 @@ Nio små lärspel för tangentbord eller mikrofon. Träna bokstäver, läsning, 
 
 All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och tangentbordsläget fungerar helt utan internet.
 
+Ordövningarna omfattar även svenska och engelska synonymer och motsatser samt tre nivåer av översättning svenska–engelska, med 50 ordpar i varje lista. Varje ordpar har två huvudord och separata listor med godkända alternativa svar i båda riktningarna. Uppgiften visar bara huvudordet. Ett svar visas med mindre text efter fem sekunder. För översättning väljer du svarsspråk med **Översätt till**, även med tangentbord. Konstruktion och underhåll beskrivs i [dev/word-pairs.md](dev/word-pairs.md).
+
 ## Gemensamma topplistor
 
 **Topplista** i menyn visar de 10 högsta resultaten för valt spel och dess aktuella poängversion, gemensamt för alla övningar och svårighetsgrader. Kolumnerna visar placering, namn, övning, nivå och poäng i samma versala LED-typsnitt. Namnkolumnen rymmer tio tecken; på smala skärmar går tabellen att rulla i sidled.

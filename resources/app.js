@@ -17,11 +17,15 @@ try{localStorage.removeItem('starlight-friends-v1');}catch(_){}
 function notice(text){$('discovery-notice').textContent=text;$('discovery-notice').hidden=false;noticeUntil=performance.now()+6000;}
 for(const [value,m] of Object.entries(SC.modes))$('lesson').add(new Option(m.name,value));$('lesson').value='swedish';
 for(const [key,glyph] of Object.entries(SC.bopomofoKeys)){const el=document.createElement('span');el.textContent=glyph+' ';const small=document.createElement('small');small.textContent=key.toUpperCase();el.append(small);$('keyboard-grid').append(el);}
-function options(){return {mode:$('lesson').value,pace:$('pace').value,lang:$('input-kind').value==='typing'?SC.modes[$('lesson').value].lang:$('language').value,uppercase:Math.random()<.5};}
+function options(){return {mode:$('lesson').value,pace:$('pace').value,lang:$('input-kind').value==='typing'&&!SC.isTranslation($('lesson').value)?SC.modes[$('lesson').value].lang:$('language').value,uppercase:Math.random()<.5};}
 function speechOptions(){return {enabled:$('input-kind').value!=='typing',kind:'browser',language:$('language').value,lesson:$('lesson').value};}
 function typingHint(){return ['letters','bopomofo'].includes($('lesson').value)?'Tryck på en bokstav.':'Skriv ett svar och tryck Enter.';}
 function menuUpdate(){
-  const voice=$('input-kind').value!=='typing';$('language').disabled=!voice;$('setup-note').textContent=kind==='marshmallows'?(voice?'Säg svaret när marshmallowen är gyllene.':['letters','bopomofo'].includes($('lesson').value)?'Tryck på bokstaven när marshmallowen är gyllene.':'Skriv svaret. Tryck Enter när marshmallowen är gyllene.'):voice?'Säg svaren efter varandra.':typingHint();
+  const voice=$('input-kind').value!=='typing',mode=$('lesson').value,translation=SC.isTranslation(mode),pair=SC.isWordPair(mode);
+  $('language-label').textContent=translation?'Översätt till':'Talspråk';$('language').disabled=!voice&&!translation;
+  for(const option of $('language').options)option.hidden=option.disabled=pair&&!(translation?['sv-SE','en-US']:[SC.modes[mode].lang]).includes(option.value);
+  if(pair&&![...$('language').options].some(o=>!o.disabled&&o.value===$('language').value))$('language').value=SC.modes[mode].lang;
+  $('setup-note').textContent=kind==='marshmallows'?(voice?'Säg svaret när marshmallowen är gyllene.':['letters','bopomofo'].includes(mode)?'Tryck på bokstaven när marshmallowen är gyllene.':'Skriv svaret. Tryck Enter när marshmallowen är gyllene.'):voice?'Säg svaren efter varandra.':typingHint();
   $('mode-description').textContent=SC.modes[$('lesson').value].description;$('keyboard').hidden=$('lesson').value!=='bopomofo';
   [...$('pace').options].forEach((o,i)=>o.textContent=['Lätt','Medel','Svår'][i]);
 }

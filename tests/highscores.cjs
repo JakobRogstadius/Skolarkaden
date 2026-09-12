@@ -99,6 +99,7 @@ class Element extends EventTarget{
     document:{get activeElement(){return focused;},getElementById:get,createElement:()=>new Element()},localStorage:{getItem:key=>nicknameStorage.get(key),setItem:(key,value)=>nicknameStorage.set(key,value),removeItem:key=>nicknameStorage.delete(key)},
     fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));if(failOnce){failOnce=false;throw new Error('network');}return Response.json({ok:true});}if(legacyBoards){const key=new URL(url).searchParams.get('leaderboard');assert.equal(key.split(':').length,4);return Response.json({leaderboard:key,scores:key.split(':')[2]==='swedish'?legacyBoards[key.split(':')[3]]:[]});}return unsupported?Response.json({error:'invalid_leaderboard'},{status:400}):Response.json(boardData);}});
   vm.runInContext(read('resources/data.js'),context);
+  vm.runInContext(read('resources/word-pairs.js'),context);
   vm.runInContext(read('resources/highscore-policy.js'),context);vm.runInContext(read('resources/highscores.js'),context);
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),'v2:city');

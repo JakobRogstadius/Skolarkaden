@@ -8,7 +8,7 @@ const mic={ready:false,recording:false,stream:{getAudioTracks:()=>[track]},async
 mic.options={processing:true,deviceId:''};mic.configure=async function(options){this.options=options;await this.open();};
 const sessions=[];class Recognition{start(t){this.track=t;sessions.push(this);this.onstart?.();}stop(){this.stopped=true;}abort(){this.aborted=true;}}
 const context=vm.createContext({Event,EventTarget,CustomEvent,Float32Array,console,navigator:{userAgent:'Chrome/145'},SpeechRecognition:Recognition,setTimeout:fn=>{timers.set(++timerId,fn);return timerId;},clearTimeout:id=>timers.delete(id)});
-for(const f of ['pinyin','data','voice','speech','input'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),context);
+for(const f of ['pinyin','data','word-pairs','voice','speech','input'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),context);
 const SC=context.Starlight,queue=new SC.AnswerQueue(),field=new Element(),form=new Element(),button=new Element();
 const input=new SC.AnswerInput({field,form,voiceButton:button,queue,microphone:mic});let diagnostic=[];input.addEventListener('diagnostic',e=>diagnostic.push(e.detail));
 const result=(text,final=false)=>Object.assign([{transcript:text,confidence:.4}],{isFinal:final});

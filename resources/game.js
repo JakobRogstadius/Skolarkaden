@@ -66,6 +66,11 @@
     c.save();c.textAlign='center';c.textBaseline='middle';
     const x=box.x+box.w/2,y=box.y+box.h/2,max=Math.max(1,box.w-14),mainSize=Number(String(c.font).match(/([\d.]+)px/)?.[1]||22);
     c.fillText(item.label,x,y,max);
+    if(item.pairId){
+      c.font=hintFont;const gap=mainSize/2+Number(hintFont.match(/([\d.]+)px/)?.[1]||12)/2+3;
+      if(hint){c.fillStyle=hintColor;c.fillText(item.hint,x,y+gap,max);}
+      c.restore();return;
+    }
     if(hint){c.font=hintFont;c.fillStyle=hintColor;const gap=mainSize/2+Number(hintFont.match(/([\d.]+)px/)?.[1]||12)/2+3;
       c.fillText(item.hint||'',x,y-gap,max);c.fillText(item.translation||'',x,y+gap,max);
     }c.restore();
@@ -73,7 +78,7 @@
   // The label's first appearance starts the clock, including walkers entering onscreen.
   SC.noteTargetAppearance=function(game){for(const target of game.getTargets())target.appearedAt??=game.clock;};
   SC.pinyinHints=function(game){
-    const hints=new Set();if(!SC.isChinese(game.mode))return hints;
+    const hints=new Set();if(!SC.isChinese(game.mode)&&!SC.isWordPair(game.mode))return hints;
     const targets=game.getTargets(),available=new Set(game.getAvailableTargets()),handled=new Set(targets.filter(t=>!available.has(t)));
     // Reserve exactly one remaining target per queued answer, using the speech aliases too.
     for(const entry of game.queue.items){const target=targets.find(t=>!handled.has(t)&&SC.matches(entry.text,t.item,game.mode,game.lang,entry.source));if(target)handled.add(target);}

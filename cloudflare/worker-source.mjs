@@ -3,11 +3,11 @@
 // new databases use schema.sql. No browser API key is used.
 const ALLOWED_ORIGIN = 'https://jakobrogstadius.github.io';
 const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home']);
-const { mathExercises } = globalThis.SkolarkadenHighscorePolicy;
+const { mathExercises, languageExercises } = globalThis.SkolarkadenHighscorePolicy;
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',
   'chineseSimpl1', 'chineseSimpl2', 'chineseSimpl3', 'chineseSimpl4',
-  ...mathExercises]);
+  ...mathExercises, ...languageExercises]);
 const PACES = new Set(['gentle', 'steady', 'brave']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1 };

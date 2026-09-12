@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 const ctx=vm.createContext({Event,EventTarget,CustomEvent,console});
-for(const f of ['pinyin','data','speech','input','people','game','plants','garden','eggs'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),ctx,{filename:f+'.js'});
+for(const f of ['pinyin','data','word-pairs','speech','input','people','game','plants','garden','eggs'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),ctx,{filename:f+'.js'});
 const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;},tick=(g,t)=>{for(let i=0;i<Math.round(t/.05);i++)g.update(.05);};
 let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
 function policy(g){g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,i)=>SC.matches(e.text,i,g.mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,g.mode,g.lang)});}

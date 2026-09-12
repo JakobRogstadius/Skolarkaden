@@ -7,6 +7,7 @@
 // Home stays on v1 during its initial tuning, by the owner's decision.
 const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1'});
 const mathExercises=Object.freeze(['math-addition','math-diagrams','math-addition-subtraction','math-simple-equations','math-large-numbers','math-multiplication','math-multiplication-division','math-equations']);
+const languageExercises=Object.freeze(['swedish-opposites','swedish-synonyms','english-opposites','english-synonyms','translation-sv-en-1','translation-sv-en-2','translation-sv-en-3']);
 // Longer distinctive strings also match inside a name (including separated or
 // simple leetspeak spellings). Short/ambiguous words only match complete tokens.
 const substrings=`
@@ -67,7 +68,7 @@ function isBannedName(value){
   return fragments.some(fragment=>joined.includes(fragment)) ||
     normalized.split(/[^a-z]+/).some(token=>words.has(token)) || words.has(joined);
 }
-root.SkolarkadenHighscorePolicy=Object.freeze({versions,mathExercises,isBannedName});
+root.SkolarkadenHighscorePolicy=Object.freeze({versions,mathExercises,languageExercises,isBannedName});
 })(globalThis);
 
 // Paste this entire file into skolarkaden-api's Cloudflare editor and deploy.
@@ -75,11 +76,11 @@ root.SkolarkadenHighscorePolicy=Object.freeze({versions,mathExercises,isBannedNa
 // new databases use schema.sql. No browser API key is used.
 const ALLOWED_ORIGIN = 'https://jakobrogstadius.github.io';
 const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home']);
-const { mathExercises } = globalThis.SkolarkadenHighscorePolicy;
+const { mathExercises, languageExercises } = globalThis.SkolarkadenHighscorePolicy;
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',
   'chineseSimpl1', 'chineseSimpl2', 'chineseSimpl3', 'chineseSimpl4',
-  ...mathExercises]);
+  ...mathExercises, ...languageExercises]);
 const PACES = new Set(['gentle', 'steady', 'brave']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1 };

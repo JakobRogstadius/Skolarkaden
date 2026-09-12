@@ -33,7 +33,7 @@ const context=vm.createContext({console,Event,EventTarget,crypto:webcrypto,Abort
     }
     return Response.json({leaderboard:parsed.searchParams.get('leaderboard').split(':').slice(0,2).join(':'),scores:[],rank:1});
   }});
-for(const file of ['resources/data.js','resources/highscore-policy.js','resources/highscores.js'])vm.runInContext(read(file),context);
+for(const file of ['resources/data.js','resources/word-pairs.js','resources/highscore-policy.js','resources/highscores.js'])vm.runInContext(read(file),context);
 const selection={kind:'dinosaur',mode:'swedish',pace:'brave',label:games.dinosaur+' · Svenska ord - korta · Svår'};
 const ui=new context.Starlight.Highscores({getSelection:()=>selection,games});
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
@@ -53,7 +53,7 @@ const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:t
       assert.equal(requests.at(-1).pathname,'/stats');assert.equal(requests.at(-1).searchParams.get('group'),ui.page);
       assert.equal(get('scores-heading').children[2].textContent,'OMGÅNGAR');
       assert.equal(get('scores-heading').children[3].textContent,'LEDARE');
-      const list=get('scores-list'),count=ui.page==='games'?9:22;
+      const list=get('scores-list'),count=ui.page==='games'?9:29;
       assert.equal(list.children.length,count,'popularity is not limited to ten rows');
       assert.equal(list.children[0].children[2].textContent,'42');assert.equal(list.children[0].children[3].textContent,'ÅSA');
       assert.equal(list.children[1].children[2].textContent,'0');assert.equal(list.children[1].children[3].textContent,'—');

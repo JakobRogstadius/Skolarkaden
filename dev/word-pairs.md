@@ -1,0 +1,19 @@
+# Word-pair exercises
+
+Each of the seven dictionaries in `resources/word-pairs.js` contains 50 pairs. A row is `[main A, main B, alternatives for A, alternatives for B]`. For a prompt of A, accept B and B's alternatives. For a prompt of B, accept A and A's alternatives. Only the two main words become prompts. The lists are independent: an accepted alternative is not automatically a synonym or translation of every other accepted answer.
+
+The task bubble contains only the main word. One preferred answer appears below it in smaller text after five playable seconds. Existing pause and queued-answer rules apply. There are no context labels, word-class labels or example sentences.
+
+Prefer main words with clear meanings. Where an ordinary word has several meanings, include the other valid answers explicitly: `book` accepts `bok` and `boka`; `letter` accepts `bokstav` and `brev`. `Penna` accepts `pen` or `pencil`, but the reverse main word is `pencil`, for which `penna` and `blyertspenna` are accepted. Alternatives such as `mad` and `close` are retained while clearer words are used as synonym prompts.
+
+Identical prompts within a dictionary and answer language are merged, combining their direct accepted answers. Thus `light` accepts both `heavy` and `dark` in the opposite exercise, and `open` accepts both `öppna` and `öppen` in translation. A hidden pair ID never determines which of these answers is correct. This can make the number of distinct tasks slightly smaller than twice the number of pairs. Games normally avoid simultaneous prompts from the same pair or with overlapping accepted answers.
+
+Synonyms and opposites use both directions in a round. Translation rounds use **Översätt till** to select the answer language, also for keyboard input; speech recognition uses that same language throughout the round. Levels introduce everyday objects, then everyday verbs and adjectives, then school, geography and more demanding verbs. They are practical vocabulary levels, not a formal age or CEFR assessment.
+
+Matching ignores case, surrounding punctuation and extra spaces. Articles and infinitive markers (`en`, `ett`, `att`, `a`, `an`, `to`) may precede answers. Other grammatical variants are explicitly listed where appropriate. British/American variants and common alternative meanings are included. Swedish å, ä and ö remain distinct. There is no arbitrary stemming, fuzzy spelling, transitive synonym expansion or online answer judge. Multiword answers stay together across speech-recognition segments; unfinished phrases do not become wrong answers prematurely.
+
+Review both directions when editing a pair. If an accepted alternative is itself a main word elsewhere, check its reverse answer too, without inferring any further links. A finite dictionary cannot contain every valid paraphrase; keep adding genuine omissions to the relevant alternative list. Tests cover all declared alternatives, both directions, merged prompts, common ambiguities, speech phrases, delayed hints in all nine games, menu order and highscore support.
+
+Reference points for vocabulary selection and meaning checks: [Cambridge English young learner wordlists](https://www.cambridgeenglish.org/Images/506166-starters-movers-flyers-word-list-2025.pdf), [Svenska Akademiens ordböcker](https://svenska.se/), and Cambridge's entries for [borrow](https://dictionary.cambridge.org/dictionary/english-swedish/borrow), [lend](https://dictionary.cambridge.org/dictionary/english-swedish/lend) and [kind](https://dictionary.cambridge.org/dictionary/english-swedish/kind). The application lists were composed independently; definitions and example sentences were not copied.
+
+The new exercise IDs are included in the shared highscore policy and generated Worker. Deploy the rebuilt `cloudflare/worker.mjs` to accept scores for the new exercises. No database migration or game-version change is needed.

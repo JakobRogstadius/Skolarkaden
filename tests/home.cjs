@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 const ctx=vm.createContext({Event,EventTarget,CustomEvent,console});
-for(const file of ['pinyin','data','speech','input','people','game','home','home-renderer'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
+for(const file of ['pinyin','data','word-pairs','speech','input','people','game','home','home-renderer'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
 const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;},tick=(g,seconds)=>{for(let i=0;i<Math.round(seconds/.05);i++)g.update(.05);};
 function setup(options={},active=false){const events=[],g=new SC.HomeGame({random:rng(8),onEvent:e=>events.push(e)});g.start({uppercase:false,...options});g.queue.setPolicy({getCandidates:()=>g.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>g.getActiveEntries(),matches:(e,i)=>SC.matches(e.text,i,g.mode,g.lang,e.source),sameInput:(a,b)=>SC.sameInput(a,b,g.mode,g.lang)});if(!active){g.chooseActivity=()=>false;g.people.slice(1).forEach(p=>{p.wait=0;p.activity=null;});}return {g,events};}
 function until(g,condition,seconds=60){for(let i=0;i<seconds*20&&!condition();i++)g.update(.05);assert(condition(),'condition must resolve in '+seconds+' seconds');}

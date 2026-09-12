@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 const ctx=vm.createContext({console,Event,EventTarget,CustomEvent,setTimeout,clearTimeout,Float32Array,Math,navigator:{userAgent:'Chrome/145'}});
-for(const file of ['pinyin','data','voice','speech','input','people','game','plants','dinosaur'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
+for(const file of ['pinyin','data','word-pairs','voice','speech','input','people','game','plants','dinosaur'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
 const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;},tick=(g,n)=>{for(let i=0;i<Math.round(n/.05);i++)g.update(.05);};
 let checks=0;function test(name,fn){fn();console.log('PASS '+name);checks++;}
 function isolated(options={},onEvent=()=>{}){const g=new SC.DinosaurGame({random:rng(3),onEvent});g.start(options);g.spawnIn=10000;const p=g.people[0];p.x=.18;p.y=.58;p.direction=-1;return {g,p};}

@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
-const ctx=vm.createContext({Event,EventTarget,CustomEvent,console});for(const f of ['pinyin','data','input','people','game','plants','marshmallows'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),ctx,{filename:f+'.js'});
+const ctx=vm.createContext({Event,EventTarget,CustomEvent,console});for(const f of ['pinyin','data','word-pairs','input','people','game','plants','marshmallows'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),ctx,{filename:f+'.js'});
 const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;},tick=(g,seconds)=>{for(let i=0;i<Math.round(seconds/.05);i++)g.update(.05);};
 let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
 function setup(options={}){const events=[],g=new SC.MarshmallowGame({random:rng(5),onEvent:e=>events.push(e)});g.start(options);g.resize(1000,740);g.spawnIn=10000;tick(g,.85);return {g,p:g.getTargets()[0],events};}

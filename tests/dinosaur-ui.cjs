@@ -25,7 +25,7 @@ const frame=()=>{now+=50;const callbacks=[...raf.values()];raf.clear();for(const
 async function start(kind,lesson='swedish'){const radio=radios.find(r=>r.value===kind);assert(radio,kind+' missing from menu');radio.dispatchEvent(new Event('change'));elements.lesson.value=lesson;elements.lesson.dispatchEvent(new Event('change'));click('start');await settle();assert.equal(elements['setup-error'].textContent,'');assert.equal(elements.play.hidden,false);frame();}
 (async()=>{
  assert.equal(radios.length,9);assert.match(html,/<title>Skolarkaden<\/title>/);assert.doesNotMatch(html,/id="(?:queue-list|voice-toggle|live-speech|interim)"/);assert.match(html,/<details id="debug-panel"[^>]*>/);assert.doesNotMatch(html,/<details id="debug-panel"[^>]*\bopen\b/);
- const SC=context.Starlight;assert.equal(elements.lesson.options.length,22);assert.deepEqual(elements.lesson.options.map(o=>o.text),Object.values(SC.modes).map(m=>m.name));
+ const SC=context.Starlight;assert.equal(elements.lesson.options.length,29);assert.deepEqual(elements.lesson.options.map(o=>o.text),Object.values(SC.modes).map(m=>m.name));
  assert.deepEqual([...html.match(/<div class="setup-grid">[\s\S]*?<div class="menu-bottom">/)[0].matchAll(/<select id="([^"]+)"/g)].map(m=>m[1]),['lesson','input-kind','language','pace']);
  assert.deepEqual(elements['input-kind'].options.map(o=>o.value),['typing','browser']);assert.deepEqual(elements.pace.options.map(o=>o.textContent),['Lätt','Medel','Svår']);assert(elements.language.disabled);
  elements['input-kind'].value='browser';elements['input-kind'].dispatchEvent(new Event('change'));assert.equal(elements.language.disabled,false);

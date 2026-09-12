@@ -2,13 +2,13 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 const ctx=vm.createContext({Event,EventTarget,CustomEvent,console});
-for(const file of ['pinyin','data','speech','input','people','game','foodtruck','plants','garden','beehive','paint','dinosaur','marshmallows','eggs','home'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
+for(const file of ['pinyin','data','word-pairs','speech','input','people','game','foodtruck','plants','garden','beehive','paint','dinosaur','marshmallows','eggs','home'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
 const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
 const tick=(g,t)=>{for(let i=0;i<Math.round(t/.05);i++)g.update(.05);};
 let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
 const modes=Object.keys(SC.modes),math=modes.filter(SC.isMath),chinese=modes.filter(SC.isChinese);
-test('Twenty-two exercises have the requested order and complete, distinct dictionaries',()=>{
- assert.deepEqual(modes,['letters','swedish','swedishLong','english','englishLong','bopomofo','chinese','chineseTrad2','chineseTrad3','chineseTrad4','chineseSimpl1','chineseSimpl2','chineseSimpl3','chineseSimpl4','math-addition','math-addition-subtraction','math-diagrams','math-simple-equations','math-large-numbers','math-multiplication','math-multiplication-division','math-equations']);
+test('Twenty-nine exercises have the requested order and complete, distinct dictionaries',()=>{
+ assert.deepEqual(modes,['letters','swedish','swedishLong','swedish-opposites','swedish-synonyms','english','englishLong','english-opposites','english-synonyms','translation-sv-en-1','translation-sv-en-2','translation-sv-en-3','bopomofo','chinese','chineseTrad2','chineseTrad3','chineseTrad4','chineseSimpl1','chineseSimpl2','chineseSimpl3','chineseSimpl4','math-addition','math-addition-subtraction','math-diagrams','math-simple-equations','math-large-numbers','math-multiplication','math-multiplication-division','math-equations']);
  for(const mode of ['swedish','swedishLong','english','englishLong',...chinese]){
   const items=SC.modes[mode].items,count=SC.isChinese(mode)?[30,80,155,255][chinese.indexOf(mode)%4]:100;assert.equal(items.length,count,mode);assert.equal(new Set(items.map(i=>i.answer)).size,count,mode);
   for(const i of items){assert.equal(i.answer,i.label);assert(SC.matches(i.answer,i,mode));}

@@ -13,8 +13,8 @@
   SC.modes.letters=lesson('Bokstäver','sv-SE',Array.from('abcdefghijklmnopqrstuvwxyzåäö',word),'Träna en grupp tangenter på tangentbordet');
   SC.modes.swedish=lesson('Svenska ord - korta','sv-SE','sol måne hus bil båt bok katt hund ko häst fisk fågel mus boll mat ost ägg mjölk is snö sjö hav skog träd röd blå grön gul vit svart stor liten glad hej ja nej barn mamma pappa bror hand fot ben arm mun näsa öga öra hår tand hals mage rygg huvud stol bord säng dörr tak golv vägg rum kök skola penna pärm väska sko hatt mössa tröja byxa socka jacka regn vind moln gräs löv sten sand jord väg bro tåg buss cykel lek spel sång dans kram vän hem dag natt ljus mörk varm kall'.split(' ').map(word),'100 ord att läsa och skriva');
   SC.modes.swedishLong=lesson('Svenska ord - långa','sv-SE','kaninen fjäril nyckel cykeln moroten tomaten gurkan jordgubbe hallonen potatis fönster dörren gardinen kudden strumpa stövlar regnjacka snögubbe sommaren vintern höstlöv skolgård kompis vänskap kalaset födelsedag stjärna solstråle månsken regnbåge blommor trädgård vattenkanna lekplats skogsmark äpplet apelsin bananen fågelbo utflykt skattkista sagoboken brandstation bibliotek äventyr elefant giraff pingvin delfin hamster lejonet tigern björnen rävarna sköldpadda krokodil nyckelpiga fjärilen gräshoppa myrstack ekorre blåbär lingon körsbär vattenmelon frukost smörgås pannkaka köttbullar spagetti grönsaker choklad yoghurt kastrull tallrik skedarna gaffel servett kylskåp köksbord badrummet tandborste handduk tvättmaskin sovrum skrivbord bokhylla taklampa ficklampa ryggsäck gymnastik bokstav siffror läxboken klassrum läraren suddgummi pennskrin pussel ritpapper'.split(' ').map(word),'100 ord att läsa och skriva');
-  SC.modes.english=lesson('Engelska ord - korta','en-US','sun moon star sky cat dog bird fish cow horse fox bear bee tree leaf rain snow sea boat car bus bike book ball home bed hat cup egg milk red blue green big small happy apple pear plum grape peach lemon bread rice soup meat cake water juice spoon fork table chair door floor wall roof room house light dark warm cold hand foot leg arm head face eye ear nose mouth hair tooth boy girl baby mum dad play jump run walk swim sing dance smile grass stone sand farm park class pen bag coat shoe sock dress'.split(' ').map(word),'100 ord att läsa och skriva');
-  SC.modes.englishLong=lesson('Engelska ord - långa','en-US','rabbit butterfly rainbow sunshine moonlight starlight flower garden watering kitchen carrot potato tomato cucumber strawberry raspberry pancake breakfast sandwich window curtain pillow blanket bedroom jacket mitten jumper winter summer autumn snowman playground friendship birthday present family animal forest seaside bicycle journey treasure adventure library picture storybook elephant giraffe penguin dolphin crocodile tortoise squirrel ladybird dragonfly grasshopper hedgehog chicken feather whiskers monkey purple yellow orange chocolate broccoli coconut cherry banana lettuce mushroom pumpkin spaghetti yoghurt biscuit cheese dinner supper thirsty hungry delicious saucepan kettle cupboard bathroom toothbrush hairbrush wardrobe bookcase notebook pencil rubber crayon scissors teacher student classroom homework alphabet numbers'.split(' ').map(word),'100 ord att läsa och skriva');
+  SC.modes.english=lesson('English words - short','en-US','sun moon star sky cat dog bird fish cow horse fox bear bee tree leaf rain snow sea boat car bus bike book ball home bed hat cup egg milk red blue green big small happy apple pear plum grape peach lemon bread rice soup meat cake water juice spoon fork table chair door floor wall roof room house light dark warm cold hand foot leg arm head face eye ear nose mouth hair tooth boy girl baby mum dad play jump run walk swim sing dance smile grass stone sand farm park class pen bag coat shoe sock dress'.split(' ').map(word),'100 ord att läsa och skriva');
+  SC.modes.englishLong=lesson('English words - long','en-US','rabbit butterfly rainbow sunshine moonlight starlight flower garden watering kitchen carrot potato tomato cucumber strawberry raspberry pancake breakfast sandwich window curtain pillow blanket bedroom jacket mitten jumper winter summer autumn snowman playground friendship birthday present family animal forest seaside bicycle journey treasure adventure library picture storybook elephant giraffe penguin dolphin crocodile tortoise squirrel ladybird dragonfly grasshopper hedgehog chicken feather whiskers monkey purple yellow orange chocolate broccoli coconut cherry banana lettuce mushroom pumpkin spaghetti yoghurt biscuit cheese dinner supper thirsty hungry delicious saucepan kettle cupboard bathroom toothbrush hairbrush wardrobe bookcase notebook pencil rubber crayon scissors teacher student classroom homework alphabet numbers'.split(' ').map(word),'100 ord att läsa och skriva');
   // Standard Zhuyin layout; ASCII conversion also works with a Swedish keyboard.
   SC.bopomofoKeys=Object.fromEntries(Array.from('1qaz2wsxedcrfv5tgbyhnujm8ik,9ol.0p;/-').map((key,i)=>[key,Array.from('ㄅㄆㄇㄈㄉㄊㄋㄌㄍㄎㄏㄐㄑㄒㄓㄔㄕㄖㄗㄘㄙㄧㄨㄩㄚㄛㄜㄝㄞㄟㄠㄡㄢㄣㄤㄥㄦ')[i]]));
   SC.modes.bopomofo=lesson('Bopomofo','zh-TW',Object.entries(SC.bopomofoKeys).map(([key,label])=>({...word(label),key,hint:'Tangent '+key.toUpperCase()})),'Träna 37 kinesiska ljudtecken','ㄅ');
@@ -58,9 +58,11 @@
   mathLessons.forEach(([id,mathLevel,label,description],i)=>{SC.modes['math-'+id]={...lesson(`Matematik ${i+1} (${label})`,'sv-SE',[],description,'±'),type:'math',mathLevel};});
   SC.isMath=mode=>SC.modes[mode]?.type==='math';
   SC.isChinese=mode=>SC.modes[mode]?.type==='chinese';
+  SC.isWordPair=mode=>SC.modes[mode]?.type==='word-pairs';
+  SC.isTranslation=mode=>!!SC.modes[mode]?.translation;
   SC.mathLevel=mode=>SC.modes[mode].mathLevel;
   SC.toBopomofo=value=>Array.from(value).map(c=>SC.bopomofoKeys[c.toLowerCase()]||c).join('');
-  SC.latinMode=mode=>['letters','swedish','swedishLong','english','englishLong'].includes(mode);
+  SC.latinMode=mode=>['letters','swedish','swedishLong','english','englishLong'].includes(mode)||SC.isWordPair(mode);
   SC.lessonLabel=(label,mode,uppercase)=>SC.latinMode(mode)?(uppercase?label.toLocaleUpperCase('sv-SE'):label.toLocaleLowerCase('sv-SE')):label;
   // Spoken numbers are aliases; text answers remain decimal integers.
   SC.numberWords = {
@@ -89,7 +91,7 @@
     const words=SC.numberWords[lang]||SC.numberWords['sv-SE'];
     return Object.keys(words).find(k=>words[k]===n)||String(n);
   };
-  SC.vocabulary=(mode,lang)=>SC.isMath(mode)?Array.from(SC.mathPool(SC.mathLevel(mode)).keys(),n=>({...word(String(n)),speak:SC.numberName(n,lang),hint:SC.numberName(n,lang)})):SC.modes[mode].items;
+  SC.vocabulary=(mode,lang=SC.modes[mode].lang)=>SC.isMath(mode)?Array.from(SC.mathPool(SC.mathLevel(mode)).keys(),n=>({...word(String(n)),speak:SC.numberName(n,lang),hint:SC.numberName(n,lang)})):SC.isTranslation(mode)?SC.modes[mode].items.filter(item=>item.answerLang===lang):SC.modes[mode].items;
   SC.keyboardRows=lang=>lang.startsWith('sv')?['qwertyuiopå','asdfghjklöä','zxcvbnm']:['qwertyuiop','asdfghjkl','zxcvbnm'];
   SC.letterSubset=function(lang,rng=Math.random){
     const rows=SC.keyboardRows(lang),shape=Math.floor(rng()*3),choices=[];
@@ -165,6 +167,10 @@
   SC.matches = function(value,item,mode,lang='sv-SE',source='text'){
     const v=source==='speech'?SC.speechNormalize(value):SC.normalize(value);
     if(!v)return false;
+    if(SC.isWordPair(mode)){
+      const key=SC.pairAnswerKey(v,item.answerLang),answers=[item.answer,...item.aliases||[]];
+      return answers.some(a=>SC.pairAnswerKey(a,item.answerLang)===key)||(source==='speech'&&answers.some(a=>SC.speechIdentity(key,mode,item.answerLang)===SC.speechIdentity(SC.pairAnswerKey(a,item.answerLang),mode,item.answerLang)));
+    }
     if(v===SC.normalize(item.answer))return true;
     if(SC.isMath(mode)){const n=SC.spokenNumber(v,lang,source);return n!==null&&String(n)===item.answer;}
     if(SC.isChinese(mode)){
@@ -274,5 +280,9 @@
     return {kind,answer,colors,...pick(lines)};
   };
   SC.beginPractice=(game,items)=>items||(game.mode==='letters'?SC.letterSubset(game.lang,game.random):SC.vocabulary(game.mode,game.lang));
-  SC.practiceItems=game=>game.items;
+  SC.practiceItems=game=>{
+    if(!SC.isWordPair(game.mode))return game.items;
+    const used=game.getTargets().map(t=>t.item),available=game.items.filter(item=>!used.some(other=>item.pairIds?.some(id=>other.pairIds?.includes(id))||item.answerKeys?.some(key=>other.answerKeys?.includes(key))));
+    return available.length?available:game.items;
+  };
 })(globalThis);
