@@ -3,14 +3,14 @@ const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..');
 http.createServer((req,res)=>{
   const url=new URL(req.url,'http://terminal.local');
-  if(url.pathname==='/audit-refinements.html'){res.setHeader('Content-Type','text/html');res.end(fs.readFileSync(path.join(root,'index.html'),'utf8').replace('<script defer src="resources/app.js">','<script defer src="resources/app.js"></script><script defer src="/refinements-fixture.js">'));return;}
+  if(url.pathname==='/audit-refinements.html'){res.setHeader('Content-Type','text/html');res.end(fs.readFileSync(path.join(root,'index.html'),'utf8').replace(/(<script defer src="resources\/app\.js(?:\?[^"]*)?"><\/script>)/,'$1<script defer src="/refinements-fixture.js"></script>'));return;}
   if(url.pathname==='/refinements-fixture.js'){res.setHeader('Content-Type','text/javascript');res.end(fs.readFileSync(path.join(__dirname,'refinements-fixture.js')));return;}
-  if(url.pathname==='/audit-paint.html'){res.setHeader('Content-Type','text/html');res.end(fs.readFileSync(path.join(root,'index.html'),'utf8').replace('<script defer src="resources/app.js">','<script defer src="resources/app.js"></script><script defer src="/paint-fixture.js">').replace('</head>',url.searchParams.has('narrow')?'<style>.shell{max-width:390px;padding:14px 10px}.arena.paint{height:700px}.game-picker,.setup-grid{grid-template-columns:1fr}.hud{padding:16px 10px;gap:7px}.hud strong{font-size:21px}.hud-objective span{font-size:10px}.hud .eyebrow{font-size:8px}.hud small{font-size:8px}.hud button{font-size:10px;padding:9px}#best{display:none}#answer-form{flex-wrap:wrap}#answer{width:100%;min-width:100%}</style></head>':'</head>'));return;}
+  if(url.pathname==='/audit-paint.html'){res.setHeader('Content-Type','text/html');res.end(fs.readFileSync(path.join(root,'index.html'),'utf8').replace(/(<script defer src="resources\/app\.js(?:\?[^"]*)?"><\/script>)/,'$1<script defer src="/paint-fixture.js"></script>').replace('</head>',url.searchParams.has('narrow')?'<style>.shell{max-width:390px;padding:14px 10px}.arena.paint{height:700px}.game-picker,.setup-grid{grid-template-columns:1fr}.hud{padding:16px 10px;gap:7px}.hud strong{font-size:21px}.hud-objective span{font-size:10px}.hud .eyebrow{font-size:8px}.hud small{font-size:8px}.hud button{font-size:10px;padding:9px}#best{display:none}#answer-form{flex-wrap:wrap}#answer{width:100%;min-width:100%}</style></head>':'</head>'));return;}
   if(url.pathname==='/paint-fixture.js'){res.setHeader('Content-Type','text/javascript');res.end(fs.readFileSync(path.join(__dirname,'paint-fixture.js')));return;}
   if(url.pathname==='/audit-garden.html'){res.setHeader('Content-Type','text/html');res.end(fs.readFileSync(path.join(__dirname,'garden-fixture.html')));return;}
   if(url.pathname==='/audit-speech.html'){
     res.setHeader('Content-Type','text/html');res.setHeader('Cache-Control','no-store');
-    res.end(fs.readFileSync(path.join(root,'index.html'),'utf8').replace('<script defer src="resources/data.js">','<script src="/audit-speech-fixture.js"></script><script defer src="resources/data.js">'));return;
+    res.end(fs.readFileSync(path.join(root,'index.html'),'utf8').replace(/(<script defer src="resources\/data\.js(?:\?[^"]*)?">)/,'<script src="/audit-speech-fixture.js"></script>$1'));return;
   }
   if(url.pathname==='/audit-speech-fixture.js'){
     res.setHeader('Content-Type','text/javascript');res.end(fs.readFileSync(path.join(__dirname,'voice-fixture.js')));return;

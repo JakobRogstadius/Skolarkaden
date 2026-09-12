@@ -5,7 +5,8 @@
   "description": "Nio fristående lärspel på svenska med gemensam text- och talinmatning.",
   "license": "BSD-2-Clause",
   "scripts": {
+    "assets": "node dev/version-assets.cjs",
     "dev": "node dev/serve.cjs",
-    "test": "node tests/run.cjs"
+    "test": "node dev/version-assets.cjs --check && node tests/run.cjs"
   }
 }
