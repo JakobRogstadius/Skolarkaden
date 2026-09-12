@@ -172,7 +172,7 @@
       this.emit('fire',{entry});
       if(target){
         this.threats=this.threats.filter(t=>t!==target);this.hits++;this.resolved++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);
-        const points=30+this.streak-1;this.score+=points;this.burst(target.x,target.y,target.color,22);this.emit('hit',{target,points,entry});
+        const age=Math.max(0,this.clock-target.appearedAt),points=Math.max(0,30-Math.floor(age+1e-8))+Math.min(5,this.streak-1);this.score+=points;this.burst(target.x,target.y,target.color,22);this.emit('hit',{target,points,entry});
         this.checkWaveComplete();
       }else{this.streak=0;this.emit('miss',{entry,reason:'Lasern letade en stund och sköt i luften.'});}
     }
@@ -182,7 +182,7 @@
     finish(won){
       if(this.state!=='playing')return;
       this.state=won?'won':'lost';this.lock=null;
-      this.score+=this.livingCity().length*50;
+      this.score+=this.livingCity().length*30;
       if(won){for(let i=0;i<7;i++)this.burst(this.width*(.1+.8*this.random()),this.height*(.25+.3*this.random()),PALETTE[i%5],30);}
       this.emit('end',{won,score:this.score,hits:this.hits,shots:this.shots,bestStreak:this.bestStreak,buildings:this.buildings.filter(b=>b.alive).length});
     }

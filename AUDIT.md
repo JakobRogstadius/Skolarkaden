@@ -1,3 +1,13 @@
+# Tidsberoende meteorpoäng och begränsad svitbonus
+
+2026-09-12.
+
+Meteorregns grundpoäng är nu max(0, 30 − antal hela spelsekunder sedan meteoren dök upp). Värdet räknas när kanonen skjuter, så kö- och siktetid ingår medan paus inte gör det. Sviten lägger till 0, 1, 2, 3, 4 och därefter högst 5 poäng per meteor. Missar och förstörda byggnader/kanoner bryter sviten som tidigare. Varje överlevande byggnad eller kanon ger 30 poäng vid avslut, även vid förlust.
+
+Spelversion v2 behålls enligt önskemål. Databas och befintliga poängposter ändras inte. Verifierat: sekundgränser, lägsta grundpoäng, paus och siktetid, svitens tak och återställning, överlevnadsbonus och poänghändelser. Motor-, 40-meteorsomgångs-, poängindikator- och appkopplingskontroller passerar.
+
+---
+
 # Stabil kundstorlek och närliggande pratbubblor i Laga mat
 
 2026-09-11.
