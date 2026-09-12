@@ -14,6 +14,8 @@ Matching ignores case, surrounding punctuation and extra spaces. Articles and in
 
 Review both directions when editing a pair. If an accepted alternative is itself a main word elsewhere, check its reverse answer too, without inferring any further links. A finite dictionary cannot contain every valid paraphrase; keep adding genuine omissions to the relevant alternative list. Tests cover all declared alternatives, both directions, merged prompts, common ambiguities, speech phrases, delayed hints in all nine games, menu order and highscore support.
 
+After changing browser resources, run `npm run assets` and commit `index.html` with the changes. Resource URLs carry a hash of their contents so a cached answer handler cannot silently ignore a newly loaded dictionary's alternatives. `npm test` checks these versions before running the tests. Opening or hosting the committed files requires no build step.
+
 Reference points for vocabulary selection and meaning checks: [Cambridge English young learner wordlists](https://www.cambridgeenglish.org/Images/506166-starters-movers-flyers-word-list-2025.pdf), [Svenska Akademiens ordböcker](https://svenska.se/), and Cambridge's entries for [borrow](https://dictionary.cambridge.org/dictionary/english-swedish/borrow), [lend](https://dictionary.cambridge.org/dictionary/english-swedish/lend) and [kind](https://dictionary.cambridge.org/dictionary/english-swedish/kind). The application lists were composed independently; definitions and example sentences were not copied.
 
 The new exercise IDs are included in the shared highscore policy and generated Worker. Deploy the rebuilt `cloudflare/worker.mjs` to accept scores for the new exercises. No database migration or game-version change is needed.

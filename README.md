@@ -196,6 +196,8 @@ Testerna använder endast Node.js standardbibliotek (Node 22.13+ för SQLite-tes
 npm test
 ```
 
+Efter ändringar i `resources`: kör `npm run assets` och checka in den uppdaterade `index.html` tillsammans med filerna. Skript och stilmallar får innehållsbaserade versionsnycklar så att webbläsaren hämtar rätt version efter en uppdatering. `npm test` kontrollerar att nycklarna är aktuella. Spelens poängversioner påverkas inte.
+
 `npm run dev` startar en valfri lokal granskningsserver med testfixturer. Den behövs inte för att spela. Se `AUDIT.md` för kontroller och kända verifieringsbegränsningar.
 
 ## Licens
