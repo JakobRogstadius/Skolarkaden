@@ -1,0 +1,20 @@
+{
+  "sv-001": {
+    "input": "keyboard",
+    "language": "sv-SE",
+    "words": [
+      ["hej"],
+      ["hopp"],
+      ["tekopp"]
+    ]
+  },
+  "zh-001": {
+    "input": "voice",
+    "language": "zh-TW",
+    "words": [
+      ["你", "nǐ", "du"],
+      ["謝謝", "xièxie", "tack"],
+      ["我喜歡喝茶", "wǒ xǐhuān hē chá", "Jag tycker om att dricka te."]
+    ]
+  }
+}

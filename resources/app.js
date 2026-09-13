@@ -4,10 +4,12 @@
 const queue=new SC.AnswerQueue(),microphone=new SC.Microphone(),sounds=new SC.GameSounds();
 const input=new SC.AnswerInput({field:$('answer'),form:$('answer-form'),queue,microphone,retainFocus:()=>game?.state==='playing'&&!document.querySelector('dialog[open]'),getCandidates:()=>game?.state==='playing'?game.getTargets().map(t=>t.item):[]});
 let game,renderer,kind='city',busy=false,soundOn=true,lastOptions=null,log=[],lastTargetKey=null,lastUi=0,uiFrame,replaying=null,lifecycle=0;
+const homeworkQuery=new URLSearchParams(root.location?.search||''),homeworkRequested=homeworkQuery.get('mode')==='homework';
+let homeworkReady=!homeworkRequested;
 const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer],home:[SC.HomeGame,SC.HomeRenderer]};
 const highscores=new SC.Highscores({getSelection:()=>scoreSelection(),games:names});
 function scoreSelection(selected=options()){
-  return {kind,mode:selected.mode,pace:selected.pace,input:$('input-kind').value,lang:selected.lang,spokenLanguage:$('language').value,uppercase:selected.uppercase,soundEnabled:soundOn,reducedMotion:root.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  return {kind,mode:selected.mode,pace:selected.pace,input:$('input-kind').value,lang:selected.lang,spokenLanguage:$('language').value,uppercase:selected.uppercase,homeworkId:selected.homeworkId,soundEnabled:soundOn,reducedMotion:root.matchMedia('(prefers-reduced-motion: reduce)').matches,
     label:[names[kind],SC.modes[selected.mode].name,
       {gentle:'Lätt',steady:'Medel',brave:'Svår'}[selected.pace]].join(' · ')};
 }
@@ -15,14 +17,17 @@ const safeRead=key=>{try{return Number(localStorage.getItem(key))||0;}catch(_){r
 let best=0,noticeUntil=0;
 try{localStorage.removeItem('starlight-friends-v1');}catch(_){}
 function notice(text){$('discovery-notice').textContent=text;$('discovery-notice').hidden=false;noticeUntil=performance.now()+6000;}
-for(const [value,m] of Object.entries(SC.modes))$('lesson').add(new Option(m.name,value));$('lesson').value='swedish';
+for(const [value,m] of Object.entries(SC.modes))if(!m.hidden)$('lesson').add(new Option(m.name,value));$('lesson').value='swedish';
+if(homeworkRequested){$('lesson').replaceChildren(new Option('Läxa','homework'));$('lesson').value='homework';$('homework-info').hidden=false;$('homework-info').textContent='Läser in läxan…';}
 for(const [key,glyph] of Object.entries(SC.bopomofoKeys)){const el=document.createElement('span');el.textContent=glyph+' ';const small=document.createElement('small');small.textContent=key.toUpperCase();el.append(small);$('keyboard-grid').append(el);}
-function options(){return {mode:$('lesson').value,pace:$('pace').value,lang:$('input-kind').value==='typing'&&!SC.isTranslation($('lesson').value)?SC.modes[$('lesson').value].lang:$('language').value,uppercase:Math.random()<.5};}
-function speechOptions(){return {enabled:$('input-kind').value!=='typing',kind:'browser',language:$('language').value,lesson:$('lesson').value};}
+function options(){return homeworkRequested?{mode:'homework',pace:$('pace').value,lang:SC.modes.homework.lang,uppercase:false,homeworkId:SC.modes.homework.homeworkId}:{mode:$('lesson').value,pace:$('pace').value,lang:$('input-kind').value==='typing'&&!SC.isTranslation($('lesson').value)?SC.modes[$('lesson').value].lang:$('language').value,uppercase:Math.random()<.5};}
+function speechOptions(){return homeworkRequested?{enabled:SC.modes.homework.input==='voice',kind:'browser',language:SC.modes.homework.lang,lesson:'homework'}:{enabled:$('input-kind').value!=='typing',kind:'browser',language:$('language').value,lesson:$('lesson').value};}
 function typingHint(){return ['letters','bopomofo'].includes($('lesson').value)?'Tryck på en bokstav.':'Skriv ett svar och tryck Enter.';}
 function menuUpdate(){
+  if(homeworkRequested){$('lesson').value='homework';$('input-kind').value=SC.modes.homework.input==='voice'?'browser':'typing';$('language').value=SC.modes.homework.lang;}
+  $('lesson').disabled=$('input-kind').disabled=homeworkRequested;$('start').disabled=busy||!homeworkReady;
   const voice=$('input-kind').value!=='typing',mode=$('lesson').value,translation=SC.isTranslation(mode),pair=SC.isWordPair(mode);
-  $('language-label').textContent=translation?'Översätt till':'Talspråk';$('language').disabled=!voice&&!translation;
+  $('language-label').textContent=homeworkRequested?'Språk':translation?'Översätt till':'Talspråk';$('language').disabled=homeworkRequested||!voice&&!translation;
   for(const option of $('language').options)option.hidden=option.disabled=pair&&!(translation?['sv-SE','en-US']:[SC.modes[mode].lang]).includes(option.value);
   if(pair&&![...$('language').options].some(o=>!o.disabled&&o.value===$('language').value))$('language').value=SC.modes[mode].lang;
   $('setup-note').textContent=kind==='marshmallows'?(voice?'Säg svaret när marshmallowen är gyllene.':['letters','bopomofo'].includes(mode)?'Tryck på bokstaven när marshmallowen är gyllene.':'Skriv svaret. Tryck Enter när marshmallowen är gyllene.'):voice?'Säg svaren efter varandra.':typingHint();
@@ -75,7 +80,7 @@ function onGameEvent(e){
   lastTargetKey=null;
 }
 async function start(){
-  if(busy)return;const token=++lifecycle;busy=true;$('start').disabled=true;$('again').disabled=true;$('setup-error').textContent='';
+  if(busy||!homeworkReady)return;const token=++lifecycle;busy=true;$('start').disabled=true;$('again').disabled=true;$('setup-error').textContent='';
   try{
     input.setEnabled(false);input.configure(speechOptions());await input.prepare();if(token!==lifecycle)return;
     sounds.stopCampfire();sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
@@ -97,7 +102,7 @@ $('start').addEventListener('click',start);$('again').addEventListener('click',(
 root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){
   // Canvas labels are primary. Keep a compact alternative for assistive technology.
-  const hints=SC.pinyinHints(game),text=game.getTargets().map(t=>(kind==='home'?SC.homeTaskTypes[t.type].name+': ':'')+(hints.has(t)?t.item.hint+' · '+t.item.label+(t.item.translation?' · '+t.item.translation:''):t.item.label)).join(', ');
+  const hints=SC.pinyinHints(game),text=game.getTargets().map(t=>(kind==='home'?SC.homeTaskTypes[t.type].name+': ':'')+(hints.has(t)?[t.item.hint,t.item.label,t.item.translation].filter(Boolean).join(' · '):t.item.label)).join(', ');
   if(text!==lastTargetKey){lastTargetKey=text;$('targets').textContent=text;}
 }
 function renderUi(){
@@ -139,4 +144,7 @@ $('copy-log').addEventListener('click',()=>copy($('speech-log').value,'debug-sta
 $('copy-report').addEventListener('click',()=>copy(JSON.stringify({app:'Skolarkaden',browser:navigator.userAgent,voice:input.voice,microphone:microphone.stream?.getAudioTracks()[0]?.getSettings(),audio:input.lastAudio?SC.audioStats(input.lastAudio):null,queue:queue.items,events:log},null,2),'mic-status'));
 root.addEventListener('pagehide',()=>{lifecycle++;cancelAnimationFrame(uiFrame);input.destroy();microphone.close();sounds.close();renderer?.destroy();});
 menuUpdate();input.setEnabled(false);
+if(homeworkRequested)SC.loadHomework(homeworkQuery.get('id')).then(lesson=>{
+  homeworkReady=true;$('homework-info').textContent='Läxa · '+lesson.homeworkId;menuUpdate();
+}).catch(error=>{$('homework-info').textContent='Läxan kunde inte öppnas.';$('setup-error').textContent=error.message;});
 })(globalThis);

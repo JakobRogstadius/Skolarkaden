@@ -8,10 +8,10 @@ const { mathExercises, languageExercises } = globalThis.SkolarkadenHighscorePoli
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',
   'chineseSimpl1', 'chineseSimpl2', 'chineseSimpl3', 'chineseSimpl4',
-  ...mathExercises, ...languageExercises]);
+  ...mathExercises, ...languageExercises, 'homework']);
 const PACES = new Set(['gentle', 'steady', 'brave']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1, score_dimensions: 1 };
+const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1, score_dimensions: 1, homework: 1 };
 const EXERCISE_RATING_METHOD = 'top-five-game-percentiles-v1';
 const LANGUAGES = new Set(['sv-SE', 'en-US', 'zh-TW', 'zh-CN']);
 
@@ -42,6 +42,9 @@ function settingsFor(body, board) {
   if (keys !== null && (exercise !== 'letters' || !Array.isArray(keys) || keys.length < 1 || keys.length > 37 ||
       keys.some(key => typeof key !== 'string' || !/^[\p{L}]$/u.test(key)))) throw new Error('invalid_settings');
   settings.letter_keys = keys;
+  const homeworkId = raw.homework_id ?? null;
+  if (homeworkId !== null && (exercise !== 'homework' || typeof homeworkId !== 'string' || !homeworkId.trim() || homeworkId.length > 128)) throw new Error('invalid_settings');
+  if (exercise === 'homework') settings.homework_id = homeworkId;
   return JSON.stringify(settings);
 }
 

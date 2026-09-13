@@ -101,15 +101,16 @@ SC.chineseSpeechResults=function(results,context,history,cache=[]){
 // Keep phrases and optional articles/infinitive markers together, including
 // phrases spanning two recognition results. The lexicon is language-specific.
 const pairSpeechLexicons=new Map();
+SC.hasSpeechPhrases=lesson=>SC.isWordPair(lesson)||(lesson==='homework'&&!SC.isChinese(lesson));
 SC.pairSpeechLexicon=function(context){
   const {lesson,language}=context,key=lesson+':'+language;
-  if(!pairSpeechLexicons.has(key)){
+  if(!pairSpeechLexicons.has(key)||pairSpeechLexicons.get(key).items!==SC.modes[lesson].items){
     const forms=new Set();
     for(const item of SC.vocabulary(lesson,language))for(const answer of [item.answer,...item.aliases]){
       const text=SC.speechNormalize(answer);forms.add(text);
-      for(const prefix of language==='sv-SE'?['att ','en ','ett ']:['to ','a ','an '])forms.add(prefix+text);
+      if(SC.isWordPair(lesson))for(const prefix of language==='sv-SE'?['att ','en ','ett ']:['to ','a ','an '])forms.add(prefix+text);
     }
-    pairSpeechLexicons.set(key,{forms,maxWords:Math.max(...[...forms].map(s=>s.split(' ').length))});
+    pairSpeechLexicons.set(key,{forms,maxWords:Math.max(...[...forms].map(s=>s.split(' ').length)),items:SC.modes[lesson].items});
   }return pairSpeechLexicons.get(key);
 };
 SC.groupPairSpeech=function(atoms,context,history=[],offset=0){
@@ -117,8 +118,9 @@ SC.groupPairSpeech=function(atoms,context,history=[],offset=0){
   for(let i=0;i<atoms.length;i++){
     let end=i;
     for(let j=i;j<Math.min(atoms.length,i+maxWords);j++){
-      if(j>i&&/[,.!?;，。！？]$/.test(atoms[j-1].text))break;
-      if(forms.has(SC.speechNormalize(atoms.slice(i,j+1).map(t=>t.text).join(' '))))end=j;
+      if(j>i&&SC.isWordPair(context.lesson)&&/[,.!?;，。！？]$/.test(atoms[j-1].text))break;
+      const text=SC.speechNormalize(atoms.slice(i,j+1).map(t=>t.text).join(' '));
+      if(forms.has(text)||j===atoms.length-1&&[...forms].some(form=>form.startsWith(text+' ')))end=j;
     }
     const text=atoms.slice(i,end+1).map(t=>t.text).join(' '),final=atoms.slice(i,end+1).every(t=>t.final);
     const parts=end===i?SC.splitSwedish(text,context,history,offset+out.length):[text];
@@ -130,7 +132,7 @@ SC.pairSpeechPrefix=(text,context)=>[...SC.pairSpeechLexicon(context).forms].som
 SC.tokenizeSpeech=function(text,context,history=[],offset=0){
   const {lesson,language}=context,words=SC.speechWords(text,lesson),out=[];
   if(SC.isChinese(lesson))return SC.groupChineseSpeech(SC.chineseSpeechAtoms(text).map(text=>({text})),context,history,offset).map(t=>t.text);
-  if(SC.isWordPair(lesson))return SC.groupPairSpeech(words.map(text=>({text})),context,history,offset).map(t=>t.text);
+  if(SC.hasSpeechPhrases(lesson))return SC.groupPairSpeech(words.map(text=>({text})),context,history,offset).map(t=>t.text);
   for(let i=0;i<words.length;i++){
     let word=words[i],v=SC.speechNormalize(word);
     if(lesson==='letters'&&i+1<words.length){const phrase=word+' '+words[i+1];if(SC.letterNames[language]?.[SC.speechNormalize(phrase)]){word=phrase;i++;}}
@@ -160,7 +162,7 @@ class SpeechStream{
     // but do not retry identical rejected text on every recognition callback.
     for(const t of this.ledger)if(t.entry?.rejected){t.sent=false;t.skipped=true;t.entry=undefined;t.keys=[t.key];}
     const context=this.getContext(),history=this.ledger.filter(t=>!t.ghost),fresh=[];
-    if(SC.isWordPair(context.lesson)){
+    if(SC.hasSpeechPhrases(context.lesson)){
       const atoms=results.flatMap(result=>SC.speechWords(result[0]?.transcript||'',context.lesson).map(text=>({text,final:result.isFinal})));
       for(const token of SC.groupPairSpeech(atoms,context,history))fresh.push({...token,key:SC.speechIdentity(token.text,context.lesson,context.language),sent:false,ghost:false});
     }else if(SC.isChinese(context.lesson)){
@@ -205,7 +207,7 @@ class SpeechStream{
       // In lessons reaching 100 or more, the trailing interim "one" may still become "one
       // hundred". Wait for its boundary; earlier complete answers still flow.
       const t=merged[k],last=k===merged.length-1,boundary=(!['math-large-numbers','math-multiplication','math-multiplication-division'].includes(context.lesson)||!last);
-      const phraseBoundary=!SC.isWordPair(context.lesson)||!last||!SC.pairSpeechPrefix(t.text,context);
+      const phraseBoundary=!SC.hasSpeechPhrases(context.lesson)||!last||!SC.pairSpeechPrefix(t.text,context);
       const matches=context.candidates.some(item=>SC.matches(t.text,item,context.lesson,context.language,'speech'));
       // ASR can finalize "ice" before a later result supplies "cream". Keep
       // that incomplete phrase pending instead of charging a wrong answer.
