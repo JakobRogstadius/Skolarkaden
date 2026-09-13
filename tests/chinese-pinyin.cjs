@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 const ctx=vm.createContext({console,Event,EventTarget,CustomEvent});
-for(const name of ['pinyin','data','speech','input','people','game','foodtruck','plants','garden','beehive','paint'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+name+'.js'),'utf8'),ctx);
+for(const name of ['pinyin','data','language-exercises-data','language-exercises','speech','input','people','game','foodtruck','plants','garden','beehive','paint'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+name+'.js'),'utf8'),ctx);
 const SC=ctx.Starlight,result=(text,isFinal=false)=>Object.assign([{transcript:text}],{isFinal}),item=char=>SC.modes.chinese.items.find(i=>i.answer===char);
 const matches=(text,char,source='speech')=>SC.matches(text,item(char),'chinese','zh-CN',source);
 let checks=0;function test(name,fn){fn();console.log('PASS '+name);checks++;}

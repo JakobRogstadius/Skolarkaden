@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 const context=vm.createContext({console,Event,EventTarget,CustomEvent,ResizeObserver:class{observe(){}disconnect(){}},requestAnimationFrame:()=>1,cancelAnimationFrame(){}});
-for(const file of ['pinyin','data','input','people','game','foodtruck','plants','garden','beehive','paint','dinosaur','marshmallows','eggs','home','home-renderer'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),context);
+for(const file of ['pinyin','data','language-exercises-data','language-exercises','input','people','game','foodtruck','plants','garden','beehive','paint','dinosaur','marshmallows','eggs','home','home-renderer'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),context);
 const SC=context.Starlight;
 function canvas(){const texts=[],stack=[];const c=new Proxy({globalAlpha:1,measureText:t=>({width:t.length*8}),save(){stack.push(this.globalAlpha);},restore(){this.globalAlpha=stack.pop();},fillText(text,x,y){if(text.endsWith(' poäng'))texts.push({text,x,y,alpha:this.globalAlpha,color:this.fillStyle});}},{get:(o,k)=>k in o?o[k]:k.includes('Gradient')?()=>({addColorStop(){}}):()=>{}});return {texts,getContext:()=>c,getBoundingClientRect:()=>({width:1000,height:740})};}
 for(const prefix of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home']){

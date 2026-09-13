@@ -6,38 +6,9 @@ Nio små lärspel för tangentbord eller mikrofon. Träna bokstäver, läsning, 
 
 All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och tangentbordsläget fungerar helt utan internet.
 
+Alla språkövningar finns i [language-exercises.json](language-exercises.json).
+
 Ordövningarna omfattar även svenska och engelska synonymer och motsatser samt tre nivåer av översättning svenska–engelska, med 50 ordpar i varje lista. Varje ordpar har två huvudord och separata listor med godkända alternativa svar i båda riktningarna. Uppgiften visar bara huvudordet. Ett svar visas med mindre text efter fem sekunder. För översättning väljer du svarsspråk med **Översätt till**, även med tangentbord. Konstruktion och underhåll beskrivs i [dev/word-pairs.md](dev/word-pairs.md).
-
-## Läxor via länk
-
-Redigera [homework.json](homework.json) direkt i GitHub. Varje nyckel är ett läx-id; länken väljer läxan med `?mode=homework&id=sv-001` eller `?mode=homework&id=zh-001`. Dessa två exempel finns i filen och kan ändras eller ersättas. Ändringar blir tillgängliga när GitHub Pages har publicerat dem; ladda om sidan för att läsa in dem. Inget separat byggsteg behövs när bara läxfilen ändras. Läxlänkar används via GitHub Pages eller en lokal webbserver (`npm run dev`), eftersom webbläsaren behöver hämta JSON-filen.
-
-```json
-{
-  "zh-001": {
-    "input": "voice",
-    "language": "zh-TW",
-    "words": [
-      ["你", "nǐ", "du"],
-      ["謝謝", "xièxie", "tack"],
-      ["我喜歡喝茶", "wǒ xǐhuān hē chá", "Jag tycker om att dricka te."]
-    ]
-  }
-}
-```
-
-- `input`: `keyboard` eller `voice`.
-- `language`: `sv-SE`, `en-US`, `zh-TW` eller `zh-CN`.
-- `words`: minst en uppgift. Varje rad är `[text, uttal, översättning]`. En fras med blanksteg är en enda uppgift. Textens skiftläge bevaras.
-- Uttal och översättning får utelämnas från slutet: `["hej"]`. Använd `null` om bara översättningen behövs: `["hello", null, "hej"]`.
-- Mandarin kräver uttal i pinyin för varje uppgift. Pinyin med toner visas som skrivet, medan svarsmatchningen bortser från toner och mellanrum mellan stavelser. Tangentbord accepterar både uppgiftens kinesiska text och pinyin. Översättningen är bara en ledtråd.
-- Läx-id är skiftlägeskänsliga och får vara högst 128 tecken. Använd gärna enkla id:n som `zh-001`; specialtecken behöver URL-kodas i länken.
-
-Lägg till `&input=keyboard` eller `&input=voice` för att åsidosätta läxfilens inmatningsläge, exempelvis `?mode=homework&id=zh-001&input=keyboard`. Utan `input` används läxfilens inställning. Ett annat värde visar ett felmeddelande.
-
-Spelaren väljer spel och svårighet. Övning, inmatning och språk är låsta även efter paus, omspelning och återgång till menyn; ett inmatningsläge från länken behålls hela tiden och sparas med resultatet. Läxa finns inte i den vanliga övningsmenyn. Uttal visas ovanför uppgiften och översättning nedanför efter fem sekunder. Saknade eller felaktiga läxor visar ett felmeddelande och kan inte startas som en annan övning.
-
-Alla läxor har övnings-id `homework` och visas som **Läxa** i topplistorna. Läx-id sparas separat som `homework_id` i resultatets `settings_json`. Den uppdaterade [Cloudflare Workern](cloudflare/worker.mjs) måste publiceras för att ta emot läxresultat; denna ändring kräver ingen ny SQL-migrering. GitHub Pages publicerar inte Workern.
 
 ## Gemensamma topplistor
 
@@ -216,7 +187,9 @@ Klassiska skript används så att `file://` fungerar utan modulladdare, externa 
 | `resources/input.js` | Återanvändbar svarskö, text- och talinmatning samt valbar fokusbevakning. |
 | `resources/speech.js` | Tidig köning, rättningar, orddelning och deduplicering av tal. |
 | `resources/voice.js` | Mikrofonens livscykel. |
-| `resources/data.js`, `pinyin.js` | Övningar, ordböcker, fasta matematiknivåer och svarsmatchning. |
+| `language-exercises.json` | Alla språkövningars innehåll och menytexter. |
+| `resources/language-exercises.js`, `language-exercises-data.js` | Läser och validerar språkövningar; genererad kopia för lokal användning. |
+| `resources/data.js`, `pinyin.js` | Fasta matematiknivåer, uttalsbehandling och svarsmatchning. |
 | `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js`, `marshmallows.js`, `eggs.js`, `home.js`, `home-renderer.js` | Nio separata simuleringar och canvas-renderare. |
 | `resources/people.js`, `plants.js`, `sounds.js` | Gemensamma figurer, växter och syntetiska ljud. |
 | `resources/app.js` | Menyer, paus, HUD och anslutning av modulerna. |

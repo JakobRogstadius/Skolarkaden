@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
-const ctx=vm.createContext({Event,EventTarget,CustomEvent,console});for(const f of ['data','input','people','game','foodtruck'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),ctx);
+const ctx=vm.createContext({Event,EventTarget,CustomEvent,console});for(const f of ['data','language-exercises-data','language-exercises','input','people','game','foodtruck'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),ctx);
 const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
 for(const [pace,base] of Object.entries({gentle:5,steady:3,brave:1.5}))for(const mode of ['swedish','math-diagrams'])for(const strategy of ['perfect','silent']){
  const ends=[],arrivals=[],g=new SC.FoodTruckGame({random:rng(71),onEvent:e=>{if(e.type==='end')ends.push(e);}});

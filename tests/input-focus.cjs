@@ -11,7 +11,7 @@ class Element extends EventTarget{
  setAttribute(){}
 }
 const context=vm.createContext({console,Event,EventTarget,CustomEvent,Float32Array,setTimeout,clearTimeout,navigator:{userAgent:'Chrome/145'},addEventListener:windowEvents.addEventListener.bind(windowEvents),removeEventListener:windowEvents.removeEventListener.bind(windowEvents)});
-for(const f of ['pinyin','data','input'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),context);
+for(const f of ['pinyin','data','language-exercises-data','language-exercises','input'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),context);
 const SC=context.Starlight,queue=new SC.AnswerQueue(),field=new Element(),form=new Element(),other=new Element();
 const microphone={snapshot:()=>({samples:new Float32Array(0)}),cancel(){}};
 const input=new SC.AnswerInput({field,form,queue,microphone,retainFocus:()=>playing&&!dialog});

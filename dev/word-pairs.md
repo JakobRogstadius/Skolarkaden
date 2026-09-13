@@ -1,6 +1,6 @@
 # Word-pair exercises
 
-Each of the seven dictionaries in `resources/word-pairs.js` contains 50 pairs. A row is `[main A, main B, alternatives for A, alternatives for B]`. For a prompt of A, accept B and B's alternatives. For a prompt of B, accept A and A's alternatives. Only the two main words become prompts. The lists are independent: an accepted alternative is not automatically a synonym or translation of every other accepted answer.
+Each of the seven word-pair exercises in [language-exercises.json](../language-exercises.json) contains 50 pairs under `pairs`. A row is `[main A, main B, alternatives for A, alternatives for B]`. For a prompt of A, accept B and B's alternatives. For a prompt of B, accept A and A's alternatives. Only the two main words become prompts. The lists are independent: an accepted alternative is not automatically a synonym or translation of every other accepted answer.
 
 The task bubble contains only the main word. One preferred answer appears below it in smaller text after five playable seconds. Existing pause and queued-answer rules apply. There are no context labels, word-class labels or example sentences.
 

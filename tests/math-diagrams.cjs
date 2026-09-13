@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 const context=vm.createContext({console,Event,EventTarget});
-for(const file of ['data','game'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),context);
+for(const file of ['data','language-exercises-data','language-exercises','game'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),context);
 const SC=context.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
 const diagrams=SC.mathLevel('math-diagrams'),equations=SC.mathLevel('math-simple-equations');
 const math=Object.entries(SC.modes).filter(([id])=>SC.isMath(id));

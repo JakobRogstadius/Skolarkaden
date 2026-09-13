@@ -33,7 +33,7 @@ const context=vm.createContext({console,Event,EventTarget,crypto:webcrypto,Abort
     }
     return Response.json({leaderboard:parsed.searchParams.get('leaderboard').split(':').slice(0,2).join(':'),scores:[],rank:1});
   }});
-for(const file of ['resources/data.js','resources/word-pairs.js','resources/highscore-policy.js','resources/highscores.js'])vm.runInContext(read(file),context);
+for(const file of ['resources/data.js','resources/language-exercises-data.js','resources/language-exercises.js','resources/highscore-policy.js','resources/highscores.js'])vm.runInContext(read(file),context);
 const selection={kind:'dinosaur',mode:'swedish',pace:'brave',label:games.dinosaur+' · Svenska ord - korta · Svår'};
 const ui=new context.Starlight.Highscores({getSelection:()=>selection,games});
 const settle=()=>new Promise(resolve=>setImmediate(resolve));

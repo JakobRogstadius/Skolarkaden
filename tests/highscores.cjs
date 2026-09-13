@@ -103,8 +103,8 @@ class Element extends EventTarget{
     document:{get activeElement(){return focused;},getElementById:get,createElement:()=>new Element()},localStorage:{getItem:key=>nicknameStorage.get(key),setItem:(key,value)=>nicknameStorage.set(key,value),removeItem:key=>nicknameStorage.delete(key)},
     fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));if(failOnce){failOnce=false;throw new Error('network');}return Response.json({ok:true});}if(legacyBoards){const key=new URL(url).searchParams.get('leaderboard');assert.equal(key.split(':').length,4);return Response.json({leaderboard:key,scores:key.split(':')[2]==='swedish'?legacyBoards[key.split(':')[3]]:[]});}return unsupported?Response.json({error:'invalid_leaderboard'},{status:400}):Response.json(boardData);}});
   vm.runInContext(read('resources/data.js'),context);
-  vm.runInContext(read('resources/word-pairs.js'),context);
-  vm.runInContext(read('resources/homework.js'),context);
+  vm.runInContext(read('resources/language-exercises-data.js'),context);
+  vm.runInContext(read('resources/language-exercises.js'),context);
   vm.runInContext(read('resources/highscore-policy.js'),context);vm.runInContext(read('resources/highscores.js'),context);
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),'v2:city');
@@ -233,13 +233,5 @@ class Element extends EventTarget{
   assert.equal((await call('OPTIONS','/stats')).status,204);
   assert.equal((await call('GET','/stats?group=games',undefined,{Origin:'https://unrelated.example'})).status,403);
   assert.equal((await (await call('GET','/health')).json()).capabilities.popularity_boards,1);
-  const homeworkRun=payload({leaderboard_key:'v2:city:homework:gentle',settings:{homework_id:'zh-001',input_mode:'voice',spoken_language:'zh-TW',exercise_language:'zh-TW'}});
-  assert.equal((await call('POST','/scores',homeworkRun)).status,201);
-  assert.equal(JSON.parse(db.prepare('SELECT settings_json FROM highscores WHERE submission_id=?').get(homeworkRun.submission_id).settings_json).homework_id,'zh-001');
-  assert.equal((await call('POST','/scores',homeworkRun)).status,200);
-  assert.equal((await call('GET','/scores?leaderboard=v2:city:homework:gentle')).status,200);
-  assert.equal((await (await call('GET','/stats?group=exercises')).json()).entries.find(row=>row.id==='homework').plays,1);
-  for(const id of ['',5,'x'.repeat(129)])assert.equal((await call('POST','/scores',payload({...homeworkRun,submission_id:webcrypto.randomUUID(),settings:{homework_id:id}}))).status,400);
-  assert.equal((await call('POST','/scores',payload({settings:{homework_id:'zh-001'}}))).status,400);
-  db.close();console.log('PASS highscores: real SQLite, privacy, filtering, ranking, CORS, limits, keys, browser submission, retries, homework and popularity aggregates.');
+  db.close();console.log('PASS highscores: real SQLite, privacy, filtering, ranking, CORS, limits, keys, browser submission, retries and popularity aggregates.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

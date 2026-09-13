@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 const read=file=>fs.readFileSync(path.join(__dirname,'..',file),'utf8'),ctx=vm.createContext({Event,EventTarget,CustomEvent,console});
-for(const name of ['pinyin','data','word-pairs','speech','input','people','game','foodtruck','plants','garden','beehive','paint','dinosaur','marshmallows','eggs','home','home-renderer'])vm.runInContext(read('resources/'+name+'.js'),ctx);
+for(const name of ['pinyin','data','language-exercises-data','language-exercises','speech','input','people','game','foodtruck','plants','garden','beehive','paint','dinosaur','marshmallows','eggs','home','home-renderer'])vm.runInContext(read('resources/'+name+'.js'),ctx);
 const SC=ctx.Starlight,modes=Object.keys(SC.wordPairs),rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
 const item=(mode,label)=>SC.modes[mode].items.find(i=>i.label===label);
 let checks=0;const test=(name,fn)=>{fn();checks++;console.log('PASS '+name);};
@@ -125,7 +125,7 @@ test('All nine games accept alternate answers and render each new exercise with 
 test('Typing translation direction remains selectable and speech uses the answer language',()=>{
   const fields=new Map(),field=id=>{if(!fields.has(id))fields.set(id,{value:'',options:[],hidden:false,disabled:false});return fields.get(id);};
   field('language').options=['sv-SE','en-US','zh-TW','zh-CN'].map(value=>({value}));field('lesson').value='translation-sv-en-2';field('input-kind').value='typing';field('language').value='sv-SE';
-  const app=read('resources/app.js'),start=app.indexOf('function options()'),end=app.indexOf("$('lesson').addEventListener",start),menu=vm.createContext({$:field,SC,kind:'city',homeworkRequested:false,homeworkReady:true,busy:false});
+  const app=read('resources/app.js'),start=app.indexOf('function options()'),end=app.indexOf("$('lesson').addEventListener",start),menu=vm.createContext({$:field,SC,kind:'city'});
   vm.runInContext(app.slice(start,end),menu);menu.menuUpdate();assert.equal(field('language').disabled,false);assert.equal(field('language-label').textContent,'Översätt till');assert.equal(menu.options().lang,'sv-SE');
   field('language').value='en-US';assert.equal(menu.options().lang,'en-US');field('input-kind').value='browser';assert.equal(menu.speechOptions().language,'en-US');
   field('lesson').value='swedish-synonyms';menu.menuUpdate();assert.equal(field('language').value,'sv-SE');assert.equal(field('language').options.filter(o=>!o.disabled).length,1);

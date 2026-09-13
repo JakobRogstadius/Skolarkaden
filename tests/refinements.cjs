@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 class Element extends EventTarget{constructor(){super();this.value='';this.button={};}querySelector(){return this.button;}focus(){}setAttribute(){}}
 const ctx=vm.createContext({console,Event,EventTarget,CustomEvent,setTimeout,clearTimeout,Float32Array,Math,navigator:{userAgent:'Chrome/145'}});
-for(const file of ['pinyin','data','voice','speech','input','people','game','foodtruck','plants','garden','beehive','paint'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
+for(const file of ['pinyin','data','language-exercises-data','language-exercises','voice','speech','input','people','game','foodtruck','plants','garden','beehive','paint'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+file+'.js'),'utf8'),ctx,{filename:file+'.js'});
 const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;},tick=(g,n)=>{for(let i=0;i<Math.round(n/.05);i++)g.update(.05);};
 let checks=0;function test(name,fn){fn();console.log('PASS '+name);checks++;}
 function policy(queue,getCandidates,mode='swedish',lang='sv-SE',getActiveEntries=()=>[]){queue.setPolicy({getCandidates,getActiveEntries,matches:(entry,item)=>SC.matches(entry.text,item,mode,lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,mode,lang)});}

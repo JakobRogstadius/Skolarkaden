@@ -1,5 +1,5 @@
 'use strict';const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const ctx=vm.createContext({});for(const name of ['pinyin','data','speech'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+name+'.js'),'utf8'),ctx);
+const ctx=vm.createContext({});for(const name of ['pinyin','data','language-exercises-data','language-exercises','speech'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+name+'.js'),'utf8'),ctx);
 const SC=ctx.Starlight,result=(text,isFinal=false)=>Object.assign([{transcript:text}],{isFinal});let checks=0;
 function test(name,fn){fn();checks++;console.log('PASS '+name);}
 function harness(lesson='swedish',language='sv-SE',words=['hund','mat','katt']){

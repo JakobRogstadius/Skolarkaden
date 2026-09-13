@@ -1,12 +1,5 @@
 # Skolarkaden highscores
 
-### Homework exercise
-
-Deploy the updated, complete generated [worker.mjs](worker.mjs) to **skolarkaden-api**, keeping the existing **DB** binding. GitHub Pages does not deploy this Worker. No new database migration is needed for homework if the previous migrations are already applied.
-
-The Worker accepts `homework` as an exercise, includes it in the shared game boards and exercise popularity ranking, and stores the optional `homework_id` in the existing `settings_json` column. All homework lists share the same exercise ID and game versions stay unchanged. `/health` advertises `capabilities.homework: 1` after deployment. Later edits to `homework.json` need only the normal GitHub Pages publication; the Worker does not need to be updated for each homework.
-
-
 The frontend calls `https://skolarkaden-api.jakob-rogstadius.workers.dev`.
 The website remains on GitHub Pages. No API token belongs in the frontend.
 

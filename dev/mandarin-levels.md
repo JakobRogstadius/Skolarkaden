@@ -1,5 +1,7 @@
 # Mandarin: tecken och tvåteckensord
 
+Ordlistorna finns i `mandarinLevels` i [language-exercises.json](../language-exercises.json). Uttalsdata för sammansatta ord kommer från phrase-pinyin-data (MIT, copyright 2017 mozillazg); se `phrase-pinyin-LICENSE.txt`.
+
 Nivåerna är kumulativa. Nivå 1 och 2 behåller sina 30 respektive 80 enstaka tecken. Därefter tillkommer tvåteckensord i stället för fler fristående tecken: 75 ord i nivå 3 och ytterligare 100 i nivå 4. Alla tidigare uppgifter finns kvar för repetition. Antalen 155 och 255 avser därför uppgifter, inte unika tecken.
 
 | Nivå | Nya uppgifter | Totalt | Inriktning |
