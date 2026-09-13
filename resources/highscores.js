@@ -13,7 +13,16 @@ const scoreSettings=s=>({game_version:policy.versions[s.kind],game:s.kind,exerci
   sound_enabled:typeof s.soundEnabled==='boolean'?s.soundEnabled:null,reduced_motion:typeof s.reducedMotion==='boolean'?s.reducedMotion:null});
 const difficultyName=pace=>Array.from($('pace').options).find(option=>option.value===pace)?.textContent||'—';
 const displayName=name=>Array.from(String(name).normalize('NFC').toUpperCase()).slice(0,10).join('');
+const cleanName=name=>displayName(String(name).replace(/[^\p{L}\p{M} ]/gu,''));
 const validName=name=>/^[\p{L}\p{M} ]{1,10}$/u.test(name);
+function cleanNameInput(){
+  const input=$('score-name');if(input.readOnly)return;
+  const {value,selectionStart,selectionEnd,selectionDirection}=input,name=cleanName(value);
+  if(name===value)return;
+  input.value=name;
+  if(Number.isInteger(selectionStart)&&Number.isInteger(selectionEnd))input.setSelectionRange(
+    cleanName(value.slice(0,selectionStart)).length,cleanName(value.slice(0,selectionEnd)).length,selectionDirection);
+}
 async function request(path,options={}){
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),8000);
   try{
@@ -54,7 +63,10 @@ class Highscores{
     this.games=games;this.pages=[...Object.keys(games),'games','exercises'];
     $('score-name').value='';
     try{localStorage.removeItem('skolarkaden-nickname-v1');}catch(_){}
-    $('score-name').addEventListener('input',()=>{if(!$('score-name').readOnly)$('score-name').value=displayName($('score-name').value);});
+    let composing=false;
+    $('score-name').addEventListener('compositionstart',()=>{composing=true;});
+    $('score-name').addEventListener('compositionend',()=>{composing=false;cleanNameInput();});
+    $('score-name').addEventListener('input',e=>{if(!composing&&!e.isComposing)cleanNameInput();});
     $('leaderboard-open').addEventListener('click',()=>this.open(this.getSelection()));
     $('scores-refresh').addEventListener('click',()=>this.load(this.view,true));
     $('scores-previous').addEventListener('click',()=>this.navigate(-1));
@@ -63,7 +75,7 @@ class Highscores{
       if(!['ArrowLeft','ArrowRight'].includes(e.key)||e.altKey||e.ctrlKey||e.metaKey||e.target.isContentEditable||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;
       if(!this.endView&&$('leaderboard').open){e.preventDefault();this.navigate(e.key==='ArrowLeft'?-1:1);}
     });
-    $('score-form').addEventListener('submit',e=>{e.preventDefault();this.pendingSave=this.submit().finally(()=>{this.pendingSave=null;});});
+    $('score-form').addEventListener('submit',e=>{e.preventDefault();if(composing)return;this.pendingSave=this.submit().finally(()=>{this.pendingSave=null;});});
     $('leaderboard').addEventListener('close',()=>this.dismiss());
     $('end-overlay').addEventListener('keydown',e=>{
       if(e.key!=='Tab')return;const controls=[$('score-name'),$('again'),$('end-menu')].filter(el=>!el.disabled&&el.offsetParent!==null);
@@ -167,7 +179,10 @@ class Highscores{
   async submit(){
     const result=this.shownResult,token=this.view;
     if(!result||result.saved||result.pending||!result.id)return;
-    const raw=$('score-name').value.normalize('NFC').trim(),name=raw.toUpperCase()||'ANONYM';
+    const raw=$('score-name').value.normalize('NFC').trim();
+    // Also cover autofill without an input event, preserving the silent name filter.
+    if(!result.payload&&!policy.isBannedName(raw))cleanNameInput();
+    const name=$('score-name').value.normalize('NFC').trim().toUpperCase()||'ANONYM';
     if(!result.payload&&!policy.isBannedName(raw)&&!validName(name)){$('score-status').textContent='Skriv 1–10 bokstäver. Mellanslag går också bra.';return;}
     result.payload ||= {submission_id:result.id,leaderboard_key:storedKey(result.selection),player_name:name,score:result.score,settings:scoreSettings(result.selection)};
     result.pending=true;$('score-submit').disabled=true;$('score-name').readOnly=true;$('score-status').textContent='Sparar…';

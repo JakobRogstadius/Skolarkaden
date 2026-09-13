@@ -19,7 +19,7 @@ let focused=null;
 class Element extends EventTarget{
   constructor(){super();this.dataset={};this.value='';this.textContent='';this.children=[];this.open=false;}
   focus(){focused=this;}
-  setSelectionRange(start,end){this.selectionStart=start;this.selectionEnd=end;}
+  setSelectionRange(start,end,direction='none'){this.selectionStart=start;this.selectionEnd=end;this.selectionDirection=direction;}
   setAttribute(key,value){this[key]=value;}
   append(...items){this.children.push(...items);}replaceChildren(){this.children=[];}showModal(){this.open=true;}
   close(){this.open=false;this.dispatchEvent(new Event('close'));}
@@ -56,6 +56,10 @@ class Element extends EventTarget{
     assert.equal(globalThis.SkolarkadenHighscorePolicy.isBannedName(player_name),false,player_name);
   }
   assert.equal((await call('POST','/scores',payload({player_name:'<img onerror=x>'}))).status,400);
+  for(const player_name of ['.','A.',"' OR 1=1--","'); DROP TABLE highscores;--"]){
+    assert.equal((await call('POST','/scores',payload({player_name}))).status,400,'direct API requests still validate names');
+  }
+  assert.equal(db.prepare('SELECT count(*) AS n FROM highscores').get().n,before,'invalid names cannot alter stored scores');
   assert.equal((await call('POST','/scores',payload({player_name:'a'.repeat(3000)}))).status,413);
   // Separate boards and descending order. Add rows directly to avoid exhausting
   // the shared-address limit while filling a representative leaderboard.
@@ -115,6 +119,17 @@ class Element extends EventTarget{
   assert.equal(context.Starlight.highscoreBoardKey({...selection,mode:'english'}),context.Starlight.highscoreBoardKey(selection));
   assert.equal(context.Starlight.highscoreBoardKey({...selection,pace:'brave'}),context.Starlight.highscoreBoardKey(selection));
   const ui=new context.Starlight.Highscores({getSelection:()=>selection});
+  const nameInput=get('score-name');
+  const inputName=(value,start=value.length,end=start,direction='none')=>{
+    nameInput.value=value;nameInput.setSelectionRange(start,end,direction);nameInput.dispatchEvent(new Event('input'));
+  };
+  for(const [value,expected] of [['.',''],['a.b!2🙂','AB'],['åsa ä ö é','ÅSA Ä Ö É'],['a\u030Asa','ÅSA'],['小明。','小明'],['abcdefghijkl','ABCDEFGHIJ']]){
+    inputName(value);assert.equal(nameInput.value,expected,'filter typed or pasted unsupported characters');
+    assert.equal(nameInput.selectionStart,expected.length);
+  }
+  inputName('A.BC',2);assert.equal(nameInput.value,'ABC');assert.equal(nameInput.selectionStart,1,'removing a period keeps the cursor beside the same letters');
+  inputName('å.sa',1,4,'backward');assert.equal(nameInput.value,'ÅSA');assert.equal(nameInput.selectionStart,1);assert.equal(nameInput.selectionEnd,3);assert.equal(nameInput.selectionDirection,'backward');
+  inputName('abßcd',3);assert.equal(nameInput.value,'ABSSCD');assert.equal(nameInput.selectionStart,4,'uppercase expansion preserves the cursor');
   // Both boards render the menu's complete labels, with casing handled by CSS.
   for(const listId of ['scores-list','end-scores-list']){
     const list=get(listId);
@@ -156,6 +171,23 @@ class Element extends EventTarget{
   ui.begin(configured);configured.letterKeys.push('x');ui.finish(250);await ui.open(configured,ui.result);get('score-name').value='TEST';await ui.submit();
   const sent=posts.at(-1);assert.deepEqual(sent.settings.letter_keys,['å','ä','ö'],'snapshot actual practice keys at round start');assert.equal(sent.settings.input_mode,'voice');assert.equal(sent.settings.uppercase,true);assert.equal(sent.settings.sound_enabled,false);assert.equal(sent.settings.reduced_motion,true);
   assert.equal((await call('POST','/scores',sent)).status,201,'the actual frontend payload is accepted by the Worker');assert.deepEqual(JSON.parse(db.prepare('SELECT settings_json FROM highscores WHERE submission_id=?').get(sent.submission_id).settings_json),sent.settings);
+  // A period cannot trap the player, whether they submit with Enter or leave.
+  for(const [value,expected,enter] of [['.','ANONYM',true],['å.sa','ÅSA',true],['.','ANONYM',false],['å.sa','ÅSA',false]]){
+    ui.begin(selection);ui.finish(20);await ui.open(selection,ui.result);inputName(value);
+    const beforePosts=posts.length;
+    if(enter){get('score-form').dispatchEvent(new Event('submit',{cancelable:true}));await ui.pendingSave;}
+    else{let left=false;await ui.leave(()=>{left=true;});assert(left,'replay/menu can continue');}
+    assert.equal(ui.result.saved,true);assert.equal(posts.length,beforePosts+1);assert.equal(posts.at(-1).player_name,expected);
+    assert.equal((await call('POST','/scores',posts.at(-1))).status,201);
+  }
+  ui.begin(selection);ui.finish(20);await ui.open(selection,ui.result);
+  nameInput.dispatchEvent(new Event('compositionstart'));inputName('小明。');
+  assert.equal(nameInput.value,'小明。','do not interrupt an unfinished input-method composition');
+  const beforeComposition=posts.length;get('score-form').dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(posts.length,beforeComposition,'Enter selecting a composed character does not submit');
+  nameInput.dispatchEvent(new Event('compositionend'));assert.equal(nameInput.value,'小明');
+  get('score-form').dispatchEvent(new Event('submit',{cancelable:true}));await ui.pendingSave;assert.equal(posts.at(-1).player_name,'小明');
+  ui.begin(selection);ui.finish(20);await ui.open(selection,ui.result);nameInput.value='.';
+  await ui.leave(()=>{});assert.equal(ui.result.saved,true);assert.equal(posts.at(-1).player_name,'ANONYM','autofill without an input event is also cleaned');
   // Popularity uses every saved round, not just the top ten or non-anonymous names.
   db.exec('DELETE FROM highscores');
   const emptyStats=await (await call('GET','/stats?group=games')).json();
