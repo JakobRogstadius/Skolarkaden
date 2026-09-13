@@ -8,7 +8,7 @@ const item=(text,mode='chineseTrad4')=>{const value=SC.modes[mode].items.find(i=
 function harness(words,mode='chineseTrad4'){
  const queue=new SC.AnswerQueue(),state={candidates:words.map(w=>item(w,mode)),active:[]},submitted=[];
  const context=()=>({lesson:mode,language:SC.modes[mode].lang,candidates:state.candidates});
- queue.setPolicy({getCandidates:()=>state.candidates,getActiveEntries:()=>state.active,matches:(e,i)=>SC.matches(e.text,i,mode,context().language,e.source),sameInput:(a,b)=>SC.sameInput(a,b,mode,context().language)});
+ queue.setPolicy({getCandidates:()=>state.candidates,getActiveEntries:()=>state.active,discardUnmatched:e=>e.source==='speech',matches:(e,i)=>SC.matches(e.text,i,mode,context().language,e.source),sameInput:(a,b)=>SC.sameInput(a,b,mode,context().language)});
  const stream=new SC.SpeechStream({getContext:context,enqueue:text=>{const e=queue.enqueue(text,'speech');if(e)submitted.push(e);return e;},revise:(e,text)=>queue.revise(e,text)});
  return {queue,state,submitted,stream,context};
 }
@@ -87,5 +87,31 @@ test('The speech scanner preserves syllables and never accepts a partial word as
  for(const text of ['ni','niu','shan','ni lai']){const h=harness(['你好','牛奶']);h.stream.update([result(text,true)]);assert.equal(h.queue.length,0,text);}
  const context={lesson:'chineseTrad4',language:'zh-TW',candidates:[{answer:'安',hint:'ān'}]};
  assert(!SC.groupChineseSpeech(SC.chineseSpeechAtoms('shan').map(text=>({text,final:true})),context).some(t=>t.matched));
+});
+test('An initially rejected duplicate can become a valid answer in the same utterance',()=>{
+ const h=harness(['你','好']);h.stream.update([result('你你')]);assert.deepEqual(Array.from(h.queue.items,e=>e.text),['你']);
+ h.stream.update([result('你你')]);assert.equal(h.queue.serial,2,'identical rejection is not retried');
+ h.stream.update([result('你好')]);assert.deepEqual(Array.from(h.queue.items,e=>e.text),['你','好']);
+ h.stream.update([result('你好',true)]);assert.equal(h.submitted.length,2);
+});
+test('A queued answer rejected during revision does not swallow the next correction',()=>{
+ const h=harness(['你','好','水']);h.stream.update([result('你好')]);const dropped=h.queue.items[1];
+ h.stream.update([result('你你')]);assert(dropped.rejected);assert.deepEqual(Array.from(h.queue.items,e=>e.text),['你']);
+ h.stream.update([result('你水')]);assert.deepEqual(Array.from(h.queue.items,e=>e.text),['你','水']);
+ h.stream.update([result('你水',true)]);assert.equal(h.submitted.length,3);
+});
+test('Chinese speech whose target disappears is dropped before it can cause a wrong-action delay',()=>{
+ const h=harness(['你','好','水']);h.stream.update([result('你好')]);const dropped=h.queue.items[1];
+ h.state.candidates=[item('你'),item('水')];h.queue.reconcile();assert(dropped.rejected);assert.deepEqual(Array.from(h.queue.items,e=>e.text),['你']);
+ h.stream.update([result('你水')]);assert.deepEqual(Array.from(h.queue.items,e=>e.text),['你','水']);
+ h.state.candidates=[];assert.equal(h.queue.take(),undefined);
+});
+test('An active answer stays protected while a rejected repetition can be corrected',()=>{
+ const h=harness(['你','好']);h.stream.update([result('你')]);const first=h.queue.take();h.state.active.push(first);h.state.candidates=[item('好')];
+ // The recognizer context may still include the visible but reserved task.
+ h.stream.getContext=()=>({...h.context(),candidates:[item('你'),item('好')]});
+ h.stream.update([result('你你')]);assert.equal(h.queue.length,0);
+ h.stream.update([result('你好')]);assert.deepEqual(Array.from(h.queue.items,e=>e.text),['好']);assert.equal(first.text,'你');
+ h.stream.update([result('你好',true)]);assert.equal(h.submitted.length,2);
 });
 console.log(checks+' Mandarin compound checks passed.');

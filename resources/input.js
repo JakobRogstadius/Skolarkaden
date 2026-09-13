@@ -9,17 +9,17 @@ class AnswerQueue extends EventTarget{
   setPolicy(policy){this.policy=policy;this.reconcile();}
   reconcile(notify=true){
     const results=new Map();if(!this.policy)return results;
-    const {getCandidates,getActiveEntries=()=>[],matches,sameInput=(a,b)=>SC.normalize(a.text)===SC.normalize(b.text),maxWrong=2}=this.policy;
+    const {getCandidates,getActiveEntries=()=>[],matches,sameInput=(a,b)=>SC.normalize(a.text)===SC.normalize(b.text),discardUnmatched=()=>false,maxWrong=2}=this.policy;
     const candidates=[...getCandidates()],available=[...candidates],active=getActiveEntries(),kept=[],dropped=[];let wrong=0;
     for(const entry of this.items){
       const index=available.findIndex(item=>matches(entry,item));
-      if(index>=0){results.set(entry,{item:available.splice(index,1)[0]});kept.push(entry);continue;}
+      if(index>=0){delete entry.rejected;results.set(entry,{item:available.splice(index,1)[0]});kept.push(entry);continue;}
       // A remaining matching target permits another copy. Otherwise neither a
       // waiting nor an active answer may be repeated, including wrong answers.
       const duplicate=candidates.some(item=>matches(entry,item))||[...kept,...active].some(other=>other!==entry&&sameInput(entry,other));
-      const reason=duplicate?'duplicate':wrong>=maxWrong?'limit':null;
+      const reason=duplicate?'duplicate':discardUnmatched(entry)?'unmatched':wrong>=maxWrong?'limit':null;
       results.set(entry,{reason});
-      if(reason)dropped.push(entry);else{wrong++;kept.push(entry);}
+      if(reason){entry.rejected=true;dropped.push(entry);}else{delete entry.rejected;wrong++;kept.push(entry);}
     }
     this.items=kept;
     if(dropped.length){if(notify)this.changed();this.dispatchEvent(new CustomEvent('rejected',{detail:{entries:dropped}}));}

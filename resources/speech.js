@@ -156,6 +156,9 @@ SC.tokenizeSpeech=function(text,context,history=[],offset=0){
 class SpeechStream{
   constructor({getContext,enqueue,revise=()=>false,trace=()=>{}}){Object.assign(this,{getContext,enqueue,revise,trace});this.ledger=[];this.finalCount=0;this.finalResults=0;}
   update(results){
+    // A queue rejection is not a consumed action. Forget its old alternatives,
+    // but do not retry identical rejected text on every recognition callback.
+    for(const t of this.ledger)if(t.entry?.rejected){t.sent=false;t.skipped=true;t.entry=undefined;t.keys=[t.key];}
     const context=this.getContext(),history=this.ledger.filter(t=>!t.ghost),fresh=[];
     if(SC.isWordPair(context.lesson)){
       const atoms=results.flatMap(result=>SC.speechWords(result[0]?.transcript||'',context.lesson).map(text=>({text,final:result.isFinal})));
@@ -172,9 +175,11 @@ class SpeechStream{
     const finalResults=results.filter(r=>r.isFinal).length,finalCount=fresh.filter(t=>t.final).length,old=this.ledger,merged=[];
     const same=(a,b)=>a.keys.includes(b.key);
     const carry=(a,b)=>{
-      const revised=a.sent&&(!SC.isChinese(context.lesson)||b.matched)&&a.text!==b.text&&this.revise(a.entry,b.text);
-      if(a.sent&&!same(a,b))this.trace('revision',{text:b.text,previous:a.text,action:revised?'Väntande svar uppdaterades':'Påbörjad handling behålls'});
-      return {...b,sent:a.sent,entry:a.entry,keys:a.sent?[...new Set([...a.keys,b.key])]:[b.key]};
+      const attemptedRevision=a.sent&&(!SC.isChinese(context.lesson)||b.matched)&&a.text!==b.text;
+      const revised=attemptedRevision&&this.revise(a.entry,b.text),rejected=!!a.entry?.rejected,sent=a.sent&&!rejected;
+      const skipped=!sent&&((a.skipped&&same(a,b))||rejected);
+      if(a.sent&&!same(a,b))this.trace('revision',{text:b.text,previous:a.text,action:rejected?'Svaret avvisades; en ny rättning kan prövas':revised?'Väntande svar uppdaterades':'Påbörjad handling behålls'});
+      return {...b,sent,skipped,entry:sent?a.entry:undefined,keys:sent?[...new Set([...a.keys,b.key])]:[b.key]};
     };
     let prefix=0;while(prefix<old.length&&prefix<fresh.length&&same(old[prefix],fresh[prefix])){merged.push(carry(old[prefix],fresh[prefix]));prefix++;}
     const n=old.length-prefix,m=fresh.length-prefix;
@@ -208,7 +213,7 @@ class SpeechStream{
     }
     const added=[];
     for(let k=0;k<=frontier;k++){
-      const t=merged[k];if(t.sent||t.ghost||(SC.isChinese(context.lesson)&&!t.matched))continue;t.sent=true;t.entry=this.enqueue(t.text);if(t.entry){added.push(t.text);this.trace(t.final?'queued-final':'queued-early',{text:t.text});}
+      const t=merged[k];if(t.sent||t.skipped||t.ghost||(SC.isChinese(context.lesson)&&!t.matched))continue;t.entry=this.enqueue(t.text);t.sent=!!t.entry;t.skipped=!t.sent;if(t.entry){added.push(t.text);this.trace(t.final?'queued-final':'queued-early',{text:t.text});}
       else this.trace('queue-skipped',{text:t.text,reason:'Svaret är en dubblett eller två felaktiga svar väntar redan.'});
     }
     this.ledger=merged;this.finalCount=finalCount;this.finalResults=finalResults;return added;
