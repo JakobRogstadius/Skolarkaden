@@ -1,6 +1,26 @@
 (function(root){'use strict';
 const SC=root.Starlight,$=id=>document.getElementById(id),counts=new Map();
 const element=(tag,text,className)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;if(className)el.className=className;return el;};
+function speakerButton(item,lesson){
+  const button=element('button',undefined,'speak-word'),synth=root.speechSynthesis;
+  button.type='button';button.lang='sv';button.title='Lyssna';button.setAttribute('aria-label','Lyssna på '+item.label);
+  const icon=document.createElementNS('http://www.w3.org/2000/svg','svg'),path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  icon.setAttribute('viewBox','0 0 24 24');icon.setAttribute('aria-hidden','true');
+  path.setAttribute('d','M11 5 6 9H3v6h3l5 4V5Z M15 8a6 6 0 0 1 0 8 M18 5a10 10 0 0 1 0 14');icon.append(path);button.append(icon);
+  button.disabled=!synth||!root.SpeechSynthesisUtterance;
+  if(button.disabled)button.title='Webbläsaren saknar stöd för uppläsning.';
+  button.addEventListener('click',()=>{
+    const utterance=new root.SpeechSynthesisUtterance(item.label);utterance.lang=lesson.lang;
+    const voices=synth.getVoices(),language=lesson.lang.toLowerCase();
+    const voice=voices.find(v=>v.lang.replace('_','-').toLowerCase()===language)||
+      (language.startsWith('zh-')?voices.find(v=>/^zh[-_](cn|tw)$/i.test(v.lang)):null);
+    if(voice)utterance.voice=voice;
+    button.title='Lyssna';utterance.onerror=event=>{if(!['canceled','interrupted'].includes(event.error))button.title='Uttalet kunde inte spelas upp.';};
+    synth.cancel();synth.speak(utterance);
+  });
+  return button;
+}
+root.addEventListener('pagehide',()=>root.speechSynthesis?.cancel());
 function renderLesson(lesson){
   const details=element('details'),summary=element('summary'),name=element('span',lesson.homeworkName,'lesson-name'),count=element('span','— genomförda','lesson-count');
   counts.set(lesson.homeworkId,count);summary.append(name,count);
@@ -12,7 +32,11 @@ function renderLesson(lesson){
   table.setAttribute('aria-label',lesson.homeworkName);
   for(const text of ['Ord eller fras','Uttal','Svenska']){const th=element('th',text);th.scope='col';labels.append(th);}
   head.append(labels);
-  for(const item of lesson.items){const row=element('tr');for(const text of [item.label,item.hint,item.translation])row.append(element('td',text));row.children[0].lang=lesson.lang;body.append(row);}
+  for(const item of lesson.items){
+    const row=element('tr'),word=element('td'),content=element('span',undefined,'spoken-word');word.lang=lesson.lang;
+    content.append(speakerButton(item,lesson),element('span',item.label));word.append(content);
+    row.append(word,element('td',item.hint),element('td',item.translation));body.append(row);
+  }
   table.append(head,body);scroll.append(table);details.append(summary,scroll);return details;
 }
 async function refreshCounts(){
