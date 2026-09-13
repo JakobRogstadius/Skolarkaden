@@ -187,16 +187,16 @@ class DinosaurRenderer extends SC.SceneRenderer{
   for(const p of g.people)if(p.status!=='eaten'){const ps=s*SC.personScale(p.look);blocked.push({x:p.x*w-29*ps,y:p.y*h-(54*p.look.height+56)*ps,w:58*ps,h:(54*p.look.height+60)*ps});}
   blocked.push({x:g.dino.x*w-70*s,y:g.dino.y*h-196*s,w:190*s,h:202*s});
   for(const p of targets){
-   const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?14:18,maxWidth=w-16,hint=hints.has(p);const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:maxWidth}),bh=SC.labelHeight(p.item,hint?font+36:font+6),ps=s*SC.personScale(p.look),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+59)*ps-g.jumpHeight(p)},candidates=this.nearLabelCandidates(anchor,bw,bh,boxes,{top:154,bottom:h-38});
+   const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?14:18,maxWidth=w-16,hint=hints.has(p);const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:maxWidth}),bh=SC.taskLabelHeight(p.item,font,hint||!!p.item.pairId),ps=s*SC.personScale(p.look),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+59)*ps-g.jumpHeight(p)},candidates=this.nearLabelCandidates(anchor,bw,bh,boxes,{top:154,bottom:h-38});
    const top=154,bottom=h-38-bh,cols=Math.max(1,Math.floor((w-16+2)/(bw+2))),dx=cols>1?(w-16-bw)/(cols-1):0;
    // Fallback slots guarantee room for eight labels even on a narrow screen.
    for(let yy=top;yy<=bottom;yy+=bh+2)for(let col=0;col<cols;col++)candidates.push({x:8+col*dx,y:yy,w:bw,h:bh});
    candidates.sort((a,b)=>Math.hypot(a.x+bw/2-anchor.x,a.y+bh-anchor.y)-Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y));
    const stable=this.stableLabel(p,anchor,bw,bh,{top:top,bottom:h-38});if(stable)candidates.unshift(stable);
    const box=candidates.find(b=>[...boxes,...blocked].every(a=>!overlaps(a,b)))||candidates.find(b=>boxes.every(a=>!overlaps(a,b)))||candidates[0];boxes.push({...box,id:p.id});
-   this.keepLabel(p,anchor,box);this.rememberScoreAnchor(p,box,'#466748','#f2efd8');
-   c.strokeStyle='#54725da0';c.lineWidth=1.5;c.beginPath();c.moveTo(anchor.x,anchor.y+4);c.lineTo(box.x+bw/2,box.y+bh);c.stroke();
-   const state=states.get(p);c.lineWidth=state==='active'?3:1;this.round(box.x,box.y,bw,bh,10,state?'#a8ed9d':'#fff3d5',state==='active'?'#2f7953':p.look.exotic?'#c5953c':'#a5a473');c.lineWidth=1;
+   this.keepLabel(p,anchor,box);box.h=SC.taskLabelHeight(p.item,font,hint);this.rememberScoreAnchor(p,box,'#466748','#f2efd8');
+   c.strokeStyle='#54725da0';c.lineWidth=1.5;c.beginPath();c.moveTo(anchor.x,anchor.y+4);c.lineTo(box.x+bw/2,box.y+box.h);c.stroke();
+   const state=states.get(p);c.lineWidth=state==='active'?3:1;this.round(box.x,box.y,bw,box.h,10,state?'#a8ed9d':'#fff3d5',state==='active'?'#2f7953':p.look.exotic?'#c5953c':'#a5a473');c.lineWidth=1;
    c.fillStyle='#365749';c.font='bold '+font+'px system-ui';c.textAlign='center';SC.drawLabelText(c,p.item,box,{hint,hintFont:'12px system-ui'});
   }
   this.labelBoxes=boxes;

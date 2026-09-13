@@ -210,7 +210,7 @@
       if(entering||g.state==='menu')return;
       if(leaving)return;
       const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?25:w<500?17:20;
-      const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:pos.cell-6,min:32}),bh=SC.labelHeight(p.item,hint?font+44:font+14,8),lateHeight=SC.labelHeight(p.item,p.item.hint?font+44:font+14,8),bx=clamp(slotX-bw/2,3,w-bw-3),by=feet+(headY-28)*visualScale-5-(lateHeight+bh)/2,remaining=g.patienceLeft(p);
+      const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:pos.cell-6,min:32}),bh=SC.taskLabelHeight(p.item,font,hint,12,8),lateHeight=SC.taskLabelHeight(p.item,font,!!p.item.hint,12,8),bx=clamp(slotX-bw/2,3,w-bw-3),by=feet+(headY-28)*visualScale-5-(p.item.pairId?lateHeight:(lateHeight+bh)/2),remaining=g.patienceLeft(p);
       this.rememberScoreAnchor(p,{x:bx,y:by,w:bw,h:bh},'#f0d8ad','#304b4e');
       const state=g.getTaskStates().get(p),fill=state==='queued'?'#bdeedc':state==='active'?'#ffe1a2':'#fff1d9';
       c.lineWidth=state?3:1;

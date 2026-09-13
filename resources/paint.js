@@ -146,7 +146,7 @@ class PaintRenderer extends SC.SceneRenderer{
   for(const person of g.people){const s=g.personScale(person);blocked.push({x:person.x*w-28*s,y:person.y*h-(54*person.look.height+52)*s,w:56*s,h:(54*person.look.height+54)*s});}
   for(const p of targets){
    const maxWidth=w-16,font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?13:17;
-   const hint=hints.has(p),bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',hintFont:'11px system-ui',max:maxWidth}),bh=SC.labelHeight(p.item,hint?font+34:font+6),s=g.personScale(p),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+54)*s},candidates=this.nearLabelCandidates(anchor,bw,bh,boxes,{top:122,bottom:h*.92});
+   const hint=hints.has(p),bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',hintFont:'11px system-ui',max:maxWidth}),bh=SC.taskLabelHeight(p.item,font,hint||!!p.item.pairId,11),s=g.personScale(p),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+54)*s},candidates=this.nearLabelCandidates(anchor,bw,bh,boxes,{top:122,bottom:h*.92});
    const top=122,bottom=h*.92-bh;
    // On narrow streets, aligned slots prevent eight moving labels from trapping
    // one another in the gaps left by greedy free placement.
@@ -156,10 +156,10 @@ class PaintRenderer extends SC.SceneRenderer{
    if(w>=900)for(const dy of [0,-bh-6,bh+5,-2*bh-10])for(const offset of [0,-bw*.65,bw*.65])candidates.push({x:clamp(anchor.x-bw/2+offset,8,w-bw-8),y:clamp(anchor.y-bh-6+dy,top,bottom),w:bw,h:bh});
    candidates.push(...slots);
    const stable=this.stableLabel(p,anchor,bw,bh,{top:top,bottom:h*.92});if(stable)candidates.unshift(stable);
-   const box=candidates.find(b=>[...boxes,...blocked].every(a=>!overlaps(a,b)))||candidates.find(b=>boxes.every(a=>!overlaps(a,b)))||candidates[0];boxes.push(box);
-   this.keepLabel(p,anchor,box);this.rememberScoreAnchor(p,box,'#3d6863','#f7eedb');
-   c.strokeStyle='#735f5480';c.lineWidth=1;c.beginPath();c.moveTo(anchor.x,anchor.y+3);c.lineTo(box.x+bw/2,box.y+bh);c.stroke();
-   const state=states.get(p);this.round(box.x,box.y,bw,bh,9,state?'#b7ecd7':'#fff4dc',state==='active'?'#408f7d':p.look.exotic?'#bc9047':'#b89a77');c.fillStyle='#405553';c.font='bold '+font+'px system-ui';c.textAlign='center';SC.drawLabelText(c,p.item,box,{hint,hintFont:'11px system-ui'});
+   const box=candidates.find(b=>[...boxes,...blocked].every(a=>!overlaps(a,b)))||candidates.find(b=>boxes.every(a=>!overlaps(a,b)))||candidates[0];boxes.push({...box});
+   this.keepLabel(p,anchor,box);box.h=SC.taskLabelHeight(p.item,font,hint,11);this.rememberScoreAnchor(p,box,'#3d6863','#f7eedb');
+   c.strokeStyle='#735f5480';c.lineWidth=1;c.beginPath();c.moveTo(anchor.x,anchor.y+3);c.lineTo(box.x+bw/2,box.y+box.h);c.stroke();
+   const state=states.get(p);this.round(box.x,box.y,bw,box.h,9,state?'#b7ecd7':'#fff4dc',state==='active'?'#408f7d':p.look.exotic?'#bc9047':'#b89a77');c.fillStyle='#405553';c.font='bold '+font+'px system-ui';c.textAlign='center';SC.drawLabelText(c,p.item,box,{hint,hintFont:'11px system-ui'});
   }
   this.labelBoxes=boxes;
  }

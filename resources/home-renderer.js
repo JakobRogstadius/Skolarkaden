@@ -197,7 +197,7 @@ class HomeRenderer extends SC.SceneRenderer{
   const faces=g.people.map(p=>{const q=this.point(p.x,p.y),s=this.view.s;return {x:q.x-s*.47,y:q.y-s*1.95,w:s*.94,h:s*.8};});if(this.angerBox)faces.push(this.angerBox);
   const messBounds=g.messes.filter(t=>this.messOnSite(t)).map(t=>{const p=g.taskPosition(t),q=this.point(p.x,p.y,p.z??.08),s=Math.max(16,this.view.s);return {x:q.x-s*.7,y:q.y-s*.8,w:s*1.4,h:s*1.05};});faces.push(...messBounds);
   for(const target of targets){
-   const hint=hints.has(target),pos=g.taskPosition(target),z=pos.z??(target.type==='hungry'?2.15:.18),anchor=this.point(pos.x,pos.y,z),textWidth=SC.labelWidth(c,target.item,{font:'bold '+font+'px system-ui',hint:hint?target.item.hint:'',translation:hint?target.item.translation:'',hintFont:'11px system-ui',max:w-35}),bw=textWidth+21,bh=SC.labelHeight(target.item,hint?font+34:font+6);
+   const hint=hints.has(target),pos=g.taskPosition(target),z=pos.z??(target.type==='hungry'?2.15:.18),anchor=this.point(pos.x,pos.y,z),textWidth=SC.labelWidth(c,target.item,{font:'bold '+font+'px system-ui',hint:hint?target.item.hint:'',translation:hint?target.item.translation:'',hintFont:'11px system-ui',max:w-35}),bw=textWidth+21,bh=SC.taskLabelHeight(target.item,font,hint,11);
    const make=(x,y)=>({x:clamp(x,7,w-bw-7),y:clamp(y,116,h-bh-7),w:bw,h:bh}),direct=make(anchor.x-bw/2,anchor.y-bh-3),candidates=this.nearLabelCandidates(anchor,bw,bh,boxes,{top:116,bottom:h-7,left:7,right:w-7}),previous=this.previousBoxes.get(target.id);
    if(previous&&Math.hypot(previous.x+bw/2-anchor.x,previous.y+bh-anchor.y)<115)candidates.unshift(make(previous.x,previous.y));
    for(const dy of [-51,51,-102,102,-153])for(const dx of [0,-bw-5,bw+5])candidates.push(make(direct.x+dx,direct.y+dy));

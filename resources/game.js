@@ -15,6 +15,8 @@
     return clamp(Math.ceil(width)+padding*2,min,max);
   };
   SC.labelHeight=(item,height,footer=0)=>item.diagram?80+footer:height;
+  // Placement may reserve the final height before its hint is drawn.
+  SC.taskLabelHeight=(item,font,hint,hintSize=12,footer=0)=>SC.labelHeight(item,font+6+footer+(hint?(hintSize+3)*(item.pairId?1:2):0),footer);
   SC.fittedFont=function(c,text,font,max){
     const old=c.font;c.font=font;const width=c.measureText(text).width;c.font=old;
     return width>max?String(font).replace(/([\d.]+)px/,(match,size)=>(Number(size)*Math.max(1,max)/width)+'px'):font;
@@ -68,11 +70,11 @@
     }
     c.restore();
   };
-  // Keep the answer at the center; reveal guidance symmetrically around it.
+  // Reserve only the hint lines that exist; word-pair answers grow downward.
   SC.drawLabelText=function(c,item,box,{hint=false,hintFont='12px system-ui',hintColor=c.fillStyle}={}){
     if(item.diagram){SC.drawMathDiagram(c,item.diagram,box);return;}
     c.save();c.textAlign='center';c.textBaseline='middle';
-    const x=box.x+box.w/2,y=box.y+box.h/2,max=Math.max(1,box.w-SC.labelPadding*2),mainSize=Number(String(c.font).match(/([\d.]+)px/)?.[1]||22);
+    const x=box.x+box.w/2,max=Math.max(1,box.w-SC.labelPadding*2),mainSize=Number(String(c.font).match(/([\d.]+)px/)?.[1]||22),y=box.y+(hint&&item.pairId?(mainSize+6)/2:box.h/2);
     SC.drawFittedText(c,item.label,x,y,max);
     if(item.pairId){
       c.font=hintFont;const gap=mainSize/2+Number(hintFont.match(/([\d.]+)px/)?.[1]||12)/2+3;
@@ -282,10 +284,10 @@
       this.raf=requestAnimationFrame(frame);
     }
     stableLabel(target,anchor,bw,bh,{top=116,bottom=this.game.height-8,left=8,right=this.game.width-8}={}){
-      if(!SC.isChinese(this.game.mode))return null;
+      if(!SC.isChinese(this.game.mode)&&!SC.isWordPair(this.game.mode))return null;
       const old=this.labelPositions?.get(target),g=this.game;
       if(!old||old.width!==g.width||old.height!==g.height||old.item!==target.item)return null;
-      return {x:clamp(old.box.x+(old.box.w-bw)/2+(anchor.x-old.anchor.x),left,right-bw),y:clamp(old.box.y+(old.box.h-bh)/2+(anchor.y-old.anchor.y),top,bottom-bh),w:bw,h:bh};
+      return {x:clamp(old.box.x+(old.box.w-bw)/2+(anchor.x-old.anchor.x),left,right-bw),y:clamp(old.box.y+(SC.isWordPair(g.mode)?0:(old.box.h-bh)/2)+(anchor.y-old.anchor.y),top,bottom-bh),w:bw,h:bh};
     }
     keepLabel(target,anchor,box){
       this.labelPositions??=new WeakMap();this.labelPositions.set(target,{anchor:{...anchor},box:{...box},width:this.game.width,height:this.game.height,item:target.item});
@@ -381,7 +383,7 @@
       for(const t of g.getTargets()){
         const size=SC.isChinese(g.mode)?26:g.width<600?20:23;
         c.font='700 '+size+'px "Trebuchet MS", system-ui, sans-serif';
-        const hint=hints.has(t),bw=SC.labelWidth(c,t.item,{hint:hint?t.item.hint:'',translation:hint?t.item.translation:'',hintFont:'13px system-ui',max:w-16}),bh=SC.labelHeight(t.item,hint?size+38:size+6);
+        const hint=hints.has(t),bw=SC.labelWidth(c,t.item,{hint:hint?t.item.hint:'',translation:hint?t.item.translation:'',hintFont:'13px system-ui',max:w-16}),bh=SC.taskLabelHeight(t.item,size,hint,13);
         let box;
         const candidates=this.nearLabelCandidates({x:t.x,y:t.y+bh/2},bw,bh,labels,{top:122,bottom:g.ground-7});
         for(const dy of [0,-50,50,-100,100])for(const dx of [0,-bw-8,bw+8,-2*bw,2*bw])candidates.push({x:clamp(t.x+dx-bw/2,8,w-bw-8),y:clamp(t.y+dy-20,122,g.ground-bh-7),w:bw,h:bh});

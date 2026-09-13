@@ -219,7 +219,7 @@ class EggRenderer extends SC.SceneRenderer{
   const naturalWidth=Math.max(22,...targets.map(e=>SC.labelWidth(c,e.item,{font:'bold '+font+'px system-ui',hint:e.item.hint,translation:e.item.translation,hintFont:'12px system-ui',max:w-16})));
   const cols=Math.max(1,Math.min(8,Math.floor((w-16)/(naturalWidth+2))),Math.ceil(targets.length/rows)),maxWidth=(w-16)/cols-2;
   const overlaps=(a,b)=>a.x<b.x+b.w+2&&a.x+a.w+2>b.x&&a.y<b.y+b.h+2&&a.y+a.h+2>b.y;
-  const layouts=targets.map(e=>{const hint=hints.has(e);return {e,hint,bw:SC.labelWidth(c,e.item,{font:'bold '+font+'px system-ui',hint:hint?e.item.hint:'',translation:hint?e.item.translation:'',hintFont:'12px system-ui',max:maxWidth}),bh:SC.labelHeight(e.item,hint?font+36:font+6),anchor:{x:e.x*w,y:e.y*h-(e.form==='egg'?66:35)*g.scale()}};});
+  const layouts=targets.map(e=>{const hint=hints.has(e);return {e,hint,bw:SC.labelWidth(c,e.item,{font:'bold '+font+'px system-ui',hint:hint?e.item.hint:'',translation:hint?e.item.translation:'',hintFont:'12px system-ui',max:maxWidth}),bh:SC.taskLabelHeight(e.item,font,hint),anchor:{x:e.x*w,y:e.y*h-(e.form==='egg'?66:35)*g.scale()}};});
   const arrange=near=>{const boxes=[];
    for(const {e,bw,bh,anchor} of layouts){const candidates=near?this.nearLabelCandidates(anchor,bw,bh,boxes,{top,bottom:h-8}):[],slots=[];
     // Center in full hint-height lanes so revealing a hint cannot close off the last slots.

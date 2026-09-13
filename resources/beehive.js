@@ -196,7 +196,7 @@ class BeehiveRenderer extends SC.SceneRenderer{
    const hs=Math.min(w/700,.86),jars=this.jarLayout(),props=[{x:w*.17-85*hs,y:h*.435-185*hs,w:170*hs,h:195*hs},{x:w*g.hive.x-74*hs,y:h*g.hive.y-90*hs,w:148*hs,h:193*hs},{x:jars.x-40,y:h*.445-100,w:40+jars.columns*jars.pitch,h:110}];
    const overlaps=(a,b)=>a.x<b.x+b.w+2&&a.x+a.w+2>b.x&&a.y<b.y+b.h+2&&a.y+a.h+2>b.y;
    for(const p of targets){
-    const hint=hints.has(p),bh=SC.labelHeight(p.item,hint?font+34:font+6),q=this.point(p),bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',hintFont:'11px system-ui',max:w-14}),anchor={x:q.x,y:q.y+SC.plantBounds(p).top*s-2},candidates=this.nearLabelCandidates(anchor,bw,bh,boxes,{top,bottom:h-10,left:7,right:w-7}).map(b=>({...b,id:p.id}));
+    const hint=hints.has(p),bh=SC.taskLabelHeight(p.item,font,hint||!!p.item.pairId,11),q=this.point(p),bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',hintFont:'11px system-ui',max:w-14}),anchor={x:q.x,y:q.y+SC.plantBounds(p).top*s-2},candidates=this.nearLabelCandidates(anchor,bw,bh,boxes,{top,bottom:h-10,left:7,right:w-7}).map(b=>({...b,id:p.id}));
     const add=(x,y)=>candidates.push({id:p.id,x:clamp(x,7,w-bw-7),y:clamp(y,top,h-bh-10),w:bw,h:bh});
     add(anchor.x-bw/2,anchor.y-bh);add(q.x-33*s-bw,q.y-45*s-bh/2);add(q.x+33*s,q.y-45*s-bh/2);add(q.x-bw/2,q.y+8);
     for(let yy=top;yy<=h-bh-10;yy+=18)for(let xx=7;xx<=w-bw-7;xx+=18)add(xx,yy);
@@ -210,7 +210,7 @@ class BeehiveRenderer extends SC.SceneRenderer{
    this.labelBoxes=boxes;this.labelKey=key;
   }
   const states=g.getTaskStates(),byId=new Map(targets.map(p=>[p.id,p]));
-  for(const box of this.labelBoxes){const p=byId.get(box.id);if(!p)continue;const q=this.point(p),state=states.get(p),hint=hints.has(p),{x,y,w:bw,h:bh}=box;
+  for(const placed of this.labelBoxes){const p=byId.get(placed.id);if(!p)continue;const q=this.point(p),state=states.get(p),hint=hints.has(p),box={...placed,h:SC.taskLabelHeight(p.item,font,hint,11)},{x,y,w:bw,h:bh}=box;
    this.rememberScoreAnchor(p,box,'#695331','#f5efda');
    c.strokeStyle='#75865b90';c.lineWidth=1;c.beginPath();c.moveTo(q.x,q.y-35*s);c.lineTo(x+bw/2,y+bh/2);c.stroke();
    c.lineWidth=state==='active'?2:1;this.round(x,y,bw,bh,8,state?'#ffe176':'#fff9e1',state==='active'?'#b77a2c':'#b5a577');c.lineWidth=1;c.fillStyle='#50432d';c.font='bold '+font+'px system-ui';c.textAlign='center';SC.drawLabelText(c,p.item,box,{hint,hintFont:'11px system-ui'});

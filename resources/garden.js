@@ -179,7 +179,7 @@ class GardenRenderer extends SC.SceneRenderer{
     const layouts=g.pots.flatMap(pot=>{
       const reqs=Object.values(pot.requests);if(!reqs.length)return [];
       const widths=reqs.map(r=>SC.labelWidth(c,r.item,{font,hint:hints.has(r)?r.item.hint:'',translation:hints.has(r)?r.item.translation:'',hintFont:'11px system-ui',padding:0,min:0,max:w-50})+30+SC.labelPadding*2);
-      const rows=reqs.map(r=>SC.labelHeight(r.item,hints.has(r)?size+34:size+6));return [{pot,reqs,rows,p:this.point(pot),bw:clamp(Math.max(...widths),48,w-14),bh:rows.reduce((sum,row)=>sum+row,4)}];
+      const rows=reqs.map(r=>SC.taskLabelHeight(r.item,size,hints.has(r)||!!r.item.pairId,11));return [{pot,reqs,rows,p:this.point(pot),bw:clamp(Math.max(...widths),48,w-14),bh:rows.reduce((sum,row)=>sum+row,4)}];
     });
     const arrange=()=>{const boxes=[];
      for(const {pot,p,bw,bh} of layouts){
@@ -196,14 +196,14 @@ class GardenRenderer extends SC.SceneRenderer{
     // Exhaust nearby space first; only a full garden needs compact rows and uniform scaling.
     const boxes=arrange()||this.compactLabelGrid(layouts.map(b=>({anchor:b.p,w:b.bw,h:b.bh})),{top:120,bottom:h-9,left:7,right:w-7});
     for(const [index,{pot,reqs,rows,p,bw,bh}] of layouts.entries()){
-      const box=boxes[index],scale=box.scale||1;this.keepLabel(pot,p,box);
+      const box=boxes[index],scale=box.scale||1,last=reqs.at(-1),paintedHeight=bh-rows.at(-1)+SC.taskLabelHeight(last.item,size,hints.has(last),11);this.keepLabel(pot,p,box);
       c.strokeStyle='#c6d6b680';c.lineWidth=1;c.beginPath();c.moveTo(p.x,p.y-20*this.scale);c.lineTo(box.x+box.w/2,box.y+box.h/2);c.stroke();
-      c.save();c.translate(box.x,box.y);c.scale(scale,scale);this.round(0,0,bw,bh,10,'#f5efd8','#b2c79e');
+      c.save();c.translate(box.x,box.y);c.scale(scale,scale);this.round(0,0,bw,paintedHeight,10,'#f5efd8','#b2c79e');
       for(let i=0;i<reqs.length;i++){
-        const r=reqs[i],row=rows[i],y=2+rows.slice(0,i).reduce((sum,n)=>sum+n,0),state=taskStates.get(r);
+        const r=reqs[i],row=SC.taskLabelHeight(r.item,size,hints.has(r),11),y=2+rows.slice(0,i).reduce((sum,n)=>sum+n,0),state=taskStates.get(r);
         this.rememberScoreAnchor(r,{x:box.x,y:box.y+y*scale,w:box.w,h:row*scale},'#dae7bc','#304e3e');
         if(state)this.round(3,y,bw-6,row,5,'#62df87',state==='active'?'#17683b':null);
-        SC.drawGardenTool(this,r.property,16,y+row/2,.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font=font;
+        SC.drawGardenTool(this,r.property,16,y+(r.item.pairId?(size+6)/2:row/2),.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font=font;
         SC.drawLabelText(c,r.item,{x:26,y,w:bw-30,h:row},{hint:hints.has(r),hintFont:'11px system-ui'});
       }
       c.restore();
