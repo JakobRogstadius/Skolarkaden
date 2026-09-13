@@ -23,8 +23,9 @@ SC.parseHomework=function(dictionary,id){
   });
   return {...base,homeworkId:id,input:homework.input,lang:homework.language,type:chinese?'chinese':'words',items};
 };
-SC.loadHomework=async function(id){
+SC.loadHomework=async function(id,inputOverride=null){
   if(typeof id!=='string'||!id.trim()||id.length>128)throw new Error('Länken saknar ett giltigt läx-id.');
+  if(inputOverride!==null&&!['keyboard','voice'].includes(inputOverride))throw new Error('Länkens input måste vara keyboard eller voice.');
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),8000);
   try{
     let dictionary;
@@ -34,6 +35,7 @@ SC.loadHomework=async function(id){
       dictionary=await response.json();
     }catch(_){throw new Error('Läxfilen kunde inte läsas. Kontrollera anslutningen och att homework.json innehåller giltig JSON, och ladda sedan om sidan.');}
     const lesson=SC.parseHomework(dictionary,id);
+    if(inputOverride!==null)lesson.input=inputOverride;
     SC.modes.homework=lesson;
     // Use the supplied phrase readings for recognized Hanzi as well as pinyin.
     SC.homeworkReadings=Object.fromEntries(lesson.items.filter(()=>lesson.type==='chinese').map(item=>[SC.speechNormalize(item.answer).replace(/[\s\p{P}]/gu,''),item.hint]));

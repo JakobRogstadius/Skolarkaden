@@ -33,7 +33,9 @@ Redigera [homework.json](homework.json) direkt i GitHub. Varje nyckel är ett l�
 - Mandarin kräver uttal i pinyin för varje uppgift. Pinyin med toner visas som skrivet, medan svarsmatchningen bortser från toner och mellanrum mellan stavelser. Tangentbord accepterar både uppgiftens kinesiska text och pinyin. Översättningen är bara en ledtråd.
 - Läx-id är skiftlägeskänsliga och får vara högst 128 tecken. Använd gärna enkla id:n som `zh-001`; specialtecken behöver URL-kodas i länken.
 
-Spelaren väljer spel och svårighet. Övning, inmatning och språk är låsta även efter paus, omspelning och återgång till menyn. Läxa finns inte i den vanliga övningsmenyn. Uttal visas ovanför uppgiften och översättning nedanför efter fem sekunder. Saknade eller felaktiga läxor visar ett felmeddelande och kan inte startas som en annan övning.
+Lägg till `&input=keyboard` eller `&input=voice` för att åsidosätta läxfilens inmatningsläge, exempelvis `?mode=homework&id=zh-001&input=keyboard`. Utan `input` används läxfilens inställning. Ett annat värde visar ett felmeddelande.
+
+Spelaren väljer spel och svårighet. Övning, inmatning och språk är låsta även efter paus, omspelning och återgång till menyn; ett inmatningsläge från länken behålls hela tiden och sparas med resultatet. Läxa finns inte i den vanliga övningsmenyn. Uttal visas ovanför uppgiften och översättning nedanför efter fem sekunder. Saknade eller felaktiga läxor visar ett felmeddelande och kan inte startas som en annan övning.
 
 Alla läxor har övnings-id `homework` och visas som **Läxa** i topplistorna. Läx-id sparas separat som `homework_id` i resultatets `settings_json`. Den uppdaterade [Cloudflare Workern](cloudflare/worker.mjs) måste publiceras för att ta emot läxresultat; denna ändring kräver ingen ny SQL-migrering. GitHub Pages publicerar inte Workern.
 

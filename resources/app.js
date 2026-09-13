@@ -144,7 +144,7 @@ $('copy-log').addEventListener('click',()=>copy($('speech-log').value,'debug-sta
 $('copy-report').addEventListener('click',()=>copy(JSON.stringify({app:'Skolarkaden',browser:navigator.userAgent,voice:input.voice,microphone:microphone.stream?.getAudioTracks()[0]?.getSettings(),audio:input.lastAudio?SC.audioStats(input.lastAudio):null,queue:queue.items,events:log},null,2),'mic-status'));
 root.addEventListener('pagehide',()=>{lifecycle++;cancelAnimationFrame(uiFrame);input.destroy();microphone.close();sounds.close();renderer?.destroy();});
 menuUpdate();input.setEnabled(false);
-if(homeworkRequested)SC.loadHomework(homeworkQuery.get('id')).then(lesson=>{
+if(homeworkRequested)SC.loadHomework(homeworkQuery.get('id'),homeworkQuery.get('input')).then(lesson=>{
   homeworkReady=true;$('homework-info').textContent='Läxa · '+lesson.homeworkId;menuUpdate();
 }).catch(error=>{$('homework-info').textContent='Läxan kunde inte öppnas.';$('setup-error').textContent=error.message;});
 })(globalThis);

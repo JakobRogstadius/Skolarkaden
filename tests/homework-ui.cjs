@@ -38,9 +38,9 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary)){
 }
 (async()=>{
   const normal=boot();await settle();assert(!normal.requests.includes('homework.json'));assert(!normal.fields.lesson.options.some(o=>o.value==='homework'));assert(!normal.fields.lesson.disabled);assert(!normal.fields['input-kind'].disabled);
-  let resolve;const app=boot('?mode=homework&id=sv-001&input=voice&language=zh-CN&words=wrong',()=>new Promise(done=>resolve=done));
+  let resolve;const app=boot('?mode=homework&id=sv-001&input=keyboard&language=zh-CN&words=wrong',()=>new Promise(done=>resolve=done));
   assert(app.fields.start.disabled);app.click('start');await settle();assert.equal(app.game,undefined,'loading cannot launch a default exercise');
-  resolve(Response.json(dictionary));await settle();assert(!app.fields.start.disabled);
+  resolve(Response.json({...dictionary,'sv-001':{...dictionary['sv-001'],input:'voice'}}));await settle();assert(!app.fields.start.disabled);
   for(const id of ['lesson','input-kind','language'])assert(app.fields[id].disabled,id+' must be locked');
   assert.equal(app.fields['input-kind'].value,'typing');assert.equal(app.fields.language.value,'sv-SE');assert.equal(app.fields.lesson.value,'homework');
   assert.deepEqual(app.fields.lesson.options.map(o=>o.value),['homework']);assert.equal(app.fields['homework-info'].textContent,'Läxa · sv-001');
@@ -56,7 +56,9 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary)){
   app.click('again');await settle();await settle();assert.equal(app.game.state,'playing');assert.equal(app.game.mode,'homework');
   assert.equal(app.posts.length,1);assert.equal(app.posts[0].leaderboard_key,'v2:city:homework:brave');assert.equal(app.posts[0].settings.homework_id,'sv-001');assert.equal(app.posts[0].settings.input_mode,'keyboard');
   const voice=boot('?mode=homework&id=zh-001');await settle();assert.equal(voice.fields.language.value,'zh-TW');assert.equal(voice.fields['input-kind'].value,'browser');assert(voice.fields.language.disabled);assert.equal(voice.ctx.Starlight.modes.homework.items[2].hint,'wǒ xǐhuān hē chá');
-  for(const search of ['?mode=homework','?mode=homework&id=missing']){const broken=boot(search);await settle();assert(broken.fields.start.disabled);assert(broken.fields['setup-error'].textContent);broken.click('start');await settle();assert.equal(broken.game,undefined);}
+  const voiceOverride=boot('?mode=homework&id=sv-001&input=voice');await settle();assert.equal(voiceOverride.fields['input-kind'].value,'browser');assert(voiceOverride.fields['input-kind'].disabled);assert.equal(voiceOverride.ctx.Starlight.modes.homework.input,'voice');
+  const keyboardDefault=boot('?mode=homework&id=sv-001');await settle();assert.equal(keyboardDefault.fields['input-kind'].value,'typing');
+  for(const search of ['?mode=homework','?mode=homework&id=missing','?mode=homework&id=sv-001&input=invalid','?mode=homework&id=sv-001&input=']){const broken=boot(search);await settle();assert(broken.fields.start.disabled);assert(broken.fields['setup-error'].textContent);broken.click('start');await settle();assert.equal(broken.game,undefined);}
   for(const response of [()=>new Response('{'),()=>{throw Error('offline');},()=>Response.json({'sv-001':{input:'keyboard',language:'sv-SE',words:[]}})]){
     const broken=boot('?mode=homework&id=sv-001',async()=>response());await settle();assert(broken.fields.start.disabled);assert(broken.fields['setup-error'].textContent);assert.equal(broken.game,undefined);
   }

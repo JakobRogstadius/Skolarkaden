@@ -29,6 +29,10 @@ function draw(name,g){
   await assert.rejects(SC.loadHomework(null));assert.equal(requests,0);
   await SC.loadHomework('sv-001');assert.equal(requests,1);assert.deepEqual(plain(SC.modes.homework.items.map(i=>i.answer)),['hej','hopp','tekopp']);assert(SC.shortSpeechLesson('homework'));
   await assert.rejects(SC.loadHomework('missing'),/finns inte/);assert.equal(SC.modes.homework.homeworkId,'sv-001');
+  assert.equal((await SC.loadHomework('zh-001','keyboard')).input,'keyboard');
+  assert.equal((await SC.loadHomework('sv-001','voice')).input,'voice');
+  assert.equal((await SC.loadHomework('sv-001')).input,'keyboard','an omitted override uses the JSON default');
+  for(const input of ['','typing','browser','invalid'])await assert.rejects(SC.loadHomework('sv-001',input),/input måste vara keyboard eller voice/);
   for(const response of [()=>Response.json({}, {status:404}),()=>new Response('{'),()=>{throw Error('offline');}]){ctx.fetch=async()=>response();await assert.rejects(SC.loadHomework('test'),/kunde inte läsas/);}
   await load(good);const bank=SC.modes.homework.items[0];
   for(const text of ['銀行','yín háng','yin hang','yinhang','yin2 hang2','YIN2HANG2'])for(const source of ['text','speech'])assert(SC.matches(text,bank,'homework','zh-TW',source),text);
