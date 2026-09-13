@@ -191,12 +191,12 @@ class BeehiveRenderer extends SC.SceneRenderer{
   const targets=g.getTargets().sort((a,b)=>a.id-b.id),hints=SC.pinyinHints(g),font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?14:17;
   const key=[w,h,g.mode,...g.plants.map(p=>p.id+':'+p.status+':'+p.harvested+':'+p.item?.label+':'+p.item?.hint+':'+p.item?.translation+':'+hints.has(p))].join('|');
   if(key!==this.labelKey){
-   const previous=new Map((this.labelBoxes||[]).map(b=>[b.id,b])),boxes=[],top=Math.max(132,h*.43);
+   const previous=new Map((this.labelBoxes||[]).map(b=>[b.id,b])),boxes=[],top=Math.max(132,h*.3);
    const bodies=g.plants.map(p=>{const q=this.point(p),bounds=SC.plantBounds({...p,growth:1});return {x:q.x-32*s,y:q.y+bounds.top*s,w:64*s,h:-bounds.top*s+8};});
    const hs=Math.min(w/700,.86),jars=this.jarLayout(),props=[{x:w*.17-85*hs,y:h*.435-185*hs,w:170*hs,h:195*hs},{x:w*g.hive.x-74*hs,y:h*g.hive.y-90*hs,w:148*hs,h:193*hs},{x:jars.x-40,y:h*.445-100,w:40+jars.columns*jars.pitch,h:110}];
-   const overlaps=(a,b)=>a.x<b.x+b.w+4&&a.x+a.w+4>b.x&&a.y<b.y+b.h+4&&a.y+a.h+4>b.y;
+   const overlaps=(a,b)=>a.x<b.x+b.w+2&&a.x+a.w+2>b.x&&a.y<b.y+b.h+2&&a.y+a.h+2>b.y;
    for(const p of targets){
-    const hint=hints.has(p),bh=SC.labelHeight(p.item,hint?59:31),q=this.point(p),bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',hintFont:'11px system-ui',max:w<600?116:166}),anchor={x:q.x,y:q.y+SC.plantBounds(p).top*s-2},candidates=[];
+    const hint=hints.has(p),bh=SC.labelHeight(p.item,hint?font+34:font+6),q=this.point(p),bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',hintFont:'11px system-ui',max:w-14}),anchor={x:q.x,y:q.y+SC.plantBounds(p).top*s-2},candidates=this.nearLabelCandidates(anchor,bw,bh,boxes,{top,bottom:h-10,left:7,right:w-7}).map(b=>({...b,id:p.id}));
     const add=(x,y)=>candidates.push({id:p.id,x:clamp(x,7,w-bw-7),y:clamp(y,top,h-bh-10),w:bw,h:bh});
     add(anchor.x-bw/2,anchor.y-bh);add(q.x-33*s-bw,q.y-45*s-bh/2);add(q.x+33*s,q.y-45*s-bh/2);add(q.x-bw/2,q.y+8);
     for(let yy=top;yy<=h-bh-10;yy+=18)for(let xx=7;xx<=w-bw-7;xx+=18)add(xx,yy);
@@ -226,7 +226,7 @@ class BeehiveRenderer extends SC.SceneRenderer{
   c.fillStyle='#f9fff5ba';for(const x of [-5,5]){c.beginPath();c.ellipse(x,-9,9,5*wing+.5,x/10,0,6.28);c.fill();}
   c.fillStyle=b.stage==='hungry'?'#a7a28e':'#f5c658';c.beginPath();c.ellipse(0,0,13,8,0,0,6.28);c.fill();c.strokeStyle='#615032';c.lineWidth=3;for(const x of [-4,3]){c.beginPath();c.moveTo(x,-6);c.lineTo(x,6);c.stroke();}this.circle(10,-2,1.6,'#443c31');
   if(b.nectar)this.circle(-8,9,5,'#ffda66');c.textAlign='center';
-  if(b.stage==='confused'){const text=b.job.entry.text+' ?',bw=SC.labelWidth(c,text,{font:'bold 12px system-ui',max:160}),x=clamp(-bw/2,(5-p.x)/s,(g.width-5-p.x)/s-bw);this.round(x,-40,bw,24,7,'#fff2cf','#c4ad76');c.fillStyle='#66553a';c.font='bold 12px system-ui';c.fillText(text,x+bw/2,-24,bw-14);}
+  if(b.stage==='confused'){const text=b.job.entry.text+' ?',bw=SC.labelWidth(c,text,{font:'bold 12px system-ui',max:160}),x=clamp(-bw/2,(5-p.x)/s,(g.width-5-p.x)/s-bw);this.round(x,-40,bw,24,7,'#fff2cf','#c4ad76');c.fillStyle='#66553a';c.font='bold 12px system-ui';SC.drawFittedText(c,text,x+bw/2,-24,bw-SC.labelPadding*2);}
   c.restore();
  }
 }

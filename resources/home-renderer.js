@@ -192,21 +192,21 @@ class HomeRenderer extends SC.SceneRenderer{
  }
  labels(){
   const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],paintLinks=[],paintLabels=[],narrow=w<600,targets=g.getTargets(),font=SC.isChinese(g.mode)||g.mode==='bopomofo'?21:narrow?14:17;
-  const intersects=(a,b)=>a.x<b.x+b.w+4&&a.x+a.w+4>b.x&&a.y<b.y+b.h+4&&a.y+a.h+4>b.y;
+  const intersects=(a,b)=>a.x<b.x+b.w+2&&a.x+a.w+2>b.x&&a.y<b.y+b.h+2&&a.y+a.h+2>b.y;
   if(this.labelWidth!==w){this.previousBoxes=new Map();this.labelWidth=w;}this.previousBoxes??=new Map();
   const faces=g.people.map(p=>{const q=this.point(p.x,p.y),s=this.view.s;return {x:q.x-s*.47,y:q.y-s*1.95,w:s*.94,h:s*.8};});if(this.angerBox)faces.push(this.angerBox);
   const messBounds=g.messes.filter(t=>this.messOnSite(t)).map(t=>{const p=g.taskPosition(t),q=this.point(p.x,p.y,p.z??.08),s=Math.max(16,this.view.s);return {x:q.x-s*.7,y:q.y-s*.8,w:s*1.4,h:s*1.05};});faces.push(...messBounds);
   for(const target of targets){
-   const hint=hints.has(target),pos=g.taskPosition(target),z=pos.z??(target.type==='hungry'?2.15:.18),anchor=this.point(pos.x,pos.y,z),textWidth=SC.labelWidth(c,target.item,{font:'bold '+font+'px system-ui',hint:hint?target.item.hint:'',translation:hint?target.item.translation:'',hintFont:'11px system-ui',max:narrow?125:178}),bw=textWidth+21,bh=SC.labelHeight(target.item,hint?59:30);
-   const make=(x,y)=>({x:clamp(x,7,w-bw-7),y:clamp(y,116,h-bh-7),w:bw,h:bh}),direct=make(anchor.x-bw/2,anchor.y-bh-Math.max(20,this.view.s*.65)),candidates=[direct],previous=this.previousBoxes.get(target.id);
+   const hint=hints.has(target),pos=g.taskPosition(target),z=pos.z??(target.type==='hungry'?2.15:.18),anchor=this.point(pos.x,pos.y,z),textWidth=SC.labelWidth(c,target.item,{font:'bold '+font+'px system-ui',hint:hint?target.item.hint:'',translation:hint?target.item.translation:'',hintFont:'11px system-ui',max:w-35}),bw=textWidth+21,bh=SC.labelHeight(target.item,hint?font+34:font+6);
+   const make=(x,y)=>({x:clamp(x,7,w-bw-7),y:clamp(y,116,h-bh-7),w:bw,h:bh}),direct=make(anchor.x-bw/2,anchor.y-bh-3),candidates=this.nearLabelCandidates(anchor,bw,bh,boxes,{top:116,bottom:h-7,left:7,right:w-7}),previous=this.previousBoxes.get(target.id);
    if(previous&&Math.hypot(previous.x+bw/2-anchor.x,previous.y+bh-anchor.y)<115)candidates.unshift(make(previous.x,previous.y));
    for(const dy of [-51,51,-102,102,-153])for(const dx of [0,-bw-5,bw+5])candidates.push(make(direct.x+dx,direct.y+dy));
    for(let y=120;y<h-bh-7;y+=51)for(let x=7;x<w-bw-5;x+=(w-14)/Math.max(2,Math.floor(w/190)))candidates.push(make(x,y));
    const stable=this.stableLabel(target,anchor,bw,bh,{top:116,bottom:h-7,left:7,right:w-7});if(stable)candidates.unshift(stable);
    if(target.item.diagram){
     // Full-height diagram lanes leave room for every task on narrow screens.
-    const columns=Math.max(1,Math.floor((w-14)/(bw+5))),cell=(w-14)/columns;candidates.length=0;
-    for(let y=116;y<=h-bh-7;y+=bh+6)for(let col=0;col<columns;col++)candidates.push(make(7+col*cell+(cell-bw)/2,y));
+    const columns=Math.max(1,Math.floor((w-14)/(bw+2))),cell=(w-14)/columns;candidates.length=0;
+    for(let y=116;y<=h-bh-7;y+=bh+2)for(let col=0;col<columns;col++)candidates.push(make(7+col*cell+(cell-bw)/2,y));
     candidates.sort((a,b)=>Math.hypot(a.x+bw/2-anchor.x,a.y+bh-anchor.y)-Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y));
     const retained=previous&&candidates.find(b=>b.x===previous.x&&b.y===previous.y);if(retained)candidates.unshift(retained);
    }

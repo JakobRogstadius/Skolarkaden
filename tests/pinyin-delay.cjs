@@ -99,6 +99,39 @@ test('Restart clears revealed hints, and other exercises never show pinyin',()=>
  const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8'),app=fs.readFileSync(path.join(__dirname,'../resources/app.js'),'utf8');assert.doesNotMatch(html,/id="hints"|Visa pinyin/);assert.doesNotMatch(app,/\$\('hints'\)/);
 });
 
+test('All nine games draw long task text with natural proportions, including the garden icon padding',()=>{
+ for(const width of [370,1100])for(const name of [...names,'Home']){
+  let g,p;
+  if(name==='Home'){g=new SC.HomeGame({random:rng(5)});g.start({mode:'swedishLong'});g.resize(width,740);p=g.createTask('toys',g.spots.toys[0]);}
+  else ({g,p}=game(name,width));
+  g.mode='swedishLong';p.item={label:'blomsterträdgård',answer:'blomsterträdgård'};
+  const {r,drawn}=renderer(name,g);r.draw();const label=drawn.find(t=>t.text===p.item.label);
+  assert(label,name+' missing long label');assert.equal(label.max,undefined,name+' uses canvas horizontal text compression');
+  if(name==='Garden')assert.equal(label.font,'bold 16px system-ui','garden icon and padding must leave room for natural-size text');
+ }
+ const {g}=game('City'),{r,drawn}=renderer('City',g),c=r.ctx;c.font='bold 22px system-ui';
+ SC.drawLabelText(c,{label:'blomsterträdgård',hint:'huā yuán',translation:'en blomstrande trädgård'},{x:0,y:0,w:55,h:70},{hint:true});
+ assert.equal(c.font,'bold 22px system-ui','fitting must restore the caller font');assert.equal(drawn.length,3);
+ for(const label of drawn){assert.equal(label.max,undefined);c.font=label.font;assert(c.measureText(label.text).width<=49.001,'fitted glyphs overflow their bubble');}
+ assert(Number(drawn[0].font.match(/([\d.]+)px/)[1])<22,'a width limit must reduce both font dimensions');
+ assert.equal(drawn[1].font,drawn[2].font,'both Mandarin hint lines retain the same font size');
+});
+
+test('All 36 garden requests stay separate at narrow and desktop sizes, before and after hints',()=>{
+ const overlap=(a,b)=>a.x<b.x+b.w-.001&&a.x+a.w>b.x+.001&&a.y<b.y+b.h-.001&&a.y+a.h>b.y+.001;
+ for(const width of [320,370,620,1100])for(const mode of ['swedishLong','chineseTrad4','math-diagrams']){
+  const g=new SC.GardenGame({random:rng(31)});g.start({mode,pace:'brave'});g.resize(width,width<600?680:740);
+  g.pots.forEach(p=>{Object.assign(p,{growth:.5,moisture:.4,nutrition:.4,infection:.6,requests:{}});g.syncRequests(p);});
+  const {r}=renderer('Garden',g);assert.equal(g.getTargets().length,36);
+  for(const clock of [0,6]){g.clock=clock;r.draw();assert.equal(r.bubbleBoxes.length,12);
+   for(const [i,b] of r.bubbleBoxes.entries()){
+    assert(b.x>=6.999&&b.y>=119.999&&b.x+b.w<=width-6.999&&b.y+b.h<=g.height-8.999,mode+' clipped garden bubble');
+    assert(r.bubbleBoxes.slice(i+1).every(a=>!overlap(a,b)),width+'/'+mode+' overlapping garden requests');
+   }
+  }
+ }
+});
+
 test('Every renderer fits a diagram in its task bubble without changing the task between frames',()=>{
  for(const width of [320,1100])for(const name of [...names,'Home']){
   let g,p;

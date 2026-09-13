@@ -140,18 +140,18 @@ class PaintRenderer extends SC.SceneRenderer{
   if(p.paint){c.save();c.translate(x,feet);c.scale(visual,visual);c.translate(0,-54*p.look.height+18);this.splatter(p.paint,11);c.translate(-14,-44);this.circle(0,0,4,p.paint.color);c.restore();}
  }
  labels(){
-  const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],targets=g.getTargets().sort((a,b)=>a.y-b.y||a.x-b.x),gap=4;
+  const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],targets=g.getTargets().sort((a,b)=>a.y-b.y||a.x-b.x),gap=2;
   const overlaps=(a,b)=>a.x<b.x+b.w+gap&&a.x+a.w+gap>b.x&&a.y<b.y+b.h+gap&&a.y+a.h+gap>b.y;
   const child=g.child,blocked=[{x:child.x*w-38,y:child.y*h-100*g.childScale(),w:76,h:100*g.childScale()+12}];
   for(const person of g.people){const s=g.personScale(person);blocked.push({x:person.x*w-28*s,y:person.y*h-(54*person.look.height+52)*s,w:56*s,h:(54*person.look.height+54)*s});}
   for(const p of targets){
-   const maxWidth=Math.min(w<600?110:154,w-16),font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?13:17;
-   const hint=hints.has(p),bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',hintFont:'11px system-ui',max:maxWidth}),bh=SC.labelHeight(p.item,hint?61:33),s=g.personScale(p),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+54)*s},candidates=[];
-   const top=Math.max(178,h*.50),bottom=h*.92-bh;
+   const maxWidth=w-16,font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?13:17;
+   const hint=hints.has(p),bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',hintFont:'11px system-ui',max:maxWidth}),bh=SC.labelHeight(p.item,hint?font+34:font+6),s=g.personScale(p),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+54)*s},candidates=this.nearLabelCandidates(anchor,bw,bh,boxes,{top:122,bottom:h*.92});
+   const top=122,bottom=h*.92-bh;
    // On narrow streets, aligned slots prevent eight moving labels from trapping
    // one another in the gaps left by greedy free placement.
-   const cols=Math.max(1,Math.floor((w-16+8)/(maxWidth+8))),dx=cols>1?(w-16-maxWidth)/(cols-1):0,slots=[];
-   for(let yy=top;yy<=bottom;yy+=bh+8)for(let col=0;col<cols;col++)slots.push({x:8+col*dx+(maxWidth-bw)/2,y:yy,w:bw,h:bh});
+   const cols=Math.max(1,Math.floor((w-16+2)/(bw+2))),dx=cols>1?(w-16-bw)/(cols-1):0,slots=[];
+   for(let yy=top;yy<=bottom;yy+=bh+2)for(let col=0;col<cols;col++)slots.push({x:8+col*dx,y:yy,w:bw,h:bh});
    slots.sort((a,b)=>Math.hypot(a.x+bw/2-anchor.x,a.y+bh-anchor.y)-Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y));
    if(w>=900)for(const dy of [0,-bh-6,bh+5,-2*bh-10])for(const offset of [0,-bw*.65,bw*.65])candidates.push({x:clamp(anchor.x-bw/2+offset,8,w-bw-8),y:clamp(anchor.y-bh-6+dy,top,bottom),w:bw,h:bh});
    candidates.push(...slots);

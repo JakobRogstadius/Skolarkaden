@@ -50,8 +50,8 @@ test('Normal bee flights are slower than before, bend away from a straight path 
  while(travel<30&&!landed){b.age+=.05;landed=g.move(b,to,.05);travel+=.05;path+=Math.hypot((b.x-previous.x)*1.35,b.y-previous.y);maxDeviation=Math.max(maxDeviation,Math.abs(lineX*(b.y-from.y)-lineY*(b.x-from.x)*1.35)/direct);previous={x:b.x,y:b.y};}
  assert(landed);assert(travel>direct/.185*1.2);assert(path>direct*1.035);assert(maxDeviation>.012);assert.equal(b.x,to.x);assert.equal(b.y,to.y);
 });
-test('Balloon labels fit short text, reserve room for hints and keep existing width limits',()=>{
+test('Balloon labels use small padding and available width for long text and hints',()=>{
  const g=new SC.PaintGame();g.start();g.spawnIn=10000;const p=g.people[0];p.x=.5;const context=new Proxy({},{get:(_,key)=>key==='measureText'?text=>({width:[...text].length*10}):()=>{}});const r=Object.create(SC.PaintRenderer.prototype);r.game=g;r.ctx=context;r.round=()=>{};
- p.item={answer:'a',label:'A'};r.labels();const single=r.labelBoxes[0].w;p.item.label='ko';r.labels();const short=r.labelBoxes[0].w;p.item.label='vattenkanna';r.labels();const long=r.labelBoxes[0].w;assert(single<=40);assert(short<=44);assert(long>short*2);assert(long<=154);g.mode='chinese';g.clock=p.appearedAt+5;p.item.label='一';p.item.hint='yi';r.labels();assert(r.labelBoxes[0].w>=34&&r.labelBoxes[0].w<40);
+ p.item={answer:'a',label:'A'};r.labels();const single=r.labelBoxes[0].w;p.item.label='ko';r.labels();const short=r.labelBoxes[0].w;p.item.label='vattenkanna'.repeat(3);r.labels();const long=r.labelBoxes[0].w;assert(single<=30);assert(short<=30);assert(long>154&&long<=g.width-16);g.mode='chinese';g.clock=p.appearedAt+5;p.item.label='一';p.item.hint='yi';r.labels();assert.equal(r.labelBoxes[0].w,26);
 });
 console.log(checks+' input and visual-refinement checks passed.');

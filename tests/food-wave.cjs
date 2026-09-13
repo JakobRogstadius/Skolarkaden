@@ -56,8 +56,8 @@ for(const width of [320,1100])for(const mode of ['swedishLong','chineseTrad4','m
  try{for(const p of g.customers){p.status='waiting';r.person(p,width,g.height,SC.isChinese(mode));}}finally{SC.drawPerson=draw;}
  for(let i=0;i<bodies.length;i++){
   const body=bodies[i],box=boxes[i],head=body.feet-(54*body.look.height+54)*body.scale*SC.personScale(body.look),gap=head-box.y-box.h;
-  assert(gap>=7.9&&gap<=30.1,mode+' detached bubble: '+gap);assert.equal(box.x+box.w/2,body.x);
+  assert(gap>=4.9&&gap<=20.1,mode+' detached bubble: '+gap);assert.equal(box.x+box.w/2,body.x);
   assert.equal(body.scale,Math.min(1.13,width/430),'crowd size changed sprite scale');
  }
 }
-console.log('PASS bubbles stay 8–30 pixels above each head, with matching horizontal anchors and full-size sprites.');
+console.log('PASS bubbles stay 5–20 pixels above each head, with matching horizontal anchors and full-size sprites.');

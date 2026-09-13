@@ -141,7 +141,7 @@ class EggRenderer extends SC.SceneRenderer{
   for(const p of g.people)if(p.status==='dead')this.person(p);
   const actors=[...g.eggs.map(e=>({y:e.y+(e.stage==='chewing'?.001:0),draw:()=>this.enemy(e)})),...g.people.filter(p=>p.status!=='dead').map(p=>({y:p.y,draw:()=>this.person(p)}))];actors.sort((a,b)=>a.y-b.y).forEach(a=>a.draw());
   if(g.job?.firing)this.flame();this.labels();
-  if(g.job&&!g.job.target&&g.player.status!=='dead'){const p=g.player,text=g.job.entry.text+' ?',bw=SC.labelWidth(c,text,{font:'bold 16px system-ui',max:160});this.round(clamp(p.x*w-bw/2,8,w-bw-8),p.y*h-125*g.scale(),bw,32,8,'#253334','#c4a774');c.fillStyle='#f0dfb3';c.textAlign='center';c.font='bold 16px system-ui';c.fillText(text,clamp(p.x*w,bw/2+8,w-bw/2-8),p.y*h-125*g.scale()+22,bw-12);}
+  if(g.job&&!g.job.target&&g.player.status!=='dead'){const p=g.player,text=g.job.entry.text+' ?',bw=SC.labelWidth(c,text,{font:'bold 16px system-ui',max:160});this.round(clamp(p.x*w-bw/2,8,w-bw-8),p.y*h-125*g.scale(),bw,32,8,'#253334','#c4a774');c.fillStyle='#f0dfb3';c.textAlign='center';c.font='bold 16px system-ui';SC.drawFittedText(c,text,clamp(p.x*w,bw/2+8,w-bw/2-8),p.y*h-125*g.scale()+22,bw-SC.labelPadding*2);}
  }
  room(){
   const c=this.ctx,g=this.game,w=g.width,h=g.height,t=this.reduced?0:g.clock;
@@ -213,15 +213,25 @@ class EggRenderer extends SC.SceneRenderer{
   for(let i=12;i>=1;i--)c.lineTo(d*i/12,(3+i*1.1+Math.cos(t*29+i)*4)*s);c.lineTo(0,3*s);c.closePath();c.fill();c.strokeStyle='#fff1bd';c.lineWidth=3*s;c.beginPath();c.moveTo(0,0);c.quadraticCurveTo(d*.4,Math.sin(t*28)*6*s,d*.82,0);c.stroke();c.restore();
  }
  labels(){
-  const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],targets=g.getTargets(),narrow=w<700,top=122,slotH=g.mode==='math-diagrams'?86:SC.isChinese(g.mode)?65:50,rows=Math.max(1,Math.floor((h-top-8)/slotH)),cols=Math.max(narrow?2:Math.max(3,Math.floor((w-16)/188)),Math.ceil(targets.length/rows)),maxWidth=Math.min(narrow?134:180,(w-16)/cols-8);
-  const overlaps=(a,b)=>a.x<b.x+b.w+4&&a.x+a.w+4>b.x&&a.y<b.y+b.h+4&&a.y+a.h+4>b.y;
-  for(const e of targets){const hint=hints.has(e),font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:narrow?14:18,bw=SC.labelWidth(c,e.item,{font:'bold '+font+'px system-ui',hint:hint?e.item.hint:'',translation:hint?e.item.translation:'',hintFont:'12px system-ui',max:maxWidth}),bh=SC.labelHeight(e.item,hint?59:31),anchor={x:e.x*w,y:e.y*h-(e.form==='egg'?66:35)*g.scale()},candidates=[];
-   // Use fixed-height lanes so delayed hints cannot close off the last slots.
-   for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){const cell=(w-16)/cols;candidates.push({x:8+col*cell+(cell-bw)/2,y:top+row*slotH,w:bw,h:bh});}
-   candidates.sort((a,b)=>Math.hypot(a.x+bw/2-anchor.x,a.y+bh-anchor.y)-Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y));
-   if(!narrow&&targets.length<=rows*(cols-1))candidates.unshift({x:clamp(anchor.x-bw/2,8,w-bw-8),y:clamp(anchor.y-bh-6,top,h-bh-8),w:bw,h:bh});
-   const stable=this.stableLabel(e,anchor,bw,bh,{top:top,bottom:h-8});if(stable)candidates.unshift(stable);
-   const box=candidates.find(b=>boxes.every(a=>!overlaps(a,b)))||candidates[0];if(!box)continue;boxes.push({...box,id:e.id});
+  const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),hints=SC.pinyinHints(g),targets=g.getTargets(),narrow=w<700,top=122,font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:narrow?14:18;
+  // Use compact rows and natural text widths before adding columns for a full arena.
+  const slotH=g.mode==='math-diagrams'?82:(SC.isChinese(g.mode)||SC.isWordPair(g.mode)?font+36:font+6)+2,rows=Math.max(1,Math.floor((h-top-8+2)/slotH));
+  const naturalWidth=Math.max(22,...targets.map(e=>SC.labelWidth(c,e.item,{font:'bold '+font+'px system-ui',hint:e.item.hint,translation:e.item.translation,hintFont:'12px system-ui',max:w-16})));
+  const cols=Math.max(1,Math.min(8,Math.floor((w-16)/(naturalWidth+2))),Math.ceil(targets.length/rows)),maxWidth=(w-16)/cols-2;
+  const overlaps=(a,b)=>a.x<b.x+b.w+2&&a.x+a.w+2>b.x&&a.y<b.y+b.h+2&&a.y+a.h+2>b.y;
+  const layouts=targets.map(e=>{const hint=hints.has(e);return {e,hint,bw:SC.labelWidth(c,e.item,{font:'bold '+font+'px system-ui',hint:hint?e.item.hint:'',translation:hint?e.item.translation:'',hintFont:'12px system-ui',max:maxWidth}),bh:SC.labelHeight(e.item,hint?font+36:font+6),anchor:{x:e.x*w,y:e.y*h-(e.form==='egg'?66:35)*g.scale()}};});
+  const arrange=near=>{const boxes=[];
+   for(const {e,bw,bh,anchor} of layouts){const candidates=near?this.nearLabelCandidates(anchor,bw,bh,boxes,{top,bottom:h-8}):[],slots=[];
+    // Center in full hint-height lanes so revealing a hint cannot close off the last slots.
+    for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){const cell=(w-16)/cols;slots.push({x:8+col*cell+(cell-bw)/2,y:top+row*slotH+(slotH-2-bh)/2,w:bw,h:bh});}
+    slots.sort((a,b)=>Math.hypot(a.x+bw/2-anchor.x,a.y+bh-anchor.y)-Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y));candidates.push(...slots);
+    const stable=near&&this.stableLabel(e,anchor,bw,bh,{top,bottom:h-8});if(stable)candidates.unshift(stable);
+    const box=candidates.find(b=>boxes.every(a=>!overlaps(a,b)));if(!box)return null;boxes.push({...box,id:e.id});
+   }return boxes;
+  };
+  // Repack the whole arena if nearby bubbles fragment the remaining free space.
+  const boxes=arrange(true)||arrange(false);
+  for(const [i,{e,hint,bw,bh,anchor}] of layouts.entries()){const box=boxes[i];
    this.keepLabel(e,anchor,box);this.rememberScoreAnchor(e,box,'#c3d8b1','#203632');
    c.strokeStyle='#a9b98a85';c.lineWidth=1;c.beginPath();c.moveTo(anchor.x,anchor.y);c.lineTo(box.x+bw/2,box.y+bh);c.stroke();c.lineWidth=states.has(e)?2:1;this.round(box.x,box.y,bw,bh,7,states.has(e)?'#314e44':'#15282b',states.has(e)?'#97e9b7':e.form==='alien'?'#c7a178':'#819178');
    c.fillStyle='#ecedce';c.font='bold '+font+'px system-ui';c.textAlign='center';SC.drawLabelText(c,e.item,box,{hint,hintFont:'12px system-ui'});c.lineWidth=1;

@@ -129,7 +129,7 @@ class DinosaurRenderer extends SC.SceneRenderer{
   // neck cannot conceal the startled faces beside the mouth during a chase.
   actors.push({y:g.dino.y-70*g.scale()/h,draw:()=>this.dinosaur()});actors.sort((a,b)=>a.y-b.y).forEach(a=>a.draw());
   this.plants(true);this.labels();
-  if(g.job?.stage==='confused'){const d=g.dino,text=g.job.entry.text+' ?',max=w<600?142:220;c.font='bold 16px system-ui';const bw=clamp(c.measureText(text).width+24,52,max),x=clamp(d.x*w-bw/2,8,w-bw-8),y=Math.max(142,d.y*h-215*g.scale());this.round(x,y,bw,34,12,'#fff0ce','#bfa46d');c.fillStyle='#6c6048';c.textAlign='center';c.fillText(text,x+bw/2,y+23,bw-14);}
+  if(g.job?.stage==='confused'){const d=g.dino,text=g.job.entry.text+' ?',max=w<600?142:220;c.font='bold 16px system-ui';const bw=clamp(c.measureText(text).width+24,52,max),x=clamp(d.x*w-bw/2,8,w-bw-8),y=Math.max(142,d.y*h-215*g.scale());this.round(x,y,bw,34,12,'#fff0ce','#bfa46d');c.fillStyle='#6c6048';c.textAlign='center';SC.drawFittedText(c,text,x+bw/2,y+23,bw-SC.labelPadding*2);}
   if(['celebrating','won'].includes(g.state)){const text='Mätt och belåten!',bw=Math.min(276,w-24);this.round((w-bw)/2,h*.28,bw,46,16,'#fff3cf','#c4a66b');c.fillStyle='#3b6150';c.textAlign='center';c.font='bold 21px system-ui';c.fillText(text,w/2,h*.28+30,bw-16);}
  }
  landscape(){
@@ -182,17 +182,16 @@ class DinosaurRenderer extends SC.SceneRenderer{
   c.restore();
  }
  labels(){
-  const c=this.ctx,g=this.game,w=g.width,h=g.height,s=g.scale(),states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],blocked=[],targets=g.getTargets().sort((a,b)=>a.y-b.y||a.x-b.x),gap=5;
+  const c=this.ctx,g=this.game,w=g.width,h=g.height,s=g.scale(),states=g.getTaskStates(),hints=SC.pinyinHints(g),boxes=[],blocked=[],targets=g.getTargets().sort((a,b)=>a.y-b.y||a.x-b.x),gap=2;
   const overlaps=(a,b)=>a.x<b.x+b.w+gap&&a.x+a.w+gap>b.x&&a.y<b.y+b.h+gap&&a.y+a.h+gap>b.y;
   for(const p of g.people)if(p.status!=='eaten'){const ps=s*SC.personScale(p.look);blocked.push({x:p.x*w-29*ps,y:p.y*h-(54*p.look.height+56)*ps,w:58*ps,h:(54*p.look.height+60)*ps});}
   blocked.push({x:g.dino.x*w-70*s,y:g.dino.y*h-196*s,w:190*s,h:202*s});
   for(const p of targets){
-   const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?14:18,maxWidth=w<600?120:170,hint=hints.has(p);const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:maxWidth}),bh=SC.labelHeight(p.item,hint?63:34),ps=s*SC.personScale(p.look),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+59)*ps-g.jumpHeight(p)},candidates=[];
-   const top=154,bottom=h-38-bh,cols=Math.max(1,Math.floor((w-16+8)/(maxWidth+8))),dx=cols>1?(w-16-maxWidth)/(cols-1):0;
+   const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:w<600?14:18,maxWidth=w-16,hint=hints.has(p);const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:maxWidth}),bh=SC.labelHeight(p.item,hint?font+36:font+6),ps=s*SC.personScale(p.look),anchor={x:p.x*w,y:p.y*h-(54*p.look.height+59)*ps-g.jumpHeight(p)},candidates=this.nearLabelCandidates(anchor,bw,bh,boxes,{top:154,bottom:h-38});
+   const top=154,bottom=h-38-bh,cols=Math.max(1,Math.floor((w-16+2)/(bw+2))),dx=cols>1?(w-16-bw)/(cols-1):0;
    // Fallback slots guarantee room for eight labels even on a narrow screen.
-   for(let yy=top;yy<=bottom;yy+=bh+9)for(let col=0;col<cols;col++)candidates.push({x:8+col*dx+(maxWidth-bw)/2,y:yy,w:bw,h:bh});
+   for(let yy=top;yy<=bottom;yy+=bh+2)for(let col=0;col<cols;col++)candidates.push({x:8+col*dx,y:yy,w:bw,h:bh});
    candidates.sort((a,b)=>Math.hypot(a.x+bw/2-anchor.x,a.y+bh-anchor.y)-Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y));
-   if(w>=700)for(const offset of [bw+6,-bw-6,0])candidates.unshift({x:clamp(anchor.x-bw/2+offset,8,w-bw-8),y:clamp(anchor.y-bh-5,top,bottom),w:bw,h:bh});
    const stable=this.stableLabel(p,anchor,bw,bh,{top:top,bottom:h-38});if(stable)candidates.unshift(stable);
    const box=candidates.find(b=>[...boxes,...blocked].every(a=>!overlaps(a,b)))||candidates.find(b=>boxes.every(a=>!overlaps(a,b)))||candidates[0];boxes.push({...box,id:p.id});
    this.keepLabel(p,anchor,box);this.rememberScoreAnchor(p,box,'#466748','#f2efd8');

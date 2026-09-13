@@ -90,7 +90,7 @@ test('Active word pairs and overlapping answers are normally excluded from new t
   const choices=SC.practiceItems(g);assert(choices.length);assert(!choices.some(i=>i.pairId===active.pairId||i.answerKeys.some(a=>active.answerKeys.includes(a))));
 });
 test('A word-pair bubble adds no context or instruction text before or after its hint',()=>{
-  const task=item('translation-sv-en-3','letter'),drawn=[],c={font:'bold 20px system-ui',fillStyle:'#000',save(){},restore(){},fillText(text){drawn.push(text);}};
+  const task=item('translation-sv-en-3','letter'),drawn=[],c={font:'bold 20px system-ui',fillStyle:'#000',save(){},restore(){},measureText(text){return {width:text.length*Number(this.font.match(/[\d.]+/)[0])*.6};},fillText(text){drawn.push(text);}};
   SC.drawLabelText(c,task,{x:0,y:0,w:140,h:34});assert.deepEqual(drawn,[task.label]);
   drawn.length=0;SC.drawLabelText(c,task,{x:0,y:0,w:140,h:66},{hint:true});assert.deepEqual(drawn,[task.label,task.hint]);
 });

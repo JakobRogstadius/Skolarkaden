@@ -5,7 +5,7 @@
   const WAITING=new Set(['waiting','cooking']);
   // Geometry depends on the viewport, never on how many customers are waiting.
   SC.foodLayout=function(width){
-    const cols=width<600?3:5,scale=Math.min(1.13,width/430),truckWidth=Math.min(570,width*.84),truckY=150;
+    const cols=width<600?2:Math.min(5,Math.floor(width/180)),scale=Math.min(1.13,width/430),truckWidth=Math.min(570,width*.84),truckY=150;
     return {cols,scale,truckWidth,truckY,cell:width/cols,firstFeet:truckY+truckWidth/570*180+140*scale+112,pitch:Math.ceil(140*scale+112)};
   };
   SC.foodSceneHeight=function(width,lastSlot){const l=SC.foodLayout(width);return Math.max(540,Math.ceil(l.firstFeet+Math.floor(Math.max(0,lastSlot)/l.cols)*l.pitch+38));};
@@ -171,7 +171,7 @@
       const plates=this.plateLayout();
       this.dish(plates.activeX,plates.y,g.activeCook?.dish??null,plates.scale);
       c.textAlign='center';c.font='bold 11px system-ui';c.fillStyle='#fff3dc';
-      if(g.activeCook)c.fillText(g.activeCook.entry.text,plates.activeX,plates.y-19,66);
+      if(g.activeCook)SC.drawFittedText(c,g.activeCook.entry.text,plates.activeX,plates.y-19,66);
       g.queue.items.slice(0,plates.visible).forEach((entry,i)=>this.emptyPlate(plates.activeX+(i+1)*plates.step,plates.y,entry.text,plates.scale));
       if(g.queue.length>plates.visible){c.font='bold 11px system-ui';c.fillStyle='#fff0d1';c.textAlign='left';c.fillText('+'+(g.queue.length-plates.visible),378,143);}
       c.restore();
@@ -179,7 +179,7 @@
     cookingPosition(w,h){const tw=Math.min(570,w*.84),scale=tw/570,plates=this.plateLayout();return {x:(w-tw)/2+plates.activeX*scale,y:SC.foodLayout(w).truckY+plates.y*scale};}
     plateLayout(){return {activeX:55,y:145,step:70,scale:.8,visible:4};}
     emptyPlate(x,y,text,scale=.8){
-      this.dish(x,y,null,scale);const c=this.ctx;c.textAlign='center';c.font='bold 11px system-ui';c.fillStyle='#fff3dc';c.fillText(text,x,y-19,66);
+      this.dish(x,y,null,scale);const c=this.ctx;c.textAlign='center';c.font='bold 11px system-ui';c.fillStyle='#fff3dc';SC.drawFittedText(c,text,x,y-19,66);
     }
     dish(x,y,kind,scale=1){
       const c=this.ctx;c.save();c.translate(x,y);c.scale(scale,scale);
@@ -195,7 +195,7 @@
       c.restore();
     }
     customerPosition(slot,w,h){
-      const l=SC.foodLayout(w),row=Math.floor(slot/l.cols),order=l.cols===3?[1,0,2]:[2,1,3,0,4],col=order[slot%l.cols];
+      const l=SC.foodLayout(w),row=Math.floor(slot/l.cols),order=l.cols===2?[0,1]:l.cols===3?[1,0,2]:l.cols===4?[1,2,0,3]:[2,1,3,0,4],col=order[slot%l.cols];
       // Small, repeatable offsets make a waiting crowd without moving existing people.
       const dx=(((slot*37+11)%17)/16-.5)*l.cell*.08,dy=[-8,14,-16,6,0][slot%5];
       return {x:(col+.5)*l.cell+dx,feet:l.firstFeet+row*l.pitch+dy,cell:l.cell,scale:l.scale};
@@ -210,7 +210,7 @@
       if(entering||g.state==='menu')return;
       if(leaving)return;
       const font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?25:w<500?17:20;
-      const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:Math.min(176,pos.cell-14),min:32}),bh=SC.labelHeight(p.item,hint?78:44,8),bx=slotX-bw/2,by=feet+(headY-28)*visualScale-76-14-(bh-76)/2,remaining=g.patienceLeft(p);
+      const bw=SC.labelWidth(c,p.item,{font:'bold '+font+'px system-ui',hint:hint?p.item.hint:'',translation:hint?p.item.translation:'',max:pos.cell-6,min:32}),bh=SC.labelHeight(p.item,hint?font+44:font+14,8),lateHeight=SC.labelHeight(p.item,p.item.hint?font+44:font+14,8),bx=clamp(slotX-bw/2,3,w-bw-3),by=feet+(headY-28)*visualScale-5-(lateHeight+bh)/2,remaining=g.patienceLeft(p);
       this.rememberScoreAnchor(p,{x:bx,y:by,w:bw,h:bh},'#f0d8ad','#304b4e');
       const state=g.getTaskStates().get(p),fill=state==='queued'?'#bdeedc':state==='active'?'#ffe1a2':'#fff1d9';
       c.lineWidth=state?3:1;

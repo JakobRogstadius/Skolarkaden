@@ -5,8 +5,9 @@
   const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
   const difference=(a,b)=>Math.atan2(Math.sin(a-b),Math.cos(a-b));
   const PALETTE=['#85f0c4','#ffdc88','#97c6ff','#f3a8d2','#c4afff'];
-  // Fit the actual glyphs (and optional pinyin/Swedish meaning), with seven pixels on each side.
-  SC.labelWidth=function(c,text,{font=c.font,hint='',translation='',hintFont='12px system-ui',padding=7,min=28,max=220}={}){
+  // Measure and draw with the same small padding. Never squeeze glyphs horizontally.
+  SC.labelPadding=3;
+  SC.labelWidth=function(c,text,{font=c.font,hint='',translation='',hintFont='12px system-ui',padding=SC.labelPadding,min=22,max=220}={}){
     if(text?.diagram)return clamp(112,min,max);
     if(typeof text==='object')text=text.label;
     c.save();c.font=font;let width=c.measureText(text).width;
@@ -14,6 +15,13 @@
     return clamp(Math.ceil(width)+padding*2,min,max);
   };
   SC.labelHeight=(item,height,footer=0)=>item.diagram?80+footer:height;
+  SC.fittedFont=function(c,text,font,max){
+    const old=c.font;c.font=font;const width=c.measureText(text).width;c.font=old;
+    return width>max?String(font).replace(/([\d.]+)px/,(match,size)=>(Number(size)*Math.max(1,max)/width)+'px'):font;
+  };
+  SC.drawFittedText=function(c,text,x,y,max){
+    const font=c.font;c.font=SC.fittedFont(c,text,font,max);c.fillText(text,x,y);c.font=font;
+  };
   SC.drawMathDiagram=function(c,diagram,box){
     c.save();
     // A pale panel keeps black chart ink legible in every game's task bubble.
@@ -64,15 +72,17 @@
   SC.drawLabelText=function(c,item,box,{hint=false,hintFont='12px system-ui',hintColor=c.fillStyle}={}){
     if(item.diagram){SC.drawMathDiagram(c,item.diagram,box);return;}
     c.save();c.textAlign='center';c.textBaseline='middle';
-    const x=box.x+box.w/2,y=box.y+box.h/2,max=Math.max(1,box.w-14),mainSize=Number(String(c.font).match(/([\d.]+)px/)?.[1]||22);
-    c.fillText(item.label,x,y,max);
+    const x=box.x+box.w/2,y=box.y+box.h/2,max=Math.max(1,box.w-SC.labelPadding*2),mainSize=Number(String(c.font).match(/([\d.]+)px/)?.[1]||22);
+    SC.drawFittedText(c,item.label,x,y,max);
     if(item.pairId){
       c.font=hintFont;const gap=mainSize/2+Number(hintFont.match(/([\d.]+)px/)?.[1]||12)/2+3;
-      if(hint){c.fillStyle=hintColor;c.fillText(item.hint,x,y+gap,max);}
+      if(hint){c.fillStyle=hintColor;SC.drawFittedText(c,item.hint,x,y+gap,max);}
       c.restore();return;
     }
     if(hint){c.font=hintFont;c.fillStyle=hintColor;const gap=mainSize/2+Number(hintFont.match(/([\d.]+)px/)?.[1]||12)/2+3;
-      c.fillText(item.hint||'',x,y-gap,max);c.fillText(item.translation||'',x,y+gap,max);
+      // Match both hint font sizes, even when only the translation is long.
+      const longest=c.measureText(item.hint||'').width>=c.measureText(item.translation||'').width?item.hint||'':item.translation||'';
+      c.font=SC.fittedFont(c,longest,hintFont,max);c.fillText(item.hint||'',x,y-gap);c.fillText(item.translation||'',x,y+gap);
     }c.restore();
   };
   // The label's first appearance starts the clock, including walkers entering onscreen.
@@ -280,6 +290,34 @@
     keepLabel(target,anchor,box){
       this.labelPositions??=new WeakMap();this.labelPositions.set(target,{anchor:{...anchor},box:{...box},width:this.game.width,height:this.game.height,item:target.item});
     }
+    nearLabelCandidates(anchor,bw,bh,boxes,{top=116,bottom=this.game.height-8,left=8,right=this.game.width-8}={}){
+      const candidates=[],x=anchor.x-bw/2,y=anchor.y-bh-3;
+      const add=(xx,yy)=>candidates.push({x:clamp(xx,left,right-bw),y:clamp(yy,top,bottom-bh),w:bw,h:bh});
+      add(x,y);add(anchor.x-bw-3,anchor.y-bh/2);add(anchor.x+3,anchor.y-bh/2);add(x,anchor.y+3);
+      // Fit tightly beside existing bubbles before sending a label to a distant lane.
+      for(const box of boxes){
+        for(const xx of [x,box.x,box.x+box.w-bw]){add(xx,box.y-bh-2);add(xx,box.y+box.h+2);}
+        for(const yy of [y,box.y,box.y+box.h-bh]){add(box.x-bw-2,yy);add(box.x+box.w+2,yy);}
+      }
+      const distance=b=>Math.hypot(b.x+bw/2-anchor.x,b.y+bh-anchor.y);
+      return candidates.sort((a,b)=>distance(a)-distance(b));
+    }
+    compactLabelGrid(layouts,{top=116,bottom=this.game.height-8,left=8,right=this.game.width-8}={}){
+      if(!layouts.length)return [];
+      const widest=Math.max(...layouts.map(b=>b.w)),tallest=Math.max(...layouts.map(b=>b.h));let best=null;
+      for(let cols=1;cols<=layouts.length;cols++){
+        const rows=Math.ceil(layouts.length/cols),cellW=(right-left+2)/cols,cellH=(bottom-top+2)/rows,scale=Math.min(1,(cellW-2)/widest,(cellH-2)/tallest);
+        if(best&&scale<best.scale)continue;
+        const slots=[];for(let row=0;row<rows;row++)for(let col=0;col<cols;col++)slots.push({x:left+col*cellW+(cellW-2)/2,y:top+row*cellH+(cellH-2)/2});
+        let distance=0;const boxes=layouts.map(b=>{
+          slots.sort((a,c)=>Math.hypot(a.x-b.anchor.x,a.y-b.anchor.y)-Math.hypot(c.x-b.anchor.x,c.y-b.anchor.y));
+          const slot=slots.shift();distance+=Math.hypot(slot.x-b.anchor.x,slot.y-b.anchor.y);
+          return {x:slot.x-b.w*scale/2,y:slot.y-b.h*scale/2,w:b.w*scale,h:b.h*scale,scale};
+        });
+        if(!best||scale>best.scale||distance<best.distance)best={scale,distance,boxes};
+      }
+      return best.boxes;
+    }
     rememberScoreAnchor(target,box,color='#e3e8cb',outline='#243d38'){
       this.scoreAnchors??=new WeakMap();this.liveScoreBoxes??=[];
       const g=this.game,anchor={x:(box.x+box.w/2)/g.width,y:(box.y+box.h/2)/g.height,color,outline};
@@ -343,12 +381,12 @@
       for(const t of g.getTargets()){
         const size=SC.isChinese(g.mode)?26:g.width<600?20:23;
         c.font='700 '+size+'px "Trebuchet MS", system-ui, sans-serif';
-        const hint=hints.has(t),bw=SC.labelWidth(c,t.item,{hint:hint?t.item.hint:'',translation:hint?t.item.translation:'',hintFont:'13px system-ui',max:w-16}),bh=SC.labelHeight(t.item,hint?78:40);
+        const hint=hints.has(t),bw=SC.labelWidth(c,t.item,{hint:hint?t.item.hint:'',translation:hint?t.item.translation:'',hintFont:'13px system-ui',max:w-16}),bh=SC.labelHeight(t.item,hint?size+38:size+6);
         let box;
-        const candidates=[];
+        const candidates=this.nearLabelCandidates({x:t.x,y:t.y+bh/2},bw,bh,labels,{top:122,bottom:g.ground-7});
         for(const dy of [0,-50,50,-100,100])for(const dx of [0,-bw-8,bw+8,-2*bw,2*bw])candidates.push({x:clamp(t.x+dx-bw/2,8,w-bw-8),y:clamp(t.y+dy-20,122,g.ground-bh-7),w:bw,h:bh});
         const anchor={x:t.x,y:t.y},stable=this.stableLabel(t,anchor,bw,bh,{top:122,bottom:g.ground-7});if(stable)candidates.unshift(stable);
-        box=candidates.find(b=>labels.every(o=>b.x+b.w+5<o.x||o.x+o.w+5<b.x||b.y+b.h+5<o.y||o.y+o.h+5<b.y))||candidates[0];
+        box=candidates.find(b=>labels.every(o=>b.x+b.w+2<=o.x||o.x+o.w+2<=b.x||b.y+b.h+2<=o.y||o.y+o.h+2<=b.y))||candidates[0];
         this.keepLabel(t,anchor,box);t.labelBox=box;this.rememberScoreAnchor(t,box,'#c4dedb','#202c48');labels.push(box);this.comet(t,hint);
       }
       if(g.state==='playing')for(const gun of g.turrets)if(gun.alive&&gun.job?.target)this.crosshair({gun,target:gun.job.target});
@@ -385,7 +423,7 @@
       c.save();c.translate(t.x,t.y);c.rotate(t.angle);
       this.round(-4,-6,33,12,4,'#273e54',color);this.round(22,-7,8,14,2,color);c.restore();
       c.fillStyle=color;c.beginPath();c.arc(t.x,t.y,10,0,Math.PI*2);c.fill();c.fillStyle='#27435a';c.beginPath();c.arc(t.x,t.y,5,0,Math.PI*2);c.fill();
-      c.font='700 10px system-ui';c.textAlign='center';c.fillStyle='#adcedb';if(t.job)c.fillText(t.job.entry.text,t.x,g.ground+22,Math.min(150,g.width*.24));
+      c.font='700 10px system-ui';c.textAlign='center';c.fillStyle='#adcedb';if(t.job)SC.drawFittedText(c,t.job.entry.text,t.x,g.ground+22,Math.min(150,g.width*.24));
     }
     comet(t,hint=false){
       const c=this.ctx,g=this.game;
@@ -395,7 +433,7 @@
       c.strokeStyle=trail;c.lineCap='round';c.lineWidth=5;c.beginPath();c.moveTo(0,0);c.lineTo(-Math.cos(angle)*55,-Math.sin(angle)*55);c.stroke();c.lineCap='butt';
       const size=SC.isChinese(g.mode)?26:g.width<600?20:23;c.font='700 '+size+'px "Trebuchet MS", system-ui, sans-serif';
       const label=t.item.label,bw=t.labelBox.w,bh=t.labelBox.h;
-      const labelX=t.labelBox.x+bw/2-t.x,labelY=t.labelBox.y+20-t.y;
+      const labelX=t.labelBox.x+bw/2-t.x,labelY=t.labelBox.y+bh/2-t.y;
       c.lineWidth=1.5;
       if(Math.hypot(labelX,labelY)>8){
         c.strokeStyle=t.color;c.beginPath();c.moveTo(0,0);c.lineTo(labelX,labelY);c.stroke();
@@ -403,8 +441,8 @@
       }
       c.translate(labelX,labelY);
       c.shadowColor=t.color+'33';c.shadowBlur=14;
-      this.round(-bw/2,-20,bw,bh,12,'#192841',t.color);c.shadowBlur=0;
-      c.fillStyle='#f8f9ff';SC.drawLabelText(c,t.item,{x:-bw/2,y:-20,w:bw,h:bh},{hint,hintFont:'13px system-ui',hintColor:t.color});
+      this.round(-bw/2,-bh/2,bw,bh,10,'#192841',t.color);c.shadowBlur=0;
+      c.fillStyle='#f8f9ff';SC.drawLabelText(c,t.item,{x:-bw/2,y:-bh/2,w:bw,h:bh},{hint,hintFont:'13px system-ui',hintColor:t.color});
       c.restore();
     }
     crosshair({target,gun}){

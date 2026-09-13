@@ -149,7 +149,7 @@ class GardenRenderer extends SC.SceneRenderer{
       this.round((w-bw)/2,h-69,bw,55,12,'#543f38','#ffb793');c.textAlign='center';c.fillStyle='#fff0db';c.font='bold 17px system-ui';c.fillText('Alla plantor vissnade',w/2,h-45);c.font='13px system-ui';c.fillText(g.lossReason,w/2,h-25);
     }
     if(g.job?.stage==='think'){
-      const p=this.point(g.gardener),text=g.job.entry.text+' ?',bw=SC.labelWidth(c,text,{font:'bold 16px system-ui',max:Math.min(200,w-30)});this.round(clamp(p.x-bw/2,8,w-bw-8),p.y-145*this.scale,bw,32,10,'#fff0d3','#dbb585');c.fillStyle='#594f44';c.font='bold 16px system-ui';c.textAlign='center';c.fillText(text,clamp(p.x,bw/2+8,w-bw/2-8),p.y-124*this.scale,bw-16);
+      const p=this.point(g.gardener),text=g.job.entry.text+' ?',bw=SC.labelWidth(c,text,{font:'bold 16px system-ui',max:Math.min(200,w-30)});this.round(clamp(p.x-bw/2,8,w-bw-8),p.y-145*this.scale,bw,32,10,'#fff0d3','#dbb585');c.fillStyle='#594f44';c.font='bold 16px system-ui';c.textAlign='center';SC.drawFittedText(c,text,clamp(p.x,bw/2+8,w-bw/2-8),p.y-124*this.scale,bw-SC.labelPadding*2);
     }
   }
   plant(p){
@@ -171,30 +171,42 @@ class GardenRenderer extends SC.SceneRenderer{
     }
   }
   bubbles(){
-    const c=this.ctx,g=this.game,w=g.width,h=g.height,boxes=[],crowded=g.getTargets().length>12,taskStates=g.getTaskStates(),hints=SC.pinyinHints(g);
+    const c=this.ctx,g=this.game,w=g.width,h=g.height,taskStates=g.getTaskStates(),hints=SC.pinyinHints(g);
     const blocked=g.pots.map(p=>{const q=this.point(p);const bounds=SC.plantBounds(p);return {x:q.x-45*this.scale,y:q.y+bounds.top*this.scale,w:90*this.scale,h:(40-bounds.top)*this.scale};});
     const gardener=this.point(g.gardener);blocked.push({x:gardener.x-42*this.scale,y:gardener.y-116*this.scale,w:84*this.scale,h:138*this.scale});
-    const overlaps=(a,b)=>a.x<b.x+b.w+5&&a.x+a.w+5>b.x&&a.y<b.y+b.h+5&&a.y+a.h+5>b.y;
-    for(const pot of g.pots){
-      const reqs=Object.values(pot.requests);if(!reqs.length)continue;
-      const font='bold '+((SC.isChinese(g.mode)||g.mode==='bopomofo')?21:16)+'px system-ui';
-      const widths=reqs.map(r=>SC.labelWidth(c,r.item,{font,hint:hints.has(r)?r.item.hint:'',translation:hints.has(r)?r.item.translation:'',hintFont:'11px system-ui',padding:0,min:0,max:400})+38);
-      const rows=reqs.map(r=>SC.labelHeight(r.item,hints.has(r)?62:28)),p=this.point(pot),bw=clamp(Math.max(...widths),48,w<500?144:180),bh=rows.reduce((sum,row)=>sum+row,8),candidates=[];
+    const overlaps=(a,b)=>a.x<b.x+b.w+2&&a.x+a.w+2>b.x&&a.y<b.y+b.h+2&&a.y+a.h+2>b.y;
+    const size=(SC.isChinese(g.mode)||g.mode==='bopomofo')?21:16,font='bold '+size+'px system-ui';
+    const layouts=g.pots.flatMap(pot=>{
+      const reqs=Object.values(pot.requests);if(!reqs.length)return [];
+      const widths=reqs.map(r=>SC.labelWidth(c,r.item,{font,hint:hints.has(r)?r.item.hint:'',translation:hints.has(r)?r.item.translation:'',hintFont:'11px system-ui',padding:0,min:0,max:w-50})+30+SC.labelPadding*2);
+      const rows=reqs.map(r=>SC.labelHeight(r.item,hints.has(r)?size+34:size+6));return [{pot,reqs,rows,p:this.point(pot),bw:clamp(Math.max(...widths),48,w-14),bh:rows.reduce((sum,row)=>sum+row,4)}];
+    });
+    const arrange=()=>{const boxes=[];
+     for(const {pot,p,bw,bh} of layouts){
+      const candidates=this.nearLabelCandidates(p,bw,bh,boxes,{top:120,bottom:h-9,left:7,right:w-7});
       const bx=pot.x>=0?p.x+30*this.scale:p.x-bw-30*this.scale;
       for(const [x,y] of [[bx,p.y-bh/2],[p.x-bw/2,p.y-(42+pot.growth*75)*this.scale-bh],[p.x-bw/2,p.y+40*this.scale],[w/2-bw/2,135]])candidates.push({x:clamp(x,7,w-bw-7),y:clamp(y,120,h-bh-9),w:bw,h:bh});
       for(let y=120;y<h-bh-8;y+=16)for(let x=7;x<w-bw;x+=22)candidates.push({x,y,w:bw,h:bh});
       const stable=this.stableLabel(pot,p,bw,bh,{top:120,bottom:h-9,left:7,right:w-7});
-      const good=candidates.filter(b=>[...boxes,...blocked].every(o=>!overlaps(b,o)));good.sort((a,b)=> (crowded&&Math.abs(a.y-b.y)>1?a.y-b.y:0)||Math.hypot(a.x+bw/2-p.x,a.y+bh/2-p.y)-Math.hypot(b.x+bw/2-p.x,b.y+bh/2-p.y));
-      const box=(stable&&[...boxes,...blocked].every(o=>!overlaps(stable,o))?stable:null)||good[0]||candidates.find(b=>boxes.every(o=>!overlaps(b,o))&&!overlaps(b,blocked[blocked.length-1]))||candidates[0];this.keepLabel(pot,p,box);boxes.push(box);
-      c.strokeStyle='#c6d6b680';c.lineWidth=1;c.beginPath();c.moveTo(p.x,p.y-20*this.scale);c.lineTo(box.x+bw/2,box.y+bh/2);c.stroke();
-      this.round(box.x,box.y,bw,bh,10,'#f5efd8','#b2c79e');
+      const good=candidates.filter(b=>[...boxes,...blocked].every(o=>!overlaps(b,o)));good.sort((a,b)=>Math.hypot(a.x+bw/2-p.x,a.y+bh/2-p.y)-Math.hypot(b.x+bw/2-p.x,b.y+bh/2-p.y));
+      const box=(stable&&[...boxes,...blocked].every(o=>!overlaps(stable,o))?stable:null)||good[0]||candidates.find(b=>boxes.every(o=>!overlaps(b,o))&&!overlaps(b,blocked[blocked.length-1]))||candidates.find(b=>boxes.every(o=>!overlaps(b,o)));
+      if(!box)return null;boxes.push(box);
+     }return boxes;
+    };
+    // Exhaust nearby space first; only a full garden needs compact rows and uniform scaling.
+    const boxes=arrange()||this.compactLabelGrid(layouts.map(b=>({anchor:b.p,w:b.bw,h:b.bh})),{top:120,bottom:h-9,left:7,right:w-7});
+    for(const [index,{pot,reqs,rows,p,bw,bh}] of layouts.entries()){
+      const box=boxes[index],scale=box.scale||1;this.keepLabel(pot,p,box);
+      c.strokeStyle='#c6d6b680';c.lineWidth=1;c.beginPath();c.moveTo(p.x,p.y-20*this.scale);c.lineTo(box.x+box.w/2,box.y+box.h/2);c.stroke();
+      c.save();c.translate(box.x,box.y);c.scale(scale,scale);this.round(0,0,bw,bh,10,'#f5efd8','#b2c79e');
       for(let i=0;i<reqs.length;i++){
-        const r=reqs[i],row=rows[i],y=box.y+4+rows.slice(0,i).reduce((sum,n)=>sum+n,0),state=taskStates.get(r);
-        this.rememberScoreAnchor(r,{x:box.x,y,w:bw,h:row},'#dae7bc','#304e3e');
-        if(state)this.round(box.x+3,y,bw-6,row,5,'#62df87',state==='active'?'#17683b':null);
-        SC.drawGardenTool(this,r.property,box.x+16,y+row/2,.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font='bold '+(SC.isChinese(g.mode)||g.mode==='bopomofo'?21:16)+'px system-ui';
-        SC.drawLabelText(c,r.item,{x:box.x+26,y,w:bw-30,h:row},{hint:hints.has(r),hintFont:'11px system-ui'});
+        const r=reqs[i],row=rows[i],y=2+rows.slice(0,i).reduce((sum,n)=>sum+n,0),state=taskStates.get(r);
+        this.rememberScoreAnchor(r,{x:box.x,y:box.y+y*scale,w:box.w,h:row*scale},'#dae7bc','#304e3e');
+        if(state)this.round(3,y,bw-6,row,5,'#62df87',state==='active'?'#17683b':null);
+        SC.drawGardenTool(this,r.property,16,y+row/2,.53);c.fillStyle=g.badness(pot,r.property)>=.8?'#a14b38':'#304a41';c.textAlign='center';c.font=font;
+        SC.drawLabelText(c,r.item,{x:26,y,w:bw-30,h:row},{hint:hints.has(r),hintFont:'11px system-ui'});
       }
+      c.restore();
     }
     this.bubbleBoxes=boxes;
   }

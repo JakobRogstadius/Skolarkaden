@@ -75,6 +75,6 @@ test('All target boxes fit short words and pinyin, with no overlaps in a crowded
   const positions=JSON.stringify(r.labelBoxes);g.queue.enqueue(g.getTargets()[0].item.answer);r.labels();assert.equal(JSON.stringify(r.labelBoxes),positions,'queue highlighting must not move labels');
  }
  for(const [Game,Renderer] of [[SC.PaintGame,SC.PaintRenderer],[SC.DinosaurGame,SC.DinosaurRenderer]]){const {game:g,r}=renderer(Game,Renderer);g.people[0].item={label:'A',answer:'a'};r.labels();assert(r.labelBoxes[0].w<=30);}
- const {c}=renderer(SC.BeehiveGame,SC.BeehiveRenderer);const a=SC.labelWidth(c,'A',{font:'20px system-ui'}),word=SC.labelWidth(c,'vattenkanna',{font:'20px system-ui'}),hint=SC.labelWidth(c,'一',{font:'22px system-ui',hint:'yī',hintFont:'12px system-ui'});assert(a<=30&&word>a*3&&hint>=28);
+ const {c}=renderer(SC.BeehiveGame,SC.BeehiveRenderer);const a=SC.labelWidth(c,'A',{font:'20px system-ui'}),word=SC.labelWidth(c,'vattenkanna',{font:'20px system-ui'}),hint=SC.labelWidth(c,'一',{font:'22px system-ui',hint:'yī',hintFont:'12px system-ui'});assert(a<=30&&word>a*3&&hint>=22);
 });
 console.log(checks+' plant, layout, pacing and surplus-honey checks passed.');
