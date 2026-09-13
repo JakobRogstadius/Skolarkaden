@@ -21,7 +21,7 @@ http.createServer((req,res)=>{
     res.end('<!doctype html><html><body style="margin:0;background:#333"><iframe title="App test viewport" src="'+(url.searchParams.has('garden')?'/audit-garden.html':url.searchParams.has('paint')?'/audit-paint.html':'/')+'" style="display:block;border:0;width:'+(mobile?'390px':'640px')+';height:'+(mobile?'844px':'900px')+'"></iframe></body></html>');return;
   }
   const relative=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1));
-  if(!['index.html','language-exercises.json'].includes(relative)&&!/^resources\/[\w.-]+$/.test(relative)){res.writeHead(404).end();return;}
+  if(!['index.html','statistics.html','language-exercises.json'].includes(relative)&&!/^resources\/[\w.-]+$/.test(relative)){res.writeHead(404).end();return;}
   const file=path.join(root,relative);
   fs.readFile(file,(err,data)=>{if(err){res.writeHead(404).end();return;}res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type',file.endsWith('.js')?'text/javascript':file.endsWith('.json')?'application/json':file.endsWith('.css')?'text/css':'text/html');res.end(data);});
 }).listen(4173,'0.0.0.0');

@@ -11,7 +11,7 @@ const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englis
   ...mathExercises, ...languageExercises]);
 const PACES = new Set(['gentle', 'steady', 'brave']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1, score_dimensions: 1 };
+const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1, score_dimensions: 1, admin_statistics: 1 };
 const EXERCISE_RATING_METHOD = 'top-five-game-percentiles-v1';
 const LANGUAGES = new Set(['sv-SE', 'en-US', 'zh-TW', 'zh-CN']);
 
@@ -151,21 +151,92 @@ async function popularity(db, group) {
   })).sort((a, b) => b.plays - a.plays); // Stable ties follow the menu order.
 }
 
+async function authorizedStatistics(request, secret) {
+  const authorization = request.headers.get('Authorization') || '';
+  if (!authorization.startsWith('Bearer ') || authorization.length > 1024) return false;
+  // Compare fixed-length digests without returning early for a matching prefix.
+  const digest = value => crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  const hashes = await Promise.all([digest(authorization.slice(7)), digest(secret)]);
+  const [provided, expected] = hashes.map(hash => new Uint8Array(hash));
+  let difference = 0;
+  for (let i = 0; i < expected.length; i++) difference |= provided[i] ^ expected[i];
+  return difference === 0;
+}
+
+function statisticsDays(now) {
+  const zone = 'Europe/Stockholm', format = new Intl.DateTimeFormat('sv-SE', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' });
+  const today = Date.parse(format.format(now) + 'T00:00:00Z');
+  const clock = new Intl.DateTimeFormat('en-GB', { timeZone: zone, hour: '2-digit', hourCycle: 'h23' });
+  // D1 CURRENT_TIMESTAMP uses whole seconds; midnight bounds must use that format.
+  const sqlTime = date => date.toISOString().slice(0, 19).replace('T', ' ');
+  // Stockholm is 01:00 or 02:00 at UTC midnight, before any DST change that day.
+  // Convert each midnight independently so spring/autumn days are 23/25 hours.
+  const midnight = stamp => sqlTime(new Date(stamp - Number(clock.format(new Date(stamp))) * 3600000));
+  return Array.from({ length: 7 }, (_, i) => {
+    const stamp = today + (i - 6) * 86400000;
+    return { day: new Date(stamp).toISOString().slice(0, 10), start: midnight(stamp), end: i === 6 ? now.toISOString().slice(0, 23).replace('T', ' ') : midnight(stamp + 86400000) };
+  });
+}
+
+async function statistics(db) {
+  const now = new Date(), days = statisticsDays(now), start = days[0].start, end = days[6].end;
+  const dayScope = `WITH days(day, start, end) AS (VALUES ${days.map(() => '(?, ?, ?)').join(',')})`;
+  // Date predicates act on the original indexed timestamp, not date(created_at).
+  // Only aggregates and the ten latest rows leave D1; no full history download.
+  const [allTime, latest, daily, names] = await Promise.all([
+    db.prepare("SELECT count(DISTINCT ip) AS unique_ips FROM highscores WHERE ip IS NOT NULL AND ip <> ''").first(),
+    db.prepare(`SELECT created_at, player_name, ip, game_version, game, exercise, difficulty, score
+      FROM highscores WHERE created_at < ? ORDER BY created_at DESC, submission_id DESC LIMIT 10`).bind(end).all(),
+    db.prepare(dayScope + ['ip', 'game', 'exercise'].map(dimension => `
+      SELECT day, '${dimension}' AS dimension, nullif(${dimension}, '') AS category, count(*) AS plays
+      FROM days JOIN highscores ON created_at >= start AND created_at < end
+      GROUP BY day, category`).join(' UNION ALL ')).bind(...days.flatMap(day => [day.day, day.start, day.end])).all(),
+    db.prepare(`WITH top_ips AS (
+      SELECT ip, count(*) AS plays, max(created_at) AS last_played FROM highscores
+      WHERE created_at >= ? AND created_at < ? AND ip IS NOT NULL AND ip <> ''
+      GROUP BY ip ORDER BY plays DESC, last_played DESC, ip ASC LIMIT 20
+    ) SELECT top_ips.ip, top_ips.plays, top_ips.last_played, player_name, count(*) AS name_plays
+      FROM top_ips JOIN highscores USING (ip) WHERE created_at >= ? AND created_at < ?
+      GROUP BY top_ips.ip, player_name
+      ORDER BY top_ips.plays DESC, top_ips.last_played DESC, top_ips.ip ASC, name_plays DESC, player_name ASC`)
+      .bind(start, end, start, end).all()
+  ]);
+  const ipDays = daily.results.filter(row => row.dimension === 'ip'), top = new Map();
+  for (const { ip, plays, last_played, player_name, name_plays } of names.results) {
+    if (!top.has(ip)) top.set(ip, { ip, plays, last_played, usernames: [] });
+    top.get(ip).usernames.push({ player_name, plays: name_plays });
+  }
+  return {
+    generated_at: now.toISOString(), timezone: 'Europe/Stockholm', days: days.map(day => day.day),
+    unique_ips_ever: allTime.unique_ips, unique_ips_week: new Set(ipDays.filter(row => row.category !== null).map(row => row.category)).size,
+    scores_week: ipDays.reduce((sum, row) => sum + row.plays, 0),
+    scores_without_ip_week: ipDays.filter(row => row.category === null).reduce((sum, row) => sum + row.plays, 0),
+    latest: latest.results, daily: daily.results, top_ips: [...top.values()]
+  };
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url), origin = request.headers.get('Origin');
-    const headers = { 'Cache-Control': 'no-store', 'Vary': 'Origin' };
+    const admin = url.pathname === '/admin/stats';
+    const headers = { 'Cache-Control': 'no-store', 'Vary': admin ? 'Origin, Authorization' : 'Origin' };
     if (origin === ALLOWED_ORIGIN) {
       headers['Access-Control-Allow-Origin'] = origin;
       headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
-      headers['Access-Control-Allow-Headers'] = 'Content-Type';
+      headers['Access-Control-Allow-Headers'] = admin ? 'Content-Type, Authorization' : 'Content-Type';
     }
     const reply = (body, status = 200, extra = {}) => Response.json(body, { status, headers: { ...headers, ...extra } });
     if (origin && origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_not_allowed' }, 403);
-    if (request.method === 'OPTIONS' && ['/scores', '/stats'].includes(url.pathname)) {
+    if (request.method === 'OPTIONS' && ['/scores', '/stats', '/admin/stats'].includes(url.pathname)) {
       return new Response(null, { status: 204, headers });
     }
     try {
+      if (admin) {
+        if (request.method !== 'GET') return reply({ error: 'method_not_allowed' }, 405, { Allow: 'GET, OPTIONS' });
+        if (typeof env.STATS_ADMIN_KEY !== 'string' || env.STATS_ADMIN_KEY.length < 32) return reply({ error: 'statistics_not_configured' }, 503);
+        if (!await authorizedStatistics(request, env.STATS_ADMIN_KEY)) return reply({ error: 'unauthorized' }, 401, { 'WWW-Authenticate': 'Bearer' });
+        return reply(await statistics(env.DB));
+      }
       if (request.method === 'GET' && url.pathname === '/health') {
         await env.DB.prepare('SELECT submission_id, ip, settings_json, game, game_version, exercise, difficulty FROM highscores LIMIT 1').all();
         await env.DB.prepare('SELECT client_key FROM score_rate_limits LIMIT 1').all();

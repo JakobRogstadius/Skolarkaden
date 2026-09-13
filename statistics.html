@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://skolarkaden-api.jakob-rogstadius.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Statistik · Skolarkaden</title>
+<link rel="stylesheet" href="resources/statistics.css?v=6653937d8395">
+<script defer src="resources/data.js?v=10b4055b1f2c"></script>
+<script defer src="resources/language-exercises-data.js?v=115eba2c8858"></script>
+<script defer src="resources/language-exercises.js?v=747b2fb02145"></script>
+<script defer src="resources/statistics.js?v=ed673aaaed1e"></script>
+</head>
+<body>
+<main class="shell">
+  <header class="page-header">
+    <div><a class="brand" href="index.html">Skolarkaden</a><h1>Statistik</h1><p>Sparade spelresultat · Alla spelversioner · Svensk tid</p></div>
+    <div class="actions" id="actions" hidden><button id="refresh" type="button">Uppdatera</button><button id="logout" class="secondary" type="button">Logga ut</button></div>
+  </header>
+  <form id="login" class="panel login">
+    <h2>Öppna statistiken</h2>
+    <label for="admin-key">Administratörsnyckel</label>
+    <div class="login-fields"><input id="admin-key" name="admin-key" type="password" autocomplete="off" spellcheck="false" autocapitalize="none" required maxlength="1000"><button id="login-button" type="submit">Visa statistik</button></div>
+    <p class="muted">Nyckeln används bara medan sidan är öppen.</p>
+  </form>
+  <p id="status" role="status" aria-live="polite"></p>
+  <noscript>Aktivera JavaScript för att visa statistiken.</noscript>
+  <div id="dashboard" hidden>
+    <div class="period"><p id="period"></p><p id="updated" class="muted"></p></div>
+    <section class="metrics" aria-label="Översikt">
+      <article class="panel metric"><h2>Unika IP-adresser totalt</h2><strong id="ips-ever"></strong><p>Alla sparade resultat</p></article>
+      <article class="panel metric"><h2>Unika IP-adresser senaste veckan</h2><strong id="ips-week"></strong><p>Sex föregående dagar och idag</p></article>
+      <article class="panel metric"><h2>Inskickade resultat senaste veckan</h2><strong id="scores-week"></strong><p id="missing-ips">Inklusive anonyma resultat</p></article>
+    </section>
+    <section class="panel table-panel" aria-labelledby="latest-title">
+      <div class="section-heading"><h2 id="latest-title">De 10 senast spelade spelen</h2><p>Senaste inskickade resultat, oavsett datum</p></div>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Senaste resultaten"><table>
+        <thead><tr><th scope="col">Tid</th><th scope="col">Namn</th><th scope="col">IP-adress</th><th scope="col">Spel</th><th scope="col">Övning</th><th scope="col">Svårighet</th><th scope="col" class="number">Poäng</th></tr></thead>
+        <tbody id="latest"></tbody>
+      </table></div>
+    </section>
+    <section class="charts-section" aria-labelledby="charts-title">
+      <div class="section-heading"><h2 id="charts-title">Inskickade resultat per dag</h2><p>Senaste veckan · Idag är en pågående dag</p></div>
+      <div class="charts">
+        <article class="panel chart-panel"><h3>Fördelat på IP-adress</h3><div id="chart-ip"></div></article>
+        <article class="panel chart-panel"><h3>Fördelat på spel</h3><div id="chart-game"></div></article>
+        <article class="panel chart-panel"><h3>Fördelat på övning</h3><div id="chart-exercise"></div></article>
+      </div>
+    </section>
+    <section class="panel table-panel" aria-labelledby="ips-title">
+      <div class="section-heading"><h2 id="ips-title">Användarnamn per IP-adress</h2><p>De 20 mest aktiva IP-adresserna senaste veckan · Antal resultat efter varje namn</p></div>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Användarnamn per IP"><table>
+        <thead><tr><th scope="col">Nr</th><th scope="col">IP-adress</th><th scope="col">Användarnamn</th><th scope="col" class="number">Resultat</th><th scope="col">Senast aktiv</th></tr></thead>
+        <tbody id="top-ips"></tbody>
+      </table></div>
+    </section>
+  </div>
+</main>
+</body>
+</html>

@@ -23,6 +23,9 @@ ON highscores (leaderboard_key, score DESC, created_at ASC);
 -- filtering retired exercises/invalid difficulties directly from the index.
 CREATE INDEX IF NOT EXISTS idx_highscores_game
 ON highscores (game, game_version, score DESC, created_at ASC, submission_id ASC, exercise, difficulty);
+-- Administrator statistics: weekly ranges/latest ten, and IP counts/name lookups.
+CREATE INDEX IF NOT EXISTS idx_highscores_created ON highscores (created_at DESC, submission_id DESC);
+CREATE INDEX IF NOT EXISTS idx_highscores_ip_created ON highscores (ip, created_at);
 
 -- A short-lived counter shared by all Worker instances, not an in-memory limit.
 CREATE TABLE IF NOT EXISTS score_rate_limits (

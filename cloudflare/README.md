@@ -5,6 +5,33 @@ The website remains on GitHub Pages. No API token belongs in the frontend.
 
 ## Update the existing installation
 
+### Administrator statistics
+
+Run [add-statistics-indexes.sql](add-statistics-indexes.sql) in the existing D1
+console, then deploy the complete generated [worker.mjs](worker.mjs), keeping
+the **DB** binding. In the Worker's **Settings → Variables and Secrets**, add
+**STATS_ADMIN_KEY** as a secret: use a randomly generated password of at least
+32 characters. Open [statistics.html](https://jakobrogstadius.github.io/Skolarkaden/statistics.html)
+and enter that key. No key is committed or stored by the page. GitHub updates
+do not deploy the Worker. The index SQL is safe to repeat and preserves all rows.
+
+The private `/admin/stats` endpoint requires `Authorization: Bearer <key>` and
+returns `Cache-Control: no-store`. Without a configured key it stays disabled.
+The page shows the latest ten submissions, all-time and weekly distinct nonempty
+IPs, daily stacked charts grouped by IP/game/exercise, and the top 20 IPs
+with username counts from the same week. There are three charts, each covering
+the same seven days. The week is six previous calendar days plus today in
+Europe/Stockholm, including daylight-saving changes. Today ends at refresh time.
+All versions, anonymous scores and retired exercises count. Missing IPs count
+as results but not unique IPs. IP chart groups beyond the top ten are combined
+visually; its expandable table includes every group. Tied IP totals are ordered
+by latest submission, then IP. Only submitted scores can be reported.
+
+The date index supports recent ranges and the latest ten; the IP/date index
+supports distinct IP counts and username lookups. All-time distinct counting
+still reads the IP index. No scheduled jobs or new tracking fields are added.
+The existing public `/stats` and `/scores` endpoints do not expose IPs.
+
 ### Indexed score dimensions
 
 Run [add-score-dimensions.sql](add-score-dimensions.sql) in **D1 → skolarkaden →
