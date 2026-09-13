@@ -10,8 +10,8 @@ The website remains on GitHub Pages. No API token belongs in the frontend.
 Run [add-statistics-indexes.sql](add-statistics-indexes.sql) in the existing D1
 console, then deploy the complete generated [worker.mjs](worker.mjs), keeping
 the **DB** binding. In the Worker's **Settings → Variables and Secrets**, add
-**STATS_ADMIN_KEY** as a secret: use a randomly generated password of at least
-32 characters. Open [statistics.html](https://jakobrogstadius.github.io/Skolarkaden/statistics.html)
+**STATS_ADMIN_KEY** as a secret: choose a password or passphrase of at least
+12 characters. Open [statistics.html](https://jakobrogstadius.github.io/Skolarkaden/statistics.html)
 and enter that key. No key is committed or stored by the page. GitHub updates
 do not deploy the Worker. The index SQL is safe to repeat and preserves all rows.
 

@@ -44,6 +44,7 @@ const descendants=node=>[node,...node.children.flatMap(descendants)];
   const chart=get('chart-ip'),legend=chart.children.find(node=>node.className==='legend');assert.equal(legend.children.length,11);assert.match(legend.textContent,/Övriga IP-adresser2/);
   assert.equal(descendants(chart).find(node=>node.tagName==='tbody').children.length,13,'expandable table retains all twelve IPs and the total');
   status=503;result={error:'statistics_not_configured'};await click('refresh');assert.match(get('status').textContent,/inte aktiverad/);assert.equal(get('dashboard').hidden,false,'refresh failure retains the timestamped previous data');
+  result={error:'statistics_key_too_short'};await click('refresh');assert.equal(get('status').textContent,'Administratörsnyckeln på servern måste vara minst 12 tecken.');
   status=401;result={error:'unauthorized'};await click('refresh');assert.equal(get('dashboard').hidden,true);assert.equal(get('login').hidden,false);assert.equal(get('latest').children.length,0);assert.match(get('status').textContent,/Fel administratörsnyckel/);assert.equal(get('login-button').disabled,false);
   status=200;result={days,generated_at:'2026-09-13T10:00:00Z',unique_ips_ever:0,unique_ips_week:0,scores_week:0,scores_without_ip_week:0,latest:[],daily:[],top_ips:[]};
   await login();assert.equal(get('scores-week').textContent,'0');assert.match(get('latest').textContent,/Inga resultat/);assert.match(get('chart-ip').textContent,/Inga inskickade/);

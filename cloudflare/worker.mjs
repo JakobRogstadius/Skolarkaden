@@ -323,7 +323,8 @@ export default {
     try {
       if (admin) {
         if (request.method !== 'GET') return reply({ error: 'method_not_allowed' }, 405, { Allow: 'GET, OPTIONS' });
-        if (typeof env.STATS_ADMIN_KEY !== 'string' || env.STATS_ADMIN_KEY.length < 32) return reply({ error: 'statistics_not_configured' }, 503);
+        if (typeof env.STATS_ADMIN_KEY !== 'string' || !env.STATS_ADMIN_KEY.length) return reply({ error: 'statistics_not_configured' }, 503);
+        if (env.STATS_ADMIN_KEY.length < 12) return reply({ error: 'statistics_key_too_short' }, 503);
         if (!await authorizedStatistics(request, env.STATS_ADMIN_KEY)) return reply({ error: 'unauthorized' }, 401, { 'WWW-Authenticate': 'Bearer' });
         return reply(await statistics(env.DB));
       }

@@ -94,7 +94,7 @@ async function load(){
     const data=await response.json();if(current!==generation)return;
     if(!response.ok){
       if(response.status===401){clear();$('status').className='error';$('status').textContent='Fel administratörsnyckel. Försök igen.';$('admin-key').focus();return;}
-      failure=data.error==='statistics_not_configured'?'Statistiken är inte aktiverad på servern.':response.status===404?'Servern behöver uppdateras för att visa statistiken.':failure;
+      failure=data.error==='statistics_not_configured'?'Statistiken är inte aktiverad på servern.':data.error==='statistics_key_too_short'?'Administratörsnyckeln på servern måste vara minst 12 tecken.':response.status===404?'Servern behöver uppdateras för att visa statistiken.':failure;
       throw new Error('statistics_unavailable');
     }
     render(data);$('login').hidden=true;$('dashboard').hidden=false;$('actions').hidden=false;$('status').textContent='';

@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{mock}=require('node:test');
 const {DatabaseSync}=require('node:sqlite'),read=file=>fs.readFileSync(path.join(__dirname,'..',file),'utf8');
 const db=new DatabaseSync(':memory:');db.exec(read('cloudflare/schema.sql'));
-const key='statistics-test-secret-with-at-least-32-characters',origin='https://jakobrogstadius.github.io',plans=[];
+const key='Testkey123!?',origin='https://jakobrogstadius.github.io',plans=[];
 let queries=0;
 const DB={prepare(sql){queries++;let values=[];return {
   bind(...params){assert(params.length<=100,'D1 bind limit');values=params;return this;},
@@ -15,8 +15,10 @@ const insert=(id,date,ip,name='ADA',game='city',exercise='swedish',version='v2')
   const call=(headers={},env={DB,STATS_ADMIN_KEY:key},route='/admin/stats',method='GET')=>worker.fetch(new Request('https://example.workers.dev'+route,{method,headers:{Origin:origin,...headers}}),env);
   const get=async()=>{const response=await call({Authorization:'Bearer '+key});assert.equal(response.status,200);assert.equal(response.headers.get('Cache-Control'),'no-store');assert.match(response.headers.get('Vary'),/Authorization/);return response.json();};
   for(const authorization of ['',key,'Bearer wrong','Bearer '+key+'x','Bearer '+key.slice(1)])assert.equal((await call({Authorization:authorization})).status,401);
-  assert.equal((await call({}, {DB})).status,503);
-  assert.equal((await call({}, {DB,STATS_ADMIN_KEY:'short'})).status,503);
+  for(const env of [{DB},{DB,STATS_ADMIN_KEY:''}]){
+    const missing=await call({},env);assert.equal(missing.status,503);assert.deepEqual(await missing.json(),{error:'statistics_not_configured'});
+  }
+  const short=await call({}, {DB,STATS_ADMIN_KEY:key.slice(1)});assert.equal(short.status,503);assert.deepEqual(await short.json(),{error:'statistics_key_too_short'});
   assert.equal((await call({Authorization:'Bearer '+key,Origin:'https://unrelated.example'})).status,403);
   assert.equal((await call({},undefined,'/admin/stats?key='+key)).status,401,'keys in URLs do not authenticate');
   assert.equal((await call({Authorization:'Bearer '+key},undefined,'/admin/stats','POST')).status,405);
