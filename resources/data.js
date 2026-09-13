@@ -119,13 +119,18 @@
   SC.chineseSpeechPinyin=function(value){
     let v=SC.speechNormalize(value);
     if(/^\d+$/.test(v)){const n=Number(v);if(n>10)return null;v=SC.numberName(n,'zh-CN');}
-    // ASR sometimes mixes digits and Hanzi, e.g. 1天 for 一天.
-    if(/[\p{Script=Han}]/u.test(v))v=v.replace(/\d+/g,n=>Number(n)<=10?SC.numberName(Number(n),'zh-CN'):n).replace(/\s/g,'');
-    const phrase=SC.mandarinCompoundHints?.[v];if(phrase)return SC.tonelessPinyin(phrase);
-    if(/^\p{Script=Han}+$/u.test(v)){
-      const readings=Array.from(v,c=>SC.mandarinPinyin[c]);return readings.every(Boolean)?readings.join(''):null;
+    // Recognition can mix Hanzi, pinyin and punctuation within one word.
+    // Resolve known phrases first (e.g. 家長), then concatenate sound segments.
+    v=v.replace(/u:/g,'ü').replace(/v/g,'ü').normalize('NFD').replace(/[\u0300\u0301\u0304\u030c]/g,'').normalize('NFC');
+    const compact=v.replace(/[\s\p{P}]/gu,'');
+    const phrase=SC.mandarinCompoundHints?.[compact];if(phrase)return SC.tonelessPinyin(phrase);
+    if(/[\p{Script=Han}]/u.test(v)){
+      const parts=v.match(/\p{Script=Han}|[0-9]+|[a-züê\p{M}]+[0-5]?/gu)||[];
+      if(v.replace(/\p{Script=Han}|[0-9]+|[a-züê\p{M}]+[0-5]?|[\s\p{P}]/gu,''))return null;
+      const readings=parts.map(part=>SC.mandarinPinyin[part]||(/^\d+$/.test(part)?SC.chineseSpeechPinyin(part):SC.tonelessPinyin(part)));
+      return readings.length&&readings.every(Boolean)?readings.join(''):null;
     }
-    return SC.tonelessPinyin(v);
+    return SC.tonelessPinyin(v.replace(/[,;.!?，。！？、]+/g,' '));
   };
   // Standalone Zhuyin names, not keyboard keys or arbitrary syllable initials.
   // Mandarin ASR normally returns Hanzi, e.g. 波坡摸佛, rather than ㄅㄆㄇㄈ.

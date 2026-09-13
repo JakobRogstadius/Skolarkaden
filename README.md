@@ -162,6 +162,8 @@ Spelet vinns när alla ägg och kryp är döda. Det förloras först när hela b
 
 ## Mikrofon
 
+Kinesiskt tal matchas tillåtande mot synliga uppgifter med tonlös pinyin. Appen söker efter hela svar inuti transkriptionen och jämför även taltjänstens alternativa transkriptioner. Hanzi, pinyin och siffror kan blandas; skiljetecken och gränser mellan talresultat hindrar inte flerteckenord. Sammanfogad pinyin delas i hela stavelser. Ett komplett längre ord prioriteras, men ett synligt enstaka tecken skickas direkt om det är det enda kompletta svaret hittills. Omatchade fragment ignoreras, även när taltjänsten markerar dem som slutliga, och får inte ändra ett redan godkänt svar till ett felsvar. Historik och köregler hindrar att alternativa transkriptioner eller senare rättningar utlöser samma handling igen. Gamla oförändrade transkriptioner får inte besvara nytillkomna uppgifter. Detta gäller kinesiska tecken-/ordövningar; tangentbord, bopomofo, övriga språk och matematik behåller sina regler. Val av annan transkription visas som `chinese-alternative` i felsökningsloggen.
+
 Röstläget använder alltid webbläsarens taltjänst över internet (`processLocally = false`). Lokala språkpaket och valet av talmotor är borttagna.
 
 Appens talläge kräver stöd för `SpeechRecognition.start(audioTrack)` och kontrollerar att Chrome är minst version 135. Mikrofonens godkända grundanslutning återanvänds mellan talavsnitt och pauser. Ett nytt tillstånd kan behövas när sidan öppnas på nytt eller mikrofonen uttryckligen stängts av.
