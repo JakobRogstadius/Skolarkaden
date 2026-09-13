@@ -8,10 +8,10 @@ const { mathExercises, languageExercises } = globalThis.SkolarkadenHighscorePoli
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',
   'chineseSimpl1', 'chineseSimpl2', 'chineseSimpl3', 'chineseSimpl4',
-  ...mathExercises, ...languageExercises]);
+  ...mathExercises, ...languageExercises, 'homework']);
 const PACES = new Set(['gentle', 'steady', 'brave']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1, score_dimensions: 1, admin_statistics: 1 };
+const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1, score_dimensions: 1, admin_statistics: 1, homework: 1, homework_counts: 1 };
 const EXERCISE_RATING_METHOD = 'top-five-game-percentiles-v1';
 const LANGUAGES = new Set(['sv-SE', 'en-US', 'zh-TW', 'zh-CN']);
 
@@ -42,7 +42,24 @@ function settingsFor(body, board) {
   if (keys !== null && (exercise !== 'letters' || !Array.isArray(keys) || keys.length < 1 || keys.length > 37 ||
       keys.some(key => typeof key !== 'string' || !/^[\p{L}]$/u.test(key)))) throw new Error('invalid_settings');
   settings.letter_keys = keys;
+  if (exercise === 'homework') {
+    if (typeof raw.homework_id !== 'string' || !raw.homework_id.trim() || raw.homework_id.length > 128) throw new Error('invalid_settings');
+    settings.homework_id = raw.homework_id;
+  } else if (raw.homework_id !== undefined) throw new Error('invalid_settings');
   return JSON.stringify(settings);
+}
+
+async function homeworkCounts(db) {
+  // A saved round is one completion. submission_id makes retries idempotent.
+  // Historical rows may lack settings or contain invalid JSON; expose only totals.
+  const { results } = await db.prepare(`
+    SELECT homework_id AS id, count(*) AS completions FROM (
+      SELECT CASE WHEN json_valid(settings_json) THEN json_extract(settings_json, '$.homework_id') END AS homework_id
+      FROM highscores WHERE exercise = 'homework'
+    ) WHERE typeof(homework_id) = 'text' AND length(homework_id) BETWEEN 1 AND 128 AND trim(homework_id) <> ''
+    GROUP BY homework_id
+  `).all();
+  return results;
 }
 
 async function readBody(request) {
@@ -245,7 +262,8 @@ export default {
       if (url.pathname === '/stats') {
         if (request.method !== 'GET') return reply({ error: 'method_not_allowed' }, 405, { Allow: 'GET, OPTIONS' });
         const group = url.searchParams.get('group');
-        if (!['games', 'exercises'].includes(group)) return reply({ error: 'invalid_group' }, 400);
+        if (!['games', 'exercises', 'homework'].includes(group)) return reply({ error: 'invalid_group' }, 400);
+        if (group === 'homework') return reply({ group, entries: await homeworkCounts(env.DB) });
         return reply({ group, ...(group === 'exercises' ? { ranking_method: EXERCISE_RATING_METHOD } : {}), entries: await popularity(env.DB, group) }, 200, { 'Cache-Control': 'public, max-age=60' });
       }
       if (url.pathname !== '/scores') return reply({ error: 'not_found' }, 404);

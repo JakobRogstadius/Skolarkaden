@@ -92,7 +92,7 @@
     // Resolve known phrases first (e.g. 家長), then concatenate sound segments.
     v=v.replace(/u:/g,'ü').replace(/v/g,'ü').normalize('NFD').replace(/[\u0300\u0301\u0304\u030c]/g,'').normalize('NFC');
     const compact=v.replace(/[\s\p{P}]/gu,'');
-    const phrase=SC.mandarinCompoundHints?.[compact];if(phrase)return SC.tonelessPinyin(phrase);
+    const phrase=SC.homeworkReadings?.[compact]||SC.mandarinCompoundHints?.[compact];if(phrase)return SC.tonelessPinyin(phrase);
     if(/[\p{Script=Han}]/u.test(v)){
       const parts=v.match(/\p{Script=Han}|[0-9]+|[a-züê\p{M}]+[0-5]?/gu)||[];
       if(v.replace(/\p{Script=Han}|[0-9]+|[a-züê\p{M}]+[0-5]?|[\s\p{P}]/gu,''))return null;
@@ -148,6 +148,7 @@
     if(v===SC.normalize(item.answer))return true;
     if(SC.isMath(mode)){const n=SC.spokenNumber(v,lang,source);return n!==null&&String(n)===item.answer;}
     if(SC.isChinese(mode)){
+      if(mode==='homework'&&SC.tonelessPinyin(v)&&SC.tonelessPinyin(v)===SC.tonelessPinyin(item.hint))return true;
       if(item.aliases?.some(a=>SC.normalize(a)===v))return true;
       if(source==='speech'){
         const heard=SC.chineseSpeechPinyin(v),expected=SC.tonelessPinyin(item.hint)||SC.chineseSpeechPinyin(item.answer);

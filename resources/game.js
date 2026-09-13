@@ -90,12 +90,12 @@
   // The label's first appearance starts the clock, including walkers entering onscreen.
   SC.noteTargetAppearance=function(game){for(const target of game.getTargets())target.appearedAt??=game.clock;};
   SC.pinyinHints=function(game){
-    const hints=new Set();if(!SC.isChinese(game.mode)&&!SC.isWordPair(game.mode))return hints;
+    const hints=new Set();if(!SC.isChinese(game.mode)&&!SC.isWordPair(game.mode)&&game.mode!=='homework')return hints;
     const targets=game.getTargets(),available=new Set(game.getAvailableTargets()),handled=new Set(targets.filter(t=>!available.has(t)));
     // Reserve exactly one remaining target per queued answer, using the speech aliases too.
     for(const entry of game.queue.items){const target=targets.find(t=>!handled.has(t)&&SC.matches(entry.text,t.item,game.mode,game.lang,entry.source));if(target)handled.add(target);}
     for(const target of targets){
-      if(!target.item.hint)continue;
+      if(!target.item.hint&&!target.item.translation)continue;
       if(game.state==='playing'&&target.appearedAt!==undefined&&game.clock-target.appearedAt>=5-1e-8&&!handled.has(target))target.pinyinRevealed=true;
       // Keep a revealed hint until the task disappears; queue changes must not resize it.
       if(target.pinyinRevealed)hints.add(target);

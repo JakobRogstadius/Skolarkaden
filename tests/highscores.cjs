@@ -105,6 +105,7 @@ class Element extends EventTarget{
   vm.runInContext(read('resources/data.js'),context);
   vm.runInContext(read('resources/language-exercises-data.js'),context);
   vm.runInContext(read('resources/language-exercises.js'),context);
+  vm.runInContext(read('resources/homework.js'),context);
   vm.runInContext(read('resources/highscore-policy.js'),context);vm.runInContext(read('resources/highscores.js'),context);
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),'v2:city');

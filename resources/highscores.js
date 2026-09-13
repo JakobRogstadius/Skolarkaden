@@ -9,7 +9,7 @@ const storedKey=selection=>boardKey(selection)+':'+selection.mode+':'+selection.
 const scoreSettings=s=>({game_version:policy.versions[s.kind],game:s.kind,exercise:s.mode,difficulty:s.pace,
   input_mode:s.input==='typing'?'keyboard':s.input==='browser'?'voice':null,
   spoken_language:s.spokenLanguage||s.lang||null,exercise_language:s.lang||null,
-  uppercase:typeof s.uppercase==='boolean'?s.uppercase:null,letter_keys:s.letterKeys||null,
+  uppercase:typeof s.uppercase==='boolean'?s.uppercase:null,letter_keys:s.letterKeys||null,...(s.homeworkId?{homework_id:s.homeworkId}:{}),
   sound_enabled:typeof s.soundEnabled==='boolean'?s.soundEnabled:null,reduced_motion:typeof s.reducedMotion==='boolean'?s.reducedMotion:null});
 const difficultyName=pace=>Array.from($('pace').options).find(option=>option.value===pace)?.textContent||'—';
 const displayName=name=>Array.from(String(name).normalize('NFC').toUpperCase()).slice(0,10).join('');
@@ -43,7 +43,7 @@ async function readBoard(selection,result){
   const first=await read(key);
   if(first.leaderboard===group||!first.leaderboard)return first;
   // Preserve compatibility during deployment: combine older exercise boards too.
-  const exercises=Object.keys(SC.modes),paces=['gentle','steady','brave'],parts=[];
+  const exercises=Object.keys(SC.modes).filter(mode=>!SC.modes[mode].hidden||mode===selection.mode),paces=['gentle','steady','brave'],parts=[];
   for(let offset=0;offset<exercises.length;offset+=4){
     const batch=await Promise.all(exercises.slice(offset,offset+4).map(async exercise=>{
       const exerciseKey=group+':'+exercise,probe=exercise===selection.mode?first:await read(exerciseKey+':'+selection.pace);

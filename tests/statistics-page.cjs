@@ -17,7 +17,7 @@ const context=vm.createContext({console,Intl,Date,URL,Event,EventTarget,AbortCon
   localStorage:{getItem(){throw Error('statistics must not use storage');},setItem(){throw Error('statistics must not persist keys or IPs');}},
   sessionStorage:{getItem(){throw Error('statistics must not use storage');},setItem(){throw Error('statistics must not persist keys or IPs');}}
 });
-for(const file of ['resources/data.js','resources/language-exercises-data.js','resources/language-exercises.js','resources/statistics.js'])vm.runInContext(read(file),context);
+for(const file of ['resources/data.js','resources/language-exercises-data.js','resources/language-exercises.js','resources/homework.js','resources/statistics.js'])vm.runInContext(read(file),context);
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
 const click=async id=>{get(id).dispatchEvent(new Event('click'));await settle();};
 const login=async()=>{get('admin-key').value='test-key-not-a-real-credential';get('login').dispatchEvent(new Event('submit',{cancelable:true}));await settle();};

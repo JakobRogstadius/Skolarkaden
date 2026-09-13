@@ -1,0 +1,27 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{DatabaseSync}=require('node:sqlite'),{webcrypto}=require('node:crypto');
+const db=new DatabaseSync(':memory:');db.exec(fs.readFileSync(path.join(__dirname,'../cloudflare/schema.sql'),'utf8'));
+const DB={prepare(sql){let params=[];return {bind(...values){params=values;return this;},async all(){return {results:db.prepare(sql).all(...params)};},async first(){return db.prepare(sql).get(...params)||null;},async run(){return {meta:{changes:Number(db.prepare(sql).run(...params).changes)}};}};}};
+(async()=>{
+  const worker=(await import('../cloudflare/worker.mjs')).default;
+  const call=(method,url,body)=>worker.fetch(new Request('https://example.workers.dev'+url,{method,headers:{Origin:'https://jakobrogstadius.github.io','Content-Type':'application/json','CF-Connecting-IP':'192.0.2.1'},...(body?{body:JSON.stringify(body)}:{})}),{DB});
+  const payload=id=>({submission_id:webcrypto.randomUUID(),leaderboard_key:'v2:city:homework:gentle',player_name:'TEST',score:100,settings:{homework_id:id,input_mode:'keyboard',exercise_language:'zh-TW'}});
+  const first=payload('lesson-1');assert.equal((await call('POST','/scores',first)).status,201);
+  assert.equal((await call('POST','/scores',first)).status,200,'a retry is one completion');
+  const settings=JSON.parse(db.prepare('SELECT settings_json FROM highscores').get().settings_json);
+  assert.equal(settings.homework_id,'lesson-1');assert.equal(settings.exercise,'homework');
+  assert.equal((await call('POST','/scores',{...first,settings:{...first.settings,homework_id:'lesson-2'}})).status,409,'a retry cannot change lessons');
+  assert.equal((await call('POST','/scores',{...payload('lesson-1'),leaderboard_key:'v2:food:homework:brave',settings:{homework_id:'lesson-1',input_mode:'voice'}})).status,201);
+  assert.equal((await call('POST','/scores',payload('lesson-2'))).status,201);
+  for(const id of [null,undefined,'',' ','x'.repeat(129),123,{},[]])assert.equal((await call('POST','/scores',payload(id))).status,400);
+  assert.equal((await call('POST','/scores',{...payload('lesson-1'),leaderboard_key:'v2:city:swedish:gentle'})).status,400);
+  const insert=db.prepare('INSERT INTO highscores(submission_id,leaderboard_key,player_name,score,settings_json) VALUES(?,?,?,?,?)');
+  for(const settings of [null,'{','{}','{"homework_id":2}','{"homework_id":" "}','{"homework_id":null}'])insert.run(webcrypto.randomUUID(),'v1:city:homework:gentle','ANONYM',0,settings);
+  insert.run(webcrypto.randomUUID(),'v1:city:homework:gentle','OLD',0,'{"homework_id":"lesson-1"}');
+  insert.run(webcrypto.randomUUID(),'v2:city:swedish:gentle','TEST',0,'{"homework_id":"lesson-1"}');
+  const response=await call('GET','/stats?group=homework'),data=await response.json();assert.equal(response.status,200);assert.equal(response.headers.get('Cache-Control'),'no-store');
+  assert.deepEqual(data,{group:'homework',entries:[{id:'lesson-1',completions:3},{id:'lesson-2',completions:1}]},'only homework totals, including prior versions, are public');
+  const board=await (await call('GET','/scores?leaderboard=v2:city:homework:gentle')).json();assert(board.scores.some(row=>row.exercise==='homework'));assert(board.scores.every(row=>!('homework_id'in row)&&!('settings_json'in row)));
+  console.log('PASS homework counts: saved lesson IDs, idempotent retries, all games/versions/inputs, validation and aggregate-only public data.');
+  db.close();
+})().catch(error=>{console.error(error);process.exitCode=1;});
