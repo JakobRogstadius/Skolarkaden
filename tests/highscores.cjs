@@ -97,11 +97,13 @@ class Element extends EventTarget{
   // reuse one ID/payload and results remain tied to the completed game's board.
   const elements=new Map(),get=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
   get('pace').options=Array.from(read('index.html').match(/<select id="pace">([\s\S]*?)<\/select>/)[1].matchAll(/<option value="([^"]+)">([^<]+)<\/option>/g),match=>({value:match[1],textContent:match[2]}));
-  const nicknameStorage=new Map([['skolarkaden-nickname-v1','OLD NAME']]);
-  let posts=[],failOnce=false,unsupported=false,legacyBoards=null,boardData={scores:[],rank:1};
+  const nicknameStorage=new Map([['skolarkaden-nickname-v1','OLD NAME']]),pageEvents=new EventTarget(),documentEvents=new EventTarget();
+  let posts=[],postOptions=[],holdPost=null,failOnce=false,unsupported=false,legacyBoards=null,boardData={scores:[],rank:1};
   const context=vm.createContext({Starlight:{},console,crypto:webcrypto,Event,EventTarget,setTimeout,clearTimeout,AbortController,
-    document:{get activeElement(){return focused;},getElementById:get,createElement:()=>new Element()},localStorage:{getItem:key=>nicknameStorage.get(key),setItem:(key,value)=>nicknameStorage.set(key,value),removeItem:key=>nicknameStorage.delete(key)},
-    fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));if(failOnce){failOnce=false;throw new Error('network');}return Response.json({ok:true});}if(legacyBoards){const key=new URL(url).searchParams.get('leaderboard');assert.equal(key.split(':').length,4);return Response.json({leaderboard:key,scores:key.split(':')[2]==='swedish'?legacyBoards[key.split(':')[3]]:[]});}return unsupported?Response.json({error:'invalid_leaderboard'},{status:400}):Response.json(boardData);}});
+    addEventListener:pageEvents.addEventListener.bind(pageEvents),
+    document:Object.assign(documentEvents,{getElementById:get,createElement:()=>new Element()}),localStorage:{getItem:key=>nicknameStorage.get(key),setItem:(key,value)=>nicknameStorage.set(key,value),removeItem:key=>nicknameStorage.delete(key)},
+    fetch:async(url,options)=>{if(options.method==='POST'){posts.push(JSON.parse(options.body));postOptions.push(options);if(holdPost)return await holdPost;if(failOnce){failOnce=false;throw new Error('network');}return Response.json({ok:true});}if(legacyBoards){const key=new URL(url).searchParams.get('leaderboard');assert.equal(key.split(':').length,4);return Response.json({leaderboard:key,scores:key.split(':')[2]==='swedish'?legacyBoards[key.split(':')[3]]:[]});}return unsupported?Response.json({error:'invalid_leaderboard'},{status:400}):Response.json(boardData);}});
+  Object.defineProperty(context.document,'activeElement',{get:()=>focused});
   vm.runInContext(read('resources/data.js'),context);
   vm.runInContext(read('resources/language-exercises-data.js'),context);
   vm.runInContext(read('resources/language-exercises.js'),context);
@@ -121,6 +123,7 @@ class Element extends EventTarget{
   assert.equal(context.Starlight.highscoreBoardKey({...selection,mode:'english'}),context.Starlight.highscoreBoardKey(selection));
   assert.equal(context.Starlight.highscoreBoardKey({...selection,pace:'brave'}),context.Starlight.highscoreBoardKey(selection));
   const ui=new context.Starlight.Highscores({getSelection:()=>selection});
+  assert.equal(get('score-name').value,'OLD NAME','restore the last name from earlier visits');
   const nameInput=get('score-name');
   const inputName=(value,start=value.length,end=start,direction='none')=>{
     nameInput.value=value;nameInput.setSelectionRange(start,end,direction);nameInput.dispatchEvent(new Event('input'));
@@ -150,7 +153,7 @@ class Element extends EventTarget{
   legacyBoards.brave=Array.from({length:10},()=>({score:300,player_name:'D'}));await ui.load(ui.view);assert.equal(ui.data.rank,null,'limited legacy rows cannot establish a low rank');legacyBoards=null;
   ui.begin(selection);
   ui.begin(selection);unsupported=true;await ui.open({...selection,kind:'home'});assert.equal(get('scores-status').textContent,'Topplistan är inte redo för det här spelet ännu.');unsupported=false;
-  assert.equal(get('score-name').value,'');assert.equal(nicknameStorage.size,0,'discard legacy remembered names');
+  assert.equal(get('score-name').value,'ABSSCD');assert.equal(nicknameStorage.get('skolarkaden-nickname-v1'),'ABSSCD','remember the last edited name even before a submission');
   ui.begin(selection);ui.finish(200);ui.open(selection,ui.result);get('score-name').value='f.u.c.k';await ui.submit();
   assert.equal(posts.length,0);assert.equal(get('score-status').textContent,'Resultatet är sparat.');
   ui.begin(selection);ui.finish(300);ui.open(selection,ui.result);get('score-name').value='Åsa';failOnce=true;await ui.submit();
@@ -161,9 +164,9 @@ class Element extends EventTarget{
   await ui.submit();assert.equal(posts.length,2,'saved result cannot be submitted again');
   // Display top ten plus the actual rank below them; never post merely for opening.
   boardData={scores:Array.from({length:10},(_,i)=>({player_name:'PLAYER',score:1000-i})),rank:38,saved:false};
-  ui.begin(selection);ui.finish(12);await ui.open(selection,ui.result);assert.equal(get('score-name').value,'','new round never reuses the previous name');assert.equal(nicknameStorage.size,0,'submitted names are not remembered');assert.equal(posts.length,2);assert.equal(get('end-scores-list').children.length,11);assert.equal(get('end-scores-list').children[10].children[0].textContent,'38');
+  ui.begin(selection);ui.finish(12);await ui.open(selection,ui.result);assert.equal(get('score-name').value,'ÅSA','prefill the previous name for a new round');assert.equal(nicknameStorage.get('skolarkaden-nickname-v1'),'ÅSA');assert.equal(posts.length,2);assert.equal(get('end-scores-list').children.length,11);assert.equal(get('end-scores-list').children[10].children[0].textContent,'38');
   boardData={...boardData,rank:3};await ui.load(ui.view);assert.equal(get('end-scores-list').children.length,10);assert.equal(get('end-scores-list').children[2].className,'board-row player-row');assert.equal(get('end-scores-list').children[2].children[3].textContent,'Lätt');assert.equal(get('end-scores-list').children[2].children[2].textContent,'Svenska ord - korta');assert.equal(get('end-scores-list').children[2].children[4].textContent,'12');
-  let continued=false;await ui.leave(()=>{continued=true;});assert(continued);assert.equal(posts.at(-1).player_name,'ANONYM');
+  inputName('');let continued=false;await ui.leave(()=>{continued=true;});assert(continued);assert.equal(posts.at(-1).player_name,'ANONYM');assert.equal(nicknameStorage.get('skolarkaden-nickname-v1'),'','clearing the name also clears the remembered value');
   ui.begin(selection);ui.finish(1);await ui.open(selection,ui.result);const count=posts.length;ui.dismiss();assert.equal(posts.length,count,'closing without action never posts');
   ui.begin(selection);ui.finish(7);await ui.open(selection,ui.result);get('score-name').value='BOSSE';failOnce=true;continued=false;await ui.leave(()=>{continued=true;});assert.equal(continued,false);assert.equal(ui.result.saved,false);await ui.leave(()=>{continued=true;});assert(continued);assert.deepEqual(posts.at(-1),posts.at(-2));
   // A saved top-ten player occupies exactly one ranked row, even with duplicate names/scores.
@@ -190,6 +193,37 @@ class Element extends EventTarget{
   get('score-form').dispatchEvent(new Event('submit',{cancelable:true}));await ui.pendingSave;assert.equal(posts.at(-1).player_name,'小明');
   ui.begin(selection);ui.finish(20);await ui.open(selection,ui.result);nameInput.value='.';
   await ui.leave(()=>{});assert.equal(ui.result.saved,true);assert.equal(posts.at(-1).player_name,'ANONYM','autofill without an input event is also cleaned');
+  // A page departure saves only completed results, using the same idempotent request as Enter/replay.
+  const depart=()=>pageEvents.dispatchEvent(new Event('pagehide')),returnToPage=()=>pageEvents.dispatchEvent(new Event('pageshow'));
+  ui.begin(selection);let countBeforeExit=posts.length;depart();await ui.pendingSave;assert.equal(posts.length,countBeforeExit,'an unfinished game cannot be submitted');returnToPage();
+  await ui.open(selection);depart();await ui.pendingSave;assert.equal(posts.length,countBeforeExit,'browsing a leaderboard cannot submit a score');returnToPage();
+  const homeworkSelection={...selection,mode:'homework',homeworkId:'zh-001',input:'browser',lang:'zh-TW'};
+  ui.begin(homeworkSelection);ui.finish(42);await ui.open(homeworkSelection,ui.result);nameInput.value='å.sa';
+  context.document.hidden=true;documentEvents.dispatchEvent(new Event('visibilitychange'));assert.equal(posts.length,countBeforeExit,'switching tabs must leave the name editable');assert.equal(nameInput.readOnly,false);
+  depart();const closingSave=ui.pendingSave;depart();await closingSave;
+  assert.equal(posts.length,countBeforeExit+1,'repeated departure events share one request');assert.equal(ui.result.saved,true);
+  const closingPayload=posts.at(-1),closingOptions=postOptions.at(-1);
+  assert.equal(closingPayload.player_name,'ÅSA');assert.equal(closingPayload.score,42);assert.equal(closingPayload.settings.homework_id,'zh-001');assert.equal(closingPayload.settings.input_mode,'voice');
+  assert.equal(closingOptions.keepalive,true);assert.equal(closingOptions.credentials,'omit');assert.equal(closingOptions.headers['Content-Type'],'application/json');
+  assert.equal(nicknameStorage.get('skolarkaden-nickname-v1'),'ÅSA');
+  assert.equal((await call('POST','/scores',closingPayload)).status,201,'departure payload works with the current Worker');assert.equal((await call('POST','/scores',closingPayload)).status,200);
+  assert.equal(db.prepare('SELECT count(*) AS n FROM highscores WHERE submission_id=?').get(closingPayload.submission_id).n,1,'server retries add only one record');
+  returnToPage();let resumed=false;await ui.leave(()=>{resumed=true;});assert(resumed);assert.equal(posts.length,countBeforeExit+1,'returning from the back/forward cache and replaying does not submit again');
+  ui.begin(selection);ui.finish(43);await ui.open(selection,ui.result);assert.equal(nameInput.value,'ÅSA');
+  let releasePost;holdPost=new Promise(resolve=>{releasePost=resolve;});countBeforeExit=posts.length;
+  get('score-form').dispatchEvent(new Event('submit',{cancelable:true}));const enteredSave=ui.pendingSave;depart();
+  assert.equal(ui.pendingSave,enteredSave);assert.equal(posts.length,countBeforeExit+1,'closing during an Enter submission does not create another request');assert.equal(postOptions.at(-1).keepalive,true);
+  releasePost(Response.json({ok:true}));holdPost=null;await enteredSave;assert.equal(ui.result.saved,true);returnToPage();
+  ui.begin(selection);ui.finish(44);await ui.open(selection,ui.result);inputName('Bosse');failOnce=true;depart();await ui.pendingSave;
+  assert.equal(ui.result.saved,false,'a failed departure request must not be reported as saved');const failedExit=posts.at(-1);returnToPage();
+  await ui.leave(()=>{});assert(ui.result.saved);assert.deepEqual(posts.at(-1),failedExit,'a returned page retries the original ID, name and settings');
+  ui.begin(selection);ui.finish(45);await ui.open(selection,ui.result);inputName('');depart();await ui.pendingSave;assert.equal(posts.at(-1).player_name,'ANONYM');returnToPage();
+  ui.begin(selection);ui.finish(46);await ui.open(selection,ui.result);nameInput.value='f.u.c.k';countBeforeExit=posts.length;depart();await ui.pendingSave;assert.equal(posts.length,countBeforeExit,'departure preserves the silent banned-name filter');returnToPage();
+  const storage=context.localStorage;context.localStorage={getItem(){throw Error('storage blocked');},setItem(){throw Error('storage blocked');}};
+  ui.begin(selection);inputName('Ny Åsa');ui.finish(47);await ui.open(selection,ui.result);await ui.submit();assert(ui.result.saved);
+  ui.begin(selection);ui.finish(48);await ui.open(selection,ui.result);assert.equal(nameInput.value,'NY ÅSA','blocked storage still remembers the name for this page session');
+  context.localStorage=storage;nicknameStorage.set('skolarkaden-nickname-v1','LISA');ui.begin(selection);ui.finish(49);await ui.open(selection,ui.result);assert.equal(nameInput.value,'LISA','a new round reads changes made by another tab');
+  inputName('Eva');await ui.load(ui.view);assert.equal(nameInput.value,'EVA','refreshing the scoreboard preserves the name being edited');
   // Popularity uses every saved round, not just the top ten or non-anonymous names.
   db.exec('DELETE FROM highscores');
   const emptyStats=await (await call('GET','/stats?group=games')).json();

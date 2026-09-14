@@ -18,7 +18,7 @@ get('pace').options=Array.from(html.match(/<select id="pace">([\s\S]*?)<\/select
 const games=Object.fromEntries([...html.matchAll(/<label class="game-card[^\"]*">[\s\S]*?name="game" value="([^"]+)"[\s\S]*?class="card-title">([^<]+)<\/span><\/label>/g)].map(([,id,name])=>[id,name]));
 assert.equal(Object.keys(games).length,9);
 let delayed=false,failStats=false,unavailableStats=false,oldStats=false;const pending=[],requests=[],requestOptions=[],posts=[];
-const context=vm.createContext({console,Event,EventTarget,crypto:webcrypto,AbortController,setTimeout,clearTimeout,
+const context=vm.createContext({console,Event,EventTarget,crypto:webcrypto,AbortController,setTimeout,clearTimeout,addEventListener(){},
   document:{getElementById:get,createElement:()=>new Element(),get activeElement(){return focused;}},localStorage:{removeItem(){}},
   fetch:async(url,options={})=>{
     const parsed=new URL(url);requests.push(parsed);requestOptions.push(options);

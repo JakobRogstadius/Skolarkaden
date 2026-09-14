@@ -1,7 +1,7 @@
-/* Shared scoreboard. Save only on Enter or an explicit replay/menu action. */
+/* Shared scoreboard. Save on Enter, replay/menu, or departure from the page. */
 (function(root){
 'use strict';
-const SC=root.Starlight, API='https://skolarkaden-api.jakob-rogstadius.workers.dev';
+const SC=root.Starlight, API='https://skolarkaden-api.jakob-rogstadius.workers.dev',nicknameKey='skolarkaden-nickname-v1';
 const $=id=>document.getElementById(id);
 const policy=root.SkolarkadenHighscorePolicy;
 const boardKey=selection=>[policy.versions[selection.kind],selection.kind].join(':');
@@ -61,12 +61,15 @@ class Highscores{
   constructor({getSelection,games={}}){
     this.getSelection=getSelection;this.run=null;this.result=null;this.view=0;this.readGeneration=0;
     this.games=games;this.pages=[...Object.keys(games),'games','exercises'];
-    $('score-name').value='';
-    try{localStorage.removeItem('skolarkaden-nickname-v1');}catch(_){}
+    this.lastName='';$('score-name').value=this.readName();
     let composing=false;
+    const edited=()=>{cleanNameInput();this.rememberName();};
     $('score-name').addEventListener('compositionstart',()=>{composing=true;});
-    $('score-name').addEventListener('compositionend',()=>{composing=false;cleanNameInput();});
-    $('score-name').addEventListener('input',e=>{if(!composing&&!e.isComposing)cleanNameInput();});
+    $('score-name').addEventListener('compositionend',()=>{composing=false;edited();});
+    $('score-name').addEventListener('input',e=>{if(!composing&&!e.isComposing)edited();});
+    // pagehide covers closing/navigation without submitting when merely switching tabs.
+    root.addEventListener('pagehide',()=>{this.departing=true;this.pendingSave ||= this.submit().finally(()=>{this.pendingSave=null;});});
+    root.addEventListener('pageshow',()=>{this.departing=false;});
     $('leaderboard-open').addEventListener('click',()=>this.open(this.getSelection()));
     $('scores-refresh').addEventListener('click',()=>this.load(this.view,true));
     $('scores-previous').addEventListener('click',()=>this.navigate(-1));
@@ -82,8 +85,13 @@ class Highscores{
       const index=controls.indexOf(document.activeElement);if(controls.length&&(e.shiftKey?index<=0:index===controls.length-1)){e.preventDefault();controls[e.shiftKey?controls.length-1:0].focus();}
     });
   }
+  readName(){try{this.lastName=cleanName(localStorage.getItem(nicknameKey)??this.lastName).trim();}catch(_){}return this.lastName;}
+  rememberName(){
+    if($('score-name').readOnly)return;this.lastName=cleanName($('score-name').value).trim();
+    try{localStorage.setItem(nicknameKey,this.lastName);}catch(_){}
+  }
   dismiss(){this.view++;this.shownResult=null;}
-  begin(selection){this.dismiss();$('score-name').value='';$('score-name').readOnly=false;this.result=null;this.run={selection:JSON.parse(JSON.stringify(selection)),id:root.crypto?.randomUUID?.()||null};}
+  begin(selection){this.dismiss();$('score-name').value=this.readName();$('score-name').readOnly=false;this.result=null;this.run={selection:JSON.parse(JSON.stringify(selection)),id:root.crypto?.randomUUID?.()||null};}
   finish(score){this.result=this.run?{...this.run,score,saved:false,payload:null,pending:false}:null;}
   showEnd(){this.open(this.result?.selection||this.getSelection(),this.result);}
   isPopularity(){return !this.endView&&['games','exercises'].includes(this.page);}
@@ -184,12 +192,14 @@ class Highscores{
     if(!result.payload&&!policy.isBannedName(raw))cleanNameInput();
     const name=$('score-name').value.normalize('NFC').trim().toUpperCase()||'ANONYM';
     if(!result.payload&&!policy.isBannedName(raw)&&!validName(name)){$('score-status').textContent='Skriv 1–10 bokstäver. Mellanslag går också bra.';return;}
+    if(!result.payload)this.rememberName();
     result.payload ||= {submission_id:result.id,leaderboard_key:storedKey(result.selection),player_name:name,score:result.score,settings:scoreSettings(result.selection)};
     result.pending=true;$('score-submit').disabled=true;$('score-name').readOnly=true;$('score-status').textContent='Sparar…';
     try{
-      const data=policy.isBannedName(result.payload.player_name)?{ok:true}:await request('/scores',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(result.payload)});
+      // Also protect a normal submission already in flight when the page closes.
+      const data=policy.isBannedName(result.payload.player_name)?{ok:true}:await request('/scores',{method:'POST',keepalive:true,headers:{'Content-Type':'application/json'},body:JSON.stringify(result.payload)});
       if(data.ok!==true)throw new Error('Invalid response');result.saved=true;
-      if(this.shownResult===result&&token===this.view){$('score-status').textContent='Resultatet är sparat.';this.render();if(!this.leaving){$('again').focus();await this.load(token);}}
+      if(this.shownResult===result&&token===this.view){$('score-status').textContent='Resultatet är sparat.';this.render();if(!this.leaving&&!this.departing){$('again').focus();await this.load(token);}}
     }catch(error){
       if(token===this.view)$('score-status').textContent=error.status?error.message:'Det gick inte att bekräfta sparandet. Försök igen med samma smeknamn.';
     }finally{result.pending=false;if(this.shownResult===result&&token===this.view)$('score-submit').disabled=result.saved;}
