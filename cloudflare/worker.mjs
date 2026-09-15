@@ -308,7 +308,7 @@ async function statistics(db) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url), origin = request.headers.get('Origin');
-    const admin = url.pathname === '/admin/stats';
+    const admin = ['/admin/stats', '/admin/rename'].includes(url.pathname);
     const headers = { 'Cache-Control': 'no-store', 'Vary': admin ? 'Origin, Authorization' : 'Origin' };
     if (origin === ALLOWED_ORIGIN) {
       headers['Access-Control-Allow-Origin'] = origin;
@@ -317,16 +317,34 @@ export default {
     }
     const reply = (body, status = 200, extra = {}) => Response.json(body, { status, headers: { ...headers, ...extra } });
     if (origin && origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_not_allowed' }, 403);
-    if (request.method === 'OPTIONS' && ['/scores', '/stats', '/admin/stats'].includes(url.pathname)) {
+    if (request.method === 'OPTIONS' && ['/scores', '/stats', '/admin/stats', '/admin/rename'].includes(url.pathname)) {
       return new Response(null, { status: 204, headers });
     }
     try {
       if (admin) {
-        if (request.method !== 'GET') return reply({ error: 'method_not_allowed' }, 405, { Allow: 'GET, OPTIONS' });
+        const method = url.pathname === '/admin/stats' ? 'GET' : 'POST';
+        if (request.method !== method) return reply({ error: 'method_not_allowed' }, 405, { Allow: method + ', OPTIONS' });
         if (typeof env.STATS_ADMIN_KEY !== 'string' || !env.STATS_ADMIN_KEY.length) return reply({ error: 'statistics_not_configured' }, 503);
         if (env.STATS_ADMIN_KEY.length < 12) return reply({ error: 'statistics_key_too_short' }, 503);
         if (!await authorizedStatistics(request, env.STATS_ADMIN_KEY)) return reply({ error: 'unauthorized' }, 401, { 'WWW-Authenticate': 'Bearer' });
-        return reply(await statistics(env.DB));
+        if (method === 'GET') return reply(await statistics(env.DB));
+        if (origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_required' }, 403);
+        if (request.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return reply({ error: 'json_required' }, 415);
+        const body = await readBody(request);
+        if (!body || typeof body !== 'object' || Array.isArray(body)) return reply({ error: 'invalid_rename' }, 400);
+        const ip = typeof body.ip === 'string' ? body.ip.trim() : '';
+        const oldName = body.old_name, newName = typeof body.new_name === 'string' ? body.new_name.normalize('NFC').trim().toUpperCase() : '';
+        if (!/^[0-9a-fA-F:.]{2,45}$/.test(ip)) return reply({ error: 'invalid_ip' }, 400);
+        // Keep the old name literal, including casing and historical punctuation.
+        // Only the replacement follows the current scoreboard's name rules.
+        if (typeof oldName !== 'string' || !oldName.trim() || oldName.length > 24) return reply({ error: 'invalid_old_name' }, 400);
+        if (!/^[\p{L}\p{M} ]{1,10}$/u.test(newName)) return reply({ error: 'invalid_new_name' }, 400);
+        if (globalThis.SkolarkadenHighscorePolicy.isBannedName(newName)) return reply({ error: 'name_not_allowed' }, 400);
+        if (oldName === newName) return reply({ error: 'name_unchanged' }, 400);
+        // One atomic, indexed update across history. Neither parameter is a pattern.
+        const result = await env.DB.prepare('UPDATE highscores SET player_name = ? WHERE ip = ? AND player_name = ?')
+          .bind(newName, ip, oldName).run();
+        return reply({ ok: true, updated: Number(result.meta.changes), new_name: newName });
       }
       if (request.method === 'GET' && url.pathname === '/health') {
         await env.DB.prepare('SELECT submission_id, ip, settings_json, game, game_version, exercise, difficulty FROM highscores LIMIT 1').all();

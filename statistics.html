@@ -7,12 +7,12 @@
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://skolarkaden-api.jakob-rogstadius.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Statistik · Skolarkaden</title>
-<link rel="stylesheet" href="resources/statistics.css?v=6653937d8395">
+<link rel="stylesheet" href="resources/statistics.css?v=5e0662d908bc">
 <script defer src="resources/data.js?v=7bba5627c5d7"></script>
 <script defer src="resources/language-exercises-data.js?v=115eba2c8858"></script>
 <script defer src="resources/language-exercises.js?v=747b2fb02145"></script>
 <script defer src="resources/homework.js?v=91d65cc84311"></script>
-<script defer src="resources/statistics.js?v=3396a00b3bc2"></script>
+<script defer src="resources/statistics.js?v=8647bfcf64f3"></script>
 </head>
 <body>
 <main class="shell">
@@ -56,6 +56,22 @@
         <thead><tr><th scope="col">Nr</th><th scope="col">IP-adress</th><th scope="col">Användarnamn</th><th scope="col" class="number">Resultat</th><th scope="col">Senast aktiv</th></tr></thead>
         <tbody id="top-ips"></tbody>
       </table></div>
+    </section>
+    <section class="panel rename-panel" aria-labelledby="rename-title">
+      <div class="section-heading"><h2 id="rename-title">Byt namn på sparade resultat</h2><p id="rename-help">Byter namn på alla resultat med angiven IP-adress och exakt nuvarande namn, oavsett datum och spel. Kopiera det nuvarande namnet från tabellen, inklusive stora och små bokstäver.</p></div>
+      <form id="rename-form" aria-describedby="rename-help">
+        <fieldset id="rename-fields">
+          <legend class="visually-hidden">IP-adress och namnbyte</legend>
+          <div class="rename-grid">
+            <label for="rename-ip">IP-adress<input id="rename-ip" name="ip" type="text" required maxlength="45" autocomplete="off" spellcheck="false" autocapitalize="none"></label>
+            <label for="rename-old-name">Nuvarande namn (exakt)<input id="rename-old-name" name="old_name" type="text" required maxlength="24" autocomplete="off" spellcheck="false" autocapitalize="none"></label>
+            <label for="rename-new-name">Nytt namn<input id="rename-new-name" name="new_name" type="text" required maxlength="10" autocomplete="off" spellcheck="false" aria-describedby="rename-name-help"></label>
+          </div>
+          <p id="rename-name-help">Högst 10 bokstäver och mellanslag. Det nya namnet sparas med stora bokstäver.</p>
+          <button id="rename-submit" type="submit">Byt namn</button>
+        </fieldset>
+        <p id="rename-status" role="status" aria-live="polite"></p>
+      </form>
     </section>
   </div>
 </main>

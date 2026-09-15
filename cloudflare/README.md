@@ -32,6 +32,17 @@ supports distinct IP counts and username lookups. All-time distinct counting
 still reads the IP index. No scheduled jobs or new tracking fields are added.
 The existing public `/stats` and `/scores` endpoints do not expose IPs.
 
+The form at the bottom of `statistics.html` renames every saved score matching
+both the supplied IP and the exact current name, including casing. It applies
+across all dates, games and versions. The replacement uses the usual name rules
+(uppercase, up to ten letters/spaces, with the name filter), and the page reports
+the updated row count and refreshes the statistics. `POST /admin/rename` requires
+the same administrator key, the allowed website origin and a JSON body with
+`ip`, `old_name` and `new_name`. It uses one parameterized UPDATE; other score
+fields remain intact. Deploy the regenerated Worker to enable it; the existing
+IP index is sufficient. Public popularity responses can retain an old name for
+up to their existing 60-second cache lifetime.
+
 ### Indexed score dimensions
 
 Run [add-score-dimensions.sql](add-score-dimensions.sql) in **D1 → skolarkaden →

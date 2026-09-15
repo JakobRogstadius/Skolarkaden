@@ -9,11 +9,11 @@ class Element extends EventTarget{
 }
 const nodes=new Map(),get=id=>{if(!nodes.has(id))nodes.set(id,new Element());return nodes.get(id);};
 get('dashboard').hidden=true;get('actions').hidden=true;
-const events=new EventTarget(),requests=[];let result,status=200,pending=null;
+const events=new EventTarget(),requests=[];let result,status=200,pending=null,renameResult,renameStatus=200,renamePending=null,renameFailure=false;
 const context=vm.createContext({console,Intl,Date,URL,Event,EventTarget,AbortController,setTimeout,clearTimeout,
   document:{getElementById:get,createElement:tag=>new Element(tag),createElementNS:(_,tag)=>new Element(tag)},
   addEventListener:(...args)=>events.addEventListener(...args),
-  fetch:async(url,options)=>{requests.push({url,options});return pending?await pending:Response.json(result,{status});},
+  fetch:async(url,options)=>{requests.push({url,options});if(options.method==='POST'){if(renameFailure)throw Error('network');return renamePending?await renamePending:Response.json(renameResult,{status:renameStatus});}return pending?await pending:Response.json(result,{status});},
   localStorage:{getItem(){throw Error('statistics must not use storage');},setItem(){throw Error('statistics must not persist keys or IPs');}},
   sessionStorage:{getItem(){throw Error('statistics must not use storage');},setItem(){throw Error('statistics must not persist keys or IPs');}}
 });
@@ -21,6 +21,7 @@ for(const file of ['resources/data.js','resources/language-exercises-data.js','r
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
 const click=async id=>{get(id).dispatchEvent(new Event('click'));await settle();};
 const login=async()=>{get('admin-key').value='test-key-not-a-real-credential';get('login').dispatchEvent(new Event('submit',{cancelable:true}));await settle();};
+const rename=async()=>{get('rename-form').dispatchEvent(new Event('submit',{cancelable:true}));await settle();};
 const descendants=node=>[node,...node.children.flatMap(descendants)];
 (async()=>{
   assert.equal(requests.length,0,'opening the page does not request statistics');
@@ -43,6 +44,26 @@ const descendants=node=>[node,...node.children.flatMap(descendants)];
   }
   const chart=get('chart-ip'),legend=chart.children.find(node=>node.className==='legend');assert.equal(legend.children.length,11);assert.match(legend.textContent,/Övriga IP-adresser2/);
   assert.equal(descendants(chart).find(node=>node.tagName==='tbody').children.length,13,'expandable table retains all twelve IPs and the total');
+  let requestCount=requests.length;await rename();assert.equal(requests.length,requestCount,'blank fields cannot send a rename');
+  get('rename-ip').value='2001:db8::1';get('rename-old-name').value='<svg onload=alert(1)>';get('rename-new-name').value='Å.SA';
+  await rename();assert.equal(requests.length,requestCount,'invalid replacement characters are rejected before sending');
+  get('rename-new-name').value=' åsa ';renameResult={ok:true,updated:2,new_name:'ÅSA'};result.latest[0].player_name='ÅSA';result.top_ips[0].usernames[0].player_name='ÅSA';
+  await rename();assert.equal(requests.length,requestCount+2,'successful changes refresh the statistics exactly once');
+  const post=requests.at(-2);assert.equal(post.options.method,'POST');assert(post.url.endsWith('/admin/rename'));assert.equal(post.options.headers.Authorization,sent.options.headers.Authorization);assert.equal(post.options.headers['Content-Type'],'application/json');
+  assert.deepEqual(JSON.parse(post.options.body),{ip:'2001:db8::1',old_name:'<svg onload=alert(1)>',new_name:'ÅSA'});
+  assert.equal(get('latest').children[0].children[1].textContent,'ÅSA');assert.equal(get('rename-status').children.length,0,'status inserts old names as text');assert.match(get('rename-status').textContent,/2 resultat bytte namn/);assert.equal(get('rename-fields').disabled,false);
+  requestCount=requests.length;renameResult={ok:true,updated:0,new_name:'ÅSA'};await rename();assert.equal(requests.length,requestCount+1);assert.match(get('rename-status').textContent,/Inga resultat matchade/);
+  renameStatus=400;renameResult={error:'name_not_allowed'};await rename();assert.match(get('rename-status').textContent,/inte tillåtet/);assert.equal(get('rename-fields').disabled,false);renameStatus=200;
+  renameFailure=true;requestCount=requests.length;await rename();assert.equal(requests.length,requestCount+1,'a write is never retried automatically');assert.match(get('rename-status').textContent,/kunde inte bekräftas/);assert.equal(get('refresh').disabled,false);renameFailure=false;
+  // A read started before renaming cannot restore stale names after the update.
+  let resolveRead;pending=new Promise(resolve=>{resolveRead=resolve;});await click('refresh');pending=null;
+  renameResult={ok:true,updated:1,new_name:'ÅSA'};await rename();resolveRead(Response.json({...result,latest:[{...result.latest[0],player_name:'STALE'}]}));await settle();assert.equal(get('latest').children[0].children[1].textContent,'ÅSA');
+  // Duplicate submits and responses arriving after logout cannot apply another UI change.
+  let resolveRename;renamePending=new Promise(resolve=>{resolveRename=resolve;});requestCount=requests.length;await rename();assert.equal(get('rename-fields').disabled,true);await rename();assert.equal(requests.length,requestCount+1);
+  await click('logout');assert.equal(get('rename-ip').value,'');assert.equal(get('rename-old-name').value,'');assert.equal(get('rename-new-name').value,'');assert.equal(get('rename-status').textContent,'');assert.equal(get('rename-fields').disabled,false);
+  resolveRename(Response.json(renameResult));await settle();assert.equal(get('dashboard').hidden,true);assert.equal(requests.length,requestCount+1,'late write responses do not trigger a refresh after logout');renamePending=null;
+  await login();get('rename-ip').value='192.0.2.1';get('rename-old-name').value='ADA';get('rename-new-name').value='BO';renameStatus=401;renameResult={error:'unauthorized'};await rename();assert.equal(get('dashboard').hidden,true);assert.equal(get('rename-ip').value,'');assert.match(get('status').textContent,/Logga in igen/);renameStatus=200;
+  await login();
   status=503;result={error:'statistics_not_configured'};await click('refresh');assert.match(get('status').textContent,/inte aktiverad/);assert.equal(get('dashboard').hidden,false,'refresh failure retains the timestamped previous data');
   result={error:'statistics_key_too_short'};await click('refresh');assert.equal(get('status').textContent,'Administratörsnyckeln på servern måste vara minst 12 tecken.');
   status=401;result={error:'unauthorized'};await click('refresh');assert.equal(get('dashboard').hidden,true);assert.equal(get('login').hidden,false);assert.equal(get('latest').children.length,0);assert.match(get('status').textContent,/Fel administratörsnyckel/);assert.equal(get('login-button').disabled,false);

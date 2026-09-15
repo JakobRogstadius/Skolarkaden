@@ -5,7 +5,7 @@ const games={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikup
 const difficulties={gentle:'Lätt',steady:'Medel',brave:'Svår'},number=new Intl.NumberFormat('sv-SE');
 const palette=['#287d68','#647ac0','#d39536','#a76fba','#c5685c','#42a6a0','#a48b4d','#738855','#c67f9c','#557f98','#8a6855','#777777'];
 const color=index=>palette[index]||'hsl('+Math.round(index*137.508%360)+' 48% '+(38+index%3*10)+'%)';
-let key='',controller=null,generation=0;
+let key='',controller=null,generation=0,renameController=null;
 const element=(tag,text,className)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(className)node.className=className;return node;};
 const svg=(tag,attributes={},text)=>{const node=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,value]of Object.entries(attributes))node.setAttribute(key,value);if(text!==undefined)node.textContent=text;return node;};
 const label=(dimension,id)=>dimension==='ip'?(id||'IP saknas'):dimension==='game'?(games[id]||id||'Spel saknas'):(SC.modes[SC.canonicalLesson(id)]?.name||id||'Övning saknas');
@@ -82,6 +82,9 @@ function render(data){
 }
 function clear(){
   key='';generation++;controller?.abort();controller=null;$('admin-key').value='';$('dashboard').hidden=true;$('actions').hidden=true;$('login').hidden=false;
+  renameController?.abort();renameController=null;$('rename-fields').disabled=false;
+  for(const id of ['rename-ip','rename-old-name','rename-new-name'])$(id).value='';
+  $('rename-status').textContent='';$('rename-status').className='';
   for(const id of ['latest','top-ips','chart-ip','chart-game','chart-exercise','ips-ever','ips-week','scores-week','period','updated','missing-ips'])$(id).replaceChildren();
   $('status').textContent='';$('status').className='';$('login-button').disabled=false;$('refresh').disabled=false;
 }
@@ -104,7 +107,35 @@ async function load(){
     if(!key)$('admin-key').focus();
   }finally{clearTimeout(timeout);if(current===generation){controller=null;$('login-button').disabled=false;$('refresh').disabled=false;}}
 }
+async function rename(){
+  if(!key||renameController||$('dashboard').hidden)return;
+  const ip=$('rename-ip').value.trim(),oldName=$('rename-old-name').value,newName=$('rename-new-name').value.normalize('NFC').trim().toUpperCase(),status=$('rename-status');
+  status.className='';
+  if(!ip||!oldName.trim()||!newName){status.className='error';status.textContent='Fyll i IP-adress, nuvarande namn och nytt namn.';return;}
+  if(!/^[\p{L}\p{M} ]{1,10}$/u.test(newName)){status.className='error';status.textContent='Det nya namnet får innehålla högst 10 bokstäver och mellanslag.';return;}
+  // Invalidate an older statistics read so it cannot overwrite the renamed rows.
+  controller?.abort();controller=null;generation++;
+  $('status').textContent='';$('status').className='';
+  const request=renameController=new AbortController(),submittedKey=key,timeout=setTimeout(()=>request.abort(),20000);
+  const active=()=>renameController===request&&key===submittedKey;
+  $('rename-fields').disabled=true;$('refresh').disabled=true;status.textContent='Byter namn…';
+  const unconfirmed='Bytet kunde inte bekräftas. Uppdatera statistiken för att kontrollera namnet innan du försöker igen.';
+  try{
+    const response=await fetch(api.replace('/admin/stats','/admin/rename'),{method:'POST',headers:{Authorization:'Bearer '+key,'Content-Type':'application/json'},body:JSON.stringify({ip,old_name:oldName,new_name:newName}),cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',signal:request.signal});
+    const data=await response.json();if(!active())return;
+    if(response.status===401){clear();$('status').className='error';$('status').textContent='Fel administratörsnyckel. Logga in igen.';$('admin-key').focus();return;}
+    if(!response.ok){
+      const messages={invalid_ip:'Ange IP-adressen som den visas i tabellen.',invalid_old_name:'Ange det nuvarande namnet exakt som det visas i tabellen.',invalid_new_name:'Det nya namnet får innehålla högst 10 bokstäver och mellanslag.',name_not_allowed:'Det nya namnet är inte tillåtet. Välj ett annat namn.',name_unchanged:'Det nya namnet är samma som det nuvarande.',statistics_not_configured:'Statistiken är inte aktiverad på servern.',statistics_key_too_short:'Administratörsnyckeln på servern måste vara minst 12 tecken.'};
+      status.className='error';status.textContent=response.status===404?'Servern behöver uppdateras för att kunna byta namn.':messages[data.error]||unconfirmed;return;
+    }
+    if(data.ok!==true||!Number.isSafeInteger(data.updated)||data.updated<0||data.new_name!==newName)throw new Error('invalid_rename_response');
+    status.textContent=data.updated?number.format(data.updated)+' resultat bytte namn från '+oldName+' till '+data.new_name+'.':'Inga resultat matchade IP-adressen och det nuvarande namnet.';
+    if(data.updated)await load();
+  }catch(error){if(active()){status.className='error';status.textContent=unconfirmed;}}
+  finally{clearTimeout(timeout);if(active()){renameController=null;$('rename-fields').disabled=false;$('refresh').disabled=false;}}
+}
 $('login').addEventListener('submit',event=>{event.preventDefault();key=$('admin-key').value.trim();$('admin-key').value='';if(key)load();});
+$('rename-form').addEventListener('submit',event=>{event.preventDefault();rename();});
 $('refresh').addEventListener('click',()=>load());$('logout').addEventListener('click',()=>{clear();$('admin-key').focus();});
 // Clear secrets and rendered IPs before a page can enter the back/forward cache.
 root.addEventListener('pagehide',clear);
