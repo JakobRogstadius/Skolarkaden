@@ -91,6 +91,11 @@ class Highscores{
     try{localStorage.setItem(nicknameKey,this.lastName);}catch(_){}
   }
   dismiss(){this.view++;this.shownResult=null;}
+  async topScore(selection){
+    const data=await readBoard(selection);
+    if(!Array.isArray(data.scores)||data.scores.some(row=>!Number.isFinite(Number(row.score))||Number(row.score)<0))throw new Error('Invalid response');
+    return Math.max(0,...data.scores.map(row=>Number(row.score)));
+  }
   begin(selection){this.dismiss();$('score-name').value=this.readName();$('score-name').readOnly=false;this.result=null;this.run={selection:JSON.parse(JSON.stringify(selection)),id:root.crypto?.randomUUID?.()||null};}
   finish(score){this.result=this.run?{...this.run,score,saved:false,payload:null,pending:false}:null;}
   showEnd(){this.open(this.result?.selection||this.getSelection(),this.result);}
