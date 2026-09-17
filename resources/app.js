@@ -20,8 +20,7 @@ function scoreSelection(selected=options()){
     label:[names[kind],SC.modes[selected.mode].name,
       {gentle:'Lätt',steady:'Medel',brave:'Svår'}[selected.pace]].join(' · ')};
 }
-const safeRead=key=>{try{return Number(localStorage.getItem(key))||0;}catch(_){return 0;}},safeWrite=(key,v)=>{try{localStorage.setItem(key,String(v));}catch(_){}};
-let best=0,noticeUntil=0;
+let best=null,bestLoading=false,noticeUntil=0;
 try{localStorage.removeItem('starlight-friends-v1');}catch(_){}
 function notice(text){$('discovery-notice').textContent=text;$('discovery-notice').hidden=false;noticeUntil=performance.now()+6000;}
 for(const [value,m] of Object.entries(SC.modes))if(!m.hidden)$('lesson').add(new Option(m.name,value));$('lesson').value='swedish';
@@ -57,11 +56,14 @@ input.addEventListener('status',e=>$('input-status').textContent=e.detail.text);
 // Hidden diagnostics must not hide a broken microphone. Pause with a recoverable error.
 input.addEventListener('fault',e=>{if(game?.state==='playing'){pause();$('resume-error').textContent=e.detail.text;}});
 queue.addEventListener('rejected',e=>{for(const entry of e.detail.entries)record({at:new Date().toISOString(),type:'queue-skipped',text:entry.text});});
-function bestKey(){
-  // Preserve legacy local records for games whose scoring has not changed.
-  const legacy='starlight-queue-v'+(kind==='food'?'1':'2')+':'+kind+':'+SC.legacyLesson(game.mode)+':'+game.pace;
-  const version=root.SkolarkadenHighscorePolicy.versions[kind];
-  return version==='v1'?legacy:legacy+':'+version;
+async function loadBest(){
+  const currentGame=game;
+  best=null;bestLoading=true;
+  try{
+    const score=await highscores.topScore(scoreSelection(lastOptions));
+    if(game===currentGame)best=score;
+  }catch(_){/* An unavailable leaderboard is not a zero record. */}
+  finally{if(game===currentGame){bestLoading=false;renderUi();}}
 }
 function onGameEvent(e){
   if(renderer?.game===game)renderer.scoreEvent(e);
@@ -78,7 +80,6 @@ function onGameEvent(e){
   if(e.type==='end'){
     highscores.finish(e.score);
     input.setEnabled(false);$('pause').disabled=true;$('end-overlay').hidden=false;$('pause-overlay').hidden=true;
-    if(e.score>best){best=e.score;safeWrite(bestKey(),best);}
     $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Trädgården är klar.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!',eggs:'Skeppet är säkrat!',home:'Skönt att vara klar!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'Alla plantor vissnade.',hive:'Honungen räckte inte.',eggs:'Rymdkrypen tog över.'}[kind]);
     $('result-game').textContent=names[kind];$('result-context').textContent=SC.modes[game.mode].name+' · '+{gentle:'Lätt',steady:'Medel',brave:'Svår'}[game.pace];
     highscores.showEnd();
@@ -92,7 +93,7 @@ async function start(){
     input.setEnabled(false);input.configure(speechOptions());await input.prepare();if(token!==lifecycle)return;
     sounds.stopCampfire();sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
     const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});lastOptions=options();$('arena').className='arena '+kind;$('arena').dataset.exercise=lastOptions.mode;$('play').dataset.game=kind;game.start(lastOptions);highscores.begin({...scoreSelection(lastOptions),letterKeys:game.mode==='letters'?game.items.map(i=>i.answer):null});queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),discardUnmatched:entry=>entry.source==='speech'&&SC.isChinese(game.mode),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
-    best=safeRead(bestKey());$('game-title').textContent=names[kind];$('objective').closest('.hud-objective').hidden=['marshmallows','eggs'].includes(kind);$('answer').placeholder=input.singleLetter()?'…':SC.modes[game.mode].placeholder.replace('…',' ↵');$('answer-hint').textContent=typingHint();$('keyboard').hidden=game.mode!=='bopomofo';$('input-dock').hidden=input.voice.enabled;document.body.classList.add('playing');document.body.classList.toggle('voice-play',input.voice.enabled);
+    loadBest();$('game-title').textContent=names[kind];$('objective').closest('.hud-objective').hidden=['marshmallows','eggs'].includes(kind);$('answer').placeholder=input.singleLetter()?'…':SC.modes[game.mode].placeholder.replace('…',' ↵');$('answer-hint').textContent=typingHint();$('keyboard').hidden=game.mode!=='bopomofo';$('input-dock').hidden=input.voice.enabled;document.body.classList.add('playing');document.body.classList.toggle('voice-play',input.voice.enabled);
     input.setEnabled(true);if(input.voice.enabled)input.start();
     input.focus();lastTargetKey=null;renderUi();
   }catch(error){$('setup-error').textContent=error.message; $('resume-error').textContent=error.message;if($('menu').hidden){$('end-overlay').hidden=false;$('result-title').textContent=error.message;}}
@@ -116,7 +117,7 @@ function renderUi(){
   if(!game||$('play').hidden)return;
   sounds.campfire(soundOn&&kind==='marshmallows'&&['playing','celebrating'].includes(game.state)?game.fireStrength():0,input.listening?.23:1);
   if(game.state==='playing')queue.reconcile();
-  $('score').textContent=game.score.toLocaleString('sv-SE');$('best').textContent='BÄSTA '+best.toLocaleString('sv-SE');$('score').setAttribute('aria-label',game.score+' poäng');
+  $('score').textContent=game.score.toLocaleString('sv-SE');$('best').textContent='BÄSTA '+(bestLoading?'…':best===null?'—':best.toLocaleString('sv-SE'));$('score').setAttribute('aria-label',game.score+' poäng');
   let objective,secondary,value;
   if(kind==='city'){objective=game.resolved+' / '+SC.cityGoal;secondary='';value=game.resolved/SC.cityGoal*100;}
   else if(kind==='food'){

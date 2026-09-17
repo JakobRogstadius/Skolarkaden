@@ -4,7 +4,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const read=file=>fs.readFileSync(path.join(__dirname,'..',file),'utf8'),html=read('index.html'),dictionary={'sv-001':{input:'keyboard',language:'sv-SE',words:[['hej'],['hopp'],['tekopp']]},'zh-001':{input:'voice',language:'zh-TW',words:[['你','nǐ','du'],['好','hǎo','bra'],['我喜歡喝茶','wǒ xǐhuān hē chá','Jag tycker om att dricka te.']]}};
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
-function boot(search='',fetchHomework=async()=>Response.json(dictionary)){
+function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchScores=null){
   let document,currentGame,selection;const posts=[],requests=[],captures=[];
   class Element extends EventTarget{
     constructor(){super();Object.assign(this,{value:'',textContent:'',text:'',hidden:false,disabled:false,children:[],options:[],dataset:{},open:false});this.classList={add(){},remove(){},toggle(){}};this.style={setProperty(){}};}
@@ -18,6 +18,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary)){
   const ctx=vm.createContext({document,console,Event,EventTarget,CustomEvent,URLSearchParams,AbortController,setTimeout,clearTimeout,crypto:webcrypto,location:{search},performance:{now:()=>0},requestAnimationFrame:()=>0,cancelAnimationFrame(){},addEventListener(){},matchMedia:()=>({matches:false}),navigator:{},localStorage:{getItem(){},setItem(){},removeItem(){}},Option:class extends Element{constructor(text,value){super();this.textContent=this.text=text;this.value=value;}},fetch:async(url,options={})=>{
     requests.push(url);if(url==='homework.json')return fetchHomework(url,options);
     if(options.method==='POST'){posts.push(JSON.parse(options.body));return Response.json({ok:true});}
+    if(fetchScores)return fetchScores(url,options);
     return Response.json({leaderboard:'v2:city',scores:[{player_name:'TEST',score:30,exercise:'homework',difficulty:'gentle'}],rank:2});
   }});
   for(const [,url] of html.matchAll(/<script defer src="([^"]+)"/g)){
@@ -38,6 +39,30 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary)){
 }
 (async()=>{
   const normal=boot();await settle();assert(!normal.requests.includes('homework.json'));assert(!normal.fields.lesson.options.some(o=>o.value==='homework'));assert(!normal.fields.lesson.disabled);assert(!normal.fields['input-kind'].disabled);
+  let top=1234,fail=false,pending=null;
+  const hud=boot('',undefined,async url=>{
+    if(pending)return new Promise(resolve=>pending.push(resolve));
+    if(fail)throw Error('offline');
+    const board=new URL(url).searchParams.get('leaderboard').split(':').slice(0,2).join(':');
+    return Response.json({leaderboard:board,scores:top===null?[]:[{score:top}]});
+  });
+  await settle();
+  for(const radio of hud.radios){
+    radio.dispatchEvent(new Event('change'));hud.click('start');await settle();
+    assert.equal(hud.fields['setup-error'].textContent,'');
+    assert.equal(hud.fields.best.textContent,'BÄSTA '+top.toLocaleString('sv-SE'),radio.value+' shows online record');
+    assert.equal(hud.fields.score.textContent,'0');
+    assert(hud.requests.at(-1).includes(encodeURIComponent(hud.ctx.SkolarkadenHighscorePolicy.versions[radio.value]+':'+radio.value+':')));
+    hud.click('pause');hud.click('pause-menu');top++;
+  }
+  top=null;hud.click('start');await settle();assert.equal(hud.fields.best.textContent,'BÄSTA 0','empty board');
+  hud.click('pause');hud.click('pause-menu');fail=true;hud.click('start');await settle();assert.equal(hud.fields.best.textContent,'BÄSTA —','failure is not zero');
+  hud.click('pause');hud.click('pause-menu');fail=false;pending=[];hud.click('start');await settle();assert.equal(hud.fields.best.textContent,'BÄSTA …');
+  const old=pending[0];pending=null;top=4321;
+  hud.click('pause');hud.click('pause-menu');hud.radios[0].dispatchEvent(new Event('change'));hud.click('start');await settle();
+  old(Response.json({scores:[{score:9999}]}));await settle();
+  assert.equal(hud.fields.best.textContent,'BÄSTA '+top.toLocaleString('sv-SE'),'late response cannot replace another game record');
+  console.log('PASS online top score for all nine games, empty/error/loading states and stale response isolation.');
   let resolve;const app=boot('?mode=homework&id=sv-001&input=keyboard&language=zh-CN&words=wrong',()=>new Promise(done=>resolve=done));
   assert(app.fields.start.disabled);app.click('start');await settle();assert.equal(app.game,undefined,'loading cannot launch a default exercise');
   resolve(Response.json({...dictionary,'sv-001':{...dictionary['sv-001'],input:'voice'}}));await settle();assert(!app.fields.start.disabled);
