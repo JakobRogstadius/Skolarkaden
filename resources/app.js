@@ -10,7 +10,7 @@ if(/^https?:$/.test(root.location?.protocol)){
 SC.modes.homework={...SC.homeworkMode};
 const homeworkQuery=new URLSearchParams(root.location?.search||''),homeworkRequested=homeworkQuery.get('mode')==='homework';
 let homeworkReady=!homeworkRequested;
-const queue=new SC.AnswerQueue(),microphone=new SC.Microphone(),sounds=new SC.GameSounds();
+const queue=new SC.AnswerQueue(),microphone=new SC.Microphone(),sounds=new SC.GameSounds(),tileSpeech=new SC.KlossarSpeech();
 const input=new SC.AnswerInput({field:$('answer'),form:$('answer-form'),queue,microphone,retainFocus:()=>kind!=='klossar'&&game?.state==='playing'&&!document.querySelector('dialog[open]'),getCandidates:()=>game?.state==='playing'?game.getTargets().map(t=>t.item):[]});
 let game,renderer,kind='city',busy=false,soundOn=true,lastOptions=null,log=[],lastTargetKey=null,lastUi=0,uiFrame,replaying=null,lifecycle=0;
 const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet',reversi:'Reversi',chess:'Schack',klossar:'Klossar'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer],home:[SC.HomeGame,SC.HomeRenderer],reversi:[SC.ReversiGame,SC.ReversiRenderer],chess:[SC.ChessGame,SC.ChessRenderer],klossar:[SC.KlossarGame,SC.KlossarRenderer]};
@@ -69,6 +69,8 @@ async function loadBest(){
   finally{if(game===currentGame){bestLoading=false;renderUi();}}
 }
 function onGameEvent(e){
+  if(e.type==='klossar-select'){if(soundOn)tileSpeech.play(e.tile.item.speech);return;}
+  if(e.type==='pause')tileSpeech.stop();
   if(renderer?.game===game)renderer.scoreEvent(e);
   if(isBoardGame()&&['reversi-ready','reversi-wait','chess-ready','chess-wait'].includes(e.type)){
     const enabled=game.canAnswer();input.setEnabled(enabled);$('answer').value='';if(enabled&&input.voice.enabled)input.start();
@@ -98,6 +100,7 @@ function onGameEvent(e){
 }
 async function start(){
   if(busy||!homeworkReady)return;const token=++lifecycle;busy=true;$('start').disabled=true;$('again').disabled=true;$('setup-error').textContent='';
+  tileSpeech.stop();
   try{
     input.setEnabled(false);input.configure({...speechOptions(),...(isBoardGame()?{turnBased:true}:{})});if(kind!=='klossar')await input.prepare();if(token!==lifecycle)return;
     sounds.stopCampfire();sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
@@ -114,7 +117,7 @@ async function resume(){
   try{if(kind!=='klossar')await input.prepare();if(token!==lifecycle)return;$('pause-overlay').hidden=true;game.resume();const canAnswer=isBoardGame()?game.canAnswer():kind!=='klossar'&&(kind!=='eggs'||game.player.status!=='dead');input.setEnabled(canAnswer);if(canAnswer&&input.voice.enabled)input.start();if(canAnswer)input.focus();}
   catch(error){$('resume-error').textContent=error.message;}finally{busy=false;$('resume').disabled=false;}
 }
-function menu(){highscores.dismiss();sounds.stopCampfire();lifecycle++;input.setEnabled(false);game?.menu();renderer?.destroy();renderer=null;queue.clear();$('play').hidden=true;$('menu').hidden=false;document.body.classList.remove('playing','voice-play');menuUpdate();$('start').focus({preventScroll:true});}
+function menu(){highscores.dismiss();sounds.stopCampfire();tileSpeech.stop();lifecycle++;input.setEnabled(false);game?.menu();renderer?.destroy();renderer=null;queue.clear();$('play').hidden=true;$('menu').hidden=false;document.body.classList.remove('playing','voice-play');menuUpdate();$('start').focus({preventScroll:true});}
 $('start').addEventListener('click',start);$('again').addEventListener('click',()=>highscores.leave(start));$('pause').addEventListener('click',pause);$('resume').addEventListener('click',resume);$('pause-menu').addEventListener('click',menu);$('end-menu').addEventListener('click',()=>highscores.leave(menu));
 root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){
@@ -145,7 +148,7 @@ function renderUi(){
   $('objective').textContent=objective;$('secondary').textContent=secondary;$('progress').value=value;renderTargets();
 }
 function frame(now){if(noticeUntil&&now>=noticeUntil){$('discovery-notice').hidden=true;noticeUntil=0;}if(now-lastUi>100){lastUi=now;renderUi();if($('settings').open)$('mic-level').value=Math.min(1,microphone.level*6);}uiFrame=requestAnimationFrame(frame);}uiFrame=requestAnimationFrame(frame);
-$('sound').addEventListener('click',()=>{soundOn=!soundOn;if(!soundOn)sounds.stopCampfire();$('sound').querySelector('span').textContent=soundOn?'♫':'♪̸';$('sound').title=soundOn?'Ljud på':'Ljud av';$('sound').setAttribute('aria-pressed',String(soundOn));if(soundOn){sounds.unlock();sounds.play('lock');}});
+$('sound').addEventListener('click',()=>{soundOn=!soundOn;if(!soundOn){sounds.stopCampfire();tileSpeech.stop();}$('sound').querySelector('span').textContent=soundOn?'♫':'♪̸';$('sound').title=soundOn?'Ljud på':'Ljud av';$('sound').setAttribute('aria-pressed',String(soundOn));if(soundOn){sounds.unlock();sounds.play('lock');}});
 for(const el of document.querySelectorAll('[data-close]'))el.addEventListener('click',()=>$(el.dataset.close).close());
 $('help-open').addEventListener('click',()=>{pause();$('help').showModal();});
 $('settings-open').addEventListener('click',()=>{pause();$('settings').showModal();if(microphone.ready){microphone.begin(true);$('mic-status').textContent='Mikrofonen är aktiv. Prata för att se ljudnivån.';}refreshDevices();});
@@ -161,7 +164,7 @@ $('replay').addEventListener('click',async()=>{
 async function copy(text,status){try{await navigator.clipboard.writeText(text);$(status).textContent='Kopierat.';}catch(_){const area=document.createElement('textarea');area.value=text;($('settings').open?$('settings'):document.body).append(area);area.select();const copied=document.execCommand('copy');area.remove();$(status).textContent=copied?'Kopierat.':'Kopieringen misslyckades. Markera texten och tryck Ctrl+C.';}}
 $('copy-log').addEventListener('click',()=>copy($('speech-log').value,'debug-status'));$('clear-log').addEventListener('click',()=>{log=[];$('speech-log').value='';});
 $('copy-report').addEventListener('click',()=>copy(JSON.stringify({app:'Skolarkaden',browser:navigator.userAgent,voice:input.voice,microphone:microphone.stream?.getAudioTracks()[0]?.getSettings(),audio:input.lastAudio?SC.audioStats(input.lastAudio):null,queue:queue.items,events:log},null,2),'mic-status'));
-root.addEventListener('pagehide',()=>{lifecycle++;cancelAnimationFrame(uiFrame);input.destroy();microphone.close();sounds.close();renderer?.destroy();});
+root.addEventListener('pagehide',()=>{lifecycle++;cancelAnimationFrame(uiFrame);input.destroy();microphone.close();sounds.close();tileSpeech.stop();renderer?.destroy();});
 menuUpdate();input.setEnabled(false);
 if(homeworkRequested)SC.loadHomework(homeworkQuery.get('id'),homeworkQuery.get('input')).then(lesson=>{
   homeworkReady=true;$('homework-info').textContent='Läxa · '+lesson.homeworkName;menuUpdate();

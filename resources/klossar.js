@@ -53,20 +53,26 @@ function removalOrder(slots,random=Math.random){
   return null;
 }
 const readingKey=text=>String(text).normalize('NFC').toLocaleLowerCase('sv-SE').trim().replace(/\s+/g,' ');
-function pairFor(item,mode,random){
+const letterSpeech=(text,lang)=>/^\p{Script=Latin}$/u.test(text.normalize('NFC'))?{text:text.toLocaleUpperCase(lang),lang}:null;
+function pairFor(item,mode,random,lang){
   if(SC.isMath(mode)){
     const problem=SC.makeMath(item.answer,random,SC.mathLevel(mode));
     return {problem,answer:String(problem.answer),key:'math:'+problem.answer};
   }
   if(SC.isChinese(mode)){
     if(!item.hint)throw new Error('Uppgiften saknar pinyin.');
-    return {problem:{label:item.label},answer:item.hint,key:'pinyin:'+readingKey(item.hint)};
+    // Mandarin voices read Hanzi reliably; the face still shows only pinyin.
+    return {problem:{label:item.label},answer:item.hint,answerSpeech:{text:item.label,lang:SC.modes[mode].lang},key:'pinyin:'+readingKey(item.hint)};
   }
-  if(mode==='bopomofo')return {problem:{label:item.label},answer:item.key.toUpperCase(),key:'key:'+item.key};
-  if(SC.isWordPair(mode))return {problem:{label:item.label.toLocaleUpperCase('sv-SE')},answer:item.answer.toLocaleLowerCase('sv-SE'),key:'word:'+SC.pairAnswerKey(item.answer,item.answerLang)};
-  return {problem:{label:item.label.toLocaleUpperCase('sv-SE')},answer:item.label.toLocaleLowerCase('sv-SE'),key:'case:'+readingKey(item.label)};
+  if(mode==='bopomofo')return {problem:{label:item.label,speech:{audio:'resources/audio/bopomofo/'+item.label.codePointAt(0).toString(16)+'.mp3'}},answer:item.key.toUpperCase(),answerSpeech:letterSpeech(item.key,SC.modes.letters.lang),key:'key:'+item.key};
+  if(SC.isWordPair(mode)){
+    const promptLang=SC.isTranslation(mode)?(item.answerLang==='en-US'?'sv-SE':'en-US'):item.answerLang;
+    return {problem:{label:item.label.toLocaleUpperCase('sv-SE'),speech:letterSpeech(item.label,promptLang)},answer:item.answer.toLocaleLowerCase('sv-SE'),answerSpeech:letterSpeech(item.answer,item.answerLang),key:'word:'+SC.pairAnswerKey(item.answer,item.answerLang)};
+  }
+  const speech=letterSpeech(item.label,lang);
+  return {problem:{label:item.label.toLocaleUpperCase('sv-SE'),speech},answer:item.label.toLocaleLowerCase('sv-SE'),answerSpeech:speech,key:'case:'+readingKey(item.label)};
 }
-function makePairs(items,mode,count,random){
+function makePairs(items,mode,count,random,lang){
   let pool=items;
   if(SC.isWordPair(mode)){
     // Avoid overlapping synonym/translation answer sets across different keys.
@@ -80,7 +86,7 @@ function makePairs(items,mode,count,random){
   }
   if(!pool.length)throw new Error('Övningen behöver minst ett par.');
   const pairs=[];let bag=[];
-  while(pairs.length<count){if(!bag.length)bag=shuffle(pool,random);pairs.push(pairFor(bag.pop(),mode,random));}
+  while(pairs.length<count){if(!bag.length)bag=shuffle(pool,random);pairs.push(pairFor(bag.pop(),mode,random,lang));}
   return pairs;
 }
 function matches(a,b){return a!==b&&a.side!==b.side&&a.key===b.key;}
@@ -99,12 +105,12 @@ class KlossarGame{
     this.layout=layouts.find(l=>l.id===layout)||layouts[Math.floor(this.random()*layouts.length)];
     this.slots=layoutSlots(this.layout.id,pace);this.order=removalOrder(this.slots,this.random);
     if(!this.order)throw new Error('Kunde inte lägga ut klossarna.');
-    const pairs=makePairs(this.items,mode,this.total,this.random);
+    const pairs=makePairs(this.items,mode,this.total,this.random,lang);
     this.tiles=this.slots.map(p=>({...p,removed:false}));
     this.order.forEach(([first,second],i)=>{
       const [a,b]=this.random()<.5?[first,second]:[second,first],p=pairs[i];
       Object.assign(this.tiles[a],{side:'problem',key:p.key,item:p.problem});
-      Object.assign(this.tiles[b],{side:'answer',key:p.key,item:{label:p.answer}});
+      Object.assign(this.tiles[b],{side:'answer',key:p.key,item:{label:p.answer,speech:p.answerSpeech}});
     });
     this.state='playing';this.revision++;this.emit('start');
   }
@@ -121,7 +127,7 @@ class KlossarGame{
     const selected=this.selected.indexOf(tile);
     if(selected>=0){this.selected.splice(selected,1);this.revision++;return true;}
     this.selected.push(tile);this.revision++;
-    if(this.selected.length<2){this.emit('lock');return true;}
+    if(this.selected.length<2){this.emit('klossar-select',{tile});this.emit('lock');return true;}
     const [a,b]=this.selected;this.shots++;
     if(matches(a,b)){
       a.removed=b.removed=true;this.selected=[];this.hits++;this.score=this.hits*100;
@@ -130,6 +136,7 @@ class KlossarGame{
       if(this.hits===this.total){this.score=score(this.total,this.elapsed);this.state='celebrating';this.endingLeft=.85;this.emit('celebrate');}
       else if(!this.hasMove())this.reshuffle();
     }else{this.mistakes++;this.feedback={ids:[a.id,b.id],left:.42};this.emit('miss');}
+    this.emit('klossar-select',{tile});
     return true;
   }
   reshuffle(){

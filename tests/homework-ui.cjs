@@ -4,7 +4,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const read=file=>fs.readFileSync(path.join(__dirname,'..',file),'utf8'),html=read('index.html'),dictionary={'sv-001':{input:'keyboard',language:'sv-SE',words:[['hej'],['hopp'],['tekopp']]},'zh-001':{input:'voice',language:'zh-TW',words:[['你','nǐ','du'],['好','hǎo','bra'],['我喜歡喝茶','wǒ xǐhuān hē chá','Jag tycker om att dricka te.']]}};
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 const settle=()=>new Promise(resolve=>setImmediate(resolve));
-function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchScores=null){
+function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchScores=null,runtime={}){
   let document,currentGame,selection;const posts=[],requests=[],captures=[];
   class Element extends EventTarget{
     constructor(){super();Object.assign(this,{value:'',textContent:'',text:'',hidden:false,disabled:false,children:[],options:[],dataset:{},open:false});this.classList={add(){},remove(){},toggle(){}};this.style={setProperty(){}};}
@@ -20,7 +20,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
     if(options.method==='POST'){posts.push(JSON.parse(options.body));return Response.json({ok:true});}
     if(fetchScores)return fetchScores(url,options);
     return Response.json({leaderboard:'v2:city',scores:[{player_name:'TEST',score:30,exercise:'homework',difficulty:'gentle'}],rank:2});
-  }});
+  },...runtime});
   for(const [,url] of html.matchAll(/<script defer src="([^"]+)"/g)){
     const file=url.split('?')[0];
     if(file==='resources/app.js'){
@@ -131,6 +131,30 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   voice.click('pause');voice.click('pause-menu');voice.radios.find(r=>r.value==='city').dispatchEvent(new Event('change'));
   assert.equal(voice.fields['input-kind'].value,'browser');assert(!voice.fields['settings-open'].hidden);
   console.log('PASS Klossar click-only voice homework, disabled text/microphone, pause/resume, full round, score settings, replay and input restoration');
+  const utterances=[],pageEvents={};let cancellations=0;
+  const pronunciation=boot('',undefined,null,{
+    SpeechSynthesisUtterance:class{constructor(text){this.text=text;}},
+    speechSynthesis:{getVoices:()=>[],speak:u=>utterances.push(u),cancel:()=>cancellations++},
+    addEventListener:(type,listener)=>pageEvents[type]=listener
+  });
+  await settle();pronunciation.radios.find(r=>r.value==='klossar').dispatchEvent(new Event('change'));
+  pronunciation.fields.lesson.value='chinese';pronunciation.click('start');await settle();
+  pronunciation.fields.sound.querySelector=()=>({textContent:''});
+  const reading=pronunciation.game.order[0].map(id=>pronunciation.game.tiles[id]).find(t=>t.side==='answer');
+  pronunciation.game.select(reading.id);assert.equal(utterances.length,1);assert.equal(utterances[0].lang,'zh-TW');
+  pronunciation.click('sound');assert.equal(cancellations,1,'mute stops the current pronunciation');
+  pronunciation.game.select(reading.id);pronunciation.game.select(reading.id);assert.equal(utterances.length,1,'muted selection stays silent');
+  pronunciation.click('sound');assert.equal(utterances.length,1,'unmute does not replay a selected tile');
+  pronunciation.game.select(reading.id);pronunciation.game.select(reading.id);assert.equal(utterances.length,2);
+  pronunciation.click('pause');assert.equal(cancellations,2);pronunciation.click('resume');await settle();assert.equal(utterances.length,2);
+  pronunciation.game.select(reading.id);pronunciation.game.select(reading.id);assert.equal(utterances.length,3);
+  pronunciation.click('pause-menu');assert.equal(cancellations,3,'leaving the game stops pronunciation');
+  pronunciation.click('start');await settle();
+  const nextReading=pronunciation.game.order[0].map(id=>pronunciation.game.tiles[id]).find(t=>t.side==='answer');
+  pronunciation.game.select(nextReading.id);assert.equal(utterances.length,4);
+  pageEvents.pagehide();assert.equal(cancellations,4,'navigation stops pronunciation');
+  assert(pronunciation.fields.answer.disabled);assert.equal(pronunciation.captures.at(-1).enabled,false,'output does not activate voice input');
+  console.log('PASS Klossar pronunciation app integration: selection, mute/unmute, pause/resume, menu, navigation and no microphone');
   for(const search of ['?mode=homework','?mode=homework&id=missing','?mode=homework&id=sv-001&input=invalid','?mode=homework&id=sv-001&input=']){const broken=boot(search);await settle();assert(broken.fields.start.disabled);assert(broken.fields['setup-error'].textContent);broken.click('start');await settle();assert.equal(broken.game,undefined);}
   for(const response of [()=>new Response('{'),()=>{throw Error('offline');},()=>Response.json({'sv-001':{input:'keyboard',language:'sv-SE',words:[]}})]){
     const broken=boot('?mode=homework&id=sv-001',async()=>response());await settle();assert(broken.fields.start.disabled);assert(broken.fields['setup-error'].textContent);assert.equal(broken.game,undefined);
