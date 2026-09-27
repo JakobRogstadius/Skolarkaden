@@ -41,6 +41,9 @@ body.playing.voice-play .arena{height:clamp(540px,calc(100dvh - 82px),900px)}
 
 /* One compact score board for every game, coloured by its surrounding game. */
 #end-overlay{position:fixed;z-index:40;padding:12px;overflow:auto}
+.highscore-fireworks{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#end-overlay>.end-scoreboard{position:relative;z-index:1}
+@media(max-width:600px){#end-overlay.has-fireworks{padding:50px 24px}#end-overlay.has-fireworks>.end-scoreboard{max-height:calc(100dvh - 100px)}}
 .end-scoreboard{--board-accent:#b8ddd6;--board-bg:#182f3a;--board-panel:#233f48;width:min(490px,100%);max-width:490px;max-height:calc(100dvh - 24px);overflow:auto;padding:20px 24px;background:var(--board-panel);border-color:var(--board-accent)}
 [data-game=city] .end-scoreboard{--board-accent:#b9cdec;--board-bg:#111c32;--board-panel:#263750}
 [data-game=food] .end-scoreboard{--board-accent:#f1c88e;--board-bg:#242e2e;--board-panel:#3c4b46}

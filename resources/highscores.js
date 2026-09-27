@@ -69,7 +69,7 @@ class Highscores{
     $('score-name').addEventListener('compositionend',()=>{composing=false;edited();});
     $('score-name').addEventListener('input',e=>{if(!composing&&!e.isComposing)edited();});
     // pagehide covers closing/navigation without submitting when merely switching tabs.
-    root.addEventListener('pagehide',()=>{this.departing=true;this.pendingSave ||= this.submit().finally(()=>{this.pendingSave=null;});});
+    root.addEventListener('pagehide',()=>{this.departing=true;this.stopCelebration();this.pendingSave ||= this.submit().finally(()=>{this.pendingSave=null;});});
     root.addEventListener('pageshow',()=>{this.departing=false;});
     $('leaderboard-open').addEventListener('click',()=>this.open(this.getSelection()));
     $('scores-refresh').addEventListener('click',()=>this.load(this.view,true));
@@ -91,7 +91,16 @@ class Highscores{
     if($('score-name').readOnly)return;this.lastName=cleanName($('score-name').value).trim();
     try{localStorage.setItem(nicknameKey,this.lastName);}catch(_){}
   }
-  dismiss(){this.view++;this.shownResult=null;}
+  stopCelebration(){this.celebration?.dispose();this.celebration=null;}
+  dismiss(){this.stopCelebration();this.view++;this.shownResult=null;}
+  celebrate(){
+    if(!this.endView||!this.shownResult||this.departing||!SC.HighscoreFireworks)return;
+    const ownIndex=this.data?.scores?.slice(0,10).findIndex(row=>row.is_player)??-1;
+    const rank=ownIndex>=0?ownIndex+1:this.data?.rank;
+    if(!Number.isInteger(rank)||rank<1||rank>10){this.stopCelebration();return;}
+    this.celebration ||= new SC.HighscoreFireworks($('end-overlay'),{reducedMotion:this.shownResult.selection.reducedMotion});
+    this.celebration.setRank(rank);
+  }
   async topScore(selection){
     const data=await readBoard(selection);
     if(!Array.isArray(data.scores)||data.scores.some(row=>!Number.isFinite(Number(row.score))||Number(row.score)<0))throw new Error('Invalid response');
@@ -121,6 +130,7 @@ class Highscores{
     this.data=null;const token=++this.view;this.configureMenu();this.render();return this.load(token);
   }
   open(selection,result=null){
+    this.stopCelebration();
     this.selection={...selection};this.shownResult=result;this.endView=Boolean(result);this.data=null;
     this.page=selection.kind;
     const token=++this.view;
@@ -179,7 +189,7 @@ class Highscores{
       if(popularity?data.group!==page||!Array.isArray(data.entries):!Array.isArray(data.scores))throw new Error('Invalid response');
       const oldRatings=popularity&&page==='exercises'&&data.ranking_method!=='top-five-game-percentiles-v1';
       if(oldRatings)data={...data,entries:data.entries.map(row=>({...row,rating:null,player_name:null,score:null}))};
-      this.data=data;this.render();
+      this.data=data;this.render();this.celebrate();
       status.textContent=oldRatings?'Percentilrankningen kräver en uppdatering av topplistans server.':popularity?(data.entries.some(row=>row.plays>0)?'':'Inga sparade omgångar ännu.'):result&&data.rank==null?'Din placering kan inte hämtas just nu.':data.scores.length?'':'Bli först på topplistan!';
     }catch(error){if(current())status.textContent=popularity&&error.status===404?'Statistiken kräver en uppdatering av topplistans server.':error.code==='invalid_leaderboard'?error.message:'Topplistan kunde inte hämtas. Försök igen om en stund.';}
     finally{if(current())$('scores-refresh').disabled=false;}

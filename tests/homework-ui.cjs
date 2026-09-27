@@ -8,7 +8,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   let document,currentGame,selection;const posts=[],requests=[],captures=[];
   class Element extends EventTarget{
     constructor(){super();Object.assign(this,{value:'',textContent:'',text:'',hidden:false,disabled:false,children:[],options:[],dataset:{},open:false});this.classList={add(){},remove(){},toggle(){}};this.style={setProperty(){}};}
-    append(...items){this.children.push(...items);}replaceChildren(...items){this.children=[...items];this.options=[...items];this.value=items[0]?.value||'';}add(option){this.options.push(option);if(this.options.length===1)this.value=option.value;}
+    append(...items){this.children.push(...items);items.forEach(item=>{item.parent=this;});}remove(){if(this.parent)this.parent.children=this.parent.children.filter(item=>item!==this);}replaceChildren(...items){this.children=[...items];this.options=[...items];this.value=items[0]?.value||'';}add(option){this.options.push(option);if(this.options.length===1)this.value=option.value;}
     closest(){return this.parent||(this.parent=new Element());}querySelector(){return null;}setAttribute(){}focus(){document.activeElement=this;}showModal(){this.open=true;}close(){this.open=false;this.dispatchEvent(new Event('close'));}
   }
   const fields={};for(const tag of html.match(/<[^>]+\bid="[^"]+"[^>]*>/g)||[]){const el=new Element();el.hidden=/\bhidden\b/.test(tag);fields[tag.match(/\bid="([^"]+)"/)[1]]=el;}
