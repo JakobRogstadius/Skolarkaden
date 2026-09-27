@@ -41,13 +41,13 @@ SC.modes.homework=SC.parseHomework({test:{input:'voice',language:'zh-TW',words:[
   assert.equal(spoken.length,start,'longer Chinese phrases and their pinyin are silent');
 }
 for(const item of SC.modes.bopomofo.items){
-  const {g}=game({mode:'bopomofo',lang:'zh-TW',items:[item]}),pair=firstPair(g),symbol=pair.find(t=>t.side==='problem'),key=pair.find(t=>t.side==='answer');
+  const {g}=game({mode:'bopomofo',lang:'zh-TW',items:[item]}),pair=firstPair(g),symbol=pair.find(t=>t.side==='problem'),pinyin=pair.find(t=>t.side==='answer');
   const start=played.length;g.select(symbol.id);assert.equal(played.length,start+1);
   const expected='resources/audio/bopomofo/'+item.label.codePointAt(0).toString(16)+'.mp3';assert.equal(played.at(-1),expected);
   assert(fs.statSync(path.join(__dirname,'..',expected)).size>1000,'recording is bundled for '+item.label);
-  const before=spoken.length;g.select(key.id);
-  assert.equal(spoken.length,before+(/^[a-z]$/.test(item.key)?1:0),'only Latin keyboard letters speak');
-  if(spoken.length>before)assert.equal(spoken.at(-1).lang,'sv-SE');
+  const before=spoken.length;g.select(pinyin.id);
+  assert.equal(spoken.length,before,'pinyin stays silent, including one-letter vowels');
+  assert.equal(played.length,start+1);assert.equal(g.hits,1);
 }
 for(const [mode,lang,label] of [['letters','en-US','j'],['letters','sv-SE','ö'],['english','en-US','a']]){
   const {g}=game({mode,lang,items:[{label}]}),[a,b]=firstPair(g);g.select(a.id);g.select(b.id);

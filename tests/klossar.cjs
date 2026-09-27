@@ -6,6 +6,27 @@ const SC=context.Starlight,rng=seed=>()=>((seed=(Math.imul(seed,1664525)+1013904
 function setup(options={},seed=9){const events=[],g=new SC.KlossarGame({random:rng(seed),onEvent:e=>events.push(e)});g.start(options);return {g,events};}
 function playPair(g){const free=g.getAvailableTargets(),a=free.find(a=>free.some(b=>SC.klossarMatches(a,b)));assert(a,'remaining board has a legal match');const b=free.find(b=>SC.klossarMatches(a,b));g.select(a.id);g.select(b.id);}
 
+// Klossar pairs the spoken names with symbols without modifying the shared
+// exercise items or keyboard answers used by the other games.
+{
+  const original=JSON.stringify(SC.modes.bopomofo.items);
+  const expected=Object.fromEntries('ㄅ:bo ㄆ:po ㄇ:mo ㄈ:fo ㄉ:de ㄊ:te ㄋ:ne ㄌ:le ㄍ:ge ㄎ:ke ㄏ:he ㄐ:ji ㄑ:qi ㄒ:xi ㄓ:zhi ㄔ:chi ㄕ:shi ㄖ:ri ㄗ:zi ㄘ:ci ㄙ:si ㄧ:yi ㄨ:wu ㄩ:yu ㄚ:a ㄛ:o ㄜ:e ㄝ:ê ㄞ:ai ㄟ:ei ㄠ:ao ㄡ:ou ㄢ:an ㄣ:en ㄤ:ang ㄥ:eng ㄦ:er'.split(' ').map(pair=>pair.split(':')));
+  const {g}=setup({mode:'bopomofo',pace:'brave'}),symbols=g.tiles.filter(t=>t.side==='problem'),answers=g.tiles.filter(t=>t.side==='answer');
+  assert.equal(new Set(symbols.map(t=>t.item.label)).size,37,'a large board includes every symbol');
+  for(const symbol of symbols)for(const answer of answers){
+    assert.equal(SC.klossarMatches(symbol,answer),answer.item.label===expected[symbol.item.label],symbol.item.label+' ↔ '+answer.item.label);
+    assert(!symbol.item.hint&&!answer.item.hint,'keyboard hints are not copied onto tiles');
+  }
+  for(let n=0;n<40;n++){playPair(g);g.update(.3);}
+  assert.equal(g.hits,40);assert.equal(JSON.stringify(SC.modes.bopomofo.items),original);
+  for(const item of SC.modes.bopomofo.items){
+    assert.equal(SC.toBopomofo(item.key),item.label,'original keyboard key still works for '+item.label);
+    assert(SC.matches(item.answer,item,'bopomofo','zh-TW','text'),'shared text matching remains intact');
+    assert(SC.matches(expected[item.label],item,'bopomofo','zh-TW','speech'),'shared speech matching remains intact');
+  }
+}
+console.log('PASS all 37 bopomofo/pinyin pairs, distinct similar sounds, a complete round and unchanged shared keyboard/speech answers');
+
 // Covering and both horizontal sides matter; above/below neighbours do not.
 const center={x:1,y:1,z:0},left={x:0,y:1,z:0},right={x:2,y:1,z:0},top={x:1,y:0,z:0},cover={x:1,y:1,z:1};
 assert(SC.klossarIsFree(center,[center,left,top]));assert(!SC.klossarIsFree(center,[center,left,right]));

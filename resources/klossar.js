@@ -65,7 +65,11 @@ function pairFor(item,mode,random,lang){
     const speech=/^\p{Script=Han}{1,2}$/u.test(item.label)?{text:item.label,lang:SC.modes[mode].lang}:null;
     return {problem:{label:item.label,speech,tooltip:chinese.translation},answer:item.hint,chinese,key:'pinyin:'+readingKey(item.hint)};
   }
-  if(mode==='bopomofo')return {problem:{label:item.label,speech:{audio:'resources/audio/bopomofo/'+item.label.codePointAt(0).toString(16)+'.mp3'}},answer:item.key.toUpperCase(),answerSpeech:letterSpeech(item.key,SC.modes.letters.lang),key:'key:'+item.key};
+  if(mode==='bopomofo'){
+    const pinyin=SC.bopomofoPinyin[item.label];
+    if(!pinyin)throw new Error('Bopomofotecknet saknar pinyin.');
+    return {problem:{label:item.label,speech:{audio:'resources/audio/bopomofo/'+item.label.codePointAt(0).toString(16)+'.mp3'}},answer:pinyin,key:'bopomofo:'+item.label};
+  }
   if(SC.isWordPair(mode)){
     const promptLang=SC.isTranslation(mode)?(item.answerLang==='en-US'?'sv-SE':'en-US'):item.answerLang;
     return {problem:{label:item.label.toLocaleUpperCase('sv-SE'),speech:letterSpeech(item.label,promptLang)},answer:item.answer.toLocaleLowerCase('sv-SE'),answerSpeech:letterSpeech(item.answer,item.answerLang),key:'word:'+SC.pairAnswerKey(item.answer,item.answerLang)};
