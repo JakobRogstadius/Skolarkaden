@@ -44,7 +44,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
     if(pending)return new Promise(resolve=>pending.push(resolve));
     if(fail)throw Error('offline');
     const board=new URL(url).searchParams.get('leaderboard').split(':').slice(0,2).join(':');
-    return Response.json({leaderboard:board,scores:top===null?[]:[{score:board==='v2:chess'?1234:top}]});
+    return Response.json({leaderboard:board,scores:top===null?[]:[{score:board==='v3:chess'?1234:top}]});
   });
   await settle();
   for(const radio of hud.radios){
@@ -75,7 +75,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   reversi.click('again');await settle();await settle();assert.equal(reversi.posts[0].leaderboard_key,'v1:reversi:swedish:gentle');assert.equal(reversi.posts[0].score,64);
   assert.equal(reversi.game.score,2);assert.equal(reversi.game.turns,0);
   console.log('PASS Reversi app: menu, turn input, pause/resume, final score submission and restart.');
-  const chess=boot('',undefined,async url=>Response.json({leaderboard:'v2:chess',scores:[{player_name:'DRAW',score:500,exercise:'swedish',difficulty:'gentle'}],rank:2}));await settle();
+  const chess=boot('',undefined,async url=>Response.json({leaderboard:'v3:chess',scores:[{player_name:'DRAW',score:500,exercise:'swedish',difficulty:'gentle'}],rank:2}));await settle();
   chess.radios.find(r=>r.value==='chess').dispatchEvent(new Event('change'));chess.click('start');await settle();
   assert.equal(chess.fields.answer.disabled,true);assert.equal(chess.captures.at(-1).turnBased,true);assert.equal(chess.fields.best.textContent,'BÄSTA '+(500).toLocaleString('sv-SE'));
   const chessReady=()=>{for(let i=0;i<20000&&chess.game.phase!=='answer'&&chess.game.state==='playing';i++)chess.game.update(.05);};
@@ -87,7 +87,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   assert.equal(chess.fields['result-title'].textContent,'Remi! ½–½ · Patt');assert.equal(chess.fields['end-overlay'].hidden,false);
   const chessScore=chess.game.score;assert(chessScore>=0&&chessScore<=1530);
   assert(chess.fields['end-scores-list'].children.some(row=>row.children.some(cell=>cell.className==='board-points'&&cell.textContent===String(chessScore))));assert.equal(chess.fields['chess-result-breakdown'].hidden,false);assert.match(chess.fields['chess-result-breakdown'].textContent,/Dragkvalitet/);
-  chess.click('again');await settle();await settle();assert.equal(chess.posts[0].leaderboard_key,'v2:chess:swedish:gentle');assert.equal(chess.posts[0].score,chessScore,'arcade score is stored without rescaling');
+  chess.click('again');await settle();await settle();assert.equal(chess.posts[0].leaderboard_key,'v3:chess:swedish:gentle');assert.equal(chess.posts[0].score,chessScore,'arcade score is stored without rescaling');
   assert.equal(chess.game.turns,0);assert.equal(chess.game.position.history().length,0);
   chess.fields.lesson.value='chinese';chess.click('pause');chess.click('pause-menu');chess.click('start');await settle();chessReady();
   chess.game.queue.enqueue('錯了','speech');chess.game.update(.05);assert.equal(chess.game.turns,1,'incorrect Chinese speech must reach the poor-move rule');assert.equal(chess.game.hits,0);

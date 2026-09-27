@@ -4,7 +4,7 @@
 'use strict';
 // Bump only the affected game's version when its scoring/rules change.
 // Home stays on v1 during its initial tuning, by the owner's decision.
-const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1',reversi:'v1',chess:'v2',klossar:'v1'});
+const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1',reversi:'v1',chess:'v3',klossar:'v1'});
 const mathExercises=Object.freeze(['math-addition','math-diagrams','math-addition-subtraction','math-simple-equations','math-large-numbers','math-multiplication','math-multiplication-division','math-equations']);
 const languageExercises=Object.freeze(['swedish-opposites','swedish-synonyms','english-opposites','english-synonyms','translation-sv-en-1','translation-sv-en-2','translation-sv-en-3']);
 // Longer distinctive strings also match inside a name (including separated or
@@ -67,6 +67,6 @@ function isBannedName(value){
   return fragments.some(fragment=>joined.includes(fragment)) ||
     normalized.split(/[^a-z]+/).some(token=>words.has(token)) || words.has(joined);
 }
-const scoreCaps=Object.freeze({chess:2430});
+const scoreCaps=Object.freeze({chess:1000000});
 root.SkolarkadenHighscorePolicy=Object.freeze({versions,mathExercises,languageExercises,isBannedName,scoreCaps});
 })(globalThis);

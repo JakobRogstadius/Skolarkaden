@@ -100,7 +100,12 @@ function* analyse(position,{depth=4,nodes=24000}={}){
  return best.map(({internal,...move})=>move).sort((x,y)=>y.value-x.value);
 }
 const shuffled=(items,random=Math.random)=>SC.Reversi.shuffled(items,random);
-function recommendations(ranked,random=Math.random){return shuffled(shuffled(ranked,random).sort((a,b)=>b.value-a.value).slice(0,3),random);}
+function recommendations(ranked,random=Math.random,count=3){
+ if(!ranked.length||count<1)return [];
+ // Randomise ties, always retain a best move, then sample without replacement.
+ const top=shuffled(ranked,random).sort((a,b)=>b.value-a.value).slice(0,10);
+ return shuffled([top[0],...shuffled(top.slice(1),random).slice(0,Math.min(3,count)-1)],random);
+}
 function chooseBot(ranked,pace,random=Math.random){
  if(!ranked.length)return null;
  const profile=profiles[pace]||profiles.gentle,best=Math.max(...ranked.map(m=>m.value)),pool=ranked.filter(m=>m.value>=best-profile.window);

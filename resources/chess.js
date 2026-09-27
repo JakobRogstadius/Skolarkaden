@@ -1,4 +1,4 @@
-/* Answer-driven turns; points depend only on the chess moves and outcome. */
+/* Answer-driven turns with ranked move-choice points and chess result bonuses. */
 (function(root){
 'use strict';const SC=root.Starlight,C=SC.ChessEngine,S=SC.ChessScoring;
 class ChessGame{
@@ -6,7 +6,7 @@ class ChessGame{
  emit(type,detail={}){this.onEvent({type,...detail});}
  resize(width,height){Object.assign(this,{width,height});}
  start({mode='letters',pace='gentle',lang='sv-SE',items=null,uppercase=false}={}){
-  Object.assign(this,{mode,pace,lang,uppercase,clock:0,elapsed:0,turns:0,hits:0,shots:0,streak:0,bestStreak:0,score:0,botScore:0,resultScore:null,capturedMaterial:0,lostMaterial:0,qualityLoss:0,targets:[],history:[],lastMove:null,search:null,ranked:null,won:false,draw:false,reason:null});
+  Object.assign(this,{mode,pace,lang,uppercase,clock:0,elapsed:0,turns:0,hits:0,shots:0,streak:0,bestStreak:0,score:0,botScore:0,resultScore:null,capturedMaterial:0,lostMaterial:0,movePoints:0,targets:[],history:[],lastMove:null,search:null,ranked:null,won:false,draw:false,reason:null});
   this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Övningen behöver minst ett svar.');
   this.position=new C.Chess();this.updateScore();this.state='playing';this.revision++;this.queue.clear();this.emit('start');this.beginTurn();
  }
@@ -27,7 +27,7 @@ class ChessGame{
   this.search=C.analyse(this.position,this.side==='w'?C.adviser:C.profiles[this.pace]);
  }
  offer(ranked){
-  this.ranked=ranked;const moves=C.recommendations(ranked,this.random),items=SC.reversiDistinctItems(this.items,moves.length,this.mode,this.lang,this.random);
+  this.ranked=ranked;const items=SC.reversiDistinctItems(this.items,Math.min(3,ranked.length),this.mode,this.lang,this.random),moves=C.recommendations(ranked,this.random,items.length);
   this.targets=items.map((base,i)=>{
    const item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
    return {id:this.turns+':'+C.key(moves[i]),move:moves[i],item,appearedAt:this.clock,letter:'ABC'[i]};
@@ -37,13 +37,14 @@ class ChessGame{
   this.revision++;this.emit('chess-ready');
  }
  play(move,entry=null,correct=false){
-  const side=this.position.turn(),previousScore=this.score,regret=side==='w'?S.moveLoss(this.ranked,move):0,played=this.position.move(move);
-  this.lastMove={...played,at:this.clock,qualityLoss:regret};this.history.push(this.lastMove);
+  const side=this.position.turn(),previousScore=this.score,points=side==='w'?S.choicePoints(this.targets.map(t=>t.move),move,correct):0,played=this.position.move(move);
+  this.lastMove={...played,at:this.clock,movePoints:points};this.history.push(this.lastMove);
   if(played.captured){const value=S.pieceValues[played.captured];if(side==='w')this.capturedMaterial+=value;else this.lostMaterial+=value;}
-  if(side==='w')this.qualityLoss+=regret;
+  if(side==='w')this.movePoints+=points;
   if(side==='w'){this.turns++;this.shots++;if(correct){this.hits++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);}else this.streak=0;}
   this.updateScore();
-  this.wait('animate',(side==='b'?'Datorn: ':correct?'Du: ':'Fel svar. Ett svagt drag spelas: ')+C.description(played)+'.',.85);
+  const feedback=side==='w'?' '+(points>0?'+':points<0?'−':'')+Math.abs(points)+' dragpoäng.':'';
+  this.wait('animate',(side==='b'?'Datorn: ':correct?'Du: ':'Fel svar. Ett svagt drag spelas: ')+C.description(played)+'.'+feedback,.85);
   if(entry)this.emit(correct?'hit':'miss',{entry,points:this.score-previousScore});
  }
  finish(result=C.outcome(this.position)){

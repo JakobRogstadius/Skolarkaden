@@ -1,7 +1,10 @@
 # Chess (Schack)
 
-The player is White and moves first. Each turn offers up to three good legal
-moves, with distinct accepted exercise answers. Reversi's answer separation,
+The player is White and moves first. Each turn offers the bot's best legal move
+and two distinct moves sampled uniformly from the remaining top ten, with
+distinct accepted exercise answers. Ties are shuffled before taking the top
+ten. With fewer legal moves or distinct answers, show fewer choices while
+always retaining a best move. Reversi's answer separation,
 typing and final-result speech handling are reused, including aliases and
 toneless pinyin. Move order is shuffled and evaluation scores are hidden.
 Hover, focus or touch previews a move; only an answer plays it. Incorrect
@@ -48,51 +51,52 @@ perft and public/private parity tests to pass.
 
 ## Scoring
 
-The score measures the moves actually played and the final result. Correct
-answers let the player select proposed moves; they award no points directly.
-Elapsed time, answer streaks and difficulty do not enter the score.
+The score combines points for the chosen move, captures, lost pieces and the
+final result. An incorrect answer deducts 10 move points and triggers a weak
+move. Elapsed time, answer streaks and difficulty do not enter the score.
 
 | Component | Points |
 | --- | --- |
 | Result | Win: 1,000; draw: 400; loss: 0 |
 | Captured material | +10 × piece value |
 | Lost material | −10 × piece value |
-| Move quality | `round(100 × exp(−cumulativeRegret / 1000))` |
+| Move quality | Best offered choice: +10; second: +5; third: 0; wrong answer: −10 |
 | Fewer moves to win | On a win only: `round(6000 / (20 + playerTurns))` |
 
-The final score is the sum, floored at zero. Piece values are pawn 1, knight
-3, bishop 3, rook 5 and queen 9. Capturing a queen adds 90; losing one subtracts
+The score starts at zero. The total is the sum, floored at zero; negative move
+points remain in the running component and reduce later gains. Piece values
+are pawn 1, knight 3, bishop 3, rook 5 and queen 9. Capturing a queen adds 90; losing one subtracts
 90. En passant counts as a pawn capture. A promoted piece has its new value
 when captured. The king has no capture value: checkmate awards the win bonus.
 
-For each player move, **regret** is the difference between the best legal
-move's evaluation and the played move's evaluation in the adviser's completed
-search, in centipawns. Better moves preserve more of the quality bonus. Best,
-tied and forced moves have no regret. A correct answer and an incorrect answer
-that produce the same move produce the same score. Opponent moves never add
-player regret. Quality uses the same adviser at every difficulty.
+Rank is relative to the moves actually offered, not to all legal moves, and
+is independent of the shuffled A/B/C order. Equal bot evaluations earn equal
+points: count the strictly better offered moves to determine the award. Thus
+two tied best choices both earn 10, and two tied second choices both earn 5.
+If all choices tie, each earns 10. A forced correct move earns 10; a wrong
+answer still costs 10 even when it produces that same forced move. Opponent
+moves never add move-choice points. The adviser is the same at every difficulty.
 
-The 100-point quality reserve is visible from the start. Regret accumulates
-throughout the game: extra quiet moves cannot restore or dilute it. Ordinary
-evaluations are capped at ±4,000 centipawns for scoring. Mate evaluations are
-mapped just outside that range to ±`(5000 − 10 × min(99, distanceToMate))`,
-preserving preference for faster wins and delayed losses without charging
-the engine's enormous mate sentinel as a material loss.
+Move-choice points accumulate throughout the game, replacing the former
+100-point quality reserve and cumulative-regret formula. The earned or lost
+move points are shown in the status message after the move is played. Before
+answering, cards show neither their ranking nor their point award.
 
 Winning in 20, 40 or 80 own moves awards an efficiency bonus of 150, 100
 or 60 respectively. Thinking, pausing and typing take no points away.
 Captures and losses are bounded at 103 material units per side, including
 eight promoted queens. Material now has ten times its previous relative
 weight, so material differences can outweigh result bonuses across different
-games. The safe integer score cap is 2,430.
+games. Scores use the general safe submission limit of 1,000,000; the previous
+2,430-point limit no longer applies now that move points accumulate.
 The component breakdown appears in the result screen.
 
 ## Score storage and deployment
 
-Chess uses score version `v2`, keeping these scores separate from the previous
-match-only scores. The browser and D1 store arcade points as ordinary integers
-without rescaling. The Worker accepts only integers from 0 to 2,430 and
-rejects submissions using the old chess version. Historical `v1` records in
+Chess uses score version `v3`, keeping these scores separate from both previous
+scoring systems. The browser and D1 store arcade points as ordinary integers
+without rescaling. The Worker accepts only integers from 0 to 1,000,000 and
+rejects submissions using old chess versions. Historical `v1` records in
 administrator statistics still display their half-point encoding as 0, ½ or 1.
 Other games retain their existing units and versions.
 
@@ -110,9 +114,9 @@ The npm tarball SHA-1 is `edc1439492d1a0d7f530ba72b2b5398baece28a1`.
 `tests/chess.cjs` covers reference perft positions, move legality, draw rules,
 mate search, repetition preservation, difficulty variation, distinct answer
 choices and turn handling. `tests/chess-scoring.cjs` covers score arithmetic,
-result bonuses, cumulative regret, answer/time independence and actual
-captures, including en passant and promotion. `tests/chess-scores.cjs`
-exercises the real Worker against SQLite, including version separation and
+result bonuses, offered-choice ranks, ties, wrong-answer penalties, time
+independence and actual captures, including en passant and promotion.
+`tests/chess-scores.cjs` exercises the real Worker against SQLite, including version separation and
 score limits. `tests/homework-ui.cjs` covers app input, pause, score display,
 submission and replay. `tests/chess-renderer.cjs` checks that every exercise's
 move cards keep hints and answers hidden after waiting, pausing and resuming,

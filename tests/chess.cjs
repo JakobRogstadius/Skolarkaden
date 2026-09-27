@@ -58,28 +58,46 @@ test('Hidden recommendations shuffle ties; difficulty and poor choices use the e
  assert(C.profiles.gentle.depth<C.profiles.steady.depth&&C.profiles.steady.depth<C.profiles.brave.depth);
  const bot=new Set();for(let i=0;i<30;i++)bot.add(C.key(C.chooseBot(ranked,'brave',random)));assert.equal(bot.size,3);
 });
+test('Choices always include a best move plus distinct random moves from the top ten',()=>{
+ const random=rng(2026),ranked=new C.Chess().moves({verbose:true}).map((m,i)=>({...m,value:1000-i})),original=ranked.map(C.key),seen=new Set(),bestSlots=new Set();
+ for(let i=0;i<200;i++){
+  const choices=C.recommendations(ranked,random);assert.equal(choices.length,3);assert.equal(new Set(choices.map(C.key)).size,3);
+  assert(choices.some(m=>C.key(m)===C.key(ranked[0])));bestSlots.add(choices.findIndex(m=>C.key(m)===C.key(ranked[0])));
+  for(const move of choices){const index=ranked.findIndex(m=>C.key(m)===C.key(move));assert(index<10);seen.add(index);}
+ }
+ assert.equal(seen.size,10,'every one of the top ten can appear');assert.equal(bestSlots.size,3,'the best move has no fixed letter');assert.deepEqual(ranked.map(C.key),original,'input order is preserved');
+ for(const length of [0,1,2,3,7])for(const count of [1,2,3]){
+  const choices=C.recommendations(ranked.slice(0,length),random,count);assert.equal(choices.length,Math.min(length,count));
+  if(length)assert(choices.some(m=>C.key(m)===C.key(ranked[0])));
+ }
+ const tied=ranked.map(m=>({...m,value:0})),bestChoices=new Set();
+ for(let i=0;i<100;i++)bestChoices.add(C.key(C.recommendations(tied,random,1)[0]));assert(bestChoices.size>10,'ties do not lock the same ten moves into the pool');
+});
 test('Chess offers distinct exercise answers including aliases, pinyin and diagrams',()=>{
  const opening=new C.Chess().moves({verbose:true}).map((m,i)=>({...m,value:-i}));
  for(const mode of Object.keys(SC.modes).filter(m=>m!=='homework')){
   const {g}=setup({mode,lang:SC.modes[mode].lang});g.search=null;g.offer(opening);assert.equal(g.targets.length,3,mode);
   for(let i=0;i<3;i++)for(let j=i+1;j<3;j++)assert(!SC.reversiAnswerOverlap(g.targets[i].item,g.targets[j].item,mode,g.lang),mode);
  }
- const {g}=setup({items:[{label:'sol',answer:'sol'}]});g.offer(opening);assert.equal(g.targets.length,1);
+ for(const count of [1,2]){
+  const {g}=setup({items:[{label:'sol',answer:'sol'},{label:'måne',answer:'måne'}].slice(0,count)});g.offer(opening);assert.equal(g.targets.length,count);
+  assert(g.targets.some(t=>C.key(t.move)===C.key(opening[0])),'short exercises must retain the best move');
+ }
 });
 test('Correct and incorrect answers play their respective moves and clear stale input',()=>{
  const {g}=setup({mode:'swedish'});tickUntil(g,()=>g.phase==='answer');const target=g.targets[1];g.queue.enqueue(target.item.answer);g.queue.enqueue(g.targets[2].item.answer);g.update(.05);
  assert.equal(C.key(g.lastMove),C.key(target.move));assert.equal(g.turns,1);assert.equal(g.hits,1);assert.equal(g.queue.length,0);assert.equal(g.getTargets().length,0);assert.equal(g.canAnswer(),false);
  g.queue.enqueue('stale');tickUntil(g,()=>g.phase==='answer');assert.equal(g.history.length,2);assert.equal(g.turns,1);assert.equal(g.queue.length,0);
  const cutoff=[...g.ranked].sort((a,b)=>a.value-b.value)[Math.ceil(g.ranked.length/3)-1].value;
- g.queue.enqueue('incorrect');g.update(.05);assert(g.ranked.find(m=>C.key(m)===C.key(g.lastMove)).value<=cutoff);assert.equal(g.turns,2);assert.equal(g.hits,1);assert.equal(g.scoreParts.result,0);assert.equal(g.scoreParts.efficiency,0);assert(g.score>=0&&g.score<=1130,'live points come from material and move quality');
+ const movePoints=g.movePoints;g.queue.enqueue('incorrect');g.update(.05);assert(g.ranked.find(m=>C.key(m)===C.key(g.lastMove)).value<=cutoff);assert.equal(g.turns,2);assert.equal(g.hits,1);assert.equal(g.scoreParts.result,0);assert.equal(g.scoreParts.efficiency,0);assert.equal(g.movePoints,movePoints-10);assert(g.score>=0);
 });
 test('No answer deadline, pause/resume, wrong Chinese, forced move and separate match/arcade scores',()=>{
  const {g}=setup({mode:'chinese',lang:'zh-TW'});g.offer(g.position.moves({verbose:true}).map(m=>({...m,value:0})));const fen=g.position.fen();g.update(3600);assert.equal(g.position.fen(),fen);assert.equal(g.turns,0);
  g.queue.enqueue('stale');g.pause();const clock=g.clock;g.update(3600);assert.equal(g.clock,clock);assert.equal(g.queue.length,0);g.resume();assert(g.canAnswer());g.queue.enqueue('錯了','speech');g.update(.05);assert.equal(g.turns,1);assert.equal(g.hits,0);
- const one=setup().g;one.position=new C.Chess('8/8/8/8/8/8/r1k5/K7 w - - 0 1');one.beginTurn();tickUntil(one,()=>one.phase==='answer');assert.equal(one.targets.length,1);one.queue.enqueue('wrong');one.update(.05);assert.equal(one.lastMove.to,'a2');tickUntil(one,()=>one.state!=='playing');assert.equal(one.resultScore,.5);assert.equal(one.score,550,'draw plus 100 quality and captured rook');
+ const one=setup().g;one.position=new C.Chess('8/8/8/8/8/8/r1k5/K7 w - - 0 1');one.beginTurn();tickUntil(one,()=>one.phase==='answer');assert.equal(one.targets.length,1);one.queue.enqueue('wrong');one.update(.05);assert.equal(one.lastMove.to,'a2');tickUntil(one,()=>one.state!=='playing');assert.equal(one.resultScore,.5);assert.equal(one.score,440,'draw plus captured rook minus wrong-answer penalty');
  for(const [fen,score,state] of [
   ['7k/6Q1/6K1/8/8/8/8/8 b - - 0 1',1,'won'],
   ['8/8/8/8/8/6k1/6q1/7K w - - 0 1',0,'lost'],
   ['7k/5Q2/6K1/8/8/8/8/8 b - - 0 1',.5,'draw']
- ]){const {g,events}=setup();g.turns=25;g.position=new C.Chess(fen);g.beginTurn();assert.equal(g.state,state);assert.equal(g.resultScore,score);assert.equal(g.botScore,1-score);assert.equal(g.score,{won:1233,draw:500,lost:100}[state]);g.update(999);g.finish();assert.equal(events.filter(e=>e.type==='end').length,1);}
+ ]){const {g,events}=setup();g.turns=25;g.position=new C.Chess(fen);g.beginTurn();assert.equal(g.state,state);assert.equal(g.resultScore,score);assert.equal(g.botScore,1-score);assert.equal(g.score,{won:1133,draw:400,lost:0}[state]);g.update(999);g.finish();assert.equal(events.filter(e=>e.type==='end').length,1);}
 });

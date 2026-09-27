@@ -112,7 +112,7 @@ class Element extends EventTarget{
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),'v2:city');
   assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'eggs'}),'v2:eggs');
-  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,['home','reversi','klossar'].includes(game)?'v1':'v2');
+  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,game==='chess'?'v3':['home','reversi','klossar'].includes(game)?'v1':'v2');
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:eggs:swedish:gentle'}))).status,201);
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:eggs:swedish:gentle'}))).status,400);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'home'}),'v1:home');
