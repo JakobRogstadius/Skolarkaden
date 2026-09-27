@@ -5,17 +5,18 @@ const element=(tag,className,text)=>{const el=document.createElement(tag);el.cla
 const shapes={
  p:'<circle cx="50" cy="28" r="12"/><path d="M40 43h20l-4 17 10 12H34l10-12z"/>',
  r:'<path d="M28 19h11v10h7V19h9v10h7V19h11v24H63l-3 22 9 8H31l9-8-3-22h-9z"/><path d="M37 43h26"/>',
- n:'<path d="M28 74Q18 62 12 48Q27 59 38 54L39 40Q36 34 38 23Q40 12 53 12H78Q88 12 88 24V33H62V41L86 47Q83 56 64 54L61 67 70 74Z"/><path d="M67 34l4 6 4-6M78 34l4 6 4-6" fill="#fff5da" stroke="#534a3a" stroke-width="1.5"/><path d="M62 58l8 6 5-3M48 60q-9 1-8 9l-3 5h15" fill="none" stroke-width="3"/><circle cx="52" cy="25" r="7" fill="#fff5da" stroke-width="2.5"/><circle cx="54" cy="25" r="2.8" fill="#29343c" stroke="none"/><circle cx="82" cy="25" r="1.7" fill="currentColor" stroke="none"/>',
  b:'<path d="M50 12c0 0-20 19-20 31 0 10 10 14 13 15l-10 15h34L57 58c3-1 13-5 13-15 0-12-20-31-20-31z"/><path d="M52 26L41 43M38 58h24"/>',
  q:'<path d="M24 30l14 12 12-22 12 22 14-12-10 32H34zM36 63h28l7 11H29z"/><circle cx="22" cy="26" r="5"/><circle cx="50" cy="16" r="5"/><circle cx="78" cy="26" r="5"/>',
  k:'<path d="M50 9v22M42 17h16"/><path d="M33 37c-9 0-10 11-6 18l12 10-9 9h40l-9-9 12-10c4-7 3-18-6-18-8 0-9 6-17 6s-9-6-17-6zM37 65h26"/>'
 };
-function pieceSvg(piece){return '<svg viewBox="0 0 100 100" aria-hidden="true" class="ch-piece-art '+(piece.color==='w'?'ch-white':'ch-black')+'"><g stroke-linecap="round" stroke-linejoin="round" stroke-width="4">'+shapes[piece.type]+'<path d="M29 76h42l5 10H24z"/></g></svg>';}
+function pieceArt(type){return type==='n'?dinosaurBody+dinosaurFace:shapes[type]+'<path d="M29 76h42l5 10H24z"/>';}
+function pieceSvg(piece,direction=1){return '<svg viewBox="0 0 100 100" aria-hidden="true" class="ch-piece-art '+(piece.color==='w'?'ch-white':'ch-black')+'"><g transform="'+(direction<0?'translate(100 0) scale(-1 1)':'')+'" stroke-linecap="round" stroke-linejoin="round" stroke-width="4">'+pieceArt(piece.type)+'</g></svg>';}
 const point=s=>({x:('abcdefgh'.indexOf(s[0])+.5)*100,y:(8-Number(s[1])+.5)*100});
 const clamp=n=>Math.max(0,Math.min(1,n)),mix=(a,b,p)=>a+(b-a)*p;
-// Separate jaws let the same little dinosaur swallow the actual captured chess piece.
-const dinosaurBody='<path d="M28 74Q18 62 12 48Q27 59 38 54L39 40H62V54L61 67 70 74Z"/><path d="M62 58l8 6 5-3M48 60q-9 1-8 9l-3 5h15" fill="none" stroke-width="3"/><path d="M29 76h42l5 10H24z"/><ellipse class="ch-capture-mouth" cx="74" cy="43" rx="16" ry="14" fill="#412b32" stroke="none"/>',
- dinosaurFace='<g class="ch-capture-head"><path d="M39 41Q36 34 38 23Q40 12 53 12H78Q88 12 88 24V33H62V41Z"/><path d="M67 34l4 6 4-6M78 34l4 6 4-6" fill="#fff5da" stroke="#534a3a" stroke-width="1.5"/><circle cx="52" cy="25" r="7" fill="#fff5da" stroke-width="2.5"/><circle cx="54" cy="25" r="2.8" fill="#29343c" stroke="none"/><circle cx="82" cy="25" r="1.7" fill="currentColor" stroke="none"/></g><g class="ch-capture-jaw"><path d="M62 41L86 47Q83 56 64 54L61 51Z"/><path d="M69 45l4-5 3 7M79 48l4-5 2 5" fill="#fff5da" stroke="#534a3a" stroke-width="1.5"/></g>';
+// Board pieces and the capture share these parts, so the final pose needs no fade.
+const dinosaurBody='<path d="M28 74Q18 62 12 48Q27 59 38 54L39 40H62V54L61 67 70 74Z"/><path d="M62 58l8 6 5-3M48 60q-9 1-8 9l-3 5h15" fill="none" stroke-width="3"/><path d="M29 76h42l5 10H24z"/><ellipse class="ch-dino-mouth" cx="74" cy="43" rx="16" ry="14" fill="#412b32" stroke="none" opacity="0"/>',
+ dinosaurFace='<g class="ch-dino-head"><path d="M39 41Q36 34 38 23Q40 12 53 12H78Q88 12 88 24V33H62V41Z"/><path d="M67 34l4 6 4-6M78 34l4 6 4-6" fill="#fff5da" stroke="#534a3a" stroke-width="1.5"/><circle cx="52" cy="25" r="7" fill="#fff5da" stroke-width="2.5"/><circle cx="54" cy="25" r="2.8" fill="#29343c" stroke="none"/><circle cx="82" cy="25" r="1.7" fill="currentColor" stroke="none"/></g><g class="ch-dino-jaw"><path d="M62 41L86 47Q83 56 64 54L61 51Z"/><path d="M69 45l4-5 3 7M79 48l4-5 2 5" fill="#fff5da" stroke="#534a3a" stroke-width="1.5"/></g>';
+const captureDirection=move=>{const from=point(move.from),to=point(move.to);return root.matchMedia?.('(prefers-reduced-motion: reduce)').matches?1:to.x<100?-1:to.x>700?1:to.x>=from.x?1:-1;};
 class ChessRenderer{
  constructor(canvas,game){
   this.canvas=canvas;this.game=game;this.node=element('div','chess-scene');canvas.hidden=true;canvas.parentElement.append(this.node);
@@ -34,8 +35,17 @@ class ChessRenderer{
  }
  resize(){}
  scoreEvent(){}
+ trackFacings(){
+  const g=this.game,m=g.lastMove;
+  if(this.facingHistory!==g.history){this.facingHistory=g.history;this.facings=new Map();this.facingMove=null;}
+  if(!m||this.facingMove===m)return;
+  const previous=this.facings.get(m.from)||1;this.capturedFacing=this.facings.get(m.to)||1;
+  this.facings.delete(m.from);this.facings.delete(m.to);
+  if(m.piece==='n'||m.promotion==='n')this.facings.set(m.to,m.piece==='n'&&m.captured?captureDirection(m):previous);
+  this.facingMove=m;
+ }
  clearCapture(){
-  if(this.capturePiece)this.capturePiece.style.opacity='';
+  if(this.capturePiece)this.capturePiece.style.visibility='';
   this.capturePiece=null;this.captureMove=null;this.captureLayer.style.display='none';this.captureLayer.replaceChildren();
  }
  drawCapture(){
@@ -44,20 +54,21 @@ class ChessRenderer{
   if(this.captureMove!==m){
    this.clearCapture();this.captureMove=m;this.capturePiece=this.cells.find(c=>c.dataset.square===m.to).querySelector('.ch-piece');
    const color=m.color==='w'?'ch-white':'ch-black',prey=m.color==='w'?'ch-black':'ch-white';
-   this.captureLayer.innerHTML='<g stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><g class="ch-capture-body '+color+'">'+dinosaurBody+'</g><g class="ch-capture-prey '+prey+'">'+shapes[m.captured]+'<path d="M29 76h42l5 10H24z"/></g><g class="ch-capture-face '+color+'">'+dinosaurFace+'</g></g>';
-   for(const name of ['body','prey','face','head','jaw','mouth'])this['capture'+name[0].toUpperCase()+name.slice(1)]=this.captureLayer.querySelector('.ch-capture-'+name);
+   this.captureLayer.innerHTML='<g stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><g class="ch-capture-body '+color+'">'+dinosaurBody+'</g><g class="ch-capture-prey '+prey+'"><g transform="'+(m.captured==='n'&&this.capturedFacing<0?'translate(100 0) scale(-1 1)':'')+'">'+pieceArt(m.captured)+'</g></g><g class="ch-capture-face '+color+'">'+dinosaurFace+'</g></g>';
+   for(const name of ['body','prey','face'])this['capture'+name[0].toUpperCase()+name.slice(1)]=this.captureLayer.querySelector('.ch-capture-'+name);
+   this.captureHead=this.captureFace.querySelector('.ch-dino-head');this.captureJaw=this.captureFace.querySelector('.ch-dino-jaw');this.captureMouth=this.captureBody.querySelector('.ch-dino-mouth');
    this.captureReduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
    this.captureLayer.style.display='';
   }
-  const from=point(m.from),to=point(m.to),approach=clamp(age/T.bite),chew=clamp((age-T.bite)/(T.swallow-T.bite)),settle=clamp((age-T.swallow)/(T.end-T.swallow)),reduced=this.captureReduced;
+  const from=point(m.from),to=point(m.to),approach=clamp(age/T.bite),chew=clamp((age-T.bite)/(T.swallow-T.bite)),progress=clamp((age-T.swallow)/(T.rest-T.swallow)),settle=progress*progress*(3-2*progress),reduced=this.captureReduced;
   // Face inwards at either edge, keeping the tail and victim inside the board.
-  const direction=reduced?1:to.x<100?-1:to.x>700?1:to.x>=from.x?1:-1,ease=1-(1-approach)**3,
+  const direction=this.facings.get(m.to)||1,ease=1-(1-approach)**3,
    size=reduced?.94:mix(mix(.94,1.15,ease),.94,settle),
    x=reduced?to.x:mix(mix(from.x,to.x-direction*32,ease),to.x,settle),
    y=reduced?to.y:mix(mix(from.y,Math.min(752,to.y+13),ease)-Math.sin(approach*Math.PI)*20,to.y,settle),
    transform='translate('+x+' '+y+') scale('+(direction*size)+' '+size+') translate(-50 -50)',
-   chewing=age>=T.bite&&age<T.swallow,jaw=reduced?0:chewing?12+Math.sin((age-T.bite)*Math.PI*2/.30)*10:18*approach*(1-settle);
-  for(const node of [this.captureBody,this.captureFace]){node.setAttribute('transform',transform);node.setAttribute('opacity',reduced?clamp(chew*2):1);}
+   chewing=age>=T.bite&&age<T.swallow,jaw=reduced?0:chewing?12+Math.sin((age-T.bite)*Math.PI*2/.30)*10:(age<T.bite?18*approach:12*(1-settle));
+  for(const node of [this.captureBody,this.captureFace])node.setAttribute('transform',transform);
   this.captureHead.setAttribute('transform','translate(0 '+(-jaw*.12)+')');this.captureJaw.setAttribute('transform','rotate('+jaw+' 62 43)');
   this.captureMouth.setAttribute('opacity',reduced?0:approach*(1-settle));
   let px=to.x,py=to.y,preyScale=.94,rotation=0,opacity=1;
@@ -69,7 +80,7 @@ class ChessRenderer{
    preyScale=mix(.94,.12,swallow);rotation=direction*(swallow*75+wiggle*8);opacity=1-clamp((swallow-.65)/.35);
   }
   this.capturePrey.setAttribute('transform','translate('+px+' '+py+') rotate('+rotation+') scale('+preyScale+') translate(-50 -50)');this.capturePrey.setAttribute('opacity',opacity);
-  this.captureLayer.style.opacity=String(1-settle);this.capturePiece.style.opacity=String(settle);
+  this.capturePiece.style.visibility='hidden';
  }
  preview(target){
   const moves=target?[target]:this.game.targets;
@@ -83,13 +94,14 @@ class ChessRenderer{
  }
  draw(){
   const g=this.game,key=g.revision+':'+g.state;if(key===this.key){this.drawCapture();return;}this.key=key;
+  this.trackFacings();
   const format=SC.ChessScoring.resultText,ended=g.phase==='end';
   this.status.textContent=g.state==='paused'?'Paus':ended?(g.draw?'Remi.':g.won?'Du vann!':'Datorn vann.')+' '+format(g.resultScore)+'–'+format(g.botScore)+' · '+g.reason:g.message;
   this.node.querySelector('.ch-kicker').textContent=g.phase==='answer'?'DRAG '+(g.turns+1):ended?'PARTIET ÄR KLART':'SCHACK';
   const pieces=g.position.board().flat(),check=g.position.isCheck();
   for(let i=0;i<64;i++){
    const cell=this.cells[i],piece=pieces[i],square=cell.dataset.square,targets=g.targets.filter(t=>t.move.to===square);
-   cell.querySelector('.ch-piece').innerHTML=piece?pieceSvg(piece):'';
+   cell.querySelector('.ch-piece').innerHTML=piece?pieceSvg(piece,this.facings.get(square)||1):'';
    cell.classList.toggle('ch-last',g.lastMove?.from===square||g.lastMove?.to===square);
    cell.classList.toggle('ch-check',!!piece&&piece.type==='k'&&piece.color===g.position.turn()&&check);
    cell.classList.toggle('ch-option',!!targets.length);cell.dataset.choice=targets[0]?.letter||'';cell.querySelector('.ch-marker').textContent=targets.map(t=>t.letter).join(' ');

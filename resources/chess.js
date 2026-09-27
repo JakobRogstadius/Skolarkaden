@@ -1,20 +1,20 @@
 /* Answer-driven turns with ranked move-choice points and chess result bonuses. */
 (function(root){
 'use strict';const SC=root.Starlight,C=SC.ChessEngine,S=SC.ChessScoring;
-// Shared with the renderer; game time keeps the bite and its sound in sync when paused.
-const captureTiming=SC.chessCaptureTiming=Object.freeze({bite:.42,swallow:1.32,end:1.55});
+// Shared with the renderer; the dinosaur rests on its square before the next turn.
+const captureTiming=SC.chessCaptureTiming=Object.freeze({bite:.42,swallow:1.32,rest:1.5,end:1.55});
 class ChessGame{
  constructor({onEvent=()=>{},random=Math.random,queue=new SC.AnswerQueue()}={}){Object.assign(this,{onEvent,random,queue,state:'menu',clock:0,width:1000,height:700,targets:[],revision:0});}
  emit(type,detail={}){this.onEvent({type,...detail});}
  resize(width,height){Object.assign(this,{width,height});}
  start({mode='letters',pace='gentle',lang='sv-SE',items=null,uppercase=false}={}){
-  Object.assign(this,{mode,pace,lang,uppercase,clock:0,elapsed:0,turns:0,hits:0,shots:0,streak:0,bestStreak:0,score:0,botScore:0,resultScore:null,capturedMaterial:0,lostMaterial:0,movePoints:0,targets:[],history:[],lastMove:null,captureChompAt:null,search:null,ranked:null,won:false,draw:false,reason:null});
+  Object.assign(this,{mode,pace,lang,uppercase,clock:0,elapsed:0,turns:0,hits:0,shots:0,streak:0,bestStreak:0,score:0,botScore:0,resultScore:null,capturedMaterial:0,lostMaterial:0,movePoints:0,targets:[],history:[],lastMove:null,search:null,ranked:null,won:false,draw:false,reason:null});
   this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Övningen behöver minst ett svar.');
   this.position=new C.Chess();this.updateScore();this.state='playing';this.revision++;this.queue.clear();this.emit('start');this.beginTurn();
  }
  pause(){if(this.state==='playing'){this.state='paused';this.queue.clear();this.revision++;this.emit('pause');}}
  resume(){if(this.state==='paused'){this.state='playing';this.revision++;this.emit('resume');}}
- menu(){this.state='menu';this.search=null;this.captureChompAt=null;this.targets=[];this.queue.clear();}
+ menu(){this.state='menu';this.search=null;this.targets=[];this.queue.clear();}
  getTargets(){return this.targets;}
  getAvailableTargets(){return this.phase==='answer'?this.targets:[];}
  getActiveEntries(){return [];}
@@ -42,7 +42,6 @@ class ChessGame{
   const side=this.position.turn(),previousScore=this.score,points=side==='w'?S.choicePoints(this.targets.map(t=>t.move),move,correct):0,played=this.position.move(move);
   this.lastMove={...played,at:this.clock,movePoints:points};this.history.push(this.lastMove);
   const dinosaurCapture=played.piece==='n'&&!!played.captured;
-  this.captureChompAt=dinosaurCapture?this.clock+captureTiming.bite:null;
   if(played.captured){const value=S.pieceValues[played.captured];if(side==='w')this.capturedMaterial+=value;else this.lostMaterial+=value;}
   if(side==='w')this.movePoints+=points;
   if(side==='w'){this.turns++;this.shots++;if(correct){this.hits++;this.streak++;this.bestStreak=Math.max(this.bestStreak,this.streak);}else this.streak=0;}
@@ -50,7 +49,6 @@ class ChessGame{
   const feedback=side==='w'?' '+(points>0?'+':points<0?'−':'')+Math.abs(points)+' dragpoäng.':'';
   this.wait('animate',(side==='b'?'Datorn: ':correct?'Du: ':'Fel svar. Ett svagt drag spelas: ')+C.description(played)+'.'+feedback,dinosaurCapture?captureTiming.end:.85);
   if(entry)this.emit(correct?'hit':'miss',{entry,points:this.score-previousScore});
-  if(dinosaurCapture)this.emit('dino-startle');
  }
  finish(result=C.outcome(this.position)){
   if(this.state!=='playing'||!result)return;
@@ -70,9 +68,7 @@ class ChessGame{
    if(matches.length>1){this.queue.clear();this.message='Svaret passar flera drag. Försök med ett annat svar.';this.revision++;return;}
    this.play(matches.length?matches[0].move:C.choosePoor(this.ranked,this.random),entry,!!matches.length);return;
   }
-  this.queue.clear();
-  if(this.captureChompAt!==null&&this.clock>=this.captureChompAt){this.captureChompAt=null;this.emit('dino-chomp');}
-  this.delay-=dt;if(this.delay<=0)this.beginTurn();
+  this.queue.clear();this.delay-=dt;if(this.delay<=0)this.beginTurn();
  }
 }
 SC.ChessGame=ChessGame;
