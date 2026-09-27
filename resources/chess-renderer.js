@@ -5,7 +5,7 @@ const element=(tag,className,text)=>{const el=document.createElement(tag);el.cla
 const shapes={
  p:'<circle cx="50" cy="28" r="12"/><path d="M40 43h20l-4 17 10 12H34l10-12z"/>',
  r:'<path d="M28 19h11v10h7V19h9v10h7V19h11v24H63l-3 22 9 8H31l9-8-3-22h-9z"/><path d="M37 43h26"/>',
- n:'<path d="M31 73l4-21 22-13-13-4-11 11-12-9 13-16 8-11 6 8 15 4c18 15 13 34 10 51z"/><path d="M57 47L43 61"/><circle cx="44" cy="28" r="2" fill="currentColor"/>',
+ n:'<path d="M28 74Q18 62 12 48Q27 59 38 54L39 40Q36 34 38 23Q40 12 53 12H78Q88 12 88 24V33H62V41L86 47Q83 56 64 54L61 67 70 74Z"/><path d="M67 34l4 6 4-6M78 34l4 6 4-6" fill="#fff5da" stroke="#534a3a" stroke-width="1.5"/><path d="M62 58l8 6 5-3M48 60q-9 1-8 9l-3 5h15" fill="none" stroke-width="3"/><circle cx="52" cy="25" r="7" fill="#fff5da" stroke-width="2.5"/><circle cx="54" cy="25" r="2.8" fill="#29343c" stroke="none"/><circle cx="82" cy="25" r="1.7" fill="currentColor" stroke="none"/>',
  b:'<path d="M50 12c0 0-20 19-20 31 0 10 10 14 13 15l-10 15h34L57 58c3-1 13-5 13-15 0-12-20-31-20-31z"/><path d="M52 26L41 43M38 58h24"/>',
  q:'<path d="M24 30l14 12 12-22 12 22 14-12-10 32H34zM36 63h28l7 11H29z"/><circle cx="22" cy="26" r="5"/><circle cx="50" cy="16" r="5"/><circle cx="78" cy="26" r="5"/>',
  k:'<path d="M50 9v22M42 17h16"/><path d="M33 37c-9 0-10 11-6 18l12 10-9 9h40l-9-9 12-10c4-7 3-18-6-18-8 0-9 6-17 6s-9-6-17-6zM37 65h26"/>'
