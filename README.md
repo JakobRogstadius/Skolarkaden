@@ -1,6 +1,6 @@
 # Skolarkaden
 
-Nio små lärspel för tangentbord eller mikrofon. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
+Tio små lärspel för tangentbord eller mikrofon. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
 
 **Öppna `index.html` i Chrome.** Behåll `resources` bredvid HTML-filen. Ingen installation, byggprocess eller webbserver behövs. Om du laddar ned projektet som ZIP: packa upp hela filen först.
 
@@ -22,6 +22,14 @@ API:t använder Cloudflare Worker + D1. Installationssteg och underhåll finns i
 [cloudflare/README.md](cloudflare/README.md). IP-adresser sparas för framtida moderering
 men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 `resources/highscore-policy.js` och tillämpas både i spelet och i API:t.
+
+## Reversi
+
+Ett turbaserat spel utan tidspress eller draggräns. Spelaren är svart och väljer bland upp till tre bra drag genom att svara på motsvarande uppgift. Svaren är olika även med godkända alternativ och uttalsvarianter. Fel svar spelar ett drag ur den svagaste tredjedelen av de giltiga dragen. Vid få giltiga drag eller olika svar visas färre alternativ.
+
+Datorn spelar med fast vald svårighetsnivå men varierar sina drag. Svårare nivå söker längre fram och väljer inom ett snävare kvalitetsintervall. Spelaren får samma starka rådgivare på alla nivåer, och förslagens inbördes rangordning visas inte. Partiet slutar när ingen sida kan spela. Flest brickor vinner; poängen är spelarens slutliga antal brickor, utan tidsbonus.
+
+Teknik och kontroller finns i [dev/reversi.md](dev/reversi.md). Reversis topplista kräver att den uppdaterade Cloudflare-Workern driftsätts; ingen SQL-migrering behövs.
 
 ## Meteorregns poäng
 
@@ -190,7 +198,8 @@ Klassiska skript används så att `file://` fungerar utan modulladdare, externa 
 | `language-exercises.json` | Alla språkövningars innehåll och menytexter. |
 | `resources/language-exercises.js`, `language-exercises-data.js` | Läser och validerar språkövningar; genererad kopia för lokal användning. |
 | `resources/data.js`, `pinyin.js` | Fasta matematiknivåer, uttalsbehandling och svarsmatchning. |
-| `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js`, `marshmallows.js`, `eggs.js`, `home.js`, `home-renderer.js` | Nio separata simuleringar och canvas-renderare. |
+| `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js`, `marshmallows.js`, `eggs.js`, `home.js`, `home-renderer.js` | Nio simuleringar och canvas-renderare. |
+| `resources/reversi-engine.js`, `reversi.js`, `reversi-renderer.js`, `reversi.css` | Reversis regler, sökning, frågeval och DOM-bräde. |
 | `resources/people.js`, `plants.js`, `sounds.js` | Gemensamma figurer, växter och syntetiska ljud. |
 | `resources/app.js` | Menyer, paus, HUD och anslutning av modulerna. |
 

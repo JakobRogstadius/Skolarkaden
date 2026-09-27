@@ -22,8 +22,8 @@ function draw(name,g){
 (async()=>{
   assert.equal(SC.modes.homework.name,'Läxa');assert.equal(SC.modes.homework.hidden,true);
   const lessons=JSON.parse(read('homework.json'));
-  assert.deepEqual(Object.keys(lessons),Array.from({length:7},(_,i)=>'lesson-'+(i+1)));
-  assert.deepEqual(Object.values(lessons).map(l=>l.name),['1. 手拉手','2. 好朋友','3. 下課了','4. 校園','5. 遊戲','6. 積木','7. 搭火車']);
+  assert.deepEqual(Object.keys(lessons),[...Array.from({length:7},(_,i)=>'lesson-'+(i+1)),'lesson 5-7']);
+  assert.deepEqual(Object.values(lessons).map(l=>l.name),['1. 手拉手','2. 好朋友','3. 下課了','4. 校園','5. 遊戲','6. 積木','7. 搭火車','5–7. 複習 - 手印 積木 火車']);
   for(const [id,lesson] of Object.entries(lessons)){
     await load(lesson);const items=SC.modes.homework.items;
     assert.equal(new Set(items.map(i=>i.answer)).size,items.length,id+' duplicate words');

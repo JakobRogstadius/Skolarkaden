@@ -2,7 +2,7 @@
   "name": "skolarkaden",
   "version": "1.0.0",
   "private": true,
-  "description": "Nio fristående lärspel på svenska med gemensam text- och talinmatning.",
+  "description": "Tio fristående lärspel på svenska med gemensam text- och talinmatning.",
   "license": "BSD-2-Clause",
   "scripts": {
     "assets": "node dev/version-assets.cjs",

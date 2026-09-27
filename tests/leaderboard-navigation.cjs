@@ -16,7 +16,7 @@ const elements=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>[id,ne
 const get=id=>{assert(elements.has(id),'missing HTML element '+id);return elements.get(id);};
 get('pace').options=Array.from(html.match(/<select id="pace">([\s\S]*?)<\/select>/)[1].matchAll(/<option value="([^"]+)">([^<]+)<\/option>/g),m=>({value:m[1],textContent:m[2]}));
 const games=Object.fromEntries([...html.matchAll(/<label class="game-card[^\"]*">[\s\S]*?name="game" value="([^"]+)"[\s\S]*?class="card-title">([^<]+)<\/span><\/label>/g)].map(([,id,name])=>[id,name]));
-assert.equal(Object.keys(games).length,9);
+assert.equal(Object.keys(games).length,10);
 let delayed=false,failStats=false,unavailableStats=false,oldStats=false;const pending=[],requests=[],requestOptions=[],posts=[];
 const context=vm.createContext({console,Event,EventTarget,crypto:webcrypto,AbortController,setTimeout,clearTimeout,addEventListener(){},
   document:{getElementById:get,createElement:()=>new Element(),get activeElement(){return focused;}},localStorage:{removeItem(){}},
@@ -41,7 +41,7 @@ const click=async id=>{get(id).dispatchEvent(new Event('click'));await settle();
 const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:true});Object.assign(event,{key:value,...extra});get('leaderboard').dispatchEvent(event);await settle();return event;};
 (async()=>{
   await click('leaderboard-open');assert.equal(ui.page,'dinosaur');assert.equal(get('leaderboard-title').textContent,'Topplista: '+games.dinosaur);
-  assert.equal(get('scores-page').textContent,'6 / 11');
+  assert.equal(get('scores-page').textContent,'6 / 12');
   const pages=[...Object.keys(games),'games','exercises'];
   for(let i=1;i<=pages.length;i++){
     await click('scores-next');assert.equal(ui.page,pages[(5+i)%pages.length]);
@@ -53,7 +53,7 @@ const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:t
       assert.equal(requests.at(-1).pathname,'/stats');assert.equal(requests.at(-1).searchParams.get('group'),ui.page);
       assert.equal(get('scores-heading').children[2].textContent,'OMGÅNGAR');
       assert.equal(get('scores-heading').children[3].textContent,'LEDARE');
-      const list=get('scores-list'),count=ui.page==='games'?9:29;
+      const list=get('scores-list'),count=ui.page==='games'?10:29;
       assert.equal(list.children.length,count,'popularity is not limited to ten rows');
       assert.equal(list.children[0].children[2].textContent,'42');assert.equal(list.children[0].children[3].textContent,'ÅSA');
       assert.equal(list.children[1].children[2].textContent,'0');assert.equal(list.children[1].children[3].textContent,'—');
@@ -68,7 +68,7 @@ const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:t
   assert.equal(selection.kind,'dinosaur','browsing must not change the menu game');
   await ui.open({...selection,kind:'city'});
   assert((await key('ArrowLeft')).defaultPrevented);assert.equal(ui.page,'exercises');
-  await key('ArrowLeft');assert.equal(ui.page,'games');await click('scores-previous');assert.equal(ui.page,'home');
+  await key('ArrowLeft');assert.equal(ui.page,'games');await click('scores-previous');assert.equal(ui.page,'reversi');
   await key('ArrowRight');assert.equal(ui.page,'games');await key('ArrowRight');assert.equal(ui.page,'exercises');
   await key('ArrowRight');assert.equal(ui.page,'city');
   assert.equal((await key('ArrowLeft',{ctrlKey:true})).defaultPrevented,false);assert.equal(ui.page,'city');

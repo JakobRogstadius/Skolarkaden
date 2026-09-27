@@ -26,7 +26,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
     if(file==='resources/app.js'){
       const SC=ctx.Starlight;
       SC.GameSounds=class{unlock(){}play(){}stopCampfire(){}campfire(){}close(){}};
-      for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home']){
+      for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home','Reversi']){
         const Game=SC[name+'Game'];SC[name+'Game']=class extends Game{constructor(options){super(options);currentGame=this;}};
         SC[name+'Renderer']=class{constructor(canvas,game){this.game=game;}resize(){this.game.resize(1000,700);}destroy(){}scoreEvent(){}};
       }
@@ -51,7 +51,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
     radio.dispatchEvent(new Event('change'));hud.click('start');await settle();
     assert.equal(hud.fields['setup-error'].textContent,'');
     assert.equal(hud.fields.best.textContent,'BÄSTA '+top.toLocaleString('sv-SE'),radio.value+' shows online record');
-    assert.equal(hud.fields.score.textContent,'0');
+    assert.equal(hud.fields.score.textContent,String(hud.game.score));
     assert(hud.requests.at(-1).includes(encodeURIComponent(hud.ctx.SkolarkadenHighscorePolicy.versions[radio.value]+':'+radio.value+':')));
     hud.click('pause');hud.click('pause-menu');top++;
   }
@@ -62,7 +62,19 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   hud.click('pause');hud.click('pause-menu');hud.radios[0].dispatchEvent(new Event('change'));hud.click('start');await settle();
   old(Response.json({scores:[{score:9999}]}));await settle();
   assert.equal(hud.fields.best.textContent,'BÄSTA '+top.toLocaleString('sv-SE'),'late response cannot replace another game record');
-  console.log('PASS online top score for all nine games, empty/error/loading states and stale response isolation.');
+  console.log('PASS online top score for all ten games, empty/error/loading states and stale response isolation.');
+  const reversi=boot();await settle();reversi.radios.find(r=>r.value==='reversi').dispatchEvent(new Event('change'));reversi.click('start');await settle();
+  assert.equal(reversi.fields.answer.disabled,true,'thinking disables input');
+  const ready=()=>{for(let i=0;i<10000&&reversi.game.phase!=='answer'&&reversi.game.state==='playing';i++)reversi.game.update(.05);};
+  ready();assert.equal(reversi.fields.answer.disabled,false);assert.equal(reversi.captures.at(-1).turnBased,true);
+  const move=reversi.game.targets[1];reversi.fields.answer.value=move.item.answer;reversi.fields['answer-form'].dispatchEvent(new Event('submit',{cancelable:true}));reversi.game.update(.05);
+  assert.equal(reversi.game.lastMove.index,move.move.index);assert.equal(reversi.fields.answer.disabled,true);assert.equal(reversi.fields.answer.value,'');
+  ready();reversi.click('pause');assert(reversi.fields.answer.disabled);reversi.click('resume');await settle();assert.equal(reversi.fields.answer.disabled,false);
+  reversi.game.board=new Int8Array(64).fill(1);reversi.game.beginTurn(1);await settle();
+  assert.equal(reversi.fields['result-title'].textContent,'Du vann! 64–0');assert.equal(reversi.fields['end-overlay'].hidden,false);
+  reversi.click('again');await settle();await settle();assert.equal(reversi.posts[0].leaderboard_key,'v1:reversi:swedish:gentle');assert.equal(reversi.posts[0].score,64);
+  assert.equal(reversi.game.score,2);assert.equal(reversi.game.turns,0);
+  console.log('PASS Reversi app: menu, turn input, pause/resume, final score submission and restart.');
   let resolve;const app=boot('?mode=homework&id=sv-001&input=keyboard&language=zh-CN&words=wrong',()=>new Promise(done=>resolve=done));
   assert(app.fields.start.disabled);app.click('start');await settle();assert.equal(app.game,undefined,'loading cannot launch a default exercise');
   resolve(Response.json({...dictionary,'sv-001':{...dictionary['sv-001'],input:'voice'}}));await settle();assert(!app.fields.start.disabled);

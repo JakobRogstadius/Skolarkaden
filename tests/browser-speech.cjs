@@ -8,7 +8,7 @@ const mic={ready:false,recording:false,stream:{getAudioTracks:()=>[track]},async
 mic.options={processing:true,deviceId:''};mic.configure=async function(options){this.options=options;await this.open();};
 const sessions=[];class Recognition{start(t){this.track=t;sessions.push(this);this.onstart?.();}stop(){this.stopped=true;}abort(){this.aborted=true;}}
 const context=vm.createContext({Event,EventTarget,CustomEvent,Float32Array,console,navigator:{userAgent:'Chrome/145'},SpeechRecognition:Recognition,setTimeout:fn=>{timers.set(++timerId,fn);return timerId;},clearTimeout:id=>timers.delete(id)});
-for(const f of ['pinyin','data','language-exercises-data','language-exercises','voice','speech','input'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),context);
+for(const f of ['pinyin','data','language-exercises-data','language-exercises','voice','speech','input','reversi-engine','reversi'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),context);
 const SC=context.Starlight,queue=new SC.AnswerQueue(),field=new Element(),form=new Element(),button=new Element();
 const input=new SC.AnswerInput({field,form,voiceButton:button,queue,microphone:mic});let diagnostic=[];input.addEventListener('diagnostic',e=>diagnostic.push(e.detail));
 const result=(text,final=false)=>Object.assign([{transcript:text,confidence:.4}],{isFinal:final});
@@ -41,5 +41,12 @@ assert.equal(SC.shortSpeechLesson('compoundTest'),false);delete SC.modes.compoun
  input.configure({enabled:false,kind:'typing',lesson:'swedish'});input.setEnabled(true);field.value='hela svaret';form.dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(queue.items.at(-1).text,'hela svaret');assert.equal(field.value,'');
  field.dispatchEvent(new Event('compositionstart'));field.value='pågående';const before=queue.length;form.dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(queue.length,before);field.dispatchEvent(new Event('compositionend'));form.dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(queue.length,before+1);
  input.configure({enabled:false,lesson:'bopomofo'});field.value='1qaz';field.dispatchEvent(new Event('input'));assert.equal(field.value,'');assert.deepEqual(Array.from(queue.items.slice(-4),x=>x.text),['ㄅ','ㄆ','ㄇ','ㄈ']);
+ input.configure({enabled:true,language:'sv-SE',lesson:'math-multiplication',turnBased:true});queue.clear();
+ input.getCandidates=()=>[{answer:'32'},{answer:'49'},{answer:'8'}];await input.prepare();input.start();r=sessions.at(-1);
+ fire(r,[result('trettiotvå')]);assert.equal(queue.length,0,'interim speech cannot spend a move');
+ fire(r,[result('trettiotvå',true),result('åtta',true)]);assert.equal(queue.length,1,'one final answer per board');assert.equal(queue.items[0].text,'trettiotvå');
+ input.setEnabled(false);queue.clear();fire(r,[result('åtta',true)]);assert.equal(queue.length,0,'late callbacks cannot play on a new board');
+ input.setEnabled(true);input.start();r=sessions.at(-1);fire(r,[result('trettiotvå åtta',true)]);assert.equal(queue.length,0,'two possible choices require a retry');
+ fire(r,[result('trettiotvå åtta',true),result('fel svar',true)],1);assert.equal(queue.items[0].text,'fel svar');
  input.destroy();assert(stops>=4);console.log('PASS continuous speech, final-index deduplication, repeated words, raw diagnostics, stop flush, pause cancellation, stream reuse, network failure, typing and IME.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -19,11 +19,11 @@ function boot(lessons=dictionary,speechSupported=true){
 (async()=>{
   assert(!/homework\.html/.test(read('index.html')),'lesson navigation remains hidden from the ordinary menu');
   const app=boot();await settle();const rows=app.fields.lessons.children;
-  assert.equal(rows.length,7);assert.equal(app.fields.status.textContent,'');
+  assert.equal(rows.length,Object.keys(dictionary).length);assert.equal(app.fields.status.textContent,'');
   for(const [i,[id,lesson]]of Object.entries(dictionary).entries()){
     const details=rows[i],summary=details.children[0];assert.equal(details.tagName,'details');assert.equal(summary.children[0].textContent,lesson.name);
     assert.equal(summary.children[1].textContent,(i===0?'12':'0')+' genomförda');
-    for(const [j,input]of ['keyboard','voice'].entries()){const link=summary.children[j+2];assert.equal(link.textContent,j===0?'skriva':'tala');assert.equal(link.href,'index.html?mode=homework&id='+id+'&input='+input);}
+    for(const [j,input]of ['keyboard','voice'].entries()){const link=summary.children[j+2];assert.equal(link.textContent,j===0?'skriva':'tala');const query=new URL(link.href,'https://example.test').searchParams;assert.equal(query.get('mode'),'homework');assert.equal(query.get('id'),id);assert.equal(query.get('input'),input);}
     const body=details.children[1].children[0].children[1];assert.deepEqual(body.children.map(row=>row.children.map(cell=>cell.textContent)),lesson.words);
     for(const [index,row]of body.children.entries()){
       const button=row.children[0].children[0].children[0];assert.equal(button.tagName,'button');assert.equal(button.attributes['aria-label'],'Lyssna på '+lesson.words[index][0]);
@@ -37,7 +37,7 @@ function boot(lessons=dictionary,speechSupported=true){
   assert.deepEqual(app.speechCalls,['cancel','speak','cancel','speak'],'a new word replaces ongoing speech');app.events.dispatchEvent(new Event('pagehide'));assert.equal(app.speechCalls.at(-1),'cancel');
   const unsupported=boot(dictionary,false);await settle();assert(unsupported.fields.lessons.children[0].children[1].children[0].children[1].children[0].children[0].children[0].children[0].disabled);
   app.counts={group:'homework',entries:[{id:'lesson-1',completions:13}]};const shown=new Event('pageshow');shown.persisted=true;app.events.dispatchEvent(shown);await settle();assert.equal(rows[0].children[0].children[1].textContent,'13 genomförda','returning from a game refreshes totals');
-  app.countStatus=400;app.events.dispatchEvent(shown);await settle();assert.match(app.fields.status.textContent,/kunde inte hämtas/);assert.equal(rows[0].children[0].children[1].textContent,'— genomförda','an unavailable API must not invent a zero');assert.equal(app.fields.lessons.children.length,7);
+  app.countStatus=400;app.events.dispatchEvent(shown);await settle();assert.match(app.fields.status.textContent,/kunde inte hämtas/);assert.equal(rows[0].children[0].children[1].textContent,'— genomförda','an unavailable API must not invent a zero');assert.equal(app.fields.lessons.children.length,Object.keys(dictionary).length);
   const unsafe=boot({'z&input=voice':{name:'<img onerror=alert(1)>',input:'keyboard',language:'sv-SE',words:[['<script>']]},'a':{input:'keyboard',language:'sv-SE',words:[['hej']]}});await settle();const summary=unsafe.fields.lessons.children[0].children[0];assert.equal(summary.children[0].textContent,'<img onerror=alert(1)>');assert.equal(summary.children[0].children.length,0);assert.equal(summary.children[2].href,'index.html?mode=homework&id=z%26input%3Dvoice&input=keyboard');assert.equal(unsafe.fields.lessons.children[1].children[0].children[0].textContent,'a','dictionary order is retained');
   for(const bad of [[],null,{broken:{input:'voice',language:'zh-TW',words:[['你']]}}]){const broken=boot(bad);await settle();assert.equal(broken.fields.lessons.children.length,0);assert(broken.fields.status.textContent);}
   console.log('PASS homework page: lesson order/content, speaker buttons and Mandarin voices, speech replacement/cleanup, safe links, completion counts and errors.');

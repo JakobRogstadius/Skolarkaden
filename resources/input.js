@@ -91,12 +91,22 @@ class AnswerInput extends EventTarget{
     r.lang=this.voice.language;r.continuous=true;r.interimResults=true;r.maxAlternatives=5;
     r.processLocally=false;
     this.status('Ansluter taligenkänning…');this.trace('session',{language:r.lang,engine:this.voice.kind,shortInput:this.microphone.options.shortInput,audioSettings:track.getSettings?.()});
-    r.onstart=()=>{if(!valid()){track.stop();return;}track.enabled=true;this.listening=true;this.status('Lyssnar kontinuerligt · säg flera svar i följd');this.trace('start');};
+    r.onstart=()=>{if(!valid()){track.stop();return;}track.enabled=true;this.listening=true;this.status(this.voice.turnBased?'Lyssnar · säg ett svar för ditt drag':'Lyssnar kontinuerligt · säg flera svar i följd');this.trace('start');};
     r.onaudiostart=()=>{if(valid())this.trace('audio-start');};
     r.onspeechstart=()=>{if(valid())this.trace('speech-start');};
     r.onspeechend=()=>{if(valid())this.trace('speech-end');};
     r.onresult=e=>{
       if(!valid())return;
+      if(this.voice.turnBased){
+        if(this.queue.length)return;
+        for(let i=0;i<e.results.length;i++){
+          const result=e.results[i];if(!result.isFinal||committed.has(i))continue;committed.add(i);this.failures=0;
+          const answer=SC.reversiSpeechAnswer(Array.from(result),{...this.voice,candidates:this.getCandidates()});
+          this.trace('final',{text:result[0]?.transcript||'',turnBased:true,ambiguous:!!answer.ambiguous});
+          if(answer.ambiguous){this.status('Flera svar hördes. Säg bara svaret för ett drag.');return;}
+          if(answer.text){this.queue.enqueue(answer.text,'speech');return;}
+        }return;
+      }
       const added=stream.update(Array.from(e.results));
       let interim=[];
       for(let i=0;i<e.results.length;i++){

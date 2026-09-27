@@ -112,7 +112,7 @@ class Element extends EventTarget{
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),'v2:city');
   assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'eggs'}),'v2:eggs');
-  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,game==='home'?'v1':'v2');
+  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,['home','reversi'].includes(game)?'v1':'v2');
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:eggs:swedish:gentle'}))).status,201);
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:eggs:swedish:gentle'}))).status,400);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'home'}),'v1:home');
@@ -227,7 +227,7 @@ class Element extends EventTarget{
   // Popularity uses every saved round, not just the top ten or non-anonymous names.
   db.exec('DELETE FROM highscores');
   const emptyStats=await (await call('GET','/stats?group=games')).json();
-  assert.equal(emptyStats.entries.length,9);assert(emptyStats.entries.every(r=>r.plays===0&&r.score===null&&r.player_name===null));
+  assert.equal(emptyStats.entries.length,10);assert(emptyStats.entries.every(r=>r.plays===0&&r.score===null&&r.player_name===null));
   const fixtures=[
     ['v2:city:swedish:gentle','ANONYM',10],
     ['v2:city:swedish:steady','TOP CITY',100],
@@ -268,5 +268,8 @@ class Element extends EventTarget{
   assert.equal((await call('OPTIONS','/stats')).status,204);
   assert.equal((await call('GET','/stats?group=games',undefined,{Origin:'https://unrelated.example'})).status,403);
   assert.equal((await (await call('GET','/health')).json()).capabilities.popularity_boards,1);
+  assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:reversi:math-multiplication:steady',score:37}))).status,201);
+  const reversiScores=await (await call('GET','/scores?leaderboard=v1:reversi')).json();
+  assert.equal(reversiScores.scores[0].score,37);assert.equal(reversiScores.scores[0].exercise,'math-multiplication');assert.equal(reversiScores.scores[0].difficulty,'steady');
   db.close();console.log('PASS highscores: real SQLite, privacy, filtering, ranking, CORS, limits, keys, browser submission, retries and popularity aggregates.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -5,6 +5,13 @@ The website remains on GitHub Pages. No API token belongs in the frontend.
 
 ## Update the existing installation
 
+### Reversi
+
+Deploy the complete generated [worker.mjs](worker.mjs) to **skolarkaden-api**,
+keeping the existing **DB** binding, to enable Reversi scores. No SQL migration
+is required. The game uses version `v1` and submits the player’s final disc count.
+Pushing the frontend to GitHub Pages does not deploy this Worker.
+
 ### Administrator statistics
 
 Run [add-statistics-indexes.sql](add-statistics-indexes.sql) in the existing D1
