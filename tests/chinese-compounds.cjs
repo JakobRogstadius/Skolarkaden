@@ -13,6 +13,19 @@ function harness(words,mode='chineseTrad4'){
  return {queue,state,submitted,stream,context};
 }
 let checks=0;function test(name,fn){fn();console.log('PASS '+name);checks++;}
+test('Level 2 teaches learn as a single character; what stays a complete level-3 word',()=>{
+ for(const [prefix,learn,what] of [['chineseTrad','學','什麼'],['chineseSimpl','学','什么']]){
+  const mode=prefix+'2',entry=item(learn,mode);
+  assert.equal(entry.hint,'xué');assert.equal(entry.translation,'lära sig');
+  assert(SC.modes[mode].items.every(i=>Array.from(i.answer).length===1));assert(!SC.modes[mode].items.some(i=>i.answer==='什'));
+  for(const heard of ['學','学','xué','xue2'])assert(SC.matches(heard,entry,mode,SC.modes[mode].lang,'speech'));
+  for(const level of [3,4]){
+   const word=item(what,prefix+level);assert.equal(word.hint,'shén me');assert.equal(word.translation,'vad');
+   assert.equal(SC.modes[prefix+level].items.filter(i=>i.answer===what).length,1);
+   for(const heard of ['什麼','什么','shén me','shenme'])assert(SC.matches(heard,word,prefix+level,SC.modes[prefix+level].lang,'speech'));
+  }
+ }
+});
 test('Every compound accepts Hanzi and spaced, joined, accented and numbered pinyin as a whole answer',()=>{
  for(const mode of ['chineseTrad3','chineseTrad4','chineseSimpl3','chineseSimpl4'])for(const i of SC.modes[mode].items.filter(i=>Array.from(i.answer).length===2)){
   const numbered=i.hint.split(' ').map(SC.tonelessPinyinNumber),plain=numbered.map(s=>s.slice(0,-1));
