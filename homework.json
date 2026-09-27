@@ -48,8 +48,8 @@
       ["左", "zuǒ", "vänster"],
       ["右", "yòu", "höger"],
       ["手", "shǒu", "hand"],
-      ["兩", "liǎng", "två (före räkneord)"],
-      ["個", "gè", "räkneord för personer och saker"],
+      ["兩", "liǎng", "två (före måttsord)"],
+      ["個", "gè", "måttsord för personer och saker"],
       ["拍手", "pāi shǒu", "klappa händerna"]
     ]
   },
@@ -163,7 +163,7 @@
       ["左手", "zuǒ shǒu", "vänster hand"],
       ["右手", "yòu shǒu", "höger hand"],
       ["左右", "zuǒ yòu", "vänster och höger"],
-      ["印出", "yìn chū", "trycka fram; göra ett avtryck av"],
+      ["印出", "yìn chū", "trycka; göra ett avtryck av"],
       ["出", "chū", "ut; komma ut"],
       ["小魚", "xiǎo yú", "liten fisk"],
       ["水裡", "shuǐ lǐ", "i vattnet"],
@@ -211,7 +211,7 @@
       ["也", "yě", "också"],
       ["長", "cháng", "lång"],
       ["堆", "duī", "stapla; hög"],
-      ["座", "zuò", "räkneord för byggnader och berg"],
+      ["座", "zuò", "måttsord för byggnader och berg"],
       ["比", "bǐ", "jämfört med; än"],
       ["高", "gāo", "hög"],
       ["好", "hǎo", "bra; god"],
@@ -240,7 +240,6 @@
       ["山洞", "shān dòng", "grotta; tunnel genom ett berg"],
       ["過", "guò", "passera; gå genom"],
       ["去", "qù", "gå; åka (bort)"],
-      ["哪裏", "nǎ lǐ", "var; vart (variant av 哪裡)"],
       ["要", "yào", "vilja; ska"],
       ["排", "pái", "ställa på rad; rad"],
       ["小手", "xiǎo shǒu", "liten hand; små händer"],
@@ -248,7 +247,7 @@
       ["上來", "shàng lái", "komma upp; komma fram"],
       ["車", "chē", "fordon; vagn"],
       ["快快", "kuài kuài", "snabbt; skynda"],
-      ["走過去", "zǒu guò qù", "gå"],
+      ["走過去", "zǒu guò qù", "gå dit; gå över dit"],
       ["走", "zǒu", "gå"],
       ["洞", "dòng", "hål; grotta"],
       ["我", "wǒ", "jag; mig"],
@@ -258,9 +257,9 @@
       ["哪裡", "nǎ lǐ", "var; vart"],
       ["搭著火車過山洞", "dā zhe huǒ chē guò shān dòng", "åka tåg genom en tunnel"]
     ]
-  }
+  },
   "lesson 5-7": {
-    "name": "7. 複習 - 手印 積木 火車",
+    "name": "5–7. 複習 - 手印 積木 火車",
     "input": "voice",
     "language": "zh-TW",
     "words": [
@@ -281,7 +280,7 @@
       ["地上的積木", "dì shàng de jī mù", "byggklossarna på golvet"],
       ["有圓的", "yǒu yuán de", "Det finns runda."],
       ["有方的", "yǒu fāng de", "Det finns fyrkantiga."],
-      ["長長的", "cháng cháng de", "Det finns långa."],
+      ["長長的", "cháng cháng de", "väldigt lång; väldigt långa"],
       ["一座好大的房子", "yí zuò hǎo dà de fáng zi", "Ett mycket stort hus"],
       ["一座好高的城堡", "yí zuò hǎo gāo de chéng bǎo", "Ett mycket högt slott"],
       ["手和腳", "shǒu hé jiǎo", "händer och fötter"],
