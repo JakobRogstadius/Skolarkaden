@@ -14,8 +14,9 @@ function pieceSvg(piece,direction=1){return '<svg viewBox="0 0 100 100" aria-hid
 const point=s=>({x:('abcdefgh'.indexOf(s[0])+.5)*100,y:(8-Number(s[1])+.5)*100});
 const clamp=n=>Math.max(0,Math.min(1,n)),mix=(a,b,p)=>a+(b-a)*p;
 // Board pieces and the capture share these parts, so the final pose needs no fade.
-const dinosaurBody='<path d="M28 74Q18 62 12 48Q27 59 38 54L39 40H62V54L61 67 70 74Z"/><path d="M62 58l8 6 5-3M48 60q-9 1-8 9l-3 5h15" fill="none" stroke-width="3"/><path d="M29 76h42l5 10H24z"/><ellipse class="ch-dino-mouth" cx="74" cy="43" rx="16" ry="14" fill="#412b32" stroke="none" opacity="0"/>',
- dinosaurFace='<g class="ch-dino-head"><path d="M39 41Q36 34 38 23Q40 12 53 12H78Q88 12 88 24V33H62V41Z"/><path d="M67 34l4 6 4-6M78 34l4 6 4-6" fill="#fff5da" stroke="#534a3a" stroke-width="1.5"/><circle cx="52" cy="25" r="7" fill="#fff5da" stroke-width="2.5"/><circle cx="54" cy="25" r="2.8" fill="#29343c" stroke="none"/><circle cx="82" cy="25" r="1.7" fill="currentColor" stroke="none"/></g><g class="ch-dino-jaw"><path d="M62 41L86 47Q83 56 64 54L61 51Z"/><path d="M69 45l4-5 3 7M79 48l4-5 2 5" fill="#fff5da" stroke="#534a3a" stroke-width="1.5"/></g>';
+// Open neck/head paths fill normally but leave their shared edge unstroked.
+const dinosaurBody='<path d="M62 37V54L61 67 70 74H28Q18 62 12 48Q27 59 38 54L39 37"/><path d="M62 58l8 6 5-3M48 60q-9 1-8 9l-3 5h15" fill="none" stroke-width="3"/><path d="M29 76h42l5 10H24z"/><ellipse class="ch-dino-mouth" cx="74" cy="43" rx="16" ry="14" fill="#412b32" stroke="none" opacity="0"/>',
+ dinosaurFace='<g class="ch-dino-head"><path d="M39 41Q36 34 38 23Q40 12 53 12H78Q88 12 88 24V33H62V41"/><path d="M67 34l4 6 4-6M78 34l4 6 4-6" fill="#fff5da" stroke="#534a3a" stroke-width="1.5"/><circle cx="52" cy="25" r="7" fill="#fff5da" stroke-width="2.5"/><circle cx="54" cy="25" r="2.8" fill="#29343c" stroke="none"/><circle cx="82" cy="25" r="1.7" fill="currentColor" stroke="none"/></g><g class="ch-dino-jaw"><path d="M62 41L86 47Q83 56 64 54L61 51Z"/><path d="M69 45l4-5 3 7M79 48l4-5 2 5" fill="#fff5da" stroke="#534a3a" stroke-width="1.5"/></g>';
 const captureDirection=move=>{const from=point(move.from),to=point(move.to);return root.matchMedia?.('(prefers-reduced-motion: reduce)').matches?1:to.x<100?-1:to.x>700?1:to.x>=from.x?1:-1;};
 class ChessRenderer{
  constructor(canvas,game){
