@@ -37,7 +37,7 @@ test('Long matches can exceed the previous cap and retain result and efficiency 
  assert(S.calculate({won:true,turns:500,movePoints:5000}).total>2430);
  assert.equal(S.calculate({movePoints:S.maxScore+10}).total,S.maxScore);
  assert.equal(S.maxScore,context.SkolarkadenHighscorePolicy.scoreCaps.chess);
- assert.equal(context.SkolarkadenHighscorePolicy.versions.chess,'v3');
+ assert.equal(context.SkolarkadenHighscorePolicy.versions.chess,'v2');
 });
 test('Awards use the three offered ranks, share tied ranks and penalise any wrong answer',()=>{
  const offered=[200,180,0].map((value,i)=>({from:'a2',to:'abc'[i]+'3',value}));

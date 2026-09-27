@@ -93,8 +93,8 @@ The component breakdown appears in the result screen.
 
 ## Score storage and deployment
 
-Chess uses score version `v3`, keeping these scores separate from both previous
-scoring systems. The browser and D1 store arcade points as ordinary integers
+Chess keeps score version `v2` at the owner's request, so the existing arcade
+scores remain on the same leaderboard. The browser and D1 store arcade points as ordinary integers
 without rescaling. The Worker accepts only integers from 0 to 1,000,000 and
 rejects submissions using old chess versions. Historical `v1` records in
 administrator statistics still display their half-point encoding as 0, ½ or 1.
