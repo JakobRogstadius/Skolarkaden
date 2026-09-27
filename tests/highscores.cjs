@@ -112,7 +112,7 @@ class Element extends EventTarget{
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),'v2:city');
   assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'eggs'}),'v2:eggs');
-  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,['home','reversi'].includes(game)?'v1':'v2');
+  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,['home','reversi','klossar'].includes(game)?'v1':'v2');
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:eggs:swedish:gentle'}))).status,201);
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:eggs:swedish:gentle'}))).status,400);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'home'}),'v1:home');
@@ -227,7 +227,7 @@ class Element extends EventTarget{
   // Popularity uses every saved round, not just the top ten or non-anonymous names.
   db.exec('DELETE FROM highscores');
   const emptyStats=await (await call('GET','/stats?group=games')).json();
-  assert.equal(emptyStats.entries.length,10);assert(emptyStats.entries.every(r=>r.plays===0&&r.score===null&&r.player_name===null));
+  assert.equal(emptyStats.entries.length,11);assert(emptyStats.entries.every(r=>r.plays===0&&r.score===null&&r.player_name===null));
   const fixtures=[
     ['v2:city:swedish:gentle','ANONYM',10],
     ['v2:city:swedish:steady','TOP CITY',100],

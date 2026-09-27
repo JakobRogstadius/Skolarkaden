@@ -123,7 +123,7 @@ test('All nine games accept alternate answers and render each new exercise with 
   }
 });
 test('Typing translation direction remains selectable and speech uses the answer language',()=>{
-  const fields=new Map(),field=id=>{if(!fields.has(id))fields.set(id,{value:'',options:[],hidden:false,disabled:false});return fields.get(id);};
+  const fields=new Map(),field=id=>{if(!fields.has(id))fields.set(id,{value:'',options:[],hidden:false,disabled:false,closest(){return this;}});return fields.get(id);};
   field('language').options=['sv-SE','en-US','zh-TW','zh-CN'].map(value=>({value}));field('lesson').value='translation-sv-en-2';field('input-kind').value='typing';field('language').value='sv-SE';
   const app=read('resources/app.js'),start=app.indexOf('function options()'),end=app.indexOf("$('lesson').addEventListener",start),menu=vm.createContext({$:field,SC,kind:'city',homeworkRequested:false,homeworkReady:true,busy:false});
   vm.runInContext(app.slice(start,end),menu);menu.menuUpdate();assert.equal(field('language').disabled,false);assert.equal(field('language-label').textContent,'Översätt till');assert.equal(menu.options().lang,'sv-SE');

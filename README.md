@@ -1,6 +1,6 @@
 # Skolarkaden
 
-Tio små lärspel för tangentbord eller mikrofon. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
+Elva små lärspel för tangentbord, mikrofon eller klick. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
 
 **Öppna `index.html` i Chrome.** Behåll `resources` bredvid HTML-filen. Ingen installation, byggprocess eller webbserver behövs. Om du laddar ned projektet som ZIP: packa upp hela filen först.
 
@@ -60,10 +60,13 @@ Varje slutförd skötselåtgärd ger 10 poäng. Flera åtgärder av samma typ i 
 | Marshmallows | Ta in gyllene marshmallows innan solen går upp. |
 | Äggröra | Bränn spruckna rymdägg och rymdkryp för att skydda besättningen. |
 | Städa hemmet | Städa 40 hushållsuppgifter och gör sedan klart det sista tillsammans. |
+| Klossar | Para ihop och ta bort alla klossar i mahjong-patiens. |
 
 Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övning eller valt språk.
 
 ## Så svarar du
+
+- **Klossar:** klicka eller tryck på två fria klossar. Textfält och mikrofon används inte.
 
 - **Tangentbord:** skriv ett svar och tryck Enter. Enstaka bokstäver och bopomofo skickas direkt. Pågående IME-inmatning väntar tills tecknet är färdigt.
 - **Mikrofon:** säg svaren efter varandra. Spelet lyssnar kontinuerligt och skickar kända svar så snart de transkriberas.
@@ -170,6 +173,25 @@ Ett rätt svar reserverar målet. Spelaren går närmare tills målet är inom e
 
 Spelet vinns när alla ägg och kryp är döda. Det förloras först när hela besättningen, inklusive spelaren, är död. Om spelaren dör fortsätter övriga människor försöka komma undan, och inmatningen stängs av. Överlevande människor gör tre segerhopp vid vinst; kvarvarande kryp gör det vid förlust. Alla övningar, talmatchning, köregler och fördröjd pinyin används. Matte ger 40 procent längre tider och långsammare rörelser, med samma relativa hastigheter och poäng.
 
+## Klossar
+
+Klossar är mahjong-patiens med **20, 30 eller 40 par** på lätt, medel respektive svår nivå. Bara fria klossar kan väljas: ovansidan måste vara fri och minst en av vänster- och högerkanterna måste sakna granne. Klicka eller tryck för att välja; klicka igen för att avmarkera. Två valda klossar bedöms direkt. Rätt par försvinner i små rökmoln, fel par vickar till och avmarkeras. Minskad rörelse ersätter animationerna med lugnare återkoppling.
+
+- Bokstäver och vanliga läsord: **versaler ↔ gemener**.
+- Kinesiska, inklusive kinesisk läxa: **tecken/ord ↔ pinyin med toner**. Ingen översättning, pinyinledtråd på tecknen eller fördröjd hjälp visas. Likadana uttal är utbytbara; olika toner är olika svar.
+- Matematik: **uppgift/diagram ↔ svar**. Alla klossar med samma svarsvärde är utbytbara.
+- Synonymer, motsatser och översättningar behåller övningens ordpar. Bopomofo paras med den tryckta tangenten. Vanliga läxord paras i versaler och gemener.
+
+Banan lottas mellan Sköldpaddan, Pyramiden, Borgen, Dinosaurien och Facehuggern. Silhuetten behålls och fler lager tillkommer vid högre svårighet. Varje giv konstrueras från en giltig borttagningsordning. Om en annan giltig spelordning lämnar högen utan fria par blandas de återstående klossarna automatiskt till en lösbar uppställning. Inga uppgifter försvinner vid blandning och klockan fortsätter gå. Smala skärmar får en rullningsbar spelplan för att behålla läsbara klossar.
+
+Varje rätt par ger 100 poäng. När banan är tömd tillkommer en tidsbonus:
+
+`slutpoäng = 100 × par + avrunda(400 × par / (1 + sekunder / (6 × par)))`
+
+Tiden har ingen gräns. Snabbare lösning ger större bonus; paus stoppar klockan. Fel kostar den tid de tar men ger inget separat poängavdrag. Text- och röstinmatning är avstängda även från en läxlänk som anger röst. Tidigare inputval återställs när man byter spel.
+
+Klossar använder poängversion `v1` och sparar `input_mode: "click"`. **Driftsättning:** uppdatera Cloudflare med den genererade `cloudflare/worker.mjs` innan frontend publiceras, så att API:t godkänner det nya spelet och dess klickläge. Ingen databasmigrering behövs.
+
 ## Mikrofon
 
 Kinesiskt tal matchas tillåtande mot synliga uppgifter med tonlös pinyin. Appen söker efter hela svar inuti transkriptionen och jämför även taltjänstens alternativa transkriptioner. Hanzi, pinyin och siffror kan blandas; skiljetecken och gränser mellan talresultat hindrar inte flerteckenord. Sammanfogad pinyin delas i hela stavelser. Ett komplett längre ord prioriteras, men ett synligt enstaka tecken skickas direkt om det är det enda kompletta svaret hittills. Omatchade fragment ignoreras, även när taltjänsten markerar dem som slutliga, och får inte ändra ett redan godkänt svar till ett felsvar. Historik och köregler hindrar att alternativa transkriptioner eller senare rättningar utlöser samma handling igen. Gamla oförändrade transkriptioner får inte besvara nytillkomna uppgifter. Detta gäller kinesiska tecken-/ordövningar; tangentbord, bopomofo, övriga språk och matematik behåller sina regler. Val av annan transkription visas som `chinese-alternative` i felsökningsloggen. Avvisade köförsök räknas inte som utförda handlingar: om en dubblett senare rättas till ett annat giltigt svar prövas rättningen direkt. Identiska avvisade transkriptioner prövas däremot inte om vid varje callback. Kinesiska talsvar som förlorar sitt lediga mål medan de väntar tas bort före utförandet, så att de inte utlöser en felsvarspaus.
@@ -200,6 +222,7 @@ Klassiska skript används så att `file://` fungerar utan modulladdare, externa 
 | `resources/data.js`, `pinyin.js` | Fasta matematiknivåer, uttalsbehandling och svarsmatchning. |
 | `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js`, `marshmallows.js`, `eggs.js`, `home.js`, `home-renderer.js` | Nio simuleringar och canvas-renderare. |
 | `resources/reversi-engine.js`, `reversi.js`, `reversi-renderer.js`, `reversi.css` | Reversis regler, sökning, frågeval och DOM-bräde. |
+| `resources/klossar.js`, `klossar-renderer.js`, `klossar.css` | Mahjong-patiens, lösbara högar, klickbara klossar och rökeffekter. |
 | `resources/people.js`, `plants.js`, `sounds.js` | Gemensamma figurer, växter och syntetiska ljud. |
 | `resources/app.js` | Menyer, paus, HUD och anslutning av modulerna. |
 

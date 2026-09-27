@@ -1,7 +1,7 @@
 (function(root){
 'use strict';
 const SC=root.Starlight,$=id=>document.getElementById(id),api='https://skolarkaden-api.jakob-rogstadius.workers.dev/admin/stats';
-const games={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet',reversi:'Reversi'};
+const games={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet',reversi:'Reversi',klossar:'Klossar'};
 const difficulties={gentle:'Lätt',steady:'Medel',brave:'Svår'},number=new Intl.NumberFormat('sv-SE');
 const palette=['#287d68','#647ac0','#d39536','#a76fba','#c5685c','#42a6a0','#a48b4d','#738855','#c67f9c','#557f98','#8a6855','#777777'];
 const color=index=>palette[index]||'hsl('+Math.round(index*137.508%360)+' 48% '+(38+index%3*10)+'%)';

@@ -7,8 +7,8 @@ const policy=root.SkolarkadenHighscorePolicy;
 const boardKey=selection=>[policy.versions[selection.kind],selection.kind].join(':');
 const storedKey=selection=>boardKey(selection)+':'+selection.mode+':'+selection.pace;
 const scoreSettings=s=>({game_version:policy.versions[s.kind],game:s.kind,exercise:s.mode,difficulty:s.pace,
-  input_mode:s.input==='typing'?'keyboard':s.input==='browser'?'voice':null,
-  spoken_language:s.spokenLanguage||s.lang||null,exercise_language:s.lang||null,
+  input_mode:s.input==='typing'?'keyboard':s.input==='browser'?'voice':s.input==='click'?'click':null,
+  spoken_language:s.input==='click'?null:s.spokenLanguage||s.lang||null,exercise_language:s.lang||null,
   uppercase:typeof s.uppercase==='boolean'?s.uppercase:null,letter_keys:s.letterKeys||null,...(s.homeworkId?{homework_id:s.homeworkId}:{}),
   sound_enabled:typeof s.soundEnabled==='boolean'?s.soundEnabled:null,reduced_motion:typeof s.reducedMotion==='boolean'?s.reducedMotion:null});
 const difficultyName=pace=>Array.from($('pace').options).find(option=>option.value===pace)?.textContent||'—';

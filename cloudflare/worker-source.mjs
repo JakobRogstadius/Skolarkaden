@@ -3,7 +3,7 @@
 // (also add-score-settings.sql if settings_json is absent);
 // new databases use schema.sql. No browser API key is used.
 const ALLOWED_ORIGIN = 'https://jakobrogstadius.github.io';
-const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home', 'reversi']);
+const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home', 'reversi', 'klossar']);
 const { mathExercises, languageExercises } = globalThis.SkolarkadenHighscorePolicy;
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',
@@ -30,7 +30,7 @@ function settingsFor(body, board) {
   for (const [key, value] of Object.entries(settings)) if (raw[key] !== undefined && raw[key] !== value) throw new Error('invalid_settings');
   for (const key of ['input_mode', 'spoken_language', 'exercise_language']) {
     const value = raw[key] ?? null;
-    if (value !== null && !(key === 'input_mode' ? ['keyboard', 'voice'].includes(value) : LANGUAGES.has(value))) throw new Error('invalid_settings');
+    if (value !== null && !(key === 'input_mode' ? ['keyboard', 'voice', ...(game === 'klossar' ? ['click'] : [])].includes(value) : LANGUAGES.has(value))) throw new Error('invalid_settings');
     settings[key] = value;
   }
   for (const key of ['uppercase', 'sound_enabled', 'reduced_motion']) {

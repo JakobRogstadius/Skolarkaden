@@ -26,7 +26,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
     if(file==='resources/app.js'){
       const SC=ctx.Starlight;
       SC.GameSounds=class{unlock(){}play(){}stopCampfire(){}campfire(){}close(){}};
-      for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home','Reversi']){
+      for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home','Reversi','Klossar']){
         const Game=SC[name+'Game'];SC[name+'Game']=class extends Game{constructor(options){super(options);currentGame=this;}};
         SC[name+'Renderer']=class{constructor(canvas,game){this.game=game;}resize(){this.game.resize(1000,700);}destroy(){}scoreEvent(){}};
       }
@@ -62,7 +62,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   hud.click('pause');hud.click('pause-menu');hud.radios[0].dispatchEvent(new Event('change'));hud.click('start');await settle();
   old(Response.json({scores:[{score:9999}]}));await settle();
   assert.equal(hud.fields.best.textContent,'BÄSTA '+top.toLocaleString('sv-SE'),'late response cannot replace another game record');
-  console.log('PASS online top score for all ten games, empty/error/loading states and stale response isolation.');
+  console.log('PASS online top score for all eleven games, empty/error/loading states and stale response isolation.');
   const reversi=boot();await settle();reversi.radios.find(r=>r.value==='reversi').dispatchEvent(new Event('change'));reversi.click('start');await settle();
   assert.equal(reversi.fields.answer.disabled,true,'thinking disables input');
   const ready=()=>{for(let i=0;i<10000&&reversi.game.phase!=='answer'&&reversi.game.state==='playing';i++)reversi.game.update(.05);};
@@ -95,6 +95,25 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   const voice=boot('?mode=homework&id=zh-001');await settle();assert.equal(voice.fields.language.value,'zh-TW');assert.equal(voice.fields['input-kind'].value,'browser');assert(voice.fields.language.disabled);assert.equal(voice.ctx.Starlight.modes.homework.items[2].hint,'wǒ xǐhuān hē chá');
   const voiceOverride=boot('?mode=homework&id=sv-001&input=voice');await settle();assert.equal(voiceOverride.fields['input-kind'].value,'browser');assert(voiceOverride.fields['input-kind'].disabled);assert.equal(voiceOverride.ctx.Starlight.modes.homework.input,'voice');
   const keyboardDefault=boot('?mode=homework&id=sv-001');await settle();assert.equal(keyboardDefault.fields['input-kind'].value,'typing');
+  // Even a voice-only homework URL becomes click-only for Klossar; switching
+  // games must restore the original input choice, not overwrite the homework.
+  voice.radios.find(r=>r.value==='klossar').dispatchEvent(new Event('change'));
+  voice.click('start');await settle();assert.equal(voice.fields['setup-error'].textContent,'');
+  assert.equal(voice.game.state,'playing');assert.equal(voice.captures.at(-1).enabled,false);
+  assert(voice.fields.answer.disabled);assert(voice.fields['input-dock'].hidden);assert(voice.fields['settings-open'].hidden);
+  assert.equal(voice.selection.input,'click');assert.equal(voice.selection.spokenLanguage,null);assert.equal(voice.fields.objective.textContent,'0 / 20 par');
+  const elapsed=voice.game.elapsed;voice.click('pause');voice.game.update(20);assert.equal(voice.game.elapsed,elapsed);voice.click('resume');await settle();assert(voice.fields.answer.disabled);
+  for(let n=0;n<20;n++){
+    const free=voice.game.getAvailableTargets(),a=free.find(a=>free.some(b=>voice.ctx.Starlight.klossarMatches(a,b))),b=free.find(b=>voice.ctx.Starlight.klossarMatches(a,b));
+    voice.game.select(a.id);voice.game.select(b.id);voice.game.update(.5);
+  }
+  voice.game.update(1);await settle();assert.equal(voice.fields['result-title'].textContent,'Alla klossar är borta!');
+  voice.click('again');await settle();await settle();assert.equal(voice.game.hits,0);assert.equal(voice.posts.length,1);
+  assert.equal(voice.posts[0].leaderboard_key,'v1:klossar:homework:gentle');assert.equal(voice.posts[0].settings.input_mode,'click');
+  assert.equal(voice.posts[0].settings.spoken_language,null);assert.equal(voice.posts[0].settings.homework_id,'zh-001');
+  voice.click('pause');voice.click('pause-menu');voice.radios.find(r=>r.value==='city').dispatchEvent(new Event('change'));
+  assert.equal(voice.fields['input-kind'].value,'browser');assert(!voice.fields['settings-open'].hidden);
+  console.log('PASS Klossar click-only voice homework, disabled text/microphone, pause/resume, full round, score settings, replay and input restoration');
   for(const search of ['?mode=homework','?mode=homework&id=missing','?mode=homework&id=sv-001&input=invalid','?mode=homework&id=sv-001&input=']){const broken=boot(search);await settle();assert(broken.fields.start.disabled);assert(broken.fields['setup-error'].textContent);broken.click('start');await settle();assert.equal(broken.game,undefined);}
   for(const response of [()=>new Response('{'),()=>{throw Error('offline');},()=>Response.json({'sv-001':{input:'keyboard',language:'sv-SE',words:[]}})]){
     const broken=boot('?mode=homework&id=sv-001',async()=>response());await settle();assert(broken.fields.start.disabled);assert(broken.fields['setup-error'].textContent);assert.equal(broken.game,undefined);
