@@ -194,6 +194,8 @@ Klossar är mahjong-patiens med **20, 30 eller 40 par** på lätt, medel respekt
 
 Banan lottas mellan Sköldpaddan, Pyramiden, Borgen, Dinosaurien och Facehuggern. Silhuetten behålls och fler lager tillkommer vid högre svårighet. Varje giv konstrueras från en giltig borttagningsordning. Om en annan giltig spelordning lämnar högen utan fria par blandas de återstående klossarna automatiskt till en lösbar uppställning. Inga uppgifter försvinner vid blandning och klockan fortsätter gå. Hela högen anpassas till spelrutan utan rullning. Klossarna är bredare än de är höga, med text som minskas jämnt vid behov; upp till tio tecken visas på en rad, medan längre texter kan radbrytas.
 
+Varje kloss får slumpmässigt ett serif- eller sans-serif-typsnitt, oberoende av sin partner. Typsnittet behålls vid markering, paus, blandning och storleksändring. Båda medföljande typsnitten täcker latinska bokstäver, pinyin samt övningarnas traditionella och förenklade kinesiska tecken. De är kompakta utdrag ur Noto Sans CJK och Noto Serif CJK, med OFL-licenser i `resources/fonts`. Återskapa dem med `dev/build-klossar-fonts.py` när nya kinesiska tecken läggs till; andra tecken använder lokala reservtypsnitt.
+
 Varje rätt par ger 100 poäng. När banan är tömd tillkommer en tidsbonus:
 
 `slutpoäng = 100 × par + avrunda(400 × par / (1 + sekunder / (6 × par)))`

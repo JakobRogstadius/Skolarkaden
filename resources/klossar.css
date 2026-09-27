@@ -1,4 +1,6 @@
 /* A quiet felt table and raised ivory tiles. No glyph is stretched to fit. */
+@font-face{font-family:KlossarSans;src:url('fonts/klossar-sans.woff?v=9a580ca73957') format('woff');font-style:normal;font-weight:700;font-display:swap}
+@font-face{font-family:KlossarSerif;src:url('fonts/klossar-serif.woff?v=17b7c03e8e69') format('woff');font-style:normal;font-weight:700;font-display:swap}
 .klossar-card svg{max-width:100%;max-height:100%}
 .menu:has(.klossar-card input:checked) .setup-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 body.playing .arena.klossar{height:clamp(580px,calc(100dvh - 86px),1040px);background:radial-gradient(ellipse at 45% 40%,#356c64,#173f3d 80%);border-color:#628b78}
@@ -25,7 +27,8 @@ body.playing .arena.klossar{height:clamp(580px,calc(100dvh - 86px),1040px);backg
 .klossar-tile.is-selected::after{border:3px solid #8bffd0}
 .klossar-tile:focus-visible{outline:none}
 .klossar-tile:focus-visible::after{border:3px solid #ffd080}
-.klossar-face{height:100%;width:100%;min-width:0;padding:1px;display:flex;align-items:center;justify-content:center;font-family:'Trebuchet MS',system-ui,sans-serif;font-weight:700;line-height:1.1;text-align:center;overflow-wrap:anywhere;white-space:normal;pointer-events:none}
+.klossar-face{height:100%;width:100%;min-width:0;padding:1px;display:flex;align-items:center;justify-content:center;font-family:KlossarSans,'Noto Sans CJK TC','Microsoft JhengHei','Microsoft YaHei',Arial,sans-serif;font-weight:700;line-height:1.1;text-align:center;overflow-wrap:anywhere;white-space:normal;pointer-events:none}
+.klossar-face[data-font=serif]{font-family:KlossarSerif,'Noto Serif CJK TC','Songti TC',PMingLiU,SimSun,Georgia,serif}
 .klossar-face canvas{display:block;width:100%;height:auto;max-height:100%;object-fit:contain;border-radius:3px}
 .klossar-instructions{flex-shrink:0;text-align:center;color:#c5d9ca;font-size:12px;line-height:1.35;margin:9px 0 0}
 .klossar-tile.is-wrong{--tile-color:#f4c5ae;animation:klossar-wiggle .42s ease-in-out}

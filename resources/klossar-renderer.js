@@ -20,6 +20,8 @@ class KlossarRenderer{
       const button=element('button','klossar-tile');button.type='button';button.dataset.tileId=tile.id;
       button.addEventListener('click',()=>{this.advance(performance.now());game.select(tile.id);this.draw();});
       const face=element('span','klossar-face');
+      // Visual randomness is independent of the deal and is assigned only once.
+      face.dataset.font=Math.random()<.5?'serif':'sans';
       if(tile.item.diagram){
         const diagram=document.createElement('canvas');diagram.width=224;diagram.height=160;diagram.setAttribute('aria-hidden','true');
         const ctx=diagram.getContext('2d');ctx.scale(2,2);SC.drawMathDiagram(ctx,tile.item.diagram,{x:0,y:0,w:112,h:80});face.append(diagram);
@@ -31,6 +33,9 @@ class KlossarRenderer{
     this.lastTime=performance.now();
     const frame=now=>{if(this.destroyed)return;this.advance(now);this.draw();this.raf=requestAnimationFrame(frame);};
     this.raf=requestAnimationFrame(frame);this.layout();
+    // A downloaded font can have different metrics from its local fallback.
+    // Refit once both faces are ready, without changing any tile's font choice.
+    document.fonts?.ready.then(()=>{if(!this.destroyed)this.layout();});
   }
   advance(now){
     // Use real foreground time, including slow frames; pause/resume reset this
