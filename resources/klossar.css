@@ -12,6 +12,11 @@ body.playing .arena.klossar{height:clamp(580px,calc(100dvh - 86px),1040px);backg
 .klossar-scene{position:absolute;inset:108px 10px 8px;display:flex;flex-direction:column;min-height:0}
 .klossar-caption{display:flex;flex-shrink:0;align-items:center;justify-content:space-between;gap:12px;padding:0 12px 10px;color:#c1d8c9;font-size:12px}
 .klossar-layout-name{font-family:Georgia,serif;color:#eee1bc;font-size:20px}
+.klossar-chinese-toggle{display:inline-flex;flex-shrink:0;gap:2px;padding:3px;border:1px solid #7eab9466;border-radius:9px;background:#153e35}
+.klossar-chinese-toggle button{border:0;border-radius:6px;padding:7px 9px;background:transparent;color:#c1d8c9;font-size:12px;line-height:1.2;white-space:nowrap}
+.klossar-chinese-toggle button:hover:enabled{background:#365d4d}
+.klossar-chinese-toggle button[aria-pressed=true],.klossar-chinese-toggle button[aria-pressed=true]:hover:enabled{background:#eee1bc;color:#214c3e}
+.klossar-chinese-toggle button:focus-visible{outline-offset:1px}
 .klossar-viewport{flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #cbe7c215;border-radius:15px;background:repeating-linear-gradient(36deg,#ffffff03 0 1px,transparent 1px 5px)}
 .klossar-board{position:relative;flex:none;isolation:isolate}
 /* Keep an opaque base below the same gradient in every state. Transitioning

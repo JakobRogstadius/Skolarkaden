@@ -9,7 +9,17 @@ class KlossarRenderer{
     this.canvas=canvas;this.game=game;this.reduced=root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     this.host=element('section','klossar-scene');this.host.setAttribute('aria-label','Klossar');
     this.caption=element('div','klossar-caption');
-    this.caption.append(element('span','klossar-layout-name',game.layout.name),element('span','klossar-rule','Fri ovansida + fri vänster- eller högerkant'));
+    this.displayButtons=new Map();
+    if(SC.isChinese(game.mode)){
+      const toggle=element('div','klossar-chinese-toggle');toggle.setAttribute('role','group');toggle.setAttribute('aria-label','Matcha kinesiska tecken med');
+      for(const [value,label] of [['pinyin','Pinyin'],['translation','Översättningar']]){
+        const button=element('button','',label);button.type='button';
+        button.addEventListener('click',()=>{this.advance(performance.now());if(game.setChineseDisplay(value))this.layout();});
+        toggle.append(button);this.displayButtons.set(value,button);
+      }
+      this.caption.append(toggle);
+    }else this.caption.append(element('span','klossar-layout-name',game.layout.name));
+    this.caption.append(element('span','klossar-rule','Fri ovansida + fri vänster- eller högerkant'));
     this.viewport=element('div','klossar-viewport');this.viewport.setAttribute('aria-label','Spelplan');
     this.board=element('div','klossar-board');this.viewport.append(this.board);
     this.instructions=element('p','klossar-instructions','Välj två klossar som hör ihop. Klicka igen för att avmarkera.');
@@ -57,17 +67,19 @@ class KlossarRenderer{
     for(const tile of g.tiles){
       const button=this.buttons.get(tile.id),p=this.position(tile);
       Object.assign(button.style,{left:p.x+'px',top:p.y+'px',width:this.geometry.tileWidth+'px',height:this.geometry.tileHeight+'px',zIndex:String(10+tile.z*100+tile.y)});
-      const face=button.firstElementChild;
-      if(!tile.item.diagram&&!tile.removed){
-        // Keep up to ten characters on one line. Longer labels can wrap;
-        // shrink the whole font evenly, never stretch or crop its glyphs.
-        face.style.whiteSpace=Array.from(tile.item.label).length<=10?'nowrap':'normal';
-        let size=Math.min(22,cell*.18);face.style.fontSize=size+'px';
-        while(size>1&&(face.scrollWidth>face.clientWidth||face.scrollHeight>face.clientHeight)){size=Math.max(1,size-.5);face.style.fontSize=size+'px';}
-      }
+      this.fitText(tile,button);
     }
     for(const [id,node] of this.puffs){const effect=g.effects.find(e=>e.id===id);if(effect)this.placePuff(node,effect);}
     this.draw();
+  }
+  fitText(tile,button){
+    if(tile.item.diagram||tile.removed)return;
+    const face=button.firstElementChild;
+    // Keep up to ten characters on one line. Longer labels can wrap;
+    // shrink the whole font evenly, never stretch or crop its glyphs.
+    face.style.whiteSpace=Array.from(tile.item.label).length<=10?'nowrap':'normal';
+    let size=Math.min(22,this.geometry.cell*.18);face.style.fontSize=size+'px';
+    while(size>1&&(face.scrollWidth>face.clientWidth||face.scrollHeight>face.clientHeight)){size=Math.max(1,size-.5);face.style.fontSize=size+'px';}
   }
   position(tile){const p=this.geometry;return {x:p.padding+(tile.x-tile.z*.12-p.minX)*p.cell,y:p.padding+(tile.y-tile.z*.12-p.minY)*p.row};}
   placePuff(node,effect){const p=this.position(effect);node.style.left=p.x+'px';node.style.top=p.y+'px';node.style.width=this.geometry.tileWidth+'px';node.style.height=this.geometry.tileHeight+'px';}
@@ -85,11 +97,20 @@ class KlossarRenderer{
       const free=new Set(g.getAvailableTargets());
       for(const tile of g.tiles){
         const button=this.buttons.get(tile.id);button.hidden=tile.removed;
+        if(!tile.item.diagram&&button.firstElementChild.textContent!==tile.item.label){
+          button.firstElementChild.textContent=tile.item.label;button.setAttribute('aria-label',tile.item.label);this.fitText(tile,button);
+        }
+        button.setAttribute('title',tile.item.tooltip||'');
         button.disabled=!free.has(tile)||g.state!=='playing'||!!g.feedback;
         button.classList.toggle('is-blocked',!free.has(tile));
         button.classList.toggle('is-selected',g.selected.includes(tile));
         button.classList.toggle('is-wrong',!!g.feedback?.ids.includes(tile.id));
         button.setAttribute('aria-pressed',String(g.selected.includes(tile)));
+      }
+      for(const [value,button] of this.displayButtons){
+        button.setAttribute('aria-pressed',String(value===g.chineseDisplay));
+        button.disabled=g.state!=='playing'||value==='translation'&&!g.canTranslate();
+        button.title=value==='translation'&&!g.canTranslate()?'Översättning saknas i övningen.':'';
       }
       this.lastRevision=g.revision;this.lastState=g.state;
     }

@@ -28,16 +28,17 @@ function firstPair(g){return g.order[0].map(id=>g.tiles[id]);}
   g.select(c.id);g.select(wrong.id);assert.equal(spoken.length,start+5);assert(g.feedback);
   assert(!g.select(c.id));assert.equal(spoken.length,start+5);
 }
-for(const [mode,lang,label,hint] of [['chinese','zh-TW','女','nǚ'],['chineseSimpl1','zh-CN','是','shì']]){
-  const {g}=game({mode,lang,items:[{label,hint}]}),pair=firstPair(g),han=pair.find(t=>t.side==='problem'),pinyin=pair.find(t=>t.side==='answer'),start=spoken.length;
-  g.select(han.id);assert.equal(spoken.length,start,'Chinese character faces remain silent');
-  g.select(pinyin.id);assert.equal(spoken.length,start+1);assert.equal(spoken.at(-1).text,label);assert.equal(spoken.at(-1).lang,lang);
+for(const [mode,lang,label,hint] of [['chinese','zh-TW','女','nǚ'],['chineseSimpl1','zh-CN','是','shì'],['chinese','zh-TW','你好','nǐ hǎo']])for(const display of ['pinyin','translation']){
+  const {g}=game({mode,lang,items:[{label,hint,translation:'hej'}]});g.setChineseDisplay(display);
+  const pair=firstPair(g),han=pair.find(t=>t.side==='problem'),pinyin=pair.find(t=>t.side==='answer'),start=spoken.length;
+  g.select(pinyin.id);assert.equal(spoken.length,start,'pinyin and translation faces remain silent');
+  g.select(han.id);assert.equal(spoken.length,start+1);assert.equal(spoken.at(-1).text,label);assert.equal(spoken.at(-1).lang,lang);
   assert(!pinyin.item.hint&&!pinyin.item.translation&&!han.item.hint);
 }
 SC.modes.homework=SC.parseHomework({test:{input:'voice',language:'zh-TW',words:[['我喜歡喝茶','wǒ xǐhuān hē chá','Jag tycker om att dricka te.']]}},'test');
 {
-  const {g}=game({mode:'homework',lang:'zh-TW'}),pinyin=firstPair(g).find(t=>t.side==='answer');g.select(pinyin.id);
-  assert.equal(spoken.at(-1).text,'我喜歡喝茶');assert.equal(spoken.at(-1).lang,'zh-TW');
+  const {g}=game({mode:'homework',lang:'zh-TW'}),start=spoken.length;for(const tile of firstPair(g))g.select(tile.id);
+  assert.equal(spoken.length,start,'longer Chinese phrases and their pinyin are silent');
 }
 for(const item of SC.modes.bopomofo.items){
   const {g}=game({mode:'bopomofo',lang:'zh-TW',items:[item]}),pair=firstPair(g),symbol=pair.find(t=>t.side==='problem'),key=pair.find(t=>t.side==='answer');
@@ -59,7 +60,7 @@ for(const [mode,lang,label] of [['letters','en-US','j'],['letters','sv-SE','ö']
 for(const options of [{mode:'swedish',items:[{label:'sol'}]},{mode:'math-addition'}]){
   const {g}=game(options),[a,b]=firstPair(g),before=spoken.length;g.select(a.id);g.select(b.id);assert.equal(spoken.length,before);
 }
-console.log('PASS selection/toggling, both matched and mismatched tiles, pinyin tones/phrases, all 37 bopomofo recordings, Latin languages and silent words/math/Hanzi');
+console.log('PASS selection/toggling, both matched and mismatched tiles, one/two Chinese characters, silent pinyin/translations/long phrases, all 37 bopomofo recordings and Latin languages');
 
 // Voice selection cannot substitute Cantonese for Mandarin. Empty voice lists
 // still let the browser use the requested language and are refreshed next time.

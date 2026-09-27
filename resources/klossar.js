@@ -61,8 +61,9 @@ function pairFor(item,mode,random,lang){
   }
   if(SC.isChinese(mode)){
     if(!item.hint)throw new Error('Uppgiften saknar pinyin.');
-    // Mandarin voices read Hanzi reliably; the face still shows only pinyin.
-    return {problem:{label:item.label},answer:item.hint,answerSpeech:{text:item.label,lang:SC.modes[mode].lang},key:'pinyin:'+readingKey(item.hint)};
+    const chinese={pinyin:item.hint,translation:item.translation?.trim()||''};
+    const speech=/^\p{Script=Han}{1,2}$/u.test(item.label)?{text:item.label,lang:SC.modes[mode].lang}:null;
+    return {problem:{label:item.label,speech,tooltip:chinese.translation},answer:item.hint,chinese,key:'pinyin:'+readingKey(item.hint)};
   }
   if(mode==='bopomofo')return {problem:{label:item.label,speech:{audio:'resources/audio/bopomofo/'+item.label.codePointAt(0).toString(16)+'.mp3'}},answer:item.key.toUpperCase(),answerSpeech:letterSpeech(item.key,SC.modes.letters.lang),key:'key:'+item.key};
   if(SC.isWordPair(mode)){
@@ -99,7 +100,7 @@ class KlossarGame{
   emit(type,detail={}){this.onEvent({type,...detail});}
   menu(){Object.assign(this,{state:'menu',clock:0,elapsed:0,score:0,hits:0,shots:0,mistakes:0,reshuffles:0,selected:[],tiles:[],effects:[],feedback:null,revision:0});}
   start({mode='swedish',pace='gentle',lang='sv-SE',items=null,layout=null}={}){
-    this.menu();this.queue.clear();Object.assign(this,{mode,pace,lang,uppercase:false});
+    this.menu();this.queue.clear();Object.assign(this,{mode,pace,lang,uppercase:false,chineseDisplay:'pinyin'});
     this.total=pairCounts[pace];if(!this.total)throw new Error('Okänd svårighet.');
     this.items=SC.beginPractice(this,items);
     this.layout=layouts.find(l=>l.id===layout)||layouts[Math.floor(this.random()*layouts.length)];
@@ -109,8 +110,8 @@ class KlossarGame{
     this.tiles=this.slots.map(p=>({...p,removed:false}));
     this.order.forEach(([first,second],i)=>{
       const [a,b]=this.random()<.5?[first,second]:[second,first],p=pairs[i];
-      Object.assign(this.tiles[a],{side:'problem',key:p.key,item:p.problem});
-      Object.assign(this.tiles[b],{side:'answer',key:p.key,item:{label:p.answer,speech:p.answerSpeech}});
+      Object.assign(this.tiles[a],{side:'problem',key:p.key,item:p.problem,chinese:p.chinese});
+      Object.assign(this.tiles[b],{side:'answer',key:p.key,item:{label:p.answer,speech:p.answerSpeech},chinese:p.chinese});
     });
     this.state='playing';this.revision++;this.emit('start');
   }
@@ -120,6 +121,21 @@ class KlossarGame{
   getActiveEntries(){return [];}
   free(tile){return this.tiles.includes(tile)&&isFree(tile,this.tiles);}
   hasMove(){const free=this.getAvailableTargets();return free.some((a,i)=>free.slice(i+1).some(b=>matches(a,b)));}
+  canTranslate(){return SC.isChinese(this.mode)&&this.tiles.every(t=>!t.chinese||!!t.chinese.translation);}
+  updateChineseTile(tile){
+    if(!tile.chinese)return;
+    const display=this.chineseDisplay;
+    tile.key=display+':'+readingKey(tile.chinese[display]);
+    if(tile.side==='answer')tile.item.label=tile.chinese[display];
+    else tile.item.tooltip=tile.chinese[display==='pinyin'?'translation':'pinyin'];
+  }
+  setChineseDisplay(display){
+    if(!SC.isChinese(this.mode)||this.state!=='playing'||!['pinyin','translation'].includes(display)||display===this.chineseDisplay||display==='translation'&&!this.canTranslate())return false;
+    this.chineseDisplay=display;this.selected=[];this.feedback=null;
+    this.tiles.forEach(tile=>this.updateChineseTile(tile));this.revision++;
+    if(!this.hasMove())this.reshuffle();
+    this.emit('klossar-display');return true;
+  }
   select(id){
     if(this.state!=='playing'||this.feedback)return false;
     const tile=this.tiles.find(t=>t.id===id);
@@ -130,6 +146,13 @@ class KlossarGame{
     if(this.selected.length<2){this.emit('klossar-select',{tile});this.emit('lock');return true;}
     const [a,b]=this.selected;this.shots++;
     if(matches(a,b)){
+      if(a.chinese&&a.chinese!==b.chinese){
+        const [problem,answer]=a.side==='problem'?[a,b]:[b,a];
+        // Equal pinyin can have different meanings (他/她/它). Rebind the
+        // surviving answer so both display modes retain complete pairs.
+        const companion=this.tiles.find(t=>!t.removed&&t.side==='answer'&&t.chinese===problem.chinese);
+        companion.chinese=answer.chinese;this.updateChineseTile(companion);
+      }
       a.removed=b.removed=true;this.selected=[];this.hits++;this.score=this.hits*100;
       this.effects.push({id:a.id,x:a.x,y:a.y,z:a.z,age:0},{id:b.id,x:b.x,y:b.y,z:b.z,age:0});
       this.emit('hit',{target:a,points:100});

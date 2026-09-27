@@ -140,7 +140,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   await settle();pronunciation.radios.find(r=>r.value==='klossar').dispatchEvent(new Event('change'));
   pronunciation.fields.lesson.value='chinese';pronunciation.click('start');await settle();
   pronunciation.fields.sound.querySelector=()=>({textContent:''});
-  const reading=pronunciation.game.order[0].map(id=>pronunciation.game.tiles[id]).find(t=>t.side==='answer');
+  const reading=pronunciation.game.order[0].map(id=>pronunciation.game.tiles[id]).find(t=>t.side==='problem');
   pronunciation.game.select(reading.id);assert.equal(utterances.length,1);assert.equal(utterances[0].lang,'zh-TW');
   pronunciation.click('sound');assert.equal(cancellations,1,'mute stops the current pronunciation');
   pronunciation.game.select(reading.id);pronunciation.game.select(reading.id);assert.equal(utterances.length,1,'muted selection stays silent');
@@ -150,7 +150,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   pronunciation.game.select(reading.id);pronunciation.game.select(reading.id);assert.equal(utterances.length,3);
   pronunciation.click('pause-menu');assert.equal(cancellations,3,'leaving the game stops pronunciation');
   pronunciation.click('start');await settle();
-  const nextReading=pronunciation.game.order[0].map(id=>pronunciation.game.tiles[id]).find(t=>t.side==='answer');
+  const nextReading=pronunciation.game.order[0].map(id=>pronunciation.game.tiles[id]).find(t=>t.side==='problem');
   pronunciation.game.select(nextReading.id);assert.equal(utterances.length,4);
   pageEvents.pagehide();assert.equal(cancellations,4,'navigation stops pronunciation');
   assert(pronunciation.fields.answer.disabled);assert.equal(pronunciation.captures.at(-1).enabled,false,'output does not activate voice input');

@@ -30,7 +30,7 @@ for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'
     viewport=size;renderer.resize();
     assert(parseFloat(renderer.board.style.width)<=size.width+.001,'the entire board fits the viewport width');
     assert(parseFloat(renderer.board.style.height)<=size.height+.001,'the entire board fits the viewport height');
-    for(const tile of g.tiles){const button=renderer.buttons.get(tile.id);assert.equal(button.disabled,!g.free(tile));assert.equal(button.attributes['aria-pressed'],'false');assert(!button.attributes.title,'no hover answer hint');
+    for(const tile of g.tiles){const button=renderer.buttons.get(tile.id);assert.equal(button.disabled,!g.free(tile));assert.equal(button.attributes['aria-pressed'],'false');assert.equal(button.attributes.title,SC.isChinese(mode)&&tile.side==='problem'?tile.chinese.translation:'');
       for(const key of ['left','top','width','height'])assert(Number.isFinite(parseFloat(button.style[key])));
       assert(parseFloat(button.style.left)>=0&&parseFloat(button.style.top)>=0);
       assert(parseFloat(button.style.left)+parseFloat(button.style.width)<=parseFloat(renderer.board.style.width));
@@ -39,6 +39,17 @@ for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'
       if(!tile.item.diagram)assert.equal(button.firstElementChild.textContent,tile.item.label);
     }
   }
+  if(SC.isChinese(mode)){
+    assert.equal(renderer.caption.firstElementChild.className,'klossar-chinese-toggle');
+    const fonts=g.tiles.map(t=>renderer.buttons.get(t.id).firstElementChild.dataset.font);
+    const translation=renderer.displayButtons.get('translation'),pinyin=renderer.displayButtons.get('pinyin');
+    translation.dispatchEvent(new Event('click'));assert.equal(g.chineseDisplay,'translation');
+    assert.equal(translation.attributes['aria-pressed'],'true');assert.equal(pinyin.attributes['aria-pressed'],'false');
+    for(const tile of g.tiles){const button=renderer.buttons.get(tile.id);assert.equal(button.firstElementChild.textContent,tile.item.label);assert.equal(button.attributes['aria-label'],tile.item.label);assert.equal(button.attributes.title,tile.side==='problem'?tile.chinese.pinyin:'');if(tile.side==='answer')assert.equal(tile.item.label,tile.chinese.translation);}
+    assert.deepEqual(g.tiles.map(t=>renderer.buttons.get(t.id).firstElementChild.dataset.font),fonts,'switching keeps each tile font');
+    pinyin.dispatchEvent(new Event('click'));assert.equal(g.chineseDisplay,'pinyin');
+    for(const tile of g.tiles)if(tile.side==='problem')assert.equal(renderer.buttons.get(tile.id).attributes.title,tile.chinese.translation);
+  }else{assert.equal(renderer.displayButtons.size,0);assert.equal(renderer.caption.firstElementChild.textContent,g.layout.name);}
   const [a,b]=g.order[0].map(id=>g.tiles[id]),click=t=>renderer.buttons.get(t.id).dispatchEvent(new Event('click'));
   click(a);assert(renderer.buttons.get(a.id).classList.contains('is-selected'));click(a);assert(!renderer.buttons.get(a.id).classList.contains('is-selected'));
   click(a);now+=800;click(b);assert.equal(g.hits,1);assert.equal(g.elapsed,.8);assert(renderer.buttons.get(a.id).hidden&&renderer.buttons.get(b.id).hidden);assert.equal(renderer.puffs.size,2);
