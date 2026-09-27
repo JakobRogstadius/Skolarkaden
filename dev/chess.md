@@ -7,7 +7,9 @@ toneless pinyin. Move order is shuffled and evaluation scores are hidden.
 Hover, focus or touch previews a move; only an answer plays it. Incorrect
 answers sample the weakest third of evaluated legal moves. If only one move
 is legal, both correct and incorrect answers play it. Short lessons can show
-fewer choices. There is no answer timer or turn limit.
+fewer choices. There is no answer timer or turn limit. Move cards show only
+the exercise prompt or diagram, never hints, answers, pinyin or translations,
+even after waiting or pausing. Accepted answers and aliases are unchanged.
 
 The game uses locally vendored **chess.js 1.4.0** for legal moves, check, mate,
 stalemate, castling, en passant and all four promotion pieces. Promotions are
@@ -83,7 +85,7 @@ Captures and losses are bounded at 103 material units per side, including
 eight promoted queens. Material now has ten times its previous relative
 weight, so material differences can outweigh result bonuses across different
 games. The safe integer score cap is 2,430.
-The component breakdown appears beside the board and in the result screen.
+The component breakdown appears in the result screen.
 
 ## Score storage and deployment
 
@@ -112,4 +114,7 @@ result bonuses, cumulative regret, answer/time independence and actual
 captures, including en passant and promotion. `tests/chess-scores.cjs`
 exercises the real Worker against SQLite, including version separation and
 score limits. `tests/homework-ui.cjs` covers app input, pause, score display,
-submission and replay. Run `npm test` for the complete regression suite.
+submission and replay. `tests/chess-renderer.cjs` checks that every exercise's
+move cards keep hints and answers hidden after waiting, pausing and resuming,
+while prompts, diagrams, previews and answer input still work.
+Run `npm test` for the complete regression suite.

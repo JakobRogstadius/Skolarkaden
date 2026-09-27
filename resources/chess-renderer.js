@@ -15,7 +15,7 @@ const point=s=>({x:('abcdefgh'.indexOf(s[0])+.5)*100,y:(8-Number(s[1])+.5)*100})
 class ChessRenderer{
  constructor(canvas,game){
   this.canvas=canvas;this.game=game;this.node=element('div','chess-scene');canvas.hidden=true;canvas.parentElement.append(this.node);
-  this.node.innerHTML='<div class="ch-table"><div class="ch-players"><span><i class="ch-token white"></i> Du · vit</span><span>Datorn · svart <i class="ch-token"></i></span></div><div class="ch-board-wrap"><div class="ch-board" role="group" aria-label="Schackbräde med vit nederst"></div></div><p class="ch-caption">Schackmatt vinner. Ingen tidspress.</p></div><div class="ch-sidebar"><p class="ch-kicker">DITT NÄSTA DRAG</p><h2>Ta god tid på dig.</h2><p class="ch-status" role="status" aria-live="polite"></p><div class="ch-choices"></div><p class="ch-instruction">Svara på uppgiften vid det drag du vill göra. Fel svar ger ett svagt drag. Peka på ett alternativ för att se draget.</p><dl class="ch-scoring" aria-label="Poängfördelning"></dl></div>';
+  this.node.innerHTML='<div class="ch-table"><div class="ch-players"><span><i class="ch-token white"></i> Du · vit</span><span>Datorn · svart <i class="ch-token"></i></span></div><div class="ch-board-wrap"><div class="ch-board" role="group" aria-label="Schackbräde med vit nederst"></div></div><p class="ch-caption">Schackmatt vinner. Ingen tidspress.</p></div><div class="ch-sidebar"><p class="ch-kicker">DITT NÄSTA DRAG</p><h2>Ta god tid på dig.</h2><p class="ch-status" role="status" aria-live="polite"></p><div class="ch-choices"></div></div>';
   this.board=this.node.querySelector('.ch-board');this.status=this.node.querySelector('.ch-status');this.choices=this.node.querySelector('.ch-choices');
   this.arrows=document.createElementNS('http://www.w3.org/2000/svg','svg');this.arrows.setAttribute('viewBox','0 0 800 800');this.arrows.setAttribute('class','ch-arrows');this.arrows.setAttribute('aria-hidden','true');this.node.querySelector('.ch-board-wrap').append(this.arrows);
   this.cells=Array.from({length:64},(_,i)=>{
@@ -40,10 +40,8 @@ class ChessRenderer{
   }).join('');
  }
  draw(){
-  const g=this.game,hints=SC.pinyinHints(g),key=g.revision+':'+g.state+':'+g.targets.map(t=>hints.has(t)?1:0).join('');if(key===this.key)return;this.key=key;
+  const g=this.game,key=g.revision+':'+g.state;if(key===this.key)return;this.key=key;
   const format=SC.ChessScoring.resultText,ended=g.phase==='end';
-  const scoring=this.node.querySelector('.ch-scoring');scoring.replaceChildren();
-  for(const [label,value] of SC.ChessScoring.rows(g.scoreParts)){const part=element('div','ch-score-part');part.append(element('dt','',label),element('dd','',(value<0?'−':'+')+Math.abs(value).toLocaleString('sv-SE')));scoring.append(part);}
   this.status.textContent=g.state==='paused'?'Paus':ended?(g.draw?'Remi.':g.won?'Du vann!':'Datorn vann.')+' '+format(g.resultScore)+'–'+format(g.botScore)+' · '+g.reason:g.message;
   this.node.querySelector('.ch-kicker').textContent=g.phase==='answer'?'DRAG '+(g.turns+1):ended?'PARTIET ÄR KLART':'SCHACK';
   const pieces=g.position.board().flat(),check=g.position.isCheck();
@@ -70,12 +68,8 @@ class ChessRenderer{
    card.setAttribute('aria-label','Förhandsvisa drag '+t.letter+', '+C.description(t.move)+': '+t.item.label);
    card.append(element('span','ch-choice-letter',t.letter));const text=element('span','ch-choice-text');text.append(element('span','ch-coordinate',C.description(t.move)));
    if(t.item.diagram){const diagram=element('canvas','ch-diagram');diagram.width=224;diagram.height=160;diagram.setAttribute('aria-label',t.item.label);const c=diagram.getContext('2d');c.scale(2,2);SC.drawMathDiagram(c,t.item.diagram,{x:0,y:0,w:112,h:80});text.append(diagram);}
-   else{
-    if(t.item.hint&&!t.item.pairId)text.append(element('span','ch-hint',hints.has(t)?t.item.hint:'\u00a0'));
-    text.append(element('span','ch-question',t.item.label));
-    if(t.item.pairId&&t.item.hint)text.append(element('span','ch-hint',hints.has(t)?t.item.hint:'\u00a0'));
-    if(t.item.translation)text.append(element('span','ch-hint',hints.has(t)?t.item.translation:'\u00a0'));
-   }
+   // Exercise prompts stay unanswered, regardless of how long the turn lasts.
+   else text.append(element('span','ch-question',t.item.label));
    card.append(text);for(const event of ['pointerenter','pointerdown','focus'])card.addEventListener(event,()=>this.preview(t));
    for(const event of ['pointerleave','blur'])card.addEventListener(event,()=>this.preview(null));this.choices.append(card);
   }
