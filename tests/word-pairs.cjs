@@ -126,7 +126,7 @@ test('Typing translation direction remains selectable and speech uses the answer
   const fields=new Map(),field=id=>{if(!fields.has(id))fields.set(id,{value:'',options:[],hidden:false,disabled:false,closest(){return this;}});return fields.get(id);};
   field('language').options=['sv-SE','en-US','zh-TW','zh-CN'].map(value=>({value}));field('lesson').value='translation-sv-en-2';field('input-kind').value='typing';field('language').value='sv-SE';
   const app=read('resources/app.js'),start=app.indexOf('function options()'),end=app.indexOf("$('lesson').addEventListener",start),menu=vm.createContext({$:field,SC,kind:'city',homeworkRequested:false,homeworkReady:true,busy:false});
-  vm.runInContext(app.slice(start,end),menu);menu.menuUpdate();assert.equal(field('language').disabled,false);assert.equal(field('language-label').textContent,'Översätt till');assert.equal(menu.options().lang,'sv-SE');
+  vm.runInContext(app.match(/const isBoardGame=[^\n]+/)[0]+'\n'+app.slice(start,end),menu);menu.menuUpdate();assert.equal(field('language').disabled,false);assert.equal(field('language-label').textContent,'Översätt till');assert.equal(menu.options().lang,'sv-SE');
   field('language').value='en-US';assert.equal(menu.options().lang,'en-US');field('input-kind').value='browser';assert.equal(menu.speechOptions().language,'en-US');
   field('lesson').value='swedish-synonyms';menu.menuUpdate();assert.equal(field('language').value,'sv-SE');assert.equal(field('language').options.filter(o=>!o.disabled).length,1);
   field('lesson').value='swedish';field('input-kind').value='typing';menu.menuUpdate();assert.equal(field('language').disabled,true);assert(field('language').options.every(o=>!o.disabled));

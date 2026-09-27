@@ -3,7 +3,7 @@
 // (also add-score-settings.sql if settings_json is absent);
 // new databases use schema.sql. No browser API key is used.
 const ALLOWED_ORIGIN = 'https://jakobrogstadius.github.io';
-const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home', 'reversi', 'klossar']);
+const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home', 'reversi', 'chess', 'klossar']);
 const { mathExercises, languageExercises } = globalThis.SkolarkadenHighscorePolicy;
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',
@@ -333,7 +333,7 @@ export default {
       if (globalThis.SkolarkadenHighscorePolicy.isBannedName(name)) return reply({ ok: true });
       if (typeof id !== 'string' || !UUID.test(id) || !validBoard(board) ||
           !/^[\p{L}\p{M} ]{1,10}$/u.test(name) ||
-          !Number.isSafeInteger(score) || score < 0 || score > 1000000) {
+          !Number.isSafeInteger(score) || score < 0 || score > 1000000 || score > (globalThis.SkolarkadenHighscorePolicy.scoreCaps[board.split(':')[1]] ?? 1000000)) {
         return reply({ error: 'invalid_score' }, 400);
       }
       const settings = settingsFor(body, board);

@@ -44,6 +44,7 @@ const descendants=node=>[node,...node.children.flatMap(descendants)];
   }
   const chart=get('chart-ip'),legend=chart.children.find(node=>node.className==='legend');assert.equal(legend.children.length,11);assert.match(legend.textContent,/Övriga IP-adresser2/);
   assert.equal(descendants(chart).find(node=>node.tagName==='tbody').children.length,13,'expandable table retains all twelve IPs and the total');
+  result.latest.push({...result.latest[0],game:'chess',game_version:'v1',score:1});await click('refresh');assert.equal(get('latest').children[1].children[3].textContent,'Schack');assert.equal(get('latest').children[1].children[6].textContent,'½');result.latest.push({...result.latest[0],game:'chess',game_version:'v2',score:1234});await click('refresh');assert.equal(get('latest').children[2].children[6].textContent,(1234).toLocaleString('sv-SE'));
   let requestCount=requests.length;await rename();assert.equal(requests.length,requestCount,'blank fields cannot send a rename');
   get('rename-ip').value='2001:db8::1';get('rename-old-name').value='<svg onload=alert(1)>';get('rename-new-name').value='Å.SA';
   await rename();assert.equal(requests.length,requestCount,'invalid replacement characters are rejected before sending');

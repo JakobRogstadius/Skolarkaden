@@ -1,7 +1,7 @@
 (function(root){
 'use strict';
 const SC=root.Starlight,$=id=>document.getElementById(id),api='https://skolarkaden-api.jakob-rogstadius.workers.dev/admin/stats';
-const games={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet',reversi:'Reversi',klossar:'Klossar'};
+const games={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet',reversi:'Reversi',chess:'Schack',klossar:'Klossar'};
 const difficulties={gentle:'Lätt',steady:'Medel',brave:'Svår'},number=new Intl.NumberFormat('sv-SE');
 const palette=['#287d68','#647ac0','#d39536','#a76fba','#c5685c','#42a6a0','#a48b4d','#738855','#c67f9c','#557f98','#8a6855','#777777'];
 const color=index=>palette[index]||'hsl('+Math.round(index*137.508%360)+' 48% '+(38+index%3*10)+'%)';
@@ -16,7 +16,7 @@ function latestRows(rows){
   const target=$('latest');target.replaceChildren();
   for(const row of rows){
     const tr=element('tr');
-    for(const [value,className]of [[timestamp(row.created_at),'time'],[row.player_name,'nowrap'],[row.ip||'IP saknas','mono'],[label('game',row.game)],[label('exercise',row.exercise)],[difficulties[row.difficulty]||row.difficulty],[number.format(row.score),'number']])tr.append(element('td',value,className));
+    for(const [value,className]of [[timestamp(row.created_at),'time'],[row.player_name,'nowrap'],[row.ip||'IP saknas','mono'],[label('game',row.game)],[label('exercise',row.exercise)],[difficulties[row.difficulty]||row.difficulty],[row.game==='chess'&&row.game_version==='v1'?(row.score===1?'½':number.format(row.score/2)):number.format(row.score),'number']])tr.append(element('td',value,className));
     target.append(tr);
   }
   if(!rows.length)emptyRow(target,7,'Inga resultat har skickats in ännu.');

@@ -5,7 +5,7 @@
 'use strict';
 // Bump only the affected game's version when its scoring/rules change.
 // Home stays on v1 during its initial tuning, by the owner's decision.
-const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1',reversi:'v1',klossar:'v1'});
+const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1',reversi:'v1',chess:'v2',klossar:'v1'});
 const mathExercises=Object.freeze(['math-addition','math-diagrams','math-addition-subtraction','math-simple-equations','math-large-numbers','math-multiplication','math-multiplication-division','math-equations']);
 const languageExercises=Object.freeze(['swedish-opposites','swedish-synonyms','english-opposites','english-synonyms','translation-sv-en-1','translation-sv-en-2','translation-sv-en-3']);
 // Longer distinctive strings also match inside a name (including separated or
@@ -68,7 +68,8 @@ function isBannedName(value){
   return fragments.some(fragment=>joined.includes(fragment)) ||
     normalized.split(/[^a-z]+/).some(token=>words.has(token)) || words.has(joined);
 }
-root.SkolarkadenHighscorePolicy=Object.freeze({versions,mathExercises,languageExercises,isBannedName});
+const scoreCaps=Object.freeze({chess:2430});
+root.SkolarkadenHighscorePolicy=Object.freeze({versions,mathExercises,languageExercises,isBannedName,scoreCaps});
 })(globalThis);
 
 // Paste this entire file into skolarkaden-api's Cloudflare editor and deploy.
@@ -76,7 +77,7 @@ root.SkolarkadenHighscorePolicy=Object.freeze({versions,mathExercises,languageEx
 // (also add-score-settings.sql if settings_json is absent);
 // new databases use schema.sql. No browser API key is used.
 const ALLOWED_ORIGIN = 'https://jakobrogstadius.github.io';
-const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home', 'reversi', 'klossar']);
+const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home', 'reversi', 'chess', 'klossar']);
 const { mathExercises, languageExercises } = globalThis.SkolarkadenHighscorePolicy;
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',
@@ -406,7 +407,7 @@ export default {
       if (globalThis.SkolarkadenHighscorePolicy.isBannedName(name)) return reply({ ok: true });
       if (typeof id !== 'string' || !UUID.test(id) || !validBoard(board) ||
           !/^[\p{L}\p{M} ]{1,10}$/u.test(name) ||
-          !Number.isSafeInteger(score) || score < 0 || score > 1000000) {
+          !Number.isSafeInteger(score) || score < 0 || score > 1000000 || score > (globalThis.SkolarkadenHighscorePolicy.scoreCaps[board.split(':')[1]] ?? 1000000)) {
         return reply({ error: 'invalid_score' }, 400);
       }
       const settings = settingsFor(body, board);

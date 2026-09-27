@@ -4,6 +4,7 @@
 const SC=root.Starlight, API='https://skolarkaden-api.jakob-rogstadius.workers.dev',nicknameKey='skolarkaden-nickname-v1';
 const $=id=>document.getElementById(id);
 const policy=root.SkolarkadenHighscorePolicy;
+SC.formatGameScore=(_game,score)=>Number(score).toLocaleString('sv-SE');
 const boardKey=selection=>[policy.versions[selection.kind],selection.kind].join(':');
 const storedKey=selection=>boardKey(selection)+':'+selection.mode+':'+selection.pace;
 const scoreSettings=s=>({game_version:policy.versions[s.kind],game:s.kind,exercise:s.mode,difficulty:s.pace,

@@ -1,0 +1,28 @@
+.chess-card svg{max-width:100%;max-height:100%}
+body.playing .arena.chess,body.playing.voice-play .arena.chess{height:auto;min-height:620px;background:radial-gradient(ellipse at 25% 50%,#34434d,#182832 80%);overflow:visible}
+.arena.chess .hud{position:relative;background:none;min-height:96px;padding-bottom:8px}
+.arena.chess .hud #best{display:block}.arena.chess #progress{display:none}.arena.chess .overlay{z-index:5;border-radius:inherit}
+.chess-scene{padding:4px 36px 26px;display:grid;grid-template-columns:minmax(250px,1fr) minmax(220px,.62fr);gap:clamp(20px,4vw,58px);align-items:center;color:#f4efda}
+.ch-table{min-width:0;max-width:560px;width:100%;margin:auto}
+.ch-players{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin:0 2px 18px;color:#d2dce0}
+.ch-players>span{display:flex;align-items:center;gap:8px}.ch-token{width:13px;height:17px;border-radius:7px 7px 3px 3px;background:#202b33;border:1px solid #97aab6}.ch-token.white{background:#fff3d6;border-color:#fff3d6}
+.ch-board-wrap{position:relative;border:10px solid #785f44;border-radius:7px;box-shadow:0 0 0 1px #bf9e6d,0 10px 0 #493e33,0 22px 35px #0c151a90}
+.ch-board{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));aspect-ratio:1;background:#e2d6b8}
+.ch-cell{position:relative;aspect-ratio:1;display:grid;place-items:center;background:#e4d8b9;color:#3d534f}.ch-cell.dark{background:#688179;color:#e4d8b9}
+.ch-piece{position:absolute;inset:3%;pointer-events:none;z-index:1;filter:drop-shadow(0 3px 1px #11232966)}
+.ch-piece-art{display:block;width:100%;height:100%}.ch-white{fill:#fff5da;stroke:#534a3a;color:#534a3a}.ch-black{fill:#29343c;stroke:#bfc6b9;color:#edf0e2}
+.ch-file,.ch-rank{position:absolute;font:10px/1 system-ui;pointer-events:none;z-index:2}.ch-file{bottom:2px;right:3px}.ch-rank{top:3px;left:3px}
+.ch-last{box-shadow:inset 0 0 0 4px #eed076b0}.ch-check{background:#bd6964!important;box-shadow:inset 0 0 0 3px #f6b0a6}
+.ch-preview-from{box-shadow:inset 0 0 0 4px #fff8}.ch-preview-to{box-shadow:inset 0 0 0 4px #fff}
+.ch-arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}
+.ch-marker{display:none;position:absolute;right:2px;top:2px;min-width:18px;padding:1px 4px;text-align:center;border:1px solid var(--choice);border-radius:4px;color:var(--choice);background:#102530;z-index:3;font:bold 12px/1.3 system-ui}
+.ch-option .ch-marker{display:block}.ch-caption{font-size:12px;text-align:center;color:#b7c9cd;margin:25px 0 0}
+.ch-sidebar{min-width:0}.ch-kicker{font-size:10px;letter-spacing:2px;color:#dfc493;margin:0 0 10px}.ch-sidebar h2{font-size:clamp(24px,2.6vw,34px);margin:0 0 12px}
+.ch-status{font-size:13px;min-height:42px;color:#c3d2d6;margin:0 0 14px;line-height:1.5}.ch-choices{display:grid;gap:10px;min-height:228px;align-content:start}
+.ch-choice{display:flex;align-items:center;text-align:left;gap:12px;background:#142a36b0;border:1px solid #5d7279;box-shadow:0 4px 10px #081f2240;padding:11px 14px;border-radius:12px;width:100%;min-width:0;min-height:72px;font-weight:normal}
+.ch-choice:hover:enabled,.ch-choice:focus-visible{background:#29434e;border-color:var(--choice)}.ch-choice-letter{flex:none;display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--choice);border-radius:50%;color:var(--choice);font-weight:bold;font-size:16px}
+.ch-choice-text{min-width:0;display:flex;flex-direction:column;flex:1}.ch-coordinate{font:11px/1.5 system-ui;color:var(--choice);overflow-wrap:anywhere}.ch-question{font-size:24px;line-height:1.2;overflow-wrap:anywhere}.ch-hint{font-size:13px;color:#bdcfd4;line-height:1.4;overflow-wrap:anywhere}
+.arena.chess .ch-diagram{width:112px;height:80px;max-width:100%;align-self:center;border-radius:6px}.ch-instruction{color:#b5c7ce;font-size:12px;line-height:1.6;margin:18px 0 0}.ch-wait{color:#b5c7ce;align-self:center;justify-self:center;font-size:13px;text-align:center}
+@media(max-width:700px){.chess-scene{grid-template-columns:1fr;padding:5px 16px 22px;gap:26px}.ch-table{max-width:420px}.ch-sidebar{max-width:500px;width:100%;margin:auto}.ch-sidebar h2{font-size:26px}.ch-status{min-height:0}.ch-choices{min-height:0}.ch-choice{min-height:64px;padding:9px 12px}.ch-question{font-size:22px}.ch-board-wrap{border-width:7px}.ch-marker{min-width:14px;font-size:10px;padding:0 2px}.ch-file,.ch-rank{font-size:8px}}
+
+.ch-scoring{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 12px;border-top:1px solid #5d727977;padding-top:14px;margin:18px 0 0}.ch-scoring dt{font-size:10px;color:#b5c7ce;line-height:1.35}.ch-scoring dd{font:18px/1.5 system-ui;color:#f4efda;margin:2px 0 0}.arena.chess #chess-result-breakdown{font:12px/1.65 system-ui;color:#c3d2d6;max-width:680px;margin:10px auto 18px;overflow-wrap:anywhere}

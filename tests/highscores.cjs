@@ -230,7 +230,7 @@ class Element extends EventTarget{
   // Popularity uses every saved round, not just the top ten or non-anonymous names.
   db.exec('DELETE FROM highscores');
   const emptyStats=await (await call('GET','/stats?group=games')).json();
-  assert.equal(emptyStats.entries.length,11);assert(emptyStats.entries.every(r=>r.plays===0&&r.score===null&&r.player_name===null));
+  assert.equal(emptyStats.entries.length,12);assert(emptyStats.entries.every(r=>r.plays===0&&r.score===null&&r.player_name===null));
   const fixtures=[
     ['v2:city:swedish:gentle','ANONYM',10],
     ['v2:city:swedish:steady','TOP CITY',100],

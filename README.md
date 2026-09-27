@@ -1,6 +1,6 @@
 # Skolarkaden
 
-Elva små lärspel för tangentbord, mikrofon eller klick. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
+Tolv små lärspel för tangentbord, mikrofon eller klick. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
 
 **Öppna `index.html` i Chrome.** Behåll `resources` bredvid HTML-filen. Ingen installation, byggprocess eller webbserver behövs. Om du laddar ned projektet som ZIP: packa upp hela filen först.
 
@@ -31,6 +31,14 @@ Datorn spelar med fast vald svårighetsnivå men varierar sina drag. Svårare ni
 
 Teknik och kontroller finns i [dev/reversi.md](dev/reversi.md). Reversis topplista kräver att den uppdaterade Cloudflare-Workern driftsätts; ingen SQL-migrering behövs.
 
+## Schack
+
+Som i Reversi väljer du bland upp till tre föreslagna drag genom att svara på uppgiften. Du spelar vit. Fel svar ger ett svagt giltigt drag, och svårigheten styr datorns spelstyrka. Förslagen visas utan rangordning; peka eller tryck på ett alternativ för att förhandsvisa draget. Rockad, en passant och alla fyra promoveringar ingår. Ingen tidspress eller draggräns.
+
+Schackmatt vinner. **Vinst ger 1 000 poäng och remi 400.** Slagna pjäser ger poäng och förlorade pjäser drar av lika mycket: bonde 10, springare/löpare 30, torn 50 och dam 90. En dragkvalitetsbonus börjar på 100 och minskar när du väljer sämre drag än botens bästa. Vid vinst får du dessutom `6 000 / (20 + dina drag)` avrundade poäng: färre drag ger mer. Rätt svar och tid ger inga poäng i sig. Partiet blir också remi vid patt eller otillräckligt material. Båda sidor begär automatiskt remi vid trefaldig ställningsupprepning eller femtio drag utan bondedrag eller slag.
+
+Teknik, regler och poänglagring beskrivs i [dev/chess.md](dev/chess.md). Schackets topplista kräver den uppdaterade Cloudflare-Workern; ingen SQL-migrering behövs.
+
 ## Meteorregns poäng
 
 Varje meteor börjar på 30 poäng och tappar en poäng per hel sekund från att den syns till att den skjuts, som lägst noll. Kö- och siktetid räknas, men paus gör det inte. Sviten ger +0 för första meteoren, sedan +1, +2 och så vidare upp till +5 från den sjätte. Sviten bryts av ett missat skott eller en förstörd byggnad/kanon. Vid omgångens slut ger varje kvarvarande byggnad och kanon 30 bonuspoäng, även vid förlust. Meteorregn använder poängversion v2.
@@ -60,6 +68,8 @@ Varje slutförd skötselåtgärd ger 10 poäng. Flera åtgärder av samma typ i 
 | Marshmallows | Ta in gyllene marshmallows innan solen går upp. |
 | Äggröra | Bränn spruckna rymdägg och rymdkryp för att skydda besättningen. |
 | Städa hemmet | Städa 40 hushållsuppgifter och gör sedan klart det sista tillsammans. |
+| Reversi | Välj föreslagna drag med dina svar och vinn flest brickor. |
+| Schack | Välj föreslagna drag med dina svar och sätt datorn schackmatt. |
 | Klossar | Para ihop och ta bort alla klossar i mahjong-patiens. |
 
 Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övning eller valt språk.
@@ -222,6 +232,7 @@ Klassiska skript används så att `file://` fungerar utan modulladdare, externa 
 | `resources/data.js`, `pinyin.js` | Fasta matematiknivåer, uttalsbehandling och svarsmatchning. |
 | `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js`, `marshmallows.js`, `eggs.js`, `home.js`, `home-renderer.js` | Nio simuleringar och canvas-renderare. |
 | `resources/reversi-engine.js`, `reversi.js`, `reversi-renderer.js`, `reversi.css` | Reversis regler, sökning, frågeval och DOM-bräde. |
+| `resources/chess-rules.js`, `chess-engine.js`, `chess-scoring.js`, `chess.js`, `chess-renderer.js`, `chess.css` | Schackregler, bot, poäng, uppgiftsval och DOM-bräde. |
 | `resources/klossar.js`, `klossar-renderer.js`, `klossar.css` | Mahjong-patiens, lösbara högar, klickbara klossar och rökeffekter. |
 | `resources/people.js`, `plants.js`, `sounds.js` | Gemensamma figurer, växter och syntetiska ljud. |
 | `resources/app.js` | Menyer, paus, HUD och anslutning av modulerna. |

@@ -27,7 +27,7 @@ async function start(kind,lesson='swedish'){const radio=radios.find(r=>r.value==
 (async()=>{
  if(exerciseSource)assert(elements.start.disabled,'start waits for JSON');
  await appReady;assert.equal(exerciseRequests,exerciseSource?1:0);assert(!elements.start.disabled);
- assert.equal(radios.length,11);assert.match(html,/<title>Skolarkaden<\/title>/);assert.doesNotMatch(html,/id="(?:queue-list|voice-toggle|live-speech|interim)"/);assert.match(html,/<details id="debug-panel"[^>]*>/);assert.doesNotMatch(html,/<details id="debug-panel"[^>]*\bopen\b/);
+ assert.equal(radios.length,12);assert.match(html,/<title>Skolarkaden<\/title>/);assert.doesNotMatch(html,/id="(?:queue-list|voice-toggle|live-speech|interim)"/);assert.match(html,/<details id="debug-panel"[^>]*>/);assert.doesNotMatch(html,/<details id="debug-panel"[^>]*\bopen\b/);
  const SC=context.Starlight;assert.equal(elements.lesson.options.length,29);assert.deepEqual(elements.lesson.options.map(o=>o.text),Object.values(SC.modes).filter(m=>!m.hidden).map(m=>m.name));
  assert.deepEqual([...html.match(/<div class="setup-grid">[\s\S]*?<div class="menu-bottom">/)[0].matchAll(/<select id="([^"]+)"/g)].map(m=>m[1]),['lesson','input-kind','language','pace']);
  assert.deepEqual(elements['input-kind'].options.map(o=>o.value),['typing','browser']);assert.deepEqual(elements.pace.options.map(o=>o.textContent),['Lätt','Medel','Svår']);assert(elements.language.disabled);
