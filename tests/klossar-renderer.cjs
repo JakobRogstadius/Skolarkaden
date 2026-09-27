@@ -12,7 +12,7 @@ class Element extends EventTarget{
   remove(){this.parentElement.children=this.parentElement.children.filter(c=>c!==this);}
   get firstElementChild(){return this.children[0];}
   setAttribute(k,v){this.attributes[k]=v;}
-  getBoundingClientRect(){return viewport;}
+  getBoundingClientRect(){return {left:0,top:0,...viewport};}
   getContext(){return ctx2d;}
   get clientWidth(){return this.className==='klossar-viewport'?viewport.width:parseFloat(this.parentElement?.style.width)||100;}
   get clientHeight(){return this.className==='klossar-viewport'?viewport.height:parseFloat(this.parentElement?.style.height)||100;}
@@ -20,12 +20,12 @@ class Element extends EventTarget{
   get scrollHeight(){return this.clientHeight;}
 }
 const context=vm.createContext({console,Event,EventTarget,CustomEvent:class extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}},document:{createElement:tag=>new Element(tag)},performance:{now:()=>now},matchMedia:()=>({matches:false}),ResizeObserver:class{observe(){observed++;}disconnect(){observed--;}},requestAnimationFrame:()=>1,cancelAnimationFrame(){cancelled++;}});
-for(const name of ['data','language-exercises-data','language-exercises','input','game','klossar','klossar-renderer'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+name+'.js'),'utf8'),context);
+for(const name of ['data','language-exercises-data','language-exercises','input','game','klossar','klossar-creatures','klossar-renderer'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+name+'.js'),'utf8'),context);
 const SC=context.Starlight;
 for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'])for(const layout of SC.klossarLayouts)for(const pace of ['gentle','steady','brave']){
   let renderer;const g=new SC.KlossarGame({random:()=>.31,onEvent:e=>renderer?.scoreEvent(e)});g.start({mode,layout:layout.id,pace});
-  const arena=new Element(),canvas=new Element('canvas');arena.append(canvas);renderer=new SC.KlossarRenderer(canvas,g);
-  assert.equal(renderer.buttons.size,g.total*2);assert.equal(arena.children.length,2);
+  const arena=new Element(),canvas=new Element('canvas');arena.append(canvas);renderer=new SC.KlossarRenderer(canvas,g,{creatureRandom:()=>1});
+  assert.equal(renderer.buttons.size,g.total*2);assert.equal(arena.children.length,3);
   for(const size of [{width:1160,height:620},{width:1000,height:360},{width:700,height:300},{width:350,height:470},{width:280,height:360}]){
     viewport=size;renderer.resize();
     assert(parseFloat(renderer.board.style.width)<=size.width+.001,'the entire board fits the viewport width');
@@ -60,3 +60,26 @@ for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'
   renderer.destroy();assert.equal(arena.children.length,1);assert.equal(observed,0);
 }
 assert.equal(cancelled,60);console.log('PASS DOM rendering for all five layouts and three difficulties: landscape tiles fit wide, short and narrow viewports; long words, Chinese, equations, diagrams, selection, smoke, wiggles, pause timing and cleanup');
+
+// Force the rare effect through the actual removal/rendering path. All draws
+// belong to the visual RNG, so even a busy scene cannot alter the next deal.
+{
+  viewport={width:1160,height:620};let renderer,visualDraws=0,dealDraws=0;
+  const g=new SC.KlossarGame({random:()=>{dealDraws++;return .31;},onEvent:e=>renderer?.scoreEvent(e)});g.start({mode:'letters'});
+  const arena=new Element(),canvas=new Element('canvas');arena.append(canvas);
+  renderer=new SC.KlossarRenderer(canvas,g,{creatureRandom:()=>{visualDraws++;return 0;}});
+  const [a,b]=g.order[0].map(id=>g.tiles[id]),click=t=>renderer.buttons.get(t.id).dispatchEvent(new Event('click')),before=dealDraws;
+  click(a);click(a);assert.equal(visualDraws,0,'selection and toggling never expose a creature');
+  click(a);click(b);assert.equal(renderer.creatures.creatures.length,2,'one chance for each removed block');assert.equal(g.hits,1);
+  const count=visualDraws;renderer.draw();renderer.layout();assert.equal(visualDraws,count,'frames and resize never re-roll an exposed tile');
+  assert.equal(dealDraws,before,'visual effects cannot consume the deal RNG');
+  const expected=renderer.position(a),bee=renderer.creatures.creatures[0];
+  assert(Math.abs(bee.start.x*viewport.width-expected.x-renderer.geometry.tileWidth/2)<1e-8,'the creature starts at the removed tile center');
+  now+=300;renderer.advance(now);g.pause();const age=bee.age;
+  now+=5000;renderer.advance(now);renderer.draw();assert.equal(bee.age,age,'pause freezes the flight');g.resume();
+  now+=300;renderer.advance(now);assert.equal(bee.age,age+.3);
+  viewport={width:350,height:470};renderer.layout();assert.equal(bee.age,age+.3,'resizing preserves progress');
+  g.state='won';now+=10000;renderer.advance(now);renderer.draw();assert.equal(renderer.creatures.creatures.length,0,'last-pair creatures finish even after victory');assert(renderer.creatures.canvas.hidden);
+  renderer.destroy();assert.equal(arena.children.length,1);assert.equal(observed,0);
+}
+console.log('PASS creature reveal once per removed tile, independent randomness, tile-center origin, pause, resize, victory and cleanup');

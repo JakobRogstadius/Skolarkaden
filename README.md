@@ -194,6 +194,8 @@ Klossar är mahjong-patiens med **20, 30 eller 40 par** på lätt, medel respekt
 
 Banan lottas mellan Sköldpaddan, Pyramiden, Borgen, Dinosaurien och Facehuggern. Silhuetten behålls och fler lager tillkommer vid högre svårighet. Varje giv konstrueras från en giltig borttagningsordning. Om en annan giltig spelordning lämnar högen utan fria par blandas de återstående klossarna automatiskt till en lösbar uppställning. Inga uppgifter försvinner vid blandning och klockan fortsätter gå. Hela högen anpassas till spelrutan utan rullning. Klossarna är bredare än de är höga, med text som minskas jämnt vid behov; upp till tio tecken visas på en rad, medan längre texter kan radbrytas.
 
+Varje borttagen kloss har 0,5 % chans att avslöja ett gömt bi eller en facehugger, med lika chans för båda. Djuret flyr till den kant av spelrutan som ligger längst från startpunkten. Bin flyger i en slingrande bana; facehuggers springer med rörliga ben och svans. Effekten pausar med spelet, påverkar inte giv eller poäng och försvinner när den lämnat spelrutan. Minskad rörelse visar djuret kort på plats med en toning.
+
 Varje kloss får slumpmässigt ett serif- eller sans-serif-typsnitt, oberoende av sin partner. Typsnittet behålls vid markering, paus, blandning och storleksändring. Båda medföljande typsnitten täcker latinska bokstäver, pinyin samt övningarnas traditionella och förenklade kinesiska tecken. De är kompakta utdrag ur Noto Sans CJK och Noto Serif CJK, med OFL-licenser i `resources/fonts`. Återskapa dem med `dev/build-klossar-fonts.py` när nya kinesiska tecken läggs till; andra tecken använder lokala reservtypsnitt.
 
 Val av en kloss med ett eller två kinesiska tecken spelar upp ordet med webbläsarens mandarinröst. Pinyin, översättningar och längre kinesiska fraser spelas inte upp. Bopomofoklossar spelar lokala inspelningar av de 37 ljuden, och enstaka latinska bokstäver läses på övningens språk. Avmarkering och blockerade klossar är tysta. En ny uppläsning ersätter den föregående; ljudknappen, paus och återgång till menyn stoppar uppspelningen. Kinesiska tecken och bokstäver kräver stöd för talsyntes och en passande röst på enheten. Bopomofoinspelningarna är från Taiwans utbildningsministerium, CC BY 4.0; källa, ändringar och licens finns i `resources/audio/bopomofo`.
@@ -237,7 +239,7 @@ Klassiska skript används så att `file://` fungerar utan modulladdare, externa 
 | `resources/game.js`, `foodtruck.js`, `garden.js`, `beehive.js`, `paint.js`, `dinosaur.js`, `marshmallows.js`, `eggs.js`, `home.js`, `home-renderer.js` | Nio simuleringar och canvas-renderare. |
 | `resources/reversi-engine.js`, `reversi.js`, `reversi-renderer.js`, `reversi.css` | Reversis regler, sökning, frågeval och DOM-bräde. |
 | `resources/chess-rules.js`, `chess-engine.js`, `chess-scoring.js`, `chess.js`, `chess-renderer.js`, `chess.css` | Schackregler, bot, poäng, uppgiftsval och DOM-bräde. |
-| `resources/klossar.js`, `klossar-renderer.js`, `klossar-speech.js`, `klossar.css` | Mahjong-patiens, lösbara högar, klickbara klossar och rökeffekter. |
+| `resources/klossar.js`, `klossar-renderer.js`, `klossar-creatures.js`, `klossar-speech.js`, `klossar.css` | Mahjong-patiens, lösbara högar, klickbara klossar och rökeffekter. |
 | `resources/people.js`, `plants.js`, `sounds.js` | Gemensamma figurer, växter och syntetiska ljud. |
 | `resources/app.js` | Menyer, paus, HUD och anslutning av modulerna. |
 

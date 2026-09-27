@@ -5,7 +5,7 @@ const SC=root.Starlight;
 const element=(tag,className,text)=>{const node=document.createElement(tag);node.className=className;if(text!==undefined)node.textContent=text;return node;};
 const clock=seconds=>Math.floor(seconds/60)+':'+String(Math.floor(seconds%60)).padStart(2,'0');
 class KlossarRenderer{
-  constructor(canvas,game){
+  constructor(canvas,game,{creatureRandom=Math.random}={}){
     this.canvas=canvas;this.game=game;this.reduced=root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     this.host=element('section','klossar-scene');this.host.setAttribute('aria-label','Klossar');
     this.caption=element('div','klossar-caption');
@@ -25,6 +25,7 @@ class KlossarRenderer{
     this.instructions=element('p','klossar-instructions','Välj två klossar som hör ihop. Klicka igen för att avmarkera.');
     this.status=element('span','sr-only');this.status.setAttribute('role','status');this.status.setAttribute('aria-live','polite');
     this.host.append(this.caption,this.viewport,this.instructions,this.status);canvas.parentElement.append(this.host);
+    this.creatures=new SC.KlossarCreatures(canvas.parentElement,{random:creatureRandom,reduced:this.reduced});
     this.buttons=new Map();this.puffs=new Map();this.lastRevision=-1;this.lastState='';this.destroyed=false;
     for(const tile of game.tiles){
       const button=element('button','klossar-tile');button.type='button';button.dataset.tileId=tile.id;
@@ -50,9 +51,12 @@ class KlossarRenderer{
   advance(now){
     // Use real foreground time, including slow frames; pause/resume reset this
     // timestamp so reading a paused board never earns an artificial speed bonus.
-    const dt=Math.max(0,(now-this.lastTime)/1000);this.lastTime=now;this.game.update(dt);
+    const dt=Math.max(0,(now-this.lastTime)/1000);this.lastTime=now;
+    if(['playing','celebrating','won'].includes(this.game.state))this.creatures.update(dt);
+    this.game.update(dt);
   }
   layout(){
+    this.creatures.resize();
     const g=this.game,width=this.viewport.clientWidth,height=this.viewport.clientHeight;if(!width||!height)return;
     const points=g.slots.map(t=>({x:t.x-t.z*.12,y:t.y-t.z*.12}));
     const minX=Math.min(...points.map(p=>p.x)),minY=Math.min(...points.map(p=>p.y));
@@ -119,10 +123,13 @@ class KlossarRenderer{
       const puff=element('span','klossar-puff');puff.setAttribute('aria-hidden','true');
       for(let i=0;i<9;i++){const smoke=element('i','');const angle=i*2.399;smoke.style.setProperty('--dx',Math.cos(angle)*(15+i*3)+'px');smoke.style.setProperty('--dy',Math.sin(angle)*(12+i*2)-19+'px');smoke.style.setProperty('--turn',i*37+'deg');puff.append(smoke);}
       this.placePuff(puff,effect);this.board.append(puff);this.puffs.set(effect.id,puff);
+      const board=this.board.getBoundingClientRect(),arena=this.creatures.host.getBoundingClientRect(),p=this.position(effect);
+      this.creatures.reveal(board.left-arena.left+p.x+this.geometry.tileWidth/2,board.top-arena.top+p.y+this.geometry.tileHeight/2,this.geometry.tileHeight);
     }
     for(const [id,puff] of this.puffs)if(!g.effects.some(e=>e.id===id)){puff.remove();this.puffs.delete(id);}
+    this.creatures.draw();
   }
-  destroy(){this.destroyed=true;cancelAnimationFrame(this.raf);this.observer.disconnect();this.host.remove();}
+  destroy(){this.destroyed=true;cancelAnimationFrame(this.raf);this.observer.disconnect();this.creatures.destroy();this.host.remove();}
 }
 Object.assign(SC,{KlossarRenderer,klossarClock:clock});
 })(globalThis);

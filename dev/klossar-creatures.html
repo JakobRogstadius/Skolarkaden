@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="sv">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Klossar · animationsprov</title>
+<link rel="stylesheet" href="../resources/styles.css">
+<link rel="stylesheet" href="../resources/klossar.css">
+<style>
+.preview-tools{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:16px 0}.preview-tools label{display:flex;align-items:center;gap:8px}.preview-note{font-size:13px;color:#b0c5c5}.shell.is-narrow{max-width:410px}.hud{pointer-events:none}h1{font-size:32px;margin:0}.arena{margin-bottom:16px}
+</style>
+<body class="playing">
+<main class="shell">
+<h1>Klossar · animationsprov</h1>
+<p class="preview-note">Utvecklingsprov: varje borttagen kloss visar ett djur. I spelet är chansen 0,5 % per kloss. Inga resultat sparas.</p>
+<div class="preview-tools">
+<button id="reveal">Ta bort ett par</button><button id="freeze">Visa båda djuren stilla</button><button id="pause">Pausa</button><button id="restart">Ny giv</button>
+<label><input id="narrow" type="checkbox">Smal spelruta</label>
+<label>Förlopp <input id="progress" type="range" min="0" max="100" value="35"></label>
+</div>
+<div class="arena klossar"><div class="hud"><div><small>KLOSSAR</small><strong>Animationsprov</strong></div></div><canvas id="canvas"></canvas></div>
+</main>
+<script src="../resources/data.js"></script><script src="../resources/language-exercises-data.js"></script><script src="../resources/language-exercises.js"></script><script src="../resources/input.js"></script><script src="../resources/klossar.js"></script><script src="../resources/klossar-creatures.js"></script><script src="../resources/klossar-renderer.js"></script>
+<script src="klossar-creatures-fixture.js"></script>
+</body>
+</html>
