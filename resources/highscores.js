@@ -11,7 +11,7 @@ const scoreSettings=s=>({game_version:policy.versions[s.kind],game:s.kind,exerci
   spoken_language:s.input==='click'?null:s.spokenLanguage||s.lang||null,exercise_language:s.lang||null,
   uppercase:typeof s.uppercase==='boolean'?s.uppercase:null,letter_keys:s.letterKeys||null,...(s.homeworkId?{homework_id:s.homeworkId}:{}),
   sound_enabled:typeof s.soundEnabled==='boolean'?s.soundEnabled:null,reduced_motion:typeof s.reducedMotion==='boolean'?s.reducedMotion:null});
-const difficultyName=pace=>Array.from($('pace').options).find(option=>option.value===pace)?.textContent||'—';
+const difficultyName=pace=>({gentle:'Lätt',steady:'Medel',brave:'Svår'}[pace]||'—');
 const displayName=name=>Array.from(String(name).normalize('NFC').toUpperCase()).slice(0,10).join('');
 const cleanName=name=>displayName(String(name).replace(/[^\p{L}\p{M} ]/gu,''));
 const validName=name=>/^[\p{L}\p{M} ]{1,10}$/u.test(name);

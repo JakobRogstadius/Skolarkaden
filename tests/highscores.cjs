@@ -135,14 +135,17 @@ class Element extends EventTarget{
   inputName('A.BC',2);assert.equal(nameInput.value,'ABC');assert.equal(nameInput.selectionStart,1,'removing a period keeps the cursor beside the same letters');
   inputName('å.sa',1,4,'backward');assert.equal(nameInput.value,'ÅSA');assert.equal(nameInput.selectionStart,1);assert.equal(nameInput.selectionEnd,3);assert.equal(nameInput.selectionDirection,'backward');
   inputName('abßcd',3);assert.equal(nameInput.value,'ABSSCD');assert.equal(nameInput.selectionStart,4,'uppercase expansion preserves the cursor');
-  // Both boards render the menu's complete labels, with casing handled by CSS.
+  // Klossar's menu adds pair counts, but both boards keep the short difficulty
+  // labels, including when browsing a different game's scores from that menu.
+  const difficultyNames={gentle:'Lätt',steady:'Medel',brave:'Svår'};
+  get('pace').options.forEach((option,i)=>option.textContent+=' · '+[20,30,40][i]+' par');
   for(const listId of ['scores-list','end-scores-list']){
     const list=get(listId);
     for(const [exercise,mode] of Object.entries(context.Starlight.modes)){
       for(const option of get('pace').options){
         list.replaceChildren();ui.row(list,{player_name:'TEST',score:1,exercise,difficulty:option.value},1);
         assert.equal(list.children[0].children[2].textContent,mode.name);
-        assert.equal(list.children[0].children[3].textContent,option.textContent);
+        assert.equal(list.children[0].children[3].textContent,difficultyNames[option.value]);
       }
     }
     list.replaceChildren();

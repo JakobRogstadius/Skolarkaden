@@ -182,7 +182,7 @@ Klossar är mahjong-patiens med **20, 30 eller 40 par** på lätt, medel respekt
 - Matematik: **uppgift/diagram ↔ svar**. Alla klossar med samma svarsvärde är utbytbara.
 - Synonymer, motsatser och översättningar behåller övningens ordpar. Bopomofo paras med den tryckta tangenten. Vanliga läxord paras i versaler och gemener.
 
-Banan lottas mellan Sköldpaddan, Pyramiden, Borgen, Dinosaurien och Facehuggern. Silhuetten behålls och fler lager tillkommer vid högre svårighet. Varje giv konstrueras från en giltig borttagningsordning. Om en annan giltig spelordning lämnar högen utan fria par blandas de återstående klossarna automatiskt till en lösbar uppställning. Inga uppgifter försvinner vid blandning och klockan fortsätter gå. Smala skärmar får en rullningsbar spelplan för att behålla läsbara klossar.
+Banan lottas mellan Sköldpaddan, Pyramiden, Borgen, Dinosaurien och Facehuggern. Silhuetten behålls och fler lager tillkommer vid högre svårighet. Varje giv konstrueras från en giltig borttagningsordning. Om en annan giltig spelordning lämnar högen utan fria par blandas de återstående klossarna automatiskt till en lösbar uppställning. Inga uppgifter försvinner vid blandning och klockan fortsätter gå. Hela högen anpassas till spelrutan utan rullning. Klossarna är bredare än de är höga, med text som minskas jämnt vid behov; upp till tio tecken visas på en rad, medan längre texter kan radbrytas.
 
 Varje rätt par ger 100 poäng. När banan är tömd tillkommer en tidsbonus:
 

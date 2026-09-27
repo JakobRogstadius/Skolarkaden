@@ -10,7 +10,7 @@ class KlossarRenderer{
     this.host=element('section','klossar-scene');this.host.setAttribute('aria-label','Klossar');
     this.caption=element('div','klossar-caption');
     this.caption.append(element('span','klossar-layout-name',game.layout.name),element('span','klossar-rule','Fri ovansida + fri vänster- eller högerkant'));
-    this.viewport=element('div','klossar-viewport');this.viewport.tabIndex=0;this.viewport.setAttribute('aria-label','Spelplan. Rulla för att se hela banan på en liten skärm.');
+    this.viewport=element('div','klossar-viewport');this.viewport.setAttribute('aria-label','Spelplan');
     this.board=element('div','klossar-board');this.viewport.append(this.board);
     this.instructions=element('p','klossar-instructions','Välj två klossar som hör ihop. Klicka igen för att avmarkera.');
     this.status=element('span','sr-only');this.status.setAttribute('role','status');this.status.setAttribute('aria-live','polite');
@@ -38,34 +38,34 @@ class KlossarRenderer{
     const dt=Math.max(0,(now-this.lastTime)/1000);this.lastTime=now;this.game.update(dt);
   }
   layout(){
-    const g=this.game,viewport=this.viewport.getBoundingClientRect();if(!viewport.width)return;
+    const g=this.game,width=this.viewport.clientWidth,height=this.viewport.clientHeight;if(!width||!height)return;
     const points=g.slots.map(t=>({x:t.x-t.z*.12,y:t.y-t.z*.12}));
-    const minX=Math.min(...points.map(p=>p.x))-.18,minY=Math.min(...points.map(p=>p.y))-.18;
-    const columns=Math.max(...points.map(p=>p.x))-minX+1.3,rows=Math.max(...points.map(p=>p.y))-minY+1.4;
-    const longest=Math.max(...g.tiles.map(t=>Array.from(t.item.label||'').length));
-    const minWidth=g.tiles.some(t=>t.item.diagram)?100:longest>16?104:longest>8?86:longest>3?70:48;
-    const ratio=longest>8?1.04:1.14;
-    const cell=Math.max(minWidth,Math.min(104,viewport.width/columns,Math.max(1,viewport.height)/rows/ratio));
-    this.geometry={minX,minY,cell,row:cell*ratio};
-    this.board.style.width=columns*cell+'px';this.board.style.height=rows*cell*ratio+'px';
-    this.host.classList.toggle('klossar-scrollable',columns*cell>viewport.width+2||rows*cell*ratio>viewport.height+2);
-    this.instructions.textContent=(this.host.classList.contains('klossar-scrollable')?'Rulla för att se hela banan. ':'')+'Välj två klossar. Klicka igen för att avmarkera.';
+    const minX=Math.min(...points.map(p=>p.x)),minY=Math.min(...points.map(p=>p.y));
+    const columns=Math.max(...points.map(p=>p.x))-minX+1,rows=Math.max(...points.map(p=>p.y))-minY+1;
+    // Fit the entire stack, including its layer offsets and shadows, to the
+    // available content box. Text length must never enlarge the board.
+    const padding=Math.min(18,width/8,height/8),ratio=.58;
+    const cell=Math.min(144,(width-padding*2)/columns,(height-padding*2)/rows/ratio),row=cell*ratio,gap=Math.min(3,cell*.04);
+    this.geometry={minX,minY,cell,row,padding,tileWidth:cell-gap,tileHeight:row-gap};
+    this.board.style.width=columns*cell+padding*2+'px';this.board.style.height=rows*row+padding*2+'px';
+    this.board.style.setProperty('--tile-depth',Math.min(4,cell*.04)+'px');
     for(const tile of g.tiles){
       const button=this.buttons.get(tile.id),p=this.position(tile);
-      Object.assign(button.style,{left:p.x+'px',top:p.y+'px',width:(cell-3)+'px',height:(cell*ratio-5)+'px',zIndex:String(10+tile.z*100+tile.y)});
-      button.style.setProperty('--tile-font',Math.min(27,cell*.35)+'px');
+      Object.assign(button.style,{left:p.x+'px',top:p.y+'px',width:this.geometry.tileWidth+'px',height:this.geometry.tileHeight+'px',zIndex:String(10+tile.z*100+tile.y)});
       const face=button.firstElementChild;
-      if(!tile.item.diagram){
-        // Wrap naturally, then shrink uniformly if a long word still needs room.
-        let size=Math.min(27,cell*.35);face.style.fontSize=size+'px';
-        while(size>12&&(face.scrollWidth>face.clientWidth+1||face.scrollHeight>face.clientHeight+1)){size--;face.style.fontSize=size+'px';}
+      if(!tile.item.diagram&&!tile.removed){
+        // Keep up to ten characters on one line. Longer labels can wrap;
+        // shrink the whole font evenly, never stretch or crop its glyphs.
+        face.style.whiteSpace=Array.from(tile.item.label).length<=10?'nowrap':'normal';
+        let size=Math.min(22,cell*.18);face.style.fontSize=size+'px';
+        while(size>1&&(face.scrollWidth>face.clientWidth||face.scrollHeight>face.clientHeight)){size=Math.max(1,size-.5);face.style.fontSize=size+'px';}
       }
     }
     for(const [id,node] of this.puffs){const effect=g.effects.find(e=>e.id===id);if(effect)this.placePuff(node,effect);}
     this.draw();
   }
-  position(tile){const p=this.geometry;return {x:(tile.x-tile.z*.12-p.minX)*p.cell,y:(tile.y-tile.z*.12-p.minY)*p.row};}
-  placePuff(node,effect){const p=this.position(effect);node.style.left=p.x+'px';node.style.top=p.y+'px';node.style.width=this.geometry.cell+'px';node.style.height=this.geometry.row+'px';}
+  position(tile){const p=this.geometry;return {x:p.padding+(tile.x-tile.z*.12-p.minX)*p.cell,y:p.padding+(tile.y-tile.z*.12-p.minY)*p.row};}
+  placePuff(node,effect){const p=this.position(effect);node.style.left=p.x+'px';node.style.top=p.y+'px';node.style.width=this.geometry.tileWidth+'px';node.style.height=this.geometry.tileHeight+'px';}
   scoreEvent(event){
     if(event.type==='pause'||event.type==='resume')this.lastTime=performance.now();
     if(event.type==='hit')this.status.textContent=this.game.hits+' av '+this.game.total+' par klara.';
