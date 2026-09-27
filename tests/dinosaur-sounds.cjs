@@ -4,7 +4,7 @@ let buffers=0,sources=[],gains=[],disconnected=0;
 class AudioContext{
  constructor(){this.state='running';this.destination={};}
  createBuffer(channels,length,sampleRate){buffers++;assert.equal(channels,1);return {length,sampleRate,copyToChannel(data){this.samples=new Float32Array(data);}};}
- createBufferSource(){const node={playbackRate:{value:1},connect(){},disconnect(){disconnected++;},start(){this.started=true;}};sources.push(node);return node;}
+ createBufferSource(){const node={playbackRate:{value:1},connect(){},disconnect(){disconnected++;},start(){this.started=true;},stop(){this.stopped=true;}};sources.push(node);return node;}
  createGain(){const node={gain:{value:1},connect(){},disconnect(){disconnected++;}};gains.push(node);return node;}
  async close(){this.state='closed';}
 }
@@ -23,5 +23,9 @@ for(const kind of ['dino-roar','dino-startle','dino-chomp']){
  const before=buffers;sounds.play(kind,1);const full=gains.at(-1).gain.value,buffer=sources.at(-1).buffer;sounds.play(kind,.23);assert.equal(buffers,before+1,'cache generated audio');assert.equal(sources.at(-1).buffer,buffer);assert(Math.abs(gains.at(-1).gain.value/full-.23)<1e-9);assert(sources.at(-1).started);
  assert(sources.at(-1).playbackRate.value>=.97&&sources.at(-1).playbackRate.value<=1.03);
 }
-for(const source of sources)source.onended();assert.equal(disconnected,sources.length*2);sounds.close();assert.equal(sounds.dinosaurBuffers.size,0);
+assert.equal(sounds.dinosaurVoices.size,6);for(const source of sources)source.onended();assert.equal(disconnected,sources.length*2);assert.equal(sounds.dinosaurVoices.size,0);
+sounds.play('dino-startle');sounds.play('dino-chomp');const playing=sources.slice(-2);sounds.stopDinosaurVoices();assert(playing.every(source=>source.stopped&&source.onended===null));assert.equal(sounds.dinosaurVoices.size,0);assert.equal(disconnected,sources.length*2);
+sounds.stopDinosaurVoices();assert.equal(disconnected,sources.length*2,'stopping twice is safe');
+sounds.play('dino-chomp');sounds.close();assert(sources.at(-1).stopped);assert.equal(sounds.dinosaurVoices.size,0);assert.equal(sounds.dinosaurBuffers.size,0);
 console.log('PASS cached synthesis, speech-mode volume, small pitch variation, playback and node cleanup.');
+console.log('PASS pause/mute/menu cancellation stops active voices and close releases the last voice.');

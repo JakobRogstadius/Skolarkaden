@@ -85,7 +85,7 @@ function onGameEvent(e){
   if(e.entry&&['hit','miss','waste','think','early'].includes(e.type))record({at:new Date().toISOString(),type:'action',text:e.entry.text,result:e.type});
   if(['celebrate','loss-pause'].includes(e.type)){input.setEnabled(false);$('pause').disabled=true;if(soundOn&&e.type==='celebrate'&&kind!=='marshmallows')sounds.play('win');}
   if(e.type==='player-down')input.setEnabled(false);
-  if(e.type==='pause'||e.type==='end')sounds.stopCampfire();
+  if(e.type==='pause'||e.type==='end'){sounds.stopCampfire();sounds.stopDinosaurVoices?.();}
   if(e.type==='end'){
     highscores.finish(e.score);
     input.setEnabled(false);$('pause').disabled=true;$('end-overlay').hidden=false;$('pause-overlay').hidden=true;
@@ -103,7 +103,7 @@ async function start(){
   tileSpeech.stop();
   try{
     input.setEnabled(false);input.configure({...speechOptions(),...(isBoardGame()?{turnBased:true}:{})});if(kind!=='klossar')await input.prepare();if(token!==lifecycle)return;
-    sounds.stopCampfire();sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
+    sounds.stopCampfire();sounds.stopDinosaurVoices?.();sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
     const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});lastOptions=options();$('arena').className='arena '+kind;$('arena').dataset.exercise=lastOptions.mode;$('play').dataset.game=kind;game.start(lastOptions);highscores.begin({...scoreSelection(lastOptions),letterKeys:game.mode==='letters'?game.items.map(i=>i.answer):null});queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),discardUnmatched:entry=>!isBoardGame()&&entry.source==='speech'&&SC.isChinese(game.mode),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
     loadBest();$('game-title').textContent=names[kind];$('objective').closest('.hud-objective').hidden=['marshmallows','eggs'].includes(kind);$('answer').placeholder=input.singleLetter()?'…':SC.modes[game.mode].placeholder.replace('…',' ↵');$('answer-hint').textContent=typingHint();$('keyboard').hidden=kind==='klossar'||game.mode!=='bopomofo';$('input-dock').hidden=kind==='klossar'||input.voice.enabled;document.body.classList.add('playing');document.body.classList.toggle('voice-play',input.voice.enabled);
     input.setEnabled(kind!=='klossar'&&(!isBoardGame()||game.canAnswer()));if(input.enabled&&input.voice.enabled)input.start();
@@ -117,12 +117,12 @@ async function resume(){
   try{if(kind!=='klossar')await input.prepare();if(token!==lifecycle)return;$('pause-overlay').hidden=true;game.resume();const canAnswer=isBoardGame()?game.canAnswer():kind!=='klossar'&&(kind!=='eggs'||game.player.status!=='dead');input.setEnabled(canAnswer);if(canAnswer&&input.voice.enabled)input.start();if(canAnswer)input.focus();}
   catch(error){$('resume-error').textContent=error.message;}finally{busy=false;$('resume').disabled=false;}
 }
-function menu(){highscores.dismiss();sounds.stopCampfire();tileSpeech.stop();lifecycle++;input.setEnabled(false);game?.menu();renderer?.destroy();renderer=null;queue.clear();$('play').hidden=true;$('menu').hidden=false;document.body.classList.remove('playing','voice-play');menuUpdate();$('start').focus({preventScroll:true});}
+function menu(){highscores.dismiss();sounds.stopCampfire();sounds.stopDinosaurVoices?.();tileSpeech.stop();lifecycle++;input.setEnabled(false);game?.menu();renderer?.destroy();renderer=null;queue.clear();$('play').hidden=true;$('menu').hidden=false;document.body.classList.remove('playing','voice-play');menuUpdate();$('start').focus({preventScroll:true});}
 $('start').addEventListener('click',start);$('again').addEventListener('click',()=>highscores.leave(start));$('pause').addEventListener('click',pause);$('resume').addEventListener('click',resume);$('pause-menu').addEventListener('click',menu);$('end-menu').addEventListener('click',()=>highscores.leave(menu));
 root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){
   // Canvas labels are primary. Keep a compact alternative for assistive technology.
-  const hints=kind==='klossar'?new Set():SC.pinyinHints(game),text=game.getTargets().map(t=>(kind==='home'?SC.homeTaskTypes[t.type].name+': ':'')+(hints.has(t)?[t.item.hint,t.item.label,t.item.translation].filter(Boolean).join(' · '):t.item.label)).join(', ');
+  const hints=['klossar','chess'].includes(kind)?new Set():SC.pinyinHints(game),text=game.getTargets().map(t=>(kind==='home'?SC.homeTaskTypes[t.type].name+': ':'')+(hints.has(t)?[t.item.hint,t.item.label,t.item.translation].filter(Boolean).join(' · '):t.item.label)).join(', ');
   if(text!==lastTargetKey){lastTargetKey=text;$('targets').textContent=text;}
 }
 function renderUi(){
@@ -148,7 +148,7 @@ function renderUi(){
   $('objective').textContent=objective;$('secondary').textContent=secondary;$('progress').value=value;renderTargets();
 }
 function frame(now){if(noticeUntil&&now>=noticeUntil){$('discovery-notice').hidden=true;noticeUntil=0;}if(now-lastUi>100){lastUi=now;renderUi();if($('settings').open)$('mic-level').value=Math.min(1,microphone.level*6);}uiFrame=requestAnimationFrame(frame);}uiFrame=requestAnimationFrame(frame);
-$('sound').addEventListener('click',()=>{soundOn=!soundOn;if(!soundOn){sounds.stopCampfire();tileSpeech.stop();}$('sound').querySelector('span').textContent=soundOn?'♫':'♪̸';$('sound').title=soundOn?'Ljud på':'Ljud av';$('sound').setAttribute('aria-pressed',String(soundOn));if(soundOn){sounds.unlock();sounds.play('lock');}});
+$('sound').addEventListener('click',()=>{soundOn=!soundOn;if(!soundOn){sounds.stopCampfire();sounds.stopDinosaurVoices?.();tileSpeech.stop();}$('sound').querySelector('span').textContent=soundOn?'♫':'♪̸';$('sound').title=soundOn?'Ljud på':'Ljud av';$('sound').setAttribute('aria-pressed',String(soundOn));if(soundOn){sounds.unlock();sounds.play('lock');}});
 for(const el of document.querySelectorAll('[data-close]'))el.addEventListener('click',()=>$(el.dataset.close).close());
 $('help-open').addEventListener('click',()=>{pause();$('help').showModal();});
 $('settings-open').addEventListener('click',()=>{pause();$('settings').showModal();if(microphone.ready){microphone.begin(true);$('mic-status').textContent='Mikrofonen är aktiv. Prata för att se ljudnivån.';}refreshDevices();});

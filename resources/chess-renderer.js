@@ -12,12 +12,17 @@ const shapes={
 };
 function pieceSvg(piece){return '<svg viewBox="0 0 100 100" aria-hidden="true" class="ch-piece-art '+(piece.color==='w'?'ch-white':'ch-black')+'"><g stroke-linecap="round" stroke-linejoin="round" stroke-width="4">'+shapes[piece.type]+'<path d="M29 76h42l5 10H24z"/></g></svg>';}
 const point=s=>({x:('abcdefgh'.indexOf(s[0])+.5)*100,y:(8-Number(s[1])+.5)*100});
+const clamp=n=>Math.max(0,Math.min(1,n)),mix=(a,b,p)=>a+(b-a)*p;
+// Separate jaws let the same little dinosaur swallow the actual captured chess piece.
+const dinosaurBody='<path d="M28 74Q18 62 12 48Q27 59 38 54L39 40H62V54L61 67 70 74Z"/><path d="M62 58l8 6 5-3M48 60q-9 1-8 9l-3 5h15" fill="none" stroke-width="3"/><path d="M29 76h42l5 10H24z"/><ellipse class="ch-capture-mouth" cx="74" cy="43" rx="16" ry="14" fill="#412b32" stroke="none"/>',
+ dinosaurFace='<g class="ch-capture-head"><path d="M39 41Q36 34 38 23Q40 12 53 12H78Q88 12 88 24V33H62V41Z"/><path d="M67 34l4 6 4-6M78 34l4 6 4-6" fill="#fff5da" stroke="#534a3a" stroke-width="1.5"/><circle cx="52" cy="25" r="7" fill="#fff5da" stroke-width="2.5"/><circle cx="54" cy="25" r="2.8" fill="#29343c" stroke="none"/><circle cx="82" cy="25" r="1.7" fill="currentColor" stroke="none"/></g><g class="ch-capture-jaw"><path d="M62 41L86 47Q83 56 64 54L61 51Z"/><path d="M69 45l4-5 3 7M79 48l4-5 2 5" fill="#fff5da" stroke="#534a3a" stroke-width="1.5"/></g>';
 class ChessRenderer{
  constructor(canvas,game){
   this.canvas=canvas;this.game=game;this.node=element('div','chess-scene');canvas.hidden=true;canvas.parentElement.append(this.node);
   this.node.innerHTML='<div class="ch-table"><div class="ch-players"><span><i class="ch-token white"></i> Du · vit</span><span>Datorn · svart <i class="ch-token"></i></span></div><div class="ch-board-wrap"><div class="ch-board" role="group" aria-label="Schackbräde med vit nederst"></div></div><p class="ch-caption">Schackmatt vinner. Ingen tidspress.</p></div><div class="ch-sidebar"><p class="ch-kicker">DITT NÄSTA DRAG</p><h2>Ta god tid på dig.</h2><p class="ch-status" role="status" aria-live="polite"></p><div class="ch-choices"></div></div>';
   this.board=this.node.querySelector('.ch-board');this.status=this.node.querySelector('.ch-status');this.choices=this.node.querySelector('.ch-choices');
   this.arrows=document.createElementNS('http://www.w3.org/2000/svg','svg');this.arrows.setAttribute('viewBox','0 0 800 800');this.arrows.setAttribute('class','ch-arrows');this.arrows.setAttribute('aria-hidden','true');this.node.querySelector('.ch-board-wrap').append(this.arrows);
+  this.captureLayer=document.createElementNS('http://www.w3.org/2000/svg','svg');this.captureLayer.setAttribute('viewBox','0 0 800 800');this.captureLayer.setAttribute('class','ch-capture');this.captureLayer.setAttribute('aria-hidden','true');this.captureLayer.style.display='none';this.node.querySelector('.ch-board-wrap').append(this.captureLayer);
   this.cells=Array.from({length:64},(_,i)=>{
    const cell=element('div','ch-cell'+(((i>>3)+i%8)%2?' dark':''));cell.dataset.square=C.square(i);
    cell.append(element('span','ch-piece'),element('span','ch-marker'));
@@ -29,6 +34,43 @@ class ChessRenderer{
  }
  resize(){}
  scoreEvent(){}
+ clearCapture(){
+  if(this.capturePiece)this.capturePiece.style.opacity='';
+  this.capturePiece=null;this.captureMove=null;this.captureLayer.style.display='none';this.captureLayer.replaceChildren();
+ }
+ drawCapture(){
+  const g=this.game,m=g.lastMove,T=SC.chessCaptureTiming,age=m?g.clock-m.at:0;
+  if(!m||m.piece!=='n'||!m.captured||g.phase!=='animate'||!['playing','paused'].includes(g.state)||age>=T.end){if(this.captureMove)this.clearCapture();return;}
+  if(this.captureMove!==m){
+   this.clearCapture();this.captureMove=m;this.capturePiece=this.cells.find(c=>c.dataset.square===m.to).querySelector('.ch-piece');
+   const color=m.color==='w'?'ch-white':'ch-black',prey=m.color==='w'?'ch-black':'ch-white';
+   this.captureLayer.innerHTML='<g stroke-linecap="round" stroke-linejoin="round" stroke-width="4"><g class="ch-capture-body '+color+'">'+dinosaurBody+'</g><g class="ch-capture-prey '+prey+'">'+shapes[m.captured]+'<path d="M29 76h42l5 10H24z"/></g><g class="ch-capture-face '+color+'">'+dinosaurFace+'</g></g>';
+   for(const name of ['body','prey','face','head','jaw','mouth'])this['capture'+name[0].toUpperCase()+name.slice(1)]=this.captureLayer.querySelector('.ch-capture-'+name);
+   this.captureReduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+   this.captureLayer.style.display='';
+  }
+  const from=point(m.from),to=point(m.to),approach=clamp(age/T.bite),chew=clamp((age-T.bite)/(T.swallow-T.bite)),settle=clamp((age-T.swallow)/(T.end-T.swallow)),reduced=this.captureReduced;
+  // Face inwards at either edge, keeping the tail and victim inside the board.
+  const direction=reduced?1:to.x<100?-1:to.x>700?1:to.x>=from.x?1:-1,ease=1-(1-approach)**3,
+   size=reduced?.94:mix(mix(.94,1.15,ease),.94,settle),
+   x=reduced?to.x:mix(mix(from.x,to.x-direction*32,ease),to.x,settle),
+   y=reduced?to.y:mix(mix(from.y,Math.min(752,to.y+13),ease)-Math.sin(approach*Math.PI)*20,to.y,settle),
+   transform='translate('+x+' '+y+') scale('+(direction*size)+' '+size+') translate(-50 -50)',
+   chewing=age>=T.bite&&age<T.swallow,jaw=reduced?0:chewing?12+Math.sin((age-T.bite)*Math.PI*2/.30)*10:18*approach*(1-settle);
+  for(const node of [this.captureBody,this.captureFace]){node.setAttribute('transform',transform);node.setAttribute('opacity',reduced?clamp(chew*2):1);}
+  this.captureHead.setAttribute('transform','translate(0 '+(-jaw*.12)+')');this.captureJaw.setAttribute('transform','rotate('+jaw+' 62 43)');
+  this.captureMouth.setAttribute('opacity',reduced?0:approach*(1-settle));
+  let px=to.x,py=to.y,preyScale=.94,rotation=0,opacity=1;
+  if(reduced)opacity=1-clamp(chew*2);
+  else if(age<T.bite){px+=Math.sin(approach*Math.PI*6)*4;py=Math.max(47,py-Math.sin(approach*Math.PI)*20);rotation=Math.sin(approach*Math.PI*4)*9;}
+  else{
+   const swallow=clamp(chew/.8),wiggle=Math.sin((age-T.bite)*42)*(1-swallow);
+   px=x+direction*(mix(78,51,swallow)-50)*size;py=y+(mix(39,47,swallow)-50)*size+wiggle*2;
+   preyScale=mix(.94,.12,swallow);rotation=direction*(swallow*75+wiggle*8);opacity=1-clamp((swallow-.65)/.35);
+  }
+  this.capturePrey.setAttribute('transform','translate('+px+' '+py+') rotate('+rotation+') scale('+preyScale+') translate(-50 -50)');this.capturePrey.setAttribute('opacity',opacity);
+  this.captureLayer.style.opacity=String(1-settle);this.capturePiece.style.opacity=String(settle);
+ }
  preview(target){
   const moves=target?[target]:this.game.targets;
   for(const cell of this.cells){cell.classList.toggle('ch-preview-from',target?.move.from===cell.dataset.square);cell.classList.toggle('ch-preview-to',target?.move.to===cell.dataset.square);}
@@ -40,7 +82,7 @@ class ChessRenderer{
   }).join('');
  }
  draw(){
-  const g=this.game,key=g.revision+':'+g.state;if(key===this.key)return;this.key=key;
+  const g=this.game,key=g.revision+':'+g.state;if(key===this.key){this.drawCapture();return;}this.key=key;
   const format=SC.ChessScoring.resultText,ended=g.phase==='end';
   this.status.textContent=g.state==='paused'?'Paus':ended?(g.draw?'Remi.':g.won?'Du vann!':'Datorn vann.')+' '+format(g.resultScore)+'–'+format(g.botScore)+' · '+g.reason:g.message;
   this.node.querySelector('.ch-kicker').textContent=g.phase==='answer'?'DRAG '+(g.turns+1):ended?'PARTIET ÄR KLART':'SCHACK';
@@ -55,7 +97,7 @@ class ChessRenderer{
   }
   if(g.lastMove&&this.animatedMove!==g.lastMove){
    this.animatedMove=g.lastMove;
-   if(!root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
+   if(!(g.lastMove.piece==='n'&&g.lastMove.captured)&&!root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
     const animate=(from,to)=>{const node=this.cells.find(c=>c.dataset.square===to)?.querySelector('.ch-piece');if(!node?.animate)return;const a=point(from),b=point(to),size=this.board.getBoundingClientRect().width/800;node.animate([{transform:'translate('+(a.x-b.x)*size+'px,'+(a.y-b.y)*size+'px)'},{transform:'none'}],{duration:340,easing:'ease-out'});};
     animate(g.lastMove.from,g.lastMove.to);
     if(g.lastMove.flags.includes('k'))animate('h'+g.lastMove.from[1],'f'+g.lastMove.from[1]);
@@ -74,8 +116,9 @@ class ChessRenderer{
    for(const event of ['pointerleave','blur'])card.addEventListener(event,()=>this.preview(null));this.choices.append(card);
   }
   if(!g.targets.length)this.choices.append(element('p','ch-wait',ended?g.reason:g.phase==='animate'?'Pjäsen flyttas…':'Förbereder nästa drag…'));
+  this.drawCapture();
  }
- destroy(){cancelAnimationFrame(this.raf);this.node.remove();this.canvas.hidden=false;}
+ destroy(){cancelAnimationFrame(this.raf);this.clearCapture();this.node.remove();this.canvas.hidden=false;}
 }
 SC.ChessRenderer=ChessRenderer;
 })(globalThis);

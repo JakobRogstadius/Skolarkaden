@@ -3,11 +3,11 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
 class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}
 class Element extends EventTarget{
- constructor(tag='div'){super();Object.assign(this,{tagName:tag,children:[],dataset:{},attributes:{},className:'',textContent:''});this.classList={contains:c=>this.className.split(' ').includes(c),toggle:(c,on)=>{const list=new Set(this.className.split(' ').filter(Boolean));if(on)list.add(c);else list.delete(c);this.className=[...list].join(' ');}};}
+ constructor(tag='div'){super();Object.assign(this,{tagName:tag,children:[],dataset:{},style:{},attributes:{},className:'',textContent:''});this.classList={contains:c=>this.className.split(' ').includes(c),toggle:(c,on)=>{const list=new Set(this.className.split(' ').filter(Boolean));if(on)list.add(c);else list.delete(c);this.className=[...list].join(' ');}};}
  append(...items){for(const e of items){e.parentElement=this;this.children.push(e);}}
  replaceChildren(...items){this.children=[];this.append(...items);}
  remove(){if(this.parentElement)this.parentElement.children=this.parentElement.children.filter(e=>e!==this);}
- setAttribute(k,v){this.attributes[k]=String(v);}
+ setAttribute(k,v){this.attributes[k]=String(v);if(k==='class')this.className=String(v);}
  querySelector(selector){return this.querySelectorAll(selector)[0]||null;}
  querySelectorAll(selector){const out=[];for(const child of this.children){if(selector.startsWith('.')?child.classList.contains(selector.slice(1)):child.tagName===selector)out.push(child);out.push(...child.querySelectorAll(selector));}return out;}
  set innerHTML(html){this.children=[];const stack=[this];for(const token of html.match(/<[^>]+>|[^<]+/g)||[]){if(token.startsWith('</'))stack.pop();else if(token.startsWith('<')){const e=new Element(token.match(/^<(\w+)/)[1]);e.className=token.match(/class="([^"]*)"/)?.[1]||'';stack.at(-1).append(e);if(!token.endsWith('/>'))stack.push(e);}else stack.at(-1).textContent+=token;}}
@@ -46,5 +46,34 @@ for(const option of options){
  const answer=SC.isChinese(g.mode)?target.item.hint:target.item.answer;
  assert(g.queue.enqueue(answer));g.update(.05);r.draw();assert.equal(C.key(g.lastMove),C.key(target.move),option.mode);assert.equal(g.hits,1,option.mode+' still accepts the answer');
 }
-r.destroy();assert.equal(canvas.hidden,false);assert.equal(arena.children.length,1);
+const sounds=[],timing=SC.chessCaptureTiming;g.onEvent=e=>{if(e.type.startsWith('dino-'))sounds.push(e.type);};
+function capture(color='w',victim='q',from='c3',to='d5'){
+ g.start();g.search=null;sounds.length=0;
+ g.position=new C.Chess('7k/8/8/8/8/8/8/K7 '+color+' - - 0 1');
+ g.position.put({type:'n',color},from);g.position.put({type:victim,color:color==='w'?'b':'w'},to);
+ g.play({from,to});r.draw();
+}
+for(const color of ['w','b'])for(const victim of ['p','n','b','r','q']){
+ capture(color,victim);assert.equal(g.position.get('d5').type,'n');assert.equal(g.position.get('c3'),undefined);assert.equal(g.lastMove.captured,victim);
+ assert.equal(r.capturePiece.style.opacity,'0');assert.equal(r.captureLayer.style.display,'');assert.deepEqual(sounds,['dino-startle']);
+ assert(r.capturePrey.classList.contains(color==='w'?'ch-black':'ch-white'),'the swallowed piece has the enemy colour');
+ const points=g.score,moves=g.history.length,initial=r.captureBody.attributes.transform;
+ g.update(.2);r.draw();assert.notEqual(r.captureBody.attributes.transform,initial,'capture advances without a board revision');
+ g.pause();r.draw();const frozen=r.captureBody.attributes.transform;g.update(60);r.draw();assert.equal(r.captureBody.attributes.transform,frozen);assert.deepEqual(sounds,['dino-startle']);
+ g.resume();g.update(timing.bite-.2+.001);r.draw();assert.deepEqual(sounds,['dino-startle','dino-chomp']);
+ const before=r.capturePrey.attributes.transform;g.update(.3);r.draw();assert.notEqual(r.capturePrey.attributes.transform,before);
+ assert.equal(g.score,points,'animation does not award extra points');assert.equal(g.history.length,moves);
+ g.update(.7);r.draw();assert.equal(r.capturePrey.attributes.opacity,'0','victim is fully swallowed');
+ const piece=r.capturePiece;g.update(.5);r.draw();assert.equal(r.captureLayer.style.display,'none');assert.equal(piece.style.opacity,'');assert.equal(r.captureLayer.children.length,0);
+ assert.deepEqual(sounds,['dino-startle','dino-chomp'],'sounds play once each');
+}
+capture('w','r','b6','a8');g.update(.42);r.draw();assert(r.captureBody.attributes.transform.includes('scale(-'),'left edge faces inwards');
+capture('b','r','g3','h1');g.update(.42);r.draw();assert(!r.captureBody.attributes.transform.includes('scale(-'),'right edge faces inwards');
+context.matchMedia=()=>({matches:true});capture();const still=r.captureBody.attributes.transform;g.update(.6);r.draw();assert.equal(r.captureBody.attributes.transform,still,'reduced motion uses a stationary crossfade');assert.equal(r.captureJaw.attributes.transform,'rotate(0 62 43)');
+context.matchMedia=()=>({matches:false});capture();const oldPiece=r.capturePiece;g.start();r.draw();assert.equal(oldPiece.style.opacity,'');assert.equal(r.captureLayer.style.display,'none');g.update(.5);assert.deepEqual(sounds,['dino-startle'],'restart discards a pending chomp');
+capture();g.menu();g.update(10);r.draw();assert.equal(r.captureLayer.style.display,'none');assert.deepEqual(sounds,['dino-startle'],'menu discards a pending chomp');
+g.start();sounds.length=0;g.play({from:'b1',to:'c3'});r.draw();assert.equal(r.captureLayer.style.display,'none');assert.deepEqual(sounds,[],'quiet dinosaur moves do not eat');
+g.start();g.position=new C.Chess('7k/8/8/3p4/8/8/8/K2R4 w - - 0 1');g.play({from:'d1',to:'d5'});r.draw();assert.equal(r.captureLayer.style.display,'none');assert.deepEqual(sounds,[],'other pieces do not eat');
+capture();const finalPiece=r.capturePiece;r.destroy();assert.equal(finalPiece.style.opacity,'');assert.equal(canvas.hidden,false);assert.equal(arena.children.length,1);
 console.log('PASS chess renderer: '+options.length+' exercise/language combinations keep prompts and diagrams visible, never reveal hints after waiting or pausing, and accept answers; previews and cleanup work.');
+console.log('PASS dinosaur captures: both colours and all victim pieces, timed sounds, pause/resume, unchanged scoring, board edges, reduced motion, restart, menu and renderer cleanup.');

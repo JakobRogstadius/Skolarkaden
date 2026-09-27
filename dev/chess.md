@@ -14,6 +14,15 @@ fewer choices. There is no answer timer or turn limit. Move cards show only
 the exercise prompt or diagram, never hints, answers, pinyin or translations,
 even after waiting or pausing. Accepted answers and aliases are unchanged.
 
+Knights are drawn as hungry dinosaurs. When either side's knight captures,
+the victim jumps, the dinosaur approaches with an open jaw, and the captured
+piece shrinks into its mouth during three chews. The 1.55-second effect uses
+the same `dino-startle` ("aaaaah") and `dino-chomp` ("nom nom nom") voices as
+Hungrig dinosaurie. The board and score are committed once, before the visual
+effect; the next turn waits for it to finish. Game time controls both the
+animation and bite cue, so pause freezes the effect. Muting, pausing, leaving
+or restarting stops active voices. Reduced motion uses a stationary crossfade.
+
 The game uses locally vendored **chess.js 1.4.0** for legal moves, check, mate,
 stalemate, castling, en passant and all four promotion pieces. Promotions are
 separate proposed moves and are identified on their cards. Draws use the
@@ -121,4 +130,7 @@ score limits. `tests/homework-ui.cjs` covers app input, pause, score display,
 submission and replay. `tests/chess-renderer.cjs` checks that every exercise's
 move cards keep hints and answers hidden after waiting, pausing and resuming,
 while prompts, diagrams, previews and answer input still work.
+It also covers dinosaur captures of every piece type on both sides, audio
+cue timing, pause/resume, board edges, reduced motion and cleanup.
+`tests/dinosaur-sounds.cjs` covers shared voice synthesis and cancellation.
 Run `npm test` for the complete regression suite.

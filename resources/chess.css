@@ -15,6 +15,7 @@ body.playing .arena.chess,body.playing.voice-play .arena.chess{height:auto;min-h
 .ch-last{box-shadow:inset 0 0 0 4px #eed076b0}.ch-check{background:#bd6964!important;box-shadow:inset 0 0 0 3px #f6b0a6}
 .ch-preview-from{box-shadow:inset 0 0 0 4px #fff8}.ch-preview-to{box-shadow:inset 0 0 0 4px #fff}
 .ch-arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}
+.ch-capture{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4;overflow:hidden;filter:drop-shadow(0 3px 1px #11232966)}
 .ch-marker{display:none;position:absolute;right:2px;top:2px;min-width:18px;padding:1px 4px;text-align:center;border:1px solid var(--choice);border-radius:4px;color:var(--choice);background:#102530;z-index:3;font:bold 12px/1.3 system-ui}
 .ch-option .ch-marker{display:block}.ch-caption{font-size:12px;text-align:center;color:#b7c9cd;margin:25px 0 0}
 .ch-sidebar{min-width:0}.ch-kicker{font-size:10px;letter-spacing:2px;color:#dfc493;margin:0 0 10px}.ch-sidebar h2{font-size:clamp(24px,2.6vw,34px);margin:0 0 12px}

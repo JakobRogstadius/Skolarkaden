@@ -80,7 +80,7 @@
     }data[0]=0;data[data.length-1]=0;return data;
   }
   class GameSounds{
-    constructor(){this.context=null;this.dinosaurBuffers=new Map();this.campBuffers=new Map();this.campVoices=new Set();this.campLoop=null;}
+    constructor(){this.context=null;this.dinosaurBuffers=new Map();this.dinosaurVoices=new Set();this.campBuffers=new Map();this.campVoices=new Set();this.campLoop=null;}
     unlock(){
       try{const AC=root.AudioContext||root.webkitAudioContext;if(!this.context)this.context=new AC();
         if(this.context.state==='suspended')this.context.resume().catch(()=>{});
@@ -89,10 +89,14 @@
     dinosaurVoice(kind,scale){
       const c=this.context;let buffer=this.dinosaurBuffers.get(kind);
       if(!buffer){const samples=synthesizeDinosaurSound(kind);buffer=c.createBuffer(1,samples.length,24000);buffer.copyToChannel(samples,0);this.dinosaurBuffers.set(kind,buffer);}
-      const source=c.createBufferSource(),gain=c.createGain();source.buffer=buffer;
+      const source=c.createBufferSource(),gain=c.createGain(),voice={source,gain};source.buffer=buffer;
       source.playbackRate.value=kind==='dino-chomp'?1:.97+Math.random()*.06;
       gain.gain.value=(kind==='dino-startle'?.047:.063)*Math.max(0,scale);
-      source.connect(gain);gain.connect(c.destination);source.onended=()=>{source.disconnect();gain.disconnect();};source.start();
+      source.connect(gain);gain.connect(c.destination);this.dinosaurVoices.add(voice);
+      source.onended=()=>{source.disconnect();gain.disconnect();this.dinosaurVoices.delete(voice);};source.start();
+    }
+    stopDinosaurVoices(){
+      for(const voice of this.dinosaurVoices){voice.source.onended=null;try{voice.source.stop();}catch(_){}voice.source.disconnect();voice.gain.disconnect();}this.dinosaurVoices.clear();
     }
     campBuffer(kind){
       let buffer=this.campBuffers.get(kind);if(!buffer){const data=synthesizeCampSound(kind);buffer=this.context.createBuffer(1,data.length,24000);buffer.copyToChannel(data,0);this.campBuffers.set(kind,buffer);}return buffer;
@@ -191,7 +195,7 @@
         else if(kind==='win') [523,659,784,1047].forEach((n,i)=>tone(n,n,.13,i*.09));
       }catch(_){}
     }
-    close(){this.stopCampfire();this.context?.close().catch(()=>{});this.context=null;this.dinosaurBuffers.clear();this.campBuffers.clear();}
+    close(){this.stopCampfire();this.stopDinosaurVoices();this.context?.close().catch(()=>{});this.context=null;this.dinosaurBuffers.clear();this.campBuffers.clear();}
   }
   root.Starlight.synthesizeDinosaurSound=synthesizeDinosaurSound;
   root.Starlight.synthesizeCampSound=synthesizeCampSound;
