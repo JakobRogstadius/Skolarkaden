@@ -29,13 +29,15 @@ class KlossarRenderer{
     this.buttons=new Map();this.puffs=new Map();this.lastRevision=-1;this.lastState='';this.destroyed=false;
     for(const tile of game.tiles){
       const button=element('button','klossar-tile');button.type='button';button.dataset.tileId=tile.id;
+      const textColor=tile.side==='problem'?'#742f36':'#243f75';
+      button.style.setProperty('--tile-ink',textColor);
       button.addEventListener('click',()=>{this.advance(performance.now());game.select(tile.id);this.draw();});
       const face=element('span','klossar-face');
       // Visual randomness is independent of the deal and is assigned only once.
       face.dataset.font=Math.random()<.5?'serif':'sans';
       if(tile.item.diagram){
         const diagram=document.createElement('canvas');diagram.width=224;diagram.height=160;diagram.setAttribute('aria-hidden','true');
-        const ctx=diagram.getContext('2d');ctx.scale(2,2);SC.drawMathDiagram(ctx,tile.item.diagram,{x:0,y:0,w:112,h:80});face.append(diagram);
+        const ctx=diagram.getContext('2d');ctx.scale(2,2);SC.drawMathDiagram(ctx,tile.item.diagram,{x:0,y:0,w:112,h:80},{textColor});face.append(diagram);
         button.setAttribute('aria-label',tile.item.diagram.kind==='dots'?'Räkna prickarna':tile.item.diagram.kind==='number-line'?'Vilket tal saknas på tallinjen?':'Vilket tal ersätter frågetecknet i diagrammet?');
       }else{face.textContent=tile.item.label;button.setAttribute('aria-label',tile.item.label);}
       button.append(face);this.board.append(button);this.buttons.set(tile.id,button);

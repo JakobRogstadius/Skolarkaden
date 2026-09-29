@@ -24,7 +24,7 @@
   SC.drawFittedText=function(c,text,x,y,max){
     const font=c.font;c.font=SC.fittedFont(c,text,font,max);c.fillText(text,x,y);c.font=font;
   };
-  SC.drawMathDiagram=function(c,diagram,box){
+  SC.drawMathDiagram=function(c,diagram,box,{textColor='#000'}={}){
     c.save();
     // A pale panel keeps black chart ink legible in every game's task bubble.
     c.fillStyle='#faf9f5';c.beginPath();c.roundRect(box.x+2,box.y+2,box.w-4,box.h-4,5);c.fill();
@@ -33,7 +33,7 @@
     c.strokeStyle='#000';c.fillStyle='#000';c.lineWidth=1.5;c.setLineDash([]);
     c.font='bold 16px sans-serif';c.textAlign='center';c.textBaseline='middle';
     const line=(x1,y1,x2,y2)=>{c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();};
-    const label=(text,x,y)=>{c.fillStyle='#000';c.fillText(String(text),x,y);};
+    const label=(text,x,y)=>{c.fillStyle=textColor;c.fillText(String(text),x,y);};
     const values=diagram.unknownFirst?[diagram.answer,diagram.known]:[diagram.known,diagram.answer];
     const labels=diagram.unknownFirst?['?',diagram.known]:[diagram.known,'?'];
     if(diagram.kind==='pie'){
