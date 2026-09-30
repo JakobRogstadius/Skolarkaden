@@ -47,11 +47,23 @@ function menuUpdate(){
   for(const option of $('language').options)option.hidden=option.disabled=pair&&!(translation?['sv-SE','en-US']:[SC.modes[mode].lang]).includes(option.value);
   if(pair&&![...$('language').options].some(o=>!o.disabled&&o.value===$('language').value))$('language').value=SC.modes[mode].lang;
   $('input-kind').closest('.setup-field').hidden=clickOnly;$('language').closest('.setup-field').hidden=$('language').disabled;$('settings-open').hidden=clickOnly;
-  $('setup-note').textContent=clickOnly?'Klicka på uppgiften och rätt svar.':kind==='marshmallows'?(voice?'Säg svaret när marshmallowen är gyllene.':['letters','bopomofo'].includes(mode)?'Tryck på bokstaven när marshmallowen är gyllene.':'Skriv svaret. Tryck Enter när marshmallowen är gyllene.'):voice?'Säg svaren efter varandra.':typingHint();
-  if(isBoardGame())$('setup-note').textContent='Välj ett drag genom att '+(voice?'säga':'skriva')+' svaret på dess uppgift. Ingen tidspress. Svårigheten styr datorns spelstyrka.';
-  if(kind==='studio')$('setup-note').textContent='Klicka på en färg eller ett verktyg och svara på uppgiften. Måla i din egen takt, utan poäng.';
+  $('setup-note').textContent={
+    city:'Svara på uppgifterna för att skjuta ner meteorer och skydda staden.',
+    food:'Laga och servera mat genom att svara på gästernas uppgifter innan de tröttnar.',
+    garden:'Svara på uppgifterna för att vattna, gödsla och skydda blommorna mot ohyra.',
+    hive:'Skicka bina till blommorna genom att svara på uppgifterna. Samla honung inför vintern.',
+    paint:'Svara på uppgifterna för att kasta färgballonger på förbipasserande.',
+    dinosaur:'Svara på uppgifterna för att låta dinosaurien fånga och äta de små figurerna.',
+    marshmallows:'Svara när marshmallowen är gyllene för att ta in den innan den bränns.',
+    eggs:'Svara på uppgifterna för att bränna spruckna rymdägg och rymdkryp och skydda besättningen.',
+    home:'Svara på uppgifterna för att städa och hjälpa familjen innan stöket tar över.',
+    reversi:'Välj ett drag genom att svara på dess uppgift. Få flest brickor för att vinna mot datorn.',
+    chess:'Välj ett drag genom att svara på dess uppgift. Sätt datorns kung schackmatt.',
+    klossar:'Klicka på en fri kloss och dess matchande svar. Para ihop alla klossar för att tömma brädet.',
+    studio:'Svara på uppgifter för att välja färger och verktyg. Måla i din egen takt, utan poäng.'
+  }[kind];
   $('pace').closest('.setup-field').hidden=kind==='studio';$('leaderboard-open').hidden=kind==='studio';
-  $('mode-description').textContent=clickOnly?(SC.isChinese(mode)?'Para ihop kinesiska tecken med pinyin eller översättningar. Byt med knapparna ovanför klossarna.':SC.isMath(mode)?'Para ihop uppgifterna med rätt svar.':translation?'Para ihop svenska och engelska ord. Du kan börja med vilket ord som helst.':pair?'Para ihop orden med rätt svar.':mode==='bopomofo'?'Para ihop bopomofo med uttalet i pinyin.':'Para ihop stora och små bokstäver eller ord.')+' Klicka eller tryck på klossarna.':SC.modes[mode].description;$('keyboard').hidden=clickOnly||mode!=='bopomofo';
+  $('keyboard').hidden=clickOnly||mode!=='bopomofo';
   [...$('pace').options].forEach((o,i)=>o.textContent=['Lätt','Medel','Svår'][i]+(clickOnly?' · '+[20,30,40][i]+' par':''));
 }
 $('lesson').addEventListener('change',()=>{rememberedLessons.set($('exercise-group').value,$('lesson').value);$('language').value=SC.modes[$('lesson').value].lang;menuUpdate();});$('input-kind').addEventListener('change',menuUpdate);
