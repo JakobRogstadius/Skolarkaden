@@ -70,28 +70,31 @@ class AnswerInput extends EventTarget{
   autoSubmit(){if(!this.enabled||this.voice.enabled||this.composing||!this.singleLetter())return;const text=this.field.value.normalize('NFC');this.field.value='';for(const letter of text)if(letter.trim())this.queue.enqueue(letter);}
   configure(voice){this.cancel();this.voice={...voice,kind:voice.enabled?'browser':'typing'};if(this.voiceButton)this.voiceButton.hidden=!voice.enabled;const submit=this.form.querySelector('[type=submit]');if(submit)submit.hidden=this.singleLetter();}
   setEnabled(enabled){this.enabled=enabled;this.field.disabled=!enabled||this.voice.enabled;const submit=this.form.querySelector('[type=submit]');if(submit)submit.disabled=!enabled||this.voice.enabled;if(this.voiceButton)this.voiceButton.disabled=!enabled;if(!enabled)this.cancel();else this.focus();}
-  async prepare(){
+  get usesAudioTrack(){return SC.speechCaptureMode()==='track';}
+  prepare(){
     if(!this.voice.enabled)return;
-    if(!(root.SpeechRecognition||root.webkitSpeechRecognition))throw new Error('Taligenkänning saknas i denna webbläsare.');
-    const version=navigator.userAgentData?.brands?.find(b=>b.brand==='Chromium')?.version||navigator.userAgent?.match(/\b(?:Chrome|Chromium)\/(\d+)/)?.[1];
-    if(!(Number(version)>=135))throw new Error('Röstläget behöver Chrome 135 eller senare för att återanvända den godkända mikrofonen.');
-    await this.microphone.configure({...this.microphone.options,shortInput:SC.shortSpeechLesson(this.voice.lesson)});
+    if(root.isSecureContext===false)throw new Error('Taligenkänning kräver en säker anslutning. Öppna sidan via HTTPS.');
+    if(!(root.SpeechRecognition||root.webkitSpeechRecognition))throw new Error('Taligenkänning saknas i denna webbläsare. '+SC.speechHelp()+' Du kan också välja Tangentbord och använda tangentbordets diktering.');
+    if(this.usesAudioTrack)return this.microphone.configure({...this.microphone.options,shortInput:SC.shortSpeechLesson(this.voice.lesson)});
+    // Do not acquire a second microphone or await permission before start():
+    // Safari/mobile recognition must begin in the user's click handler.
+    if(this.microphone.ready||this.microphone.opening)this.microphone.close();
   }
   start(){
     if(!this.enabled||!this.voice.enabled||this.wanted||this.recognition)return;
-    if(!this.microphone.ready){this.fault('Mikrofonen är av. Aktivera den i mikrofoninställningarna.');return;}
-    clearTimeout(this.stopTimer);this.wanted=true;this.failures=0;this.epoch++;this.microphone.begin(true);this.openSession(this.epoch);
+    if(this.usesAudioTrack&&!this.microphone.ready){this.fault('Mikrofonen är av. Aktivera den i mikrofoninställningarna.');return;}
+    clearTimeout(this.stopTimer);this.wanted=true;this.failures=0;this.epoch++;if(this.usesAudioTrack)this.microphone.begin(true);this.openSession(this.epoch);
   }
   openSession(epoch){
     if(epoch!==this.epoch||!this.enabled||!this.wanted)return;
-    const R=root.SpeechRecognition||root.webkitSpeechRecognition,r=new R(),track=this.microphone.stream.getAudioTracks()[0].clone();
+    const R=root.SpeechRecognition||root.webkitSpeechRecognition,r=new R(),track=this.usesAudioTrack?this.microphone.stream.getAudioTracks()[0].clone():null;
     const committed=new Set(),openedAt=Date.now();
-    const stream=new SC.SpeechStream({getContext:()=>({...this.voice,candidates:this.getCandidates()}),enqueue:text=>this.queue.enqueue(text,'speech'),revise:(entry,text)=>this.queue.revise(entry,text),trace:(type,data)=>this.trace(type,data)});this.recognition=r;this.track=track;track.enabled=false;
+    const stream=new SC.SpeechStream({getContext:()=>({...this.voice,candidates:this.getCandidates()}),enqueue:text=>this.queue.enqueue(text,'speech'),revise:(entry,text)=>this.queue.revise(entry,text),trace:(type,data)=>this.trace(type,data)});this.recognition=r;this.track=track;if(track)track.enabled=false;
     const valid=()=>epoch===this.epoch&&this.enabled&&this.recognition===r;
     r.lang=this.voice.language;r.continuous=true;r.interimResults=true;r.maxAlternatives=5;
     r.processLocally=false;
-    this.status('Ansluter taligenkänning…');this.trace('session',{language:r.lang,engine:this.voice.kind,shortInput:this.microphone.options.shortInput,audioSettings:track.getSettings?.()});
-    r.onstart=()=>{if(!valid()){track.stop();return;}track.enabled=true;this.listening=true;this.status(this.voice.turnBased?'Lyssnar · säg ett svar för ditt drag':'Lyssnar kontinuerligt · säg flera svar i följd');this.trace('start');};
+    this.status('Ansluter taligenkänning…');this.trace('session',{language:r.lang,engine:this.voice.kind,capture:track?'track':'direct',shortInput:track?this.microphone.options.shortInput:undefined,audioSettings:track?.getSettings?.()});
+    r.onstart=()=>{if(!valid()){track?.stop();try{r.abort();}catch(_){}return;}clearTimeout(this.startTimer);if(track)track.enabled=true;this.listening=true;this.status(this.voice.turnBased?'Lyssnar · säg ett svar för ditt drag':'Lyssnar kontinuerligt · säg flera svar i följd');this.trace('start');};
     r.onaudiostart=()=>{if(valid())this.trace('audio-start');};
     r.onspeechstart=()=>{if(valid())this.trace('speech-start');};
     r.onspeechend=()=>{if(valid())this.trace('speech-end');};
@@ -127,16 +130,17 @@ class AnswerInput extends EventTarget{
       if(e.error==='no-speech'||e.error==='aborted')return;
       this.wanted=false;
       const messages={'not-allowed':'Mikrofonåtkomst nekades.','service-not-allowed':'Taltjänsten är inte tillgänglig.','network':'Taligenkänningens nätverksanslutning bröts.','language-not-supported':'Språket stöds inte av den valda taltjänsten.','audio-capture':'Mikrofonen kunde inte läsas.'};
-      this.sessionError=(messages[e.error]||'Taligenkänningen avbröts: '+e.error)+' Starta lyssningen igen när problemet är löst.';
+      this.sessionError=(messages[e.error]||'Taligenkänningen avbröts: '+e.error)+' '+(['not-allowed','service-not-allowed','audio-capture'].includes(e.error)?SC.speechHelp()+' ':'')+'Tryck på Fortsätt för att försöka igen.';
       const message=this.sessionError;this.cancel();this.sessionError='';this.fault(message);
     };
     r.onend=()=>{
-      track.stop();if(!valid())return;clearTimeout(this.stopTimer);this.recognition=null;this.track=null;this.listening=false;this.emit('interim',{text:''});this.capture();this.trace('end');
+      track?.stop();if(!valid())return;clearTimeout(this.startTimer);clearTimeout(this.stopTimer);this.recognition=null;this.track=null;this.listening=false;this.emit('interim',{text:''});this.capture();this.trace('end');
       if(this.wanted&&Date.now()-openedAt<1500){this.failures++;if(this.failures>=4){this.wanted=false;this.sessionError='Taltjänsten avslutar lyssningen direkt. Kontrollera språk och anslutning och starta igen.';}}else this.failures=0;
       if(this.wanted){this.status('Lyssningen återansluter…');this.restartTimer=setTimeout(()=>this.openSession(epoch),Math.min(2500,350*Math.max(1,this.failures)));}
       else{this.microphone.recording=false;const error=this.sessionError;this.sessionError='';if(error)this.fault(error);else this.status('Lyssningen är stoppad. Svaren i kön fortsätter.');}
     };
-    try{r.start(track);}catch(error){track.stop();this.recognition=null;this.wanted=false;this.listening=false;this.microphone.recording=false;this.trace('error',{error:error.message});this.fault(error.message);}
+    this.startTimer=setTimeout(()=>{if(valid()&&!this.listening){this.cancel();this.fault('Taligenkänningen startade inte. '+SC.speechHelp()+' Tryck på Fortsätt för att försöka igen.');}},20000);
+    try{if(track)r.start(track);else r.start();}catch(error){this.trace('error',{error:error.message});this.cancel();this.fault(error.message+' '+SC.speechHelp());}
   }
   capture(){const pcm=this.microphone.snapshot();if(pcm.samples.length){this.lastAudio=pcm;this.trace('audio',SC.audioStats(pcm));}}
   stop(){
@@ -145,7 +149,7 @@ class AnswerInput extends EventTarget{
     else{this.capture();this.microphone.recording=false;this.listening=false;this.status('Lyssningen är stoppad.');}
   }
   cancel(){
-    this.capture();this.epoch++;this.wanted=false;this.listening=false;clearTimeout(this.restartTimer);clearTimeout(this.stopTimer);
+    this.capture();this.epoch++;this.wanted=false;this.listening=false;clearTimeout(this.startTimer);clearTimeout(this.restartTimer);clearTimeout(this.stopTimer);
     const r=this.recognition;this.recognition=null;try{r?.abort();}catch(_){}this.track?.stop();this.track=null;this.microphone.cancel();this.emit('interim',{text:''});this.status('Lyssningen är pausad.');
   }
   destroy(){this.enabled=false;this.cancel();this.listeners.forEach(fn=>fn());this.listeners=[];}

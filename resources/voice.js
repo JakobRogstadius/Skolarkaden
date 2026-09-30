@@ -2,6 +2,15 @@
 (function(root){
   'use strict';
   const SC=root.Starlight;
+  SC.appleMobile=()=>/iPad|iPhone|iPod/.test(root.navigator?.userAgent||'')||(/Macintosh/.test(root.navigator?.userAgent||'')&&root.navigator?.maxTouchPoints>1);
+  SC.speechCaptureMode=()=>{
+    const nav=root.navigator||{},ua=nav.userAgent||'';
+    const version=nav.userAgentData?.brands?.find(b=>b.brand==='Chromium')?.version||ua.match(/\b(?:Chrome|Chromium)\/(\d+)/)?.[1];
+    // Only the established desktop Chromium path uses start(audioTrack).
+    // Other browsers own their microphone through the standard start() API.
+    return Number(version)>=135&&!nav.userAgentData?.mobile&&!/Android|Mobile/.test(ua)&&!SC.appleMobile()?'track':'direct';
+  };
+  SC.speechHelp=()=>SC.appleMobile()?'Tillåt mikrofonen och aktivera Siri eller Diktering i enhetens inställningar. Om det inte fungerar, öppna sidan direkt i Safari.':'Tillåt mikrofonen i webbläsarens och enhetens inställningar. Prova Chrome om taltjänsten saknas.';
   // Short word/sound practice, plus arithmetic with answers up to 20.
   // Inspect Mandarin items so future compound-word lessons keep normal processing.
   SC.shortSpeechLesson=lesson=>['letters','swedish','english','bopomofo','math-addition','math-diagrams','math-addition-subtraction','math-simple-equations','math-equations'].includes(lesson)||
@@ -33,7 +42,7 @@
       let stream,context,source,processor,silent,committed=false;
       const stale=()=>generation!==this.generation;
       this.opening=(async()=>{
-        if(!navigator.mediaDevices?.getUserMedia)throw new Error('Mikrofonen är inte tillgänglig. Öppna index.html i Chrome på datorn.');
+        if(!navigator.mediaDevices?.getUserMedia)throw new Error('Mikrofonen är inte tillgänglig. Öppna sidan via HTTPS i Safari eller Chrome och tillåt mikrofonen.');
         stream=await navigator.mediaDevices.getUserMedia({audio:this.constraints()});
         if(stale())return;
         const AC=root.AudioContext||root.webkitAudioContext;context=new AC();await context.resume();
