@@ -13,6 +13,8 @@ let homeworkReady=!homeworkRequested;
 const queue=new SC.AnswerQueue(),microphone=new SC.Microphone(),sounds=new SC.GameSounds(),tileSpeech=new SC.KlossarSpeech();
 const input=new SC.AnswerInput({field:$('answer'),form:$('answer-form'),queue,microphone,retainFocus:()=>kind!=='klossar'&&game?.state==='playing'&&!document.querySelector('dialog[open]'),getCandidates:()=>game?.state==='playing'?game.getTargets().map(t=>t.item):[]});
 let game,renderer,kind='city',busy=false,soundOn=true,lastOptions=null,log=[],lastTargetKey=null,lastUi=0,uiFrame,replaying=null,lifecycle=0;
+const playViewport=new SC.PlayViewport(),navigation=new SC.GameNavigation({onBack:confirmGameBack});
+let resumeAfterBack=false;
 const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet',reversi:'Reversi',chess:'Schack',klossar:'Klossar',studio:'Målarateljén'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer],home:[SC.HomeGame,SC.HomeRenderer],reversi:[SC.ReversiGame,SC.ReversiRenderer],chess:[SC.ChessGame,SC.ChessRenderer],klossar:[SC.KlossarGame,SC.KlossarRenderer],studio:[SC.StudioGame,SC.StudioRenderer]};
 const isBoardGame=()=>['reversi','chess'].includes(kind);
 const highscores=new SC.Highscores({getSelection:()=>scoreSelection(),games:Object.fromEntries(Object.entries(names).filter(([id])=>id!=='studio'))});
@@ -137,10 +139,10 @@ async function start(){
   try{
     input.setEnabled(false);input.configure({...speechOptions(),...(isQuestionGame()?{turnBased:true}:{})});const preparation=kind!=='klossar'&&input.prepare();if(preparation)await preparation;if(token!==lifecycle)return;
     sounds.stopCampfire();sounds.stopDinosaurVoices?.();sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
-    const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});lastOptions=options();$('arena').className='arena '+kind;$('arena').dataset.exercise=lastOptions.mode;$('play').dataset.game=kind;game.start(lastOptions);if(kind!=='studio')highscores.begin({...scoreSelection(lastOptions),letterKeys:game.mode==='letters'?game.items.map(i=>i.answer):null});queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),discardUnmatched:entry=>!isQuestionGame()&&entry.source==='speech'&&SC.isChinese(game.mode),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
+    const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});game.viewportKind=kind;lastOptions=options();$('arena').className='arena '+kind;$('arena').dataset.exercise=lastOptions.mode;$('play').dataset.game=kind;game.start(lastOptions);if(kind!=='studio')highscores.begin({...scoreSelection(lastOptions),letterKeys:game.mode==='letters'?game.items.map(i=>i.answer):null});queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),discardUnmatched:entry=>!isQuestionGame()&&entry.source==='speech'&&SC.isChinese(game.mode),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
     if(kind!=='studio')loadBest();$('game-title').textContent=names[kind];$('objective').closest('.hud-objective').hidden=['marshmallows','eggs','studio'].includes(kind);$('answer').placeholder=input.singleLetter()?'…':SC.modes[game.mode].placeholder.replace('…',' ↵');$('answer-hint').textContent=typingHint();$('keyboard').hidden=kind==='klossar'||game.mode!=='bopomofo';$('input-dock').hidden=kind==='klossar'||input.voice.enabled;document.body.classList.add('playing');document.body.classList.toggle('voice-play',input.voice.enabled);
     input.setEnabled(kind!=='klossar'&&(!isQuestionGame()||game.canAnswer()));if(input.enabled&&input.voice.enabled)input.start();
-    if(kind!=='klossar')input.focus();lastTargetKey=null;renderUi();
+    playViewport.update();renderer.resize();navigation.enter();if(kind!=='klossar')input.focus();lastTargetKey=null;renderUi();
   }catch(error){$('setup-error').textContent=error.message; $('resume-error').textContent=error.message;if($('menu').hidden){$('end-overlay').hidden=false;$('result-title').textContent=error.message;}}
   finally{busy=false;$('start').disabled=false;$('again').disabled=false;}
 }
@@ -150,7 +152,19 @@ async function resume(){
   try{const preparation=kind!=='klossar'&&input.prepare();if(preparation)await preparation;if(token!==lifecycle)return;$('pause-overlay').hidden=true;game.resume();const canAnswer=isQuestionGame()?game.canAnswer():kind!=='klossar'&&(kind!=='eggs'||game.player.status!=='dead');input.setEnabled(canAnswer);if(canAnswer&&input.voice.enabled)input.start();if(canAnswer)input.focus();}
   catch(error){$('resume-error').textContent=error.message;}finally{busy=false;$('resume').disabled=false;}
 }
-function menu(){highscores.dismiss();sounds.stopCampfire();sounds.stopDinosaurVoices?.();tileSpeech.stop();lifecycle++;input.setEnabled(false);game?.menu();renderer?.destroy();renderer=null;queue.clear();$('play').hidden=true;$('menu').hidden=false;document.body.classList.remove('playing','voice-play');menuUpdate();$('start').focus({preventScroll:true});}
+function menu(){navigation.leave(showMenu);}
+function showMenu(){highscores.dismiss();sounds.stopCampfire();sounds.stopDinosaurVoices?.();tileSpeech.stop();lifecycle++;input.setEnabled(false);game?.menu();renderer?.destroy();renderer=null;queue.clear();$('play').hidden=true;$('menu').hidden=false;document.body.classList.remove('playing','voice-play');menuUpdate();$('start').focus({preventScroll:true});}
+function confirmGameBack(){
+  if($('leave-game').open)return;
+  resumeAfterBack=game?.state==='playing';pause();
+  $('leave-game-message').textContent=kind==='studio'&&renderer?.dirty?'Bilden är inte inramad och försvinner om du går till menyn.':'Omgången avslutas om du lämnar spelet.';
+  (document.fullscreenElement||document.body).append($('leave-game'));
+  $('leave-game').showModal();$('leave-game-stay').focus();
+}
+function stayInGame(){ $('leave-game').close();if(resumeAfterBack)resume(); }
+$('leave-game-stay').addEventListener('click',stayInGame);
+$('leave-game').addEventListener('cancel',e=>{e.preventDefault();stayInGame();});
+$('leave-game-confirm').addEventListener('click',()=>{$('leave-game').close();for(const dialog of document.querySelectorAll('dialog[open]'))dialog.close();menu();});
 $('start').addEventListener('click',start);$('again').addEventListener('click',()=>highscores.leave(start));$('pause').addEventListener('click',pause);$('resume').addEventListener('click',resume);$('pause-menu').addEventListener('click',()=>kind==='studio'&&renderer?.dirty?renderer.confirmLeave(menu):menu());$('end-menu').addEventListener('click',()=>highscores.leave(menu));
 root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){
@@ -169,7 +183,8 @@ function renderUi(){
   else if(kind==='food'){
     objective=game.resolved+' / '+game.total;secondary='♥ '.repeat(game.lives)+'♡ '.repeat(Math.max(0,5-game.lives));value=game.resolved/game.total*100;
     const last=Math.max(2,...game.customers.map(c=>c.slot));
-    // Extra rows extend the scene; they never rescale the crowd or move the truck.
+    if(document.body.classList.contains('mobile-play')&&renderer.fittedFoodSlot!==last){renderer.fittedFoodSlot=last;renderer.resize();}
+    // Desktop can grow for extra rows; touch screens fit them into the viewport.
     $('arena').style.setProperty('--food-min-height',SC.foodSceneHeight(game.width,last)+'px');
   }
   else if(kind==='hive'){objective=Math.min(100,Math.floor(game.honey/game.honeyGoal*100))+'% 🍯';secondary=game.season()+' · '+Math.ceil(game.timeLeft())+' s ❄';value=game.honey/game.honeyGoal*100;}
@@ -198,7 +213,7 @@ $('replay').addEventListener('click',async()=>{
 async function copy(text,status){try{await navigator.clipboard.writeText(text);$(status).textContent='Kopierat.';}catch(_){const area=document.createElement('textarea');area.value=text;($('settings').open?$('settings'):document.body).append(area);area.select();const copied=document.execCommand('copy');area.remove();$(status).textContent=copied?'Kopierat.':'Kopieringen misslyckades. Markera texten och tryck Ctrl+C.';}}
 $('copy-log').addEventListener('click',()=>copy($('speech-log').value,'debug-status'));$('clear-log').addEventListener('click',()=>{log=[];$('speech-log').value='';});
 $('copy-report').addEventListener('click',()=>copy(JSON.stringify({app:'Skolarkaden',browser:navigator.userAgent,voice:input.voice,microphone:microphone.stream?.getAudioTracks()[0]?.getSettings(),audio:input.lastAudio?SC.audioStats(input.lastAudio):null,queue:queue.items,events:log},null,2),'mic-status'));
-root.addEventListener('pagehide',()=>{lifecycle++;cancelAnimationFrame(uiFrame);input.destroy();microphone.close();sounds.close();tileSpeech.stop();renderer?.destroy();});
+root.addEventListener('pagehide',e=>{if(e?.persisted){pause();microphone.close();sounds.close();tileSpeech.stop();return;}navigation.destroy();playViewport.destroy();lifecycle++;cancelAnimationFrame(uiFrame);input.destroy();microphone.close();sounds.close();tileSpeech.stop();renderer?.destroy();});
 menuUpdate();input.setEnabled(false);
 if(homeworkRequested)SC.loadHomework(homeworkQuery.get('id'),homeworkQuery.get('input')).then(lesson=>{
   homeworkReady=true;$('homework-info').textContent='Läxa · '+lesson.homeworkName;menuUpdate();

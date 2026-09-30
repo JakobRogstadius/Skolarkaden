@@ -37,7 +37,8 @@ class AnswerInput extends EventTarget{
     this.listen(field,'compositionstart',()=>this.composing=true);
     this.listen(field,'compositionend',()=>{this.composing=false;this.transform();this.autoSubmit();});
     this.listen(field,'input',()=>{if(!this.composing){this.transform();this.autoSubmit();}});
-    this.listen(form,'submit',e=>{e.preventDefault();if(!this.enabled||this.voice.enabled||this.composing)return;this.queue.enqueue(field.value);field.value='';field.focus({preventScroll:true});});
+    this.listen(form,'submit',e=>{e.preventDefault();this.submit();});
+    this.listen(field,'keydown',e=>{if(e.key==='Enter'&&e.keyCode!==229&&!e.isComposing&&!this.composing){e.preventDefault();this.submit();}});
     this.listen(voiceButton,'click',()=>this.wanted?this.stop():this.start());
     // Opt-in game focus: leave menus, dialogs, IME and browser shortcuts alone.
     const doc=field.ownerDocument;
@@ -66,9 +67,10 @@ class AnswerInput extends EventTarget{
   status(text){this.emit('status',{text,listening:!!this.listening});if(this.voiceButton){this.voiceButton.textContent=this.wanted?'Stoppa lyssning':'Starta lyssning';this.voiceButton.setAttribute('aria-pressed',String(!!this.wanted));}}
   fault(text){this.status(text);this.emit('fault',{text});}
   transform(){if(this.voice.lesson==='bopomofo')this.field.value=SC.toBopomofo(this.field.value);}
+  submit(){if(!this.enabled||this.voice.enabled||this.composing)return;this.queue.enqueue(this.field.value);this.field.value='';this.field.focus({preventScroll:true});}
   singleLetter(){return ['letters','bopomofo'].includes(this.voice.lesson);}
   autoSubmit(){if(!this.enabled||this.voice.enabled||this.composing||!this.singleLetter())return;const text=this.field.value.normalize('NFC');this.field.value='';for(const letter of text)if(letter.trim())this.queue.enqueue(letter);}
-  configure(voice){this.cancel();this.voice={...voice,kind:voice.enabled?'browser':'typing'};if(this.voiceButton)this.voiceButton.hidden=!voice.enabled;const submit=this.form.querySelector('[type=submit]');if(submit)submit.hidden=this.singleLetter();}
+  configure(voice){this.cancel();this.voice={...voice,kind:voice.enabled?'browser':'typing'};this.field.setAttribute('inputmode',SC.isMath(voice.lesson)?'numeric':'text');this.field.setAttribute('enterkeyhint','send');if(this.voiceButton)this.voiceButton.hidden=!voice.enabled;const submit=this.form.querySelector('[type=submit]');if(submit)submit.hidden=this.singleLetter();}
   setEnabled(enabled){this.enabled=enabled;this.field.disabled=!enabled||this.voice.enabled;const submit=this.form.querySelector('[type=submit]');if(submit)submit.disabled=!enabled||this.voice.enabled;if(this.voiceButton)this.voiceButton.disabled=!enabled;if(!enabled)this.cancel();else this.focus();}
   get usesAudioTrack(){return SC.speechCaptureMode()==='track';}
   prepare(){

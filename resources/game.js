@@ -271,8 +271,9 @@
       this.resize=()=>{
         const {width,height}=canvas.getBoundingClientRect(),dpr=Math.min(root.devicePixelRatio||1,2);
         if(width<=0||height<=0)return;
-        this.dpr=dpr;canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
-        game.resize(width,height);this.draw();
+        const fitted=root.document?.body?.classList.contains('mobile-play')&&SC.fitSceneSize?SC.fitSceneSize(width,height,game):{width,height,scale:1};
+        this.dpr=dpr*fitted.scale;canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
+        game.resize(fitted.width,fitted.height);this.draw();
       };
       this.observer=new ResizeObserver(this.resize);this.observer.observe(canvas);
       this.last=0;

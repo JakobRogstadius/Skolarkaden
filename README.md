@@ -132,6 +132,12 @@ Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övnin
 - **Mikrofon:** säg svaren efter varandra. Spelet lyssnar kontinuerligt och skickar kända svar så snart de transkriberas.
 - **Paus:** använd pausknappen eller Escape. Att byta fönster eller flik pausar också spelet. Fortsätt återupptar spelet och mikrofonen.
 
+- **Webbläsarens Bakåt:** frågar om du vill lämna omgången och gå till menyn. Avbryter du finns spelet eller målningen kvar. Nästa Bakåt från menyn kan lämna webbplatsen som vanligt.
+
+På mobil och surfplatta begär matteövningar ett numeriskt skärmtangentbord. Svarsfältet behåller fokus efter Enter eller knappen **↵**, även på knappsatser utan Enter. Webbläsaren bestämmer den exakta tangentbordslayouten. Andra övningar använder vanligt texttangentbord.
+
+Spelläget följer den synliga skärmytan ovanför tangentbordet via `VisualViewport`. Spelplanen, poängen och svarsfältet ryms tillsammans; täta Canvas-scener skalas proportionellt och brädspel och Målarateljén har kompakta layouter. Målningens upplösning och proportioner bevaras. Sidan anpassas även när tangentbordet stängs eller enheten vrids. Nypzoomning får behålla webbläsarens vanliga panorering.
+
 Under spel visas bara svarsfältet under spelplanen; i talläge visas inget svarsfält. Köade och påbörjade uppgifter markeras i själva spelen. Matbilens väntande tallrikar är tomma och står bredvid rätten som lagas.
 
 Svar behandlas i ordning. Upprepningar hoppas över om det inte finns ytterligare lediga mål med samma svar. Högst två olika felsvar får vänta samtidigt. I övriga spel kostar fel svar arbetstid; de har ingen tidslucka att tajma. I Marshmallows reagerar varje pinne direkt när svaret hämtas ur kön, och marshmallowen ska vara gyllene då.

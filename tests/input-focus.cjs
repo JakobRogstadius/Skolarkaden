@@ -8,7 +8,7 @@ class Element extends EventTarget{
  constructor(){super();this.value='';this.disabled=false;this.ownerDocument=document;}
  querySelector(){return null;}
  focus(){if(this.disabled)return;focusCalls++;const old=document.activeElement;document.activeElement=this;if(old!==this){old?.dispatchEvent(new Event('blur'));document.dispatchEvent(new Event('focusin'));}}
- setAttribute(){}
+ setAttribute(key,value){this[key]=value;}
 }
 const context=vm.createContext({console,Event,EventTarget,CustomEvent,Float32Array,setTimeout,clearTimeout,navigator:{userAgent:'Chrome/145'},addEventListener:windowEvents.addEventListener.bind(windowEvents),removeEventListener:windowEvents.removeEventListener.bind(windowEvents)});
 for(const f of ['pinyin','data','language-exercises-data','language-exercises','input'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+f+'.js'),'utf8'),context);
@@ -29,6 +29,10 @@ const settle=()=>new Promise(resolve=>setImmediate(resolve));
  other.focus();await settle();assert.equal(document.activeElement,field,'recover stray element focus');
  document.activeElement=null;field.dispatchEvent(new Event('blur'));await settle();assert.equal(document.activeElement,field,'recover focus lost to the body');
  field.value='räka';form.dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(queue.items.at(-1).text,'räka');assert.equal(field.value,'');
+ input.configure({enabled:false,lesson:'math-addition'});assert.equal(field.inputmode,'numeric');assert.equal(field.enterkeyhint,'send');
+ const numberBefore=queue.length;field.value='12';const enter=Object.assign(new Event('keydown',{cancelable:true}),{key:'Enter'});field.dispatchEvent(enter);
+ assert(enter.defaultPrevented);assert.equal(queue.length,numberBefore+1);assert.equal(queue.items.at(-1).text,'12');assert.equal(field.value,'');assert.equal(document.activeElement,field);assert.equal(field.inputmode,'numeric');
+ input.configure({enabled:false,lesson:'swedish'});assert.equal(field.inputmode,'text');queue.items.pop();
  input.configure({enabled:false,lesson:'bopomofo'});field.dispatchEvent(new Event('compositionstart'));field.value='ㄆ';field.dispatchEvent(new Event('input'));assert.equal(queue.length,1);field.dispatchEvent(new Event('compositionend'));field.dispatchEvent(new Event('input'));assert.equal(queue.length,2);assert.equal(queue.items.at(-1).text,'ㄆ');
  for(const state of ['pause','dialog','hidden','other-window']){
   playing=state!=='pause';dialog=state==='dialog';document.hidden=state==='hidden';windowFocused=state!=='other-window';

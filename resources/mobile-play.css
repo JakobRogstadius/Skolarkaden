@@ -1,0 +1,77 @@
+/* Keep the answer field and the whole game inside the visual viewport. */
+#answer-submit{display:none}
+body.playing.mobile-play{overflow:hidden;overscroll-behavior-y:none}
+body.playing.mobile-play .shell{position:fixed;top:var(--play-top,0px);left:0;right:0;height:var(--play-height,100dvh);max-width:none;padding:6px;display:flex;flex-direction:column;min-height:0}
+body.playing.mobile-play .masthead{flex:none;align-items:center;margin:0 0 6px;gap:6px;min-height:34px}
+body.playing.mobile-play .brand{font-size:11px;gap:6px}
+body.playing.mobile-play .brand-mark{font-size:25px}
+body.playing.mobile-play .masthead nav{flex-wrap:nowrap;gap:5px}
+body.playing.mobile-play .masthead .icon-button{width:34px;height:34px;padding:7px}
+body.playing.mobile-play #play{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px}
+body.playing.mobile-play #play .arena{container-type:size;flex:1;width:100%;height:auto;min-height:0;max-width:none;margin:0;overflow:hidden}
+body.playing.mobile-play #play .input-dock{flex:none;width:100%;margin:0}
+body.playing.mobile-play #answer-form{display:flex;flex-wrap:nowrap;gap:6px}
+body.playing.mobile-play #answer{flex:1;width:0;min-width:0;min-height:42px;padding:7px 12px;font-size:18px}
+body.playing.mobile-play #answer-submit{display:block;flex:none;width:46px;min-height:42px;padding:4px;font-size:24px}
+body.playing.mobile-play .hud{min-height:66px;padding:8px 10px;gap:7px}
+body.playing.mobile-play .hud .eyebrow{font-size:9px;max-width:150px}
+body.playing.mobile-play .hud strong{font-size:21px}
+body.playing.mobile-play .hud-objective{min-width:75px}
+body.playing.mobile-play .hud-objective span{font-size:10px}
+body.playing.mobile-play .hud small{font-size:8px}
+body.playing.mobile-play .hud progress{margin-top:4px}
+body.playing.mobile-play .hud .icon-button{width:38px;height:38px;padding:8px}
+body.playing.mobile-play .overlay{padding:10px;overflow:auto}
+body.playing.mobile-play .modal-card{max-height:100%;overflow:auto;padding:16px}
+body.playing.mobile-play dialog{top:calc(var(--play-top,0px) + 8px);bottom:auto;margin-top:0;max-height:calc(var(--play-height,100dvh) - 16px)}
+body.playing.mobile-play #end-overlay{top:var(--play-top,0px);bottom:auto;height:var(--play-height,100dvh)}
+body.playing.mobile-play #end-overlay>.end-scoreboard{max-height:100%}
+body.playing.mobile-play .discovery-notice{top:75px;padding:6px 10px;font-size:12px}
+
+/* Board and answers share the available height, including on portrait phones. */
+body.playing.mobile-play .arena:is(.reversi,.chess,.studio){display:flex;flex-direction:column}
+body.playing.mobile-play .arena:is(.reversi,.chess,.studio) .hud{position:relative;flex:none;min-height:62px}
+body.playing.mobile-play :is(.reversi-scene,.chess-scene){flex:1;min-height:0;padding:4px 10px 8px;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:8px;align-items:center}
+body.playing.mobile-play :is(.rv-table,.ch-table){container-type:size;width:100%;height:100%;min-height:0;min-width:0;max-width:none;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+body.playing.mobile-play :is(.rv-players,.ch-players){flex:none;width:min(100cqw,calc(100cqh - 25px));font-size:10px;margin:0 0 5px;gap:5px;min-height:20px}
+body.playing.mobile-play .rv-players b{font-size:14px}
+body.playing.mobile-play :is(.rv-caption,.rv-kicker,.rv-sidebar h2,.rv-instruction,.ch-caption,.ch-kicker,.ch-sidebar h2){display:none}
+body.playing.mobile-play :is(.rv-sidebar,.ch-sidebar){width:100%;max-width:none;min-width:0;margin:0}
+body.playing.mobile-play :is(.rv-status,.ch-status){font-size:11px;line-height:1.2;min-height:0;margin:0 0 5px}
+body.playing.mobile-play :is(.rv-choices,.ch-choices){grid-template-columns:repeat(3,minmax(0,1fr));min-height:0;gap:5px}
+body.playing.mobile-play :is(.rv-choice,.ch-choice){min-height:48px;gap:5px;padding:5px;box-shadow:none}
+body.playing.mobile-play :is(.rv-choice-letter,.ch-choice-letter){width:20px;height:20px;font-size:12px}
+body.playing.mobile-play :is(.rv-question,.ch-question){font-size:17px}
+body.playing.mobile-play :is(.rv-coordinate,.ch-coordinate){font-size:9px;letter-spacing:0}
+body.playing.mobile-play .rv-hint{font-size:10px}
+body.playing.mobile-play :is(.rv-board,.ch-board-wrap){flex:none;width:min(100cqw,calc(100cqh - 25px));aspect-ratio:1;border-width:5px;box-shadow:0 3px 0 #493e33}
+body.playing.mobile-play .rv-marker{font-size:16px}
+body.playing.mobile-play .arena :is(.rv-diagram,.ch-diagram){width:100%;height:50px;object-fit:contain}
+@container(min-width:600px){
+ body.playing.mobile-play :is(.reversi-scene,.chess-scene){grid-template-columns:minmax(0,1fr) minmax(210px,.7fr);grid-template-rows:minmax(0,1fr);gap:15px}
+ body.playing.mobile-play :is(.rv-choices,.ch-choices){grid-template-columns:minmax(0,1fr);gap:8px}
+ body.playing.mobile-play :is(.rv-choice,.ch-choice){padding:8px;min-height:55px}
+ body.playing.mobile-play :is(.rv-question,.ch-question){font-size:21px}
+}
+
+/* The paper retains its aspect ratio; controls and questions stay full size. */
+body.playing.mobile-play .arena.studio .hud{min-height:44px;padding:4px 10px}
+body.playing.mobile-play .studio-scene{flex:1;min-height:0;padding:5px 8px;display:flex;flex-direction:column;gap:5px}
+body.playing.mobile-play .studio-work{container-type:size;display:flex;align-items:center;justify-content:center;flex:1;min-height:0;width:100%;max-width:none}
+body.playing.mobile-play .studio-paper-wrap{width:min(100cqw,150cqh);height:auto;aspect-ratio:3/2;flex:none}
+body.playing.mobile-play .studio-paper{width:100%;height:auto;aspect-ratio:3/2}
+body.playing.mobile-play .studio-gallery{display:none}
+body.playing.mobile-play .studio-toolbar{flex:none;width:100%;max-width:none;margin:0;gap:4px;grid-template-columns:minmax(0,1fr) 100px}
+body.playing.mobile-play .studio-paint-controls{--studio-control-size:28px;gap:5px 12px;grid-template-columns:28px minmax(0,214px);justify-content:start}
+body.playing.mobile-play .studio-question-panel{grid-column:1/-1;min-height:42px;gap:8px}
+body.playing.mobile-play .studio-paint-tool{width:24px}
+body.playing.mobile-play .studio-paint-tool svg{height:36px}
+body.playing.mobile-play .studio-status{font-size:11px;margin-bottom:2px}
+body.playing.mobile-play .studio-question{font-size:21px}
+body.playing.mobile-play .studio-hint{font-size:11px;margin:2px 0 0;min-height:0}
+body.playing.mobile-play .studio-actions{width:100px;gap:4px}
+body.playing.mobile-play .arena.studio .studio-diagram{width:120px;height:64px}
+body.playing.mobile-play #play:fullscreen{height:var(--play-height,100dvh);padding:6px;align-items:stretch;overflow:hidden}
+body.playing.mobile-play #play:fullscreen .arena{flex:1;max-width:none;min-height:0}
+body.playing.mobile-play #play:fullscreen .studio-work,body.playing.mobile-play #play:fullscreen .studio-toolbar{max-width:none}
+body.playing.mobile-play .klossar-scene{top:74px}
