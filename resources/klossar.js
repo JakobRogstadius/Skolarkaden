@@ -102,7 +102,7 @@ function score(pairs,seconds){
 class KlossarGame{
   constructor({queue=new SC.AnswerQueue(),onEvent=()=>{},random=Math.random}={}){Object.assign(this,{queue,onEvent,random,width:1000,height:700});this.menu();}
   emit(type,detail={}){this.onEvent({type,...detail});}
-  menu(){Object.assign(this,{state:'menu',clock:0,elapsed:0,score:0,hits:0,shots:0,mistakes:0,reshuffles:0,selected:[],tiles:[],effects:[],feedback:null,revision:0});}
+  menu(){Object.assign(this,{state:'menu',clock:0,elapsed:0,score:0,hits:0,shots:0,mistakes:0,reshuffles:0,selected:[],tiles:[],effects:[],feedback:null,hint:null,hintPenalty:0,revision:0});}
   start({mode='swedish',pace='gentle',lang='sv-SE',items=null,layout=null}={}){
     this.menu();this.queue.clear();Object.assign(this,{mode,pace,lang,uppercase:false,chineseDisplay:'pinyin'});
     this.total=pairCounts[pace];if(!this.total)throw new Error('Okänd svårighet.');
@@ -125,6 +125,17 @@ class KlossarGame{
   getActiveEntries(){return [];}
   free(tile){return this.tiles.includes(tile)&&isFree(tile,this.tiles);}
   hasMove(){const free=this.getAvailableTargets();return free.some((a,i)=>free.slice(i+1).some(b=>matches(a,b)));}
+  requestHint(){
+    if(this.state!=='playing'||this.feedback||this.hint)return false;
+    const free=this.getAvailableTargets();
+    // Prefer a match for the selected tile, if one is currently available.
+    const preferred=this.selected[0];
+    const a=preferred&&free.some(b=>matches(preferred,b))?preferred:free.find(a=>free.some(b=>matches(a,b)));
+    if(!a)return false;
+    const b=free.find(b=>matches(a,b));
+    this.selected=[];this.hint=[a.id,b.id];this.hintPenalty+=100;this.score-=100;this.revision++;
+    this.emit('klossar-hint');return true;
+  }
   canTranslate(){return SC.isChinese(this.mode)&&this.tiles.every(t=>!t.chinese||!!t.chinese.translation);}
   updateChineseTile(tile){
     if(!tile.chinese)return;
@@ -135,7 +146,7 @@ class KlossarGame{
   }
   setChineseDisplay(display){
     if(!SC.isChinese(this.mode)||this.state!=='playing'||!['pinyin','translation'].includes(display)||display===this.chineseDisplay||display==='translation'&&!this.canTranslate())return false;
-    this.chineseDisplay=display;this.selected=[];this.feedback=null;
+    this.chineseDisplay=display;this.selected=[];this.feedback=null;this.hint=null;
     this.tiles.forEach(tile=>this.updateChineseTile(tile));this.revision++;
     if(!this.hasMove())this.reshuffle();
     this.emit('klossar-display');return true;
@@ -144,6 +155,7 @@ class KlossarGame{
     if(this.state!=='playing'||this.feedback)return false;
     const tile=this.tiles.find(t=>t.id===id);
     if(!tile||!this.free(tile))return false;
+    this.hint=null;
     const selected=this.selected.indexOf(tile);
     if(selected>=0){this.selected.splice(selected,1);this.revision++;return true;}
     this.selected.push(tile);this.revision++;
@@ -157,10 +169,10 @@ class KlossarGame{
         const companion=this.tiles.find(t=>!t.removed&&t.side==='answer'&&t.chinese===problem.chinese);
         companion.chinese=answer.chinese;this.updateChineseTile(companion);
       }
-      a.removed=b.removed=true;this.selected=[];this.hits++;this.score=this.hits*100;
+      a.removed=b.removed=true;this.selected=[];this.hits++;this.score=this.hits*100-this.hintPenalty;
       this.effects.push({id:a.id,x:a.x,y:a.y,z:a.z,age:0},{id:b.id,x:b.x,y:b.y,z:b.z,age:0});
       this.emit('hit',{target:a,points:100});
-      if(this.hits===this.total){this.score=score(this.total,this.elapsed);this.state='celebrating';this.endingLeft=.85;this.emit('celebrate');}
+      if(this.hits===this.total){this.score=Math.max(0,score(this.total,this.elapsed)-this.hintPenalty);this.state='celebrating';this.endingLeft=.85;this.emit('celebrate');}
       else if(!this.hasMove())this.reshuffle();
     }else{this.mistakes++;this.feedback={ids:[a.id,b.id],left:.42};this.emit('miss');}
     this.emit('klossar-select',{tile});
@@ -175,7 +187,7 @@ class KlossarGame{
     // geometry, preserving every remaining problem/answer and the pair count.
     const order=this.order.slice(-pairs.length),mixed=shuffle(pairs,this.random);
     order.forEach(([a,b],i)=>{const pair=this.random()<.5?mixed[i]:[...mixed[i]].reverse();pair.forEach((tile,j)=>{const slot=this.slots[j?b:a];Object.assign(tile,{x:slot.x,y:slot.y,z:slot.z});});});
-    this.selected=[];this.reshuffles++;this.revision++;this.emit('klossar-shuffle');
+    this.selected=[];this.hint=null;this.reshuffles++;this.revision++;this.emit('klossar-shuffle');
   }
   pause(){if(this.state==='playing'){this.state='paused';this.emit('pause');}}
   resume(){if(this.state==='paused'){this.state='playing';this.emit('resume');}}

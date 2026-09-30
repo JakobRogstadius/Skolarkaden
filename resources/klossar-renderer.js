@@ -18,13 +18,16 @@ class KlossarRenderer{
         toggle.append(button);this.displayButtons.set(value,button);
       }
       this.caption.append(toggle);
-    }else this.caption.append(element('span','klossar-layout-name',game.layout.name));
+    }else this.caption.append(element('span','klossar-exercise-name',SC.modes[game.mode].name));
     this.caption.append(element('span','klossar-rule','Fri ovansida + fri vänster- eller högerkant'));
     this.viewport=element('div','klossar-viewport');this.viewport.setAttribute('aria-label','Spelplan');
     this.board=element('div','klossar-board');this.viewport.append(this.board);
     this.instructions=element('p','klossar-instructions','Välj två klossar som hör ihop. Klicka igen för att avmarkera.');
+    this.hintButton=element('button','klossar-hint','Ledtråd (-100 poäng)');this.hintButton.type='button';
+    this.hintButton.addEventListener('click',()=>{this.advance(performance.now());game.requestHint();this.draw();});
+    const footer=element('div','klossar-footer');footer.append(this.instructions,this.hintButton);
     this.status=element('span','sr-only');this.status.setAttribute('role','status');this.status.setAttribute('aria-live','polite');
-    this.host.append(this.caption,this.viewport,this.instructions,this.status);canvas.parentElement.append(this.host);
+    this.host.append(this.caption,this.viewport,footer,this.status);canvas.parentElement.append(this.host);
     this.creatures=new SC.KlossarCreatures(canvas.parentElement,{random:creatureRandom,reduced:this.reduced});
     this.buttons=new Map();this.puffs=new Map();this.lastRevision=-1;this.lastState='';this.destroyed=false;
     for(const tile of game.tiles){
@@ -81,11 +84,11 @@ class KlossarRenderer{
   fitText(tile,button){
     if(tile.item.diagram||tile.removed)return;
     const face=button.firstElementChild;
-    // Try a single line first, allowing long labels to shrink by up to 15%
+    // Try a single line first, allowing long labels to shrink by up to 40%
     // before wrapping. Keep up to ten characters on one line as before.
     face.style.whiteSpace='nowrap';
     let size=Math.min(22,this.geometry.cell*.18);face.style.fontSize=size+'px';
-    const singleLineMin=Math.max(1,size*.85),canWrap=Array.from(tile.item.label).length>10;
+    const singleLineMin=Math.max(1,size*.6),canWrap=Array.from(tile.item.label).length>10;
     const overflows=()=>face.scrollWidth>face.clientWidth||face.scrollHeight>face.clientHeight;
     if(canWrap){
       while(size>singleLineMin&&overflows()){size=Math.max(singleLineMin,size-.5);face.style.fontSize=size+'px';}
@@ -99,6 +102,7 @@ class KlossarRenderer{
     if(event.type==='pause'||event.type==='resume')this.lastTime=performance.now();
     if(event.type==='hit')this.status.textContent=this.game.hits+' av '+this.game.total+' par klara.';
     if(event.type==='miss')this.status.textContent='De klossarna hör inte ihop. Försök igen.';
+    if(event.type==='klossar-hint')this.status.textContent='Ledtråd: två matchande klossar markeras. 100 poäng har dragits av.';
     if(event.type==='klossar-shuffle'){this.layout();this.status.textContent='Inga fria par. De återstående klossarna har blandats.';}
     this.draw();
   }
@@ -117,6 +121,7 @@ class KlossarRenderer{
         button.classList.toggle('is-blocked',!free.has(tile));
         button.classList.toggle('is-selected',g.selected.includes(tile));
         button.classList.toggle('is-wrong',!!g.feedback?.ids.includes(tile.id));
+        button.classList.toggle('is-hint',!!g.hint?.includes(tile.id));
         button.setAttribute('aria-pressed',String(g.selected.includes(tile)));
       }
       for(const [value,button] of this.displayButtons){
@@ -124,6 +129,7 @@ class KlossarRenderer{
         button.disabled=g.state!=='playing'||value==='translation'&&!g.canTranslate();
         button.title=value==='translation'&&!g.canTranslate()?'Översättning saknas i övningen.':'';
       }
+      this.hintButton.disabled=g.state!=='playing'||!!g.feedback||!!g.hint;
       this.lastRevision=g.revision;this.lastState=g.state;
     }
     this.host.classList.toggle('is-paused',g.state==='paused');

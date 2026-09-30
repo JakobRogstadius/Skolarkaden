@@ -49,7 +49,7 @@ for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'
     assert.deepEqual(g.tiles.map(t=>renderer.buttons.get(t.id).firstElementChild.dataset.font),fonts,'switching keeps each tile font');
     pinyin.dispatchEvent(new Event('click'));assert.equal(g.chineseDisplay,'pinyin');
     for(const tile of g.tiles)if(tile.side==='problem')assert.equal(renderer.buttons.get(tile.id).attributes.title,tile.chinese.translation);
-  }else{assert.equal(renderer.displayButtons.size,0);assert.equal(renderer.caption.firstElementChild.textContent,g.layout.name);}
+  }else{assert.equal(renderer.displayButtons.size,0);assert.equal(renderer.caption.firstElementChild.textContent,SC.modes[g.mode].name);}
   const [a,b]=g.order[0].map(id=>g.tiles[id]),click=t=>renderer.buttons.get(t.id).dispatchEvent(new Event('click'));
   click(a);assert(renderer.buttons.get(a.id).classList.contains('is-selected'));click(a);assert(!renderer.buttons.get(a.id).classList.contains('is-selected'));
   click(a);now+=800;click(b);assert.equal(g.hits,1);assert.equal(g.elapsed,.8);assert(renderer.buttons.get(a.id).hidden&&renderer.buttons.get(b.id).hidden);assert.equal(renderer.puffs.size,2);
@@ -83,3 +83,20 @@ assert.equal(cancelled,60);console.log('PASS DOM rendering for all five layouts 
   renderer.destroy();assert.equal(arena.children.length,1);assert.equal(observed,0);
 }
 console.log('PASS creature reveal once per removed tile, independent randomness, tile-center origin, pause, resize, victory and cleanup');
+
+{
+  viewport={width:1160,height:620};let renderer;
+  const g=new SC.KlossarGame({random:()=>.31,onEvent:e=>renderer?.scoreEvent(e)});g.start({mode:'letters'});
+  const arena=new Element(),canvas=new Element('canvas');arena.append(canvas);renderer=new SC.KlossarRenderer(canvas,g,{creatureRandom:()=>1});
+  assert.equal(renderer.hintButton.textContent,'Ledtråd (-100 poäng)');assert(!renderer.hintButton.disabled);
+  renderer.hintButton.dispatchEvent(new Event('click'));
+  const hinted=g.tiles.filter(t=>renderer.buttons.get(t.id).classList.contains('is-hint'));
+  assert.equal(hinted.length,2);assert(hinted.every(t=>g.free(t)));assert(SC.klossarMatches(...hinted));
+  assert(renderer.hintButton.disabled);assert.equal(g.score,-100);assert(renderer.status.textContent.includes('100 poäng'));
+  now+=6000;renderer.advance(now);renderer.draw();assert.equal(g.score,-100);
+  g.pause();renderer.draw();assert(renderer.host.classList.contains('is-paused'));assert(renderer.hintButton.disabled);g.resume();
+  renderer.buttons.get(hinted[0].id).dispatchEvent(new Event('click'));
+  assert(g.tiles.every(t=>!renderer.buttons.get(t.id).classList.contains('is-hint')));assert(!renderer.hintButton.disabled);
+  g.state='won';renderer.draw();assert(renderer.hintButton.disabled);renderer.destroy();
+}
+console.log('PASS hint button, pair animation classes, single charge, cancellation and disabled states');

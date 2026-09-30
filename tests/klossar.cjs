@@ -6,6 +6,31 @@ const SC=context.Starlight,rng=seed=>()=>((seed=(Math.imul(seed,1664525)+1013904
 function setup(options={},seed=9){const events=[],g=new SC.KlossarGame({random:rng(seed),onEvent:e=>events.push(e)});g.start(options);return {g,events};}
 function playPair(g){const free=g.getAvailableTargets(),a=free.find(a=>free.some(b=>SC.klossarMatches(a,b)));assert(a,'remaining board has a legal match');const b=free.find(b=>SC.klossarMatches(a,b));g.select(a.id);g.select(b.id);}
 
+// Hints reveal legal moves, cost once per activation, and survive score updates.
+{
+  const {g,events}=setup({mode:'letters'});
+  assert(g.requestHint());assert.equal(g.score,-100);assert.equal(g.hintPenalty,100);
+  const pair=g.hint.map(id=>g.tiles.find(t=>t.id===id));
+  assert(pair.every(t=>g.free(t)));assert(SC.klossarMatches(...pair));
+  assert(!g.requestHint(),'an active hint cannot be charged twice');
+  g.update(6);assert.equal(g.score,-100);assert.equal(g.hintPenalty,100);
+  const blocked=g.tiles.find(t=>!g.free(t));assert(!g.select(blocked.id));assert(g.hint);
+  g.pause();assert(!g.requestHint());g.update(20);assert(g.hint);g.resume();
+  const other=g.getAvailableTargets().find(t=>!pair.includes(t));
+  assert(g.select(other.id));assert.equal(g.hint,null,'selecting any free tile cancels the hint');g.select(other.id);
+  g.select(pair[0].id);assert(g.requestHint());assert(g.hint.includes(pair[0].id),'prefer the selected tile when it has a match');assert.equal(g.selected.length,0);
+  const next=[...g.hint];g.select(next[0]);g.select(next[1]);assert.equal(g.score,-100);
+  while(g.state==='playing')playPair(g);
+  assert.equal(g.score,SC.klossarScore(g.total,g.elapsed)-200,'the completion bonus retains both hint charges');
+  assert(!g.hint);assert(!g.requestHint());g.update(1);
+  assert.equal(events.find(e=>e.type==='end').score,g.score);
+  g.start({mode:'chineseTrad4'});assert.equal(g.hintPenalty,0);assert.equal(g.hint,null);
+  assert(g.requestHint());assert(g.setChineseDisplay('translation'));assert.equal(g.hint,null);
+  assert(g.requestHint());assert(SC.klossarMatches(...g.hint.map(id=>g.tiles.find(t=>t.id===id))));
+  g.reshuffle();assert.equal(g.hint,null);
+}
+console.log('PASS hint legality, cancellation, repeated requests, pause, persistent score deductions, completion and Chinese display changes');
+
 // Klossar pairs the spoken names with symbols without modifying the shared
 // exercise items or keyboard answers used by the other games.
 {

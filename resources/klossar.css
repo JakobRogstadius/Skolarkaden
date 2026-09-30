@@ -13,7 +13,7 @@ body.playing .arena.klossar{height:clamp(580px,calc(100dvh - 86px),1040px);backg
 .klossar-creatures canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .klossar-scene{position:absolute;inset:108px 10px 8px;display:flex;flex-direction:column;min-height:0}
 .klossar-caption{display:flex;flex-shrink:0;align-items:center;justify-content:space-between;gap:12px;padding:0 12px 10px;color:#c1d8c9;font-size:12px}
-.klossar-layout-name{font-family:Georgia,serif;color:#eee1bc;font-size:20px}
+.klossar-exercise-name{min-width:0;overflow-wrap:anywhere;font-family:Georgia,serif;color:#eee1bc;font-size:20px}
 .klossar-chinese-toggle{display:inline-flex;flex-shrink:0;gap:2px;padding:3px;border:1px solid #7eab9466;border-radius:9px;background:#153e35}
 .klossar-chinese-toggle button{border:0;border-radius:6px;padding:7px 9px;background:transparent;color:#c1d8c9;font-size:12px;line-height:1.2;white-space:nowrap}
 .klossar-chinese-toggle button:hover:enabled{background:#365d4d}
@@ -37,14 +37,20 @@ body.playing .arena.klossar{height:clamp(580px,calc(100dvh - 86px),1040px);backg
 .klossar-face{height:100%;width:100%;min-width:0;padding:1px;display:flex;align-items:center;justify-content:center;font-family:KlossarSans,'Noto Sans CJK TC','Microsoft JhengHei','Microsoft YaHei',Arial,sans-serif;font-weight:700;line-height:1.1;text-align:center;text-shadow:0 1px 0 #fff9,0 -.5px .5px #0003;overflow-wrap:anywhere;white-space:normal;pointer-events:none}
 .klossar-face[data-font=serif]{font-family:KlossarSerif,'Noto Serif CJK TC','Songti TC',PMingLiU,SimSun,Georgia,serif}
 .klossar-face canvas{display:block;width:100%;height:auto;max-height:100%;object-fit:contain;border-radius:3px}
-.klossar-instructions{flex-shrink:0;text-align:center;color:#c5d9ca;font-size:12px;line-height:1.35;margin:9px 0 0}
+.klossar-footer{display:flex;flex:none;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 16px;padding-top:9px}
+.klossar-hint{flex:none;border:1px solid #7eab9499;border-radius:8px;padding:7px 12px;background:#153e35;color:#eee1bc;font-size:12px;white-space:nowrap}
+.klossar-hint:hover:enabled{background:#365d4d}
+.klossar-hint:disabled{opacity:.55;cursor:default}
+.klossar-instructions{flex:0 1 auto;min-width:0;max-width:100%;text-align:center;color:#c5d9ca;font-size:12px;line-height:1.35;margin:0}
+.klossar-tile.is-hint{animation:klossar-hint-shake 2s ease-in-out infinite}
 .klossar-tile.is-wrong{--tile-color:#f4c5ae;animation:klossar-wiggle .42s ease-in-out}
 .klossar-tile.is-wrong::after{border:2px solid #da997e}
 .klossar-puff{position:absolute;pointer-events:none;z-index:1000}
 .klossar-puff i{position:absolute;left:35%;top:34%;width:36%;aspect-ratio:1;border-radius:47% 53% 60% 40%;background:radial-gradient(ellipse at 40% 35%,#fffef1ed,#d8e1cfcc 45%,#c6d5c366 68%,transparent 75%);animation:klossar-smoke .85s ease-out both;filter:blur(1px)}
 .is-paused .klossar-puff i,.is-paused .klossar-tile{animation-play-state:paused}
+@keyframes klossar-hint-shake{0%,21%,100%{transform:translateX(0) rotate(0)}4%,12%{transform:translateX(-3px) rotate(-2deg)}8%,16%{transform:translateX(3px) rotate(2deg)}}
 @keyframes klossar-wiggle{0%,100%{transform:translateX(0) rotate(0)}20%,60%{transform:translateX(-3px) rotate(-2deg)}40%,80%{transform:translateX(3px) rotate(2deg)}}
 @keyframes klossar-smoke{0%{opacity:0;transform:translate(0,0) scale(.45) rotate(0deg)}14%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(2.1) rotate(var(--turn))}}
 [data-game=klossar] .end-scoreboard{--board-accent:#e8d5a3;--board-bg:#183f39;--board-panel:#315c4b}
-@media(max-width:599px){.klossar-scene{inset:98px 6px 9px}.klossar-caption{padding:0 6px 8px;gap:7px}.klossar-rule{font-size:10px;text-align:right;max-width:170px}.klossar-layout-name{font-size:18px}.klossar-instructions{font-size:11px}.arena.klossar .hud-objective{min-width:100px}}
-@media(prefers-reduced-motion:reduce){.klossar-tile.is-wrong{animation:none}.klossar-puff i{animation:klossar-fade .5s ease-out both;transform:translate(var(--dx),var(--dy)) scale(1.4)}@keyframes klossar-fade{from{opacity:.55}to{opacity:0}}}
+@media(max-width:599px){.klossar-scene{inset:98px 6px 9px}.klossar-caption{padding:0 6px 8px;gap:7px}.klossar-rule{font-size:10px;text-align:right;max-width:170px}.klossar-exercise-name{font-size:18px}.klossar-instructions{font-size:11px}.arena.klossar .hud-objective{min-width:100px}}
+@media(prefers-reduced-motion:reduce){.klossar-tile.is-hint{animation:none}.klossar-tile.is-hint::after{border:3px solid #ae7927}.klossar-tile.is-wrong{animation:none}.klossar-puff i{animation:klossar-fade .5s ease-out both;transform:translate(var(--dx),var(--dy)) scale(1.4)}@keyframes klossar-fade{from{opacity:.55}to{opacity:0}}}
