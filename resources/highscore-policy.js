@@ -7,7 +7,10 @@
 // Chess keeps v2 for the ranked-choice scoring change at the owner's request.
 const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1',reversi:'v1',chess:'v2',klossar:'v1'});
 const mathExercises=Object.freeze(['math-addition','math-diagrams','math-addition-subtraction','math-simple-equations','math-large-numbers','math-multiplication','math-multiplication-division','math-equations']);
-const languageExercises=Object.freeze(['swedish-opposites','swedish-synonyms','english-opposites','english-synonyms','translation-sv-en-1','translation-sv-en-2','translation-sv-en-3']);
+const languageExercises=Object.freeze([
+  ...['swedish-opposites','swedish-synonyms','english-opposites','english-synonyms'].flatMap(id=>[id,...[2,3,4].map(level=>id+'-'+level)]),
+  ...Array.from({length:8},(_,i)=>'translation-sv-en-'+(i+1))
+]);
 // Longer distinctive strings also match inside a name (including separated or
 // simple leetspeak spellings). Short/ambiguous words only match complete tokens.
 const substrings=`

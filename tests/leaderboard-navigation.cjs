@@ -28,8 +28,11 @@ const context=vm.createContext({console,Event,EventTarget,crypto:webcrypto,Abort
     if(parsed.pathname==='/stats'){
       if(unavailableStats)return Response.json({error:'not_found'},{status:404});
       if(failStats)throw Error('network');
-      const group=parsed.searchParams.get('group'),ids=group==='games'?Object.keys(games):Object.keys(context.Starlight.modes);
-      return Response.json({group,...(!oldStats?{ranking_method:'top-five-game-percentiles-v1'}:{}),entries:ids.map((id,i)=>({id,plays:i===0?42:0,player_name:i===0?'Åsa':null,score:id==='chess'?1234:i===0?500:null,...(!oldStats?{rating:i===0?68.125:null,sample_count:5}:{})}))});
+      const group=parsed.searchParams.get('group'),SC=context.Starlight,ids=group==='games'?Object.keys(games):[...Object.keys(SC.modes),'homework','retired-exercise'];
+      return Response.json({group,...(!oldStats?{ranking_method:'top-five-game-percentiles-v1'}:{}),entries:ids.map((id,i)=>{
+        const first=group==='games'?i===0:SC.groupExercises(SC.exerciseGroup(id))[0]?.[0]===id;
+        return {id,plays:first?42:0,player_name:first?'Åsa':null,score:id==='chess'?1234:first?500:null,...(!oldStats?{rating:first?68.125:null,sample_count:5}:{})};
+      })});
     }
     return Response.json({leaderboard:parsed.searchParams.get('leaderboard').split(':').slice(0,2).join(':'),scores:[],rank:1});
   }});
@@ -41,8 +44,9 @@ const click=async id=>{get(id).dispatchEvent(new Event('click'));await settle();
 const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:true});Object.assign(event,{key:value,...extra});get('leaderboard').dispatchEvent(event);await settle();return event;};
 (async()=>{
   await click('leaderboard-open');assert.equal(ui.page,'dinosaur');assert.equal(get('leaderboard-title').textContent,'Topplista: '+games.dinosaur);
-  assert.equal(get('scores-page').textContent,'6 / 14');
-  const pages=[...Object.keys(games),'games','exercises'];
+  assert.equal(get('scores-page').textContent,'6 / 19');
+  const groups=['math','letters','swedish','english','translation','chinese'];
+  const pages=[...Object.keys(games),'games',...groups.map(id=>'exercises:'+id)];
   for(let i=1;i<=pages.length;i++){
     await click('scores-next');assert.equal(ui.page,pages[(5+i)%pages.length]);
     if(Object.hasOwn(games,ui.page)){
@@ -50,16 +54,21 @@ const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:t
       assert.equal(get('leaderboard-title').textContent,'Topplista: '+games[ui.page]);
       assert.equal(get('scores-list').children.length,10);
     }else{
-      assert.equal(requests.at(-1).pathname,'/stats');assert.equal(requests.at(-1).searchParams.get('group'),ui.page);
+      const exerciseGroup=ui.page.split(':')[1],SC=context.Starlight;
+      assert.equal(requests.at(-1).pathname,'/stats');assert.equal(requests.at(-1).searchParams.get('group'),exerciseGroup?'exercises':'games');
       assert.equal(get('scores-heading').children[2].textContent,'OMGÅNGAR');
       assert.equal(get('scores-heading').children[3].textContent,'LEDARE');
-      const list=get('scores-list'),count=ui.page==='games'?12:29;
+      const list=get('scores-list'),count=ui.page==='games'?12:SC.groupExercises(exerciseGroup).length;
       assert.equal(list.children.length,count,'popularity is not limited to ten rows');
       assert.equal(list.children[0].children[2].textContent,'42');assert.equal(list.children[0].children[3].textContent,'ÅSA');
-      assert.equal(list.children[1].children[2].textContent,'0');assert.equal(list.children[1].children[3].textContent,'—');
+      if(count>1){assert.equal(list.children[1].children[2].textContent,'0');assert.equal(list.children[1].children[3].textContent,'—');}
       if(ui.page==='games'){
         assert.equal(get('scores-heading').children[4].textContent,'REKORD');assert.equal(list.children[0].children[4].textContent,'500');assert.equal(list.children.find(row=>row.children[1].textContent==='Schack').children[4].textContent,'1234');
       }else{
+        const name=SC.exerciseGroups.find(g=>g.id===exerciseGroup).name;
+        assert.equal(get('leaderboard-title').textContent,'Mest spelade övningar – '+name);
+        assert.deepEqual(ui.data.entries.map(row=>row.id),Array.from(SC.groupExercises(exerciseGroup),([id])=>id),'only this group is shown; hidden and unknown IDs stay out');
+        assert.deepEqual(list.children.map(row=>row.children[0].textContent),Array.from({length:count},(_,i)=>String(i+1)),'ranks restart in each group');
         assert.deepEqual(get('scores-heading').children.map(cell=>cell.textContent),['NR','ÖVNING','OMGÅNGAR','LEDARE']);
         assert(list.children.every(row=>row.children.length===4));assert.equal(list.children[0].children[3].title,undefined);
       }
@@ -67,9 +76,10 @@ const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:t
   }
   assert.equal(selection.kind,'dinosaur','browsing must not change the menu game');
   await ui.open({...selection,kind:'city'});
-  assert((await key('ArrowLeft')).defaultPrevented);assert.equal(ui.page,'exercises');
-  await key('ArrowLeft');assert.equal(ui.page,'games');await click('scores-previous');assert.equal(ui.page,'klossar');
-  await key('ArrowRight');assert.equal(ui.page,'games');await key('ArrowRight');assert.equal(ui.page,'exercises');
+  assert((await key('ArrowLeft')).defaultPrevented);assert.equal(ui.page,'exercises:chinese');
+  for(let i=0;i<groups.length;i++)await key('ArrowLeft');assert.equal(ui.page,'games');await click('scores-previous');assert.equal(ui.page,'klossar');
+  await key('ArrowRight');assert.equal(ui.page,'games');
+  for(const group of groups){await key('ArrowRight');assert.equal(ui.page,'exercises:'+group);}
   await key('ArrowRight');assert.equal(ui.page,'city');
   assert.equal((await key('ArrowLeft',{ctrlKey:true})).defaultPrevented,false);assert.equal(ui.page,'city');
   get('leaderboard').close();await click('scores-next');assert.equal(ui.page,'city');
@@ -81,9 +91,9 @@ const key=async (value,extra={})=>{const event=new Event('keydown',{cancelable:t
   oldStats=true;await ui.load(ui.view);assert.match(get('scores-status').textContent,/uppdatering/);assert.equal(get('scores-list').children[0].children[3].textContent,'—');assert.equal(get('scores-list').children[0].children.length,4);assert.equal(get('scores-list').children[0].children[2].textContent,'42');oldStats=false;
   // Resolve older requests after newer pages: neither data nor errors may leak.
   delayed=true;const older=ui.open({...selection,kind:'city'}),newer=ui.navigate(-1);
-  pending[1].resolve(Response.json({group:'exercises',ranking_method:'top-five-game-percentiles-v1',entries:[{id:'swedish',plays:5,player_name:'NY',score:null,rating:58,sample_count:5}]}));await newer;
+  pending[1].resolve(Response.json({group:'exercises',ranking_method:'top-five-game-percentiles-v1',entries:[{id:'chinese',plays:5,player_name:'NY',score:null,rating:58,sample_count:5},{id:'swedish',plays:9,player_name:'OTHER',rating:92}]}));await newer;
   pending[0].resolve(Response.json({leaderboard:'v2:city',scores:[{player_name:'OLD',score:999}]}));await older;
-  assert.equal(ui.page,'exercises');assert.equal(get('scores-list').children[0].children[3].textContent,'NY');
+  assert.equal(ui.page,'exercises:chinese');assert.equal(get('scores-list').children.length,1);assert.equal(get('scores-list').children[0].children[3].textContent,'NY');
   const olderStats=ui.navigate(-1),newerGame=ui.navigate(2);
   pending[3].resolve(Response.json({leaderboard:'v2:city',scores:[]}));await newerGame;
   pending[2].resolve(Response.json({error:'not_found'},{status:404}));await olderStats;

@@ -24,7 +24,22 @@
   SC.legacyMathIds=Object.freeze(Object.fromEntries(mathLessons.filter(m=>m[4]).map(m=>[m[4],'math-'+m[0]])));
   SC.canonicalLesson=mode=>Object.hasOwn(SC.legacyMathIds,mode)?SC.legacyMathIds[mode]:mode;
   SC.legacyLesson=mode=>Object.keys(SC.legacyMathIds).find(key=>SC.legacyMathIds[key]===mode)||mode;
-  mathLessons.forEach(([id,mathLevel,label,description],i)=>{SC.modes['math-'+id]={...lesson(`Matematik ${i+1} (${label})`,'sv-SE',[],description,'±'),type:'math',mathLevel};});
+  mathLessons.forEach(([id,mathLevel,label,description],i)=>{SC.modes['math-'+id]={...lesson(`Matematik ${i+1} (${label})`,'sv-SE',[],description,'±'),menuLabel:`${i+1} · ${['Addition','Addition och subtraktion','Enkla diagram','Enkla ekvationer','Större tal','Multiplikation','Multiplikation och division','Ekvationer'][i]}`,type:'math',mathLevel};});
+  // The menu and exercise popularity boards share this order and membership.
+  SC.exerciseGroups=Object.freeze([
+    {id:'math',name:'Matematik'},{id:'letters',name:'Bokstäver'},
+    {id:'swedish',name:'Svenska'},{id:'english',name:'Engelska'},
+    {id:'translation',name:'Svenska–engelska'},{id:'chinese',name:'Kinesiska'}
+  ].map(Object.freeze));
+  SC.exerciseGroup=id=>{
+    const mode=SC.modes[id];if(!mode||mode.hidden)return null;
+    if(mode.type==='math')return 'math';
+    if(id==='letters')return 'letters';
+    if(mode.translation)return 'translation';
+    if(mode.type==='chinese'||id==='bopomofo')return 'chinese';
+    return mode.lang==='sv-SE'?'swedish':mode.lang==='en-US'?'english':null;
+  };
+  SC.groupExercises=group=>Object.entries(SC.modes).filter(([id])=>SC.exerciseGroup(id)===group);
   SC.isMath=mode=>SC.modes[mode]?.type==='math';
   SC.isChinese=mode=>SC.modes[mode]?.type==='chinese';
   SC.isWordPair=mode=>SC.modes[mode]?.type==='word-pairs';

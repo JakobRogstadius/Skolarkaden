@@ -24,7 +24,7 @@ const context=vm.createContext({console,Event,Math,setTimeout,clearTimeout,Abort
   addEventListener:page.addEventListener.bind(page),
   fetch:async(_url,opts)=>opts.method==='POST'?Response.json({ok:true}):holdRead?await holdRead:Response.json(board)
 });
-for(const f of ['resources/highscore-fireworks.js','resources/highscore-policy.js','resources/highscores.js'])vm.runInContext(read(f),context);
+for(const f of ['resources/data.js','resources/language-exercises-data.js','resources/language-exercises.js','resources/highscore-fireworks.js','resources/highscore-policy.js','resources/highscores.js'])vm.runInContext(read(f),context);
 const Celebration=context.Starlight.HighscoreFireworks;
 const selection={kind:'city',mode:'swedish',pace:'gentle',label:'Meteorregn',input:'typing'};
 (async()=>{

@@ -24,8 +24,16 @@ function scoreSelection(selected=options()){
 let best=null,bestLoading=false,noticeUntil=0;
 try{localStorage.removeItem('starlight-friends-v1');}catch(_){}
 function notice(text){$('discovery-notice').textContent=text;$('discovery-notice').hidden=false;noticeUntil=performance.now()+6000;}
-for(const [value,m] of Object.entries(SC.modes))if(!m.hidden)$('lesson').add(new Option(m.name,value));$('lesson').value='swedish';
-if(homeworkRequested){$('lesson').replaceChildren(new Option('Läxa','homework'));$('lesson').value='homework';$('homework-info').hidden=false;$('homework-info').textContent='Läser in läxan…';}
+const rememberedLessons=new Map();
+function populateLessons(group,preferred){
+  const entries=SC.groupExercises(group);
+  $('lesson').replaceChildren(...entries.map(([id,m])=>new Option(m.menuLabel||m.name,id)));
+  $('lesson').value=entries.some(([id])=>id===preferred)?preferred:entries[0][0];
+  rememberedLessons.set(group,$('lesson').value);
+}
+for(const group of SC.exerciseGroups)$('exercise-group').add(new Option(group.name,group.id));
+$('exercise-group').value='math';populateLessons('math','math-addition');
+if(homeworkRequested){$('exercise-group').replaceChildren(new Option('Läxa','homework'));$('exercise-group').disabled=true;$('lesson').replaceChildren(new Option('Läxa','homework'));$('lesson').value='homework';$('homework-info').hidden=false;$('homework-info').textContent='Läser in läxan…';}
 for(const [key,glyph] of Object.entries(SC.bopomofoKeys)){const el=document.createElement('span');el.textContent=glyph+' ';const small=document.createElement('small');small.textContent=key.toUpperCase();el.append(small);$('keyboard-grid').append(el);}
 function options(){return homeworkRequested?{mode:'homework',pace:$('pace').value,lang:SC.modes.homework.lang,uppercase:false,homeworkId:SC.modes.homework.homeworkId}:{mode:$('lesson').value,pace:$('pace').value,lang:kind==='klossar'||$('input-kind').value==='typing'&&!SC.isTranslation($('lesson').value)?SC.modes[$('lesson').value].lang:$('language').value,uppercase:Math.random()<.5};}
 function speechOptions(){if(kind==='klossar')return {enabled:false,kind:'typing',language:options().lang,lesson:$('lesson').value};return homeworkRequested?{enabled:SC.modes.homework.input==='voice',kind:'browser',language:SC.modes.homework.lang,lesson:'homework'}:{enabled:$('input-kind').value!=='typing',kind:'browser',language:$('language').value,lesson:$('lesson').value};}
@@ -43,8 +51,15 @@ function menuUpdate(){
   $('mode-description').textContent=clickOnly?(SC.isChinese(mode)?'Para ihop kinesiska tecken med pinyin eller översättningar. Byt med knapparna ovanför klossarna.':SC.isMath(mode)?'Para ihop uppgifterna med rätt svar.':translation?'Para ihop svenska och engelska ord. Du kan börja med vilket ord som helst.':pair?'Para ihop orden med rätt svar.':mode==='bopomofo'?'Para ihop bopomofo med uttalet i pinyin.':'Para ihop stora och små bokstäver eller ord.')+' Klicka eller tryck på klossarna.':SC.modes[mode].description;$('keyboard').hidden=clickOnly||mode!=='bopomofo';
   [...$('pace').options].forEach((o,i)=>o.textContent=['Lätt','Medel','Svår'][i]+(clickOnly?' · '+[20,30,40][i]+' par':''));
 }
-$('lesson').addEventListener('change',()=>{$('language').value=SC.modes[$('lesson').value].lang;menuUpdate();});$('input-kind').addEventListener('change',menuUpdate);
-for(const radio of document.querySelectorAll('[name=game]'))radio.addEventListener('change',()=>{kind=radio.value;menuUpdate();});
+$('lesson').addEventListener('change',()=>{rememberedLessons.set($('exercise-group').value,$('lesson').value);$('language').value=SC.modes[$('lesson').value].lang;menuUpdate();});$('input-kind').addEventListener('change',menuUpdate);
+$('exercise-group').addEventListener('change',()=>{
+  if(homeworkRequested)return;
+  const group=$('exercise-group').value;populateLessons(group,rememberedLessons.get(group));
+  $('language').value=SC.modes[$('lesson').value].lang;menuUpdate();
+});
+const gameRadios=[...document.querySelectorAll('[name=game]')];
+const initialGame=gameRadios[Math.floor(Math.random()*gameRadios.length)];kind=initialGame.value;
+for(const radio of gameRadios){radio.checked=radio===initialGame;radio.addEventListener('change',()=>{kind=radio.value;menuUpdate();});}
 function record(detail){
   // A bounded diagnostic history, independent from the gameplay FIFO.
   log.push(detail);if(log.length>180)log.shift();

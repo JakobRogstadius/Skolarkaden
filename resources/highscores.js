@@ -61,7 +61,7 @@ async function readBoard(selection,result){
 class Highscores{
   constructor({getSelection,games={}}){
     this.getSelection=getSelection;this.run=null;this.result=null;this.view=0;this.readGeneration=0;
-    this.games=games;this.pages=[...Object.keys(games),'games','exercises'];
+    this.games=games;this.pages=[...Object.keys(games),'games',...SC.exerciseGroups.map(group=>'exercises:'+group.id)];
     this.lastName='';$('score-name').value=this.readName();
     let composing=false;
     const edited=()=>{cleanNameInput();this.rememberName();};
@@ -109,10 +109,11 @@ class Highscores{
   begin(selection){this.dismiss();$('score-name').value=this.readName();$('score-name').readOnly=false;this.result=null;this.run={selection:JSON.parse(JSON.stringify(selection)),id:root.crypto?.randomUUID?.()||null};}
   finish(score){this.result=this.run?{...this.run,score,saved:false,payload:null,pending:false}:null;}
   showEnd(){this.open(this.result?.selection||this.getSelection(),this.result);}
-  isPopularity(){return !this.endView&&['games','exercises'].includes(this.page);}
+  popularityGroup(){return SC.exerciseGroups.find(group=>'exercises:'+group.id===this.page);}
+  isPopularity(){return !this.endView&&(this.page==='games'||Boolean(this.popularityGroup()));}
   configureMenu(){
     const popularity=this.isPopularity(),games=this.page==='games';
-    const title=popularity?'Mest spelade '+(games?'spel':'övningar'):'Topplista: '+(this.games[this.page]||this.selection.label.split(' · ')[0]);
+    const title=popularity?'Mest spelade '+(games?'spel':'övningar – '+this.popularityGroup().name):'Topplista: '+(this.games[this.page]||this.selection.label.split(' · ')[0]);
     $('leaderboard-title').textContent=title;
     $('scores-page').textContent=(this.pages.indexOf(this.page)+1)+' / '+this.pages.length;
     $('scores-page').setAttribute('aria-label',title+', '+$('scores-page').textContent);
@@ -172,7 +173,7 @@ class Highscores{
     for(const [index,row] of (this.data?.entries||[]).entries()){
       const item=document.createElement('li');item.className='board-row';
       const label=this.page==='games'?this.games[row.id]:SC.modes[row.id]?.name;
-      const relative=this.page==='exercises',hasRating=relative&&Number.isFinite(row.rating);
+      const relative=this.page!=='games',hasRating=relative&&Number.isFinite(row.rating);
       const name=relative&&!hasRating?'—':row.player_name?displayName(row.player_name):'—';
       const cells=[['board-rank',String(index+1)],['board-exercise',label||row.id],['board-plays',String(row.plays)],['board-name',name]];
       if(!relative)cells.push(['board-points',row.score===null?'—':String(row.score)]);
@@ -181,13 +182,14 @@ class Highscores{
     }
   }
   async load(token,refresh=false){
-    const result=this.shownResult,popularity=this.isPopularity(),page=this.page,generation=++this.readGeneration,status=$(this.endView?'end-scores-status':'scores-status');
+    const result=this.shownResult,popularity=this.isPopularity(),group=this.popularityGroup(),apiGroup=group?'exercises':'games',generation=++this.readGeneration,status=$(this.endView?'end-scores-status':'scores-status');
     const current=()=>token===this.view&&generation===this.readGeneration;
     status.textContent='Hämtar topplistan…';$('scores-refresh').disabled=true;
     try{
-      let data=await (popularity?request('/stats?group='+page,refresh?{cache:'reload'}:{}):readBoard(this.selection,result));if(!current())return;
-      if(popularity?data.group!==page||!Array.isArray(data.entries):!Array.isArray(data.scores))throw new Error('Invalid response');
-      const oldRatings=popularity&&page==='exercises'&&data.ranking_method!=='top-five-game-percentiles-v1';
+      let data=await (popularity?request('/stats?group='+apiGroup,refresh?{cache:'reload'}:{}):readBoard(this.selection,result));if(!current())return;
+      if(popularity?data.group!==apiGroup||!Array.isArray(data.entries):!Array.isArray(data.scores))throw new Error('Invalid response');
+      if(popularity&&group)data={...data,entries:data.entries.filter(row=>SC.exerciseGroup(row.id)===group.id)};
+      const oldRatings=popularity&&group&&data.ranking_method!=='top-five-game-percentiles-v1';
       if(oldRatings)data={...data,entries:data.entries.map(row=>({...row,rating:null,player_name:null,score:null}))};
       this.data=data;this.render();this.celebrate();
       status.textContent=oldRatings?'Percentilrankningen kräver en uppdatering av topplistans server.':popularity?(data.entries.some(row=>row.plays>0)?'':'Inga sparade omgångar ännu.'):result&&data.rank==null?'Din placering kan inte hämtas just nu.':data.scores.length?'':'Bli först på topplistan!';

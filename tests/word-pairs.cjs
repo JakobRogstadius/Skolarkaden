@@ -6,9 +6,20 @@ for(const name of ['pinyin','data','language-exercises-data','language-exercises
 const SC=ctx.Starlight,modes=Object.keys(SC.wordPairs),rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296;};
 const item=(mode,label)=>SC.modes[mode].items.find(i=>i.label===label);
 let checks=0;const test=(name,fn)=>{fn();checks++;console.log('PASS '+name);};
-test('All 350 pairs support both directions, every accepted alternative and harmless formatting',()=>{
+test('Graded dictionaries contain all 17 new levels with useful independent entries',()=>{
+  assert.equal(modes.length,24);assert.equal(modes.reduce((sum,id)=>sum+SC.wordPairs[id].length,0),1470);
+  for(const family of ['swedish-synonyms','swedish-opposites','english-synonyms','english-opposites'])for(const level of [2,3,4]){
+    const id=family+'-'+level;assert.equal(SC.wordPairs[id].length,60);
+    for(const [a,b,left,right] of SC.wordPairs[id]){
+      assert(!/[\u0400-\u04ff]/u.test([a,b,...left,...right].join(' ')),'no lookalike Cyrillic letters');
+      if(family.endsWith('synonyms'))assert(!a.includes(b)&&!b.includes(a),id+' contains a trivial compound pair');
+    }
+  }
+  for(const level of [4,5,6,7,8])assert.equal(SC.wordPairs['translation-sv-en-'+level].length,80);
+});
+test('All 1,470 pairs support both directions, every accepted alternative and harmless formatting',()=>{
   for(const mode of modes){
-    assert.equal(SC.wordPairs[mode].length,50,mode);assert(SC.modes[mode].items.length>=95&&SC.modes[mode].items.length<=100,mode);
+    const count=SC.wordPairs[mode].length;assert(count>=50,mode);assert(SC.modes[mode].items.length>=count*1.8&&SC.modes[mode].items.length<=count*2,mode);
     for(const [left,right,alternativesLeft,alternativesRight] of SC.wordPairs[mode])for(const direction of [0,1]){
       const label=[left,right][direction],language=SC.isTranslation(mode)?['en-US','sv-SE'][direction]:SC.modes[mode].lang;
       const task=SC.modes[mode].items.find(i=>i.label===label&&i.answerLang===language);assert(task,mode+' missing main word '+label);
@@ -58,7 +69,7 @@ test('Common meanings and independent alternatives are accepted without context 
 });
 test('Translation direction selects only the opposite language, merging identical prompts',()=>{
   for(const mode of modes.filter(SC.isTranslation))for(const lang of ['sv-SE','en-US']){
-    const vocabulary=SC.vocabulary(mode,lang);assert(vocabulary.length>=49&&vocabulary.length<=50);assert(vocabulary.every(i=>i.answerLang===lang));
+    const vocabulary=SC.vocabulary(mode,lang),count=SC.wordPairs[mode].length;assert(vocabulary.length>=count-1&&vocabulary.length<=count);assert(vocabulary.every(i=>i.answerLang===lang));
     const g=new SC.CityGame({random:rng(1)});g.start({mode,lang});assert(g.items.every(i=>i.answerLang===lang));
   }
   assert.equal(SC.modes.english.name,'English words - short');assert.equal(SC.modes.englishLong.name,'English words - long');
@@ -135,5 +146,5 @@ test('Typing translation direction remains selectable and speech uses the answer
   const worker=(await import('../cloudflare/worker.mjs')).default;
   const DB={prepare(){return {bind(){return this;},async all(){return {results:[]};},async first(){return null;}};}};
   for(const mode of modes){const response=await worker.fetch(new Request('https://example.workers.dev/scores?leaderboard=v2:city:'+mode+':gentle',{headers:{Origin:'https://jakobrogstadius.github.io'}}),{DB});assert.equal(response.status,200,mode+' highscore rejected');}
-  console.log('PASS Worker accepts all seven new exercise IDs');console.log((checks+1)+' word-pair checks passed.');
+  console.log('PASS Worker accepts all 24 word-pair exercise IDs');console.log((checks+1)+' word-pair checks passed.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

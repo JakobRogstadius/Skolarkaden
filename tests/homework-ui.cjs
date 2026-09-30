@@ -38,7 +38,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   return {ctx,fields,radios,posts,requests,captures,get game(){return currentGame;},get selection(){return selection;},click:id=>fields[id].dispatchEvent(new Event('click'))};
 }
 (async()=>{
-  const normal=boot();await settle();assert(!normal.requests.includes('homework.json'));assert(!normal.fields.lesson.options.some(o=>o.value==='homework'));assert(!normal.fields.lesson.disabled);assert(!normal.fields['input-kind'].disabled);
+  const normal=boot();await settle();assert.equal(normal.fields.lesson.value,'math-addition');normal.radios[0].dispatchEvent(new Event('change'));assert(!normal.requests.includes('homework.json'));assert(!normal.fields.lesson.options.some(o=>o.value==='homework'));assert(!normal.fields.lesson.disabled);assert(!normal.fields['input-kind'].disabled);
   let top=1234,fail=false,pending=null;
   const hud=boot('',undefined,async url=>{
     if(pending)return new Promise(resolve=>pending.push(resolve));
@@ -72,7 +72,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   ready();reversi.click('pause');assert(reversi.fields.answer.disabled);reversi.click('resume');await settle();assert.equal(reversi.fields.answer.disabled,false);
   reversi.game.board=new Int8Array(64).fill(1);reversi.game.beginTurn(1);await settle();
   assert.equal(reversi.fields['result-title'].textContent,'Du vann! 64–0');assert.equal(reversi.fields['end-overlay'].hidden,false);
-  reversi.click('again');await settle();await settle();assert.equal(reversi.posts[0].leaderboard_key,'v1:reversi:swedish:gentle');assert.equal(reversi.posts[0].score,64);
+  reversi.click('again');await settle();await settle();assert.equal(reversi.posts[0].leaderboard_key,'v1:reversi:math-addition:gentle');assert.equal(reversi.posts[0].score,64);
   assert.equal(reversi.game.score,2);assert.equal(reversi.game.turns,0);
   console.log('PASS Reversi app: menu, turn input, pause/resume, final score submission and restart.');
   const chess=boot('',undefined,async url=>Response.json({leaderboard:'v2:chess',scores:[{player_name:'DRAW',score:500,exercise:'swedish',difficulty:'gentle'}],rank:2}));await settle();
@@ -87,7 +87,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   assert.equal(chess.fields['result-title'].textContent,'Remi! ½–½ · Patt');assert.equal(chess.fields['end-overlay'].hidden,false);
   const chessScore=chess.game.score;assert(chessScore>=0&&chessScore<=1530);
   assert(chess.fields['end-scores-list'].children.some(row=>row.children.some(cell=>cell.className==='board-points'&&cell.textContent===String(chessScore))));assert.equal(chess.fields['chess-result-breakdown'].hidden,false);assert.match(chess.fields['chess-result-breakdown'].textContent,/Dragkvalitet/);
-  chess.click('again');await settle();await settle();assert.equal(chess.posts[0].leaderboard_key,'v2:chess:swedish:gentle');assert.equal(chess.posts[0].score,chessScore,'arcade score is stored without rescaling');
+  chess.click('again');await settle();await settle();assert.equal(chess.posts[0].leaderboard_key,'v2:chess:math-addition:gentle');assert.equal(chess.posts[0].score,chessScore,'arcade score is stored without rescaling');
   assert.equal(chess.game.turns,0);assert.equal(chess.game.position.history().length,0);
   chess.fields.lesson.value='chinese';chess.click('pause');chess.click('pause-menu');chess.click('start');await settle();chessReady();
   chess.game.queue.enqueue('錯了','speech');chess.game.update(.05);assert.equal(chess.game.turns,1,'incorrect Chinese speech must reach the poor-move rule');assert.equal(chess.game.hits,0);
@@ -95,7 +95,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   let resolve;const app=boot('?mode=homework&id=sv-001&input=keyboard&language=zh-CN&words=wrong',()=>new Promise(done=>resolve=done));
   assert(app.fields.start.disabled);app.click('start');await settle();assert.equal(app.game,undefined,'loading cannot launch a default exercise');
   resolve(Response.json({...dictionary,'sv-001':{...dictionary['sv-001'],input:'voice'}}));await settle();assert(!app.fields.start.disabled);
-  for(const id of ['lesson','input-kind','language'])assert(app.fields[id].disabled,id+' must be locked');
+  for(const id of ['exercise-group','lesson','input-kind','language'])assert(app.fields[id].disabled,id+' must be locked');
   assert.equal(app.fields['input-kind'].value,'typing');assert.equal(app.fields.language.value,'sv-SE');assert.equal(app.fields.lesson.value,'homework');
   assert.deepEqual(app.fields.lesson.options.map(o=>o.value),['homework']);assert.equal(app.fields['homework-info'].textContent,'Läxa · sv-001');
   for(const radio of app.radios){

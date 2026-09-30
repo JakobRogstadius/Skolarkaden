@@ -7,8 +7,8 @@ const SC=ctx.Starlight,rng=seed=>()=>{seed=(Math.imul(seed,1664525)+1013904223)>
 const tick=(g,t)=>{for(let i=0;i<Math.round(t/.05);i++)g.update(.05);};
 let checks=0;function test(name,fn){fn();checks++;console.log('PASS '+name);}
 const modes=Object.keys(SC.modes),math=modes.filter(SC.isMath),chinese=modes.filter(SC.isChinese);
-test('Twenty-nine exercises have the requested order and complete, distinct dictionaries',()=>{
- assert.deepEqual(modes,['letters','swedish','swedishLong','swedish-opposites','swedish-synonyms','english','englishLong','english-opposites','english-synonyms','translation-sv-en-1','translation-sv-en-2','translation-sv-en-3','bopomofo','chinese','chineseTrad2','chineseTrad3','chineseTrad4','chineseSimpl1','chineseSimpl2','chineseSimpl3','chineseSimpl4','math-addition','math-addition-subtraction','math-diagrams','math-simple-equations','math-large-numbers','math-multiplication','math-multiplication-division','math-equations']);
+test('Forty-six exercises have stable IDs and complete, distinct dictionaries',()=>{
+ assert.deepEqual([...modes].sort(),[...['letters','swedish','swedishLong','swedish-opposites','swedish-synonyms','english','englishLong','english-opposites','english-synonyms','translation-sv-en-1','translation-sv-en-2','translation-sv-en-3','bopomofo','chinese','chineseTrad2','chineseTrad3','chineseTrad4','chineseSimpl1','chineseSimpl2','chineseSimpl3','chineseSimpl4','math-addition','math-addition-subtraction','math-diagrams','math-simple-equations','math-large-numbers','math-multiplication','math-multiplication-division','math-equations'],...['swedish-opposites','swedish-synonyms','english-opposites','english-synonyms'].flatMap(id=>[2,3,4].map(level=>id+'-'+level)),...[4,5,6,7,8].map(level=>'translation-sv-en-'+level)].sort());
  for(const mode of ['swedish','swedishLong','english','englishLong',...chinese]){
   const items=SC.modes[mode].items,count=SC.isChinese(mode)?[30,80,155,255][chinese.indexOf(mode)%4]:100;assert.equal(items.length,count,mode);assert.equal(new Set(items.map(i=>i.answer)).size,count,mode);
   for(const i of items){assert.equal(i.answer,i.label);assert(SC.matches(i.answer,i,mode));}

@@ -7,7 +7,7 @@ class CustomEvent extends Event{constructor(type,{detail}={}){super(type);this.d
 const context2d=new Proxy({},{get:(_,key)=>key==='measureText'?s=>({width:[...s].length*9}):key==='createLinearGradient'||key==='createRadialGradient'?()=>({addColorStop(){}}):()=>{}});
 class Element extends EventTarget{
  constructor(){super();Object.assign(this,{value:'',textContent:'',text:'',hidden:false,disabled:false,checked:false,children:[],options:[],dataset:{},className:'',open:false});this.classList={add(){},remove(){},toggle(){}};this.style={setProperty(){}};}
- append(...items){this.children.push(...items);}replaceChildren(...items){this.children=[...items];}add(option){this.options.push(option);if(this.options.length===1)this.value=option.value;}
+ append(...items){this.children.push(...items);}replaceChildren(...items){this.children=[...items];this.options=[...items];this.value=items[0]?.value||'';}add(option){this.options.push(option);if(this.options.length===1)this.value=option.value;}
  closest(){return this.parent||(this.parent=new Element());}querySelector(selector){return this.noSubmit&&selector==='[type=submit]'?null:this.button||(this.button=new Element());}setAttribute(){}focus(){document.activeElement=this;}select(){}remove(){}showModal(){this.open=true;}close(){this.open=false;this.dispatchEvent(new Event('close'));}
  getBoundingClientRect(){return {width:1000,height:700};}getContext(){return context2d;}
 }
@@ -23,13 +23,23 @@ context.SpeechRecognition=class{start(){recognitions.push(this);this.onstart?.()
 const scripts=[...html.matchAll(/<script defer src="([^"]+)"/g)].map(m=>m[1].split(/[?#]/)[0]);
 for(const script of scripts){assert(fs.existsSync(path.join(base,script)),script+' missing');if(script==='resources/app.js'){context.Starlight.Microphone=class{constructor(){this.ready=false;this.recording=false;this.stream={getAudioTracks:()=>[{clone:()=>({enabled:true,stop(){}})}]};}async configure(options){this.options=options;await this.open();}async open(){this.ready=true;}begin(){this.recording=true;}cancel(){this.recording=false;}snapshot(){return {samples:new Float32Array(0),sampleRate:16000};}};const Original=context.Starlight.DinosaurGame;context.Starlight.DinosaurGame=class extends Original{constructor(args){super(args);currentGame=this;}};const Camp=context.Starlight.MarshmallowGame;context.Starlight.MarshmallowGame=class extends Camp{constructor(args){super(args);currentMarshmallow=this;}};const Home=context.Starlight.HomeGame;context.Starlight.HomeGame=class extends Home{constructor(args){super(args);currentHome=this;}};const Eggs=context.Starlight.EggGame;context.Starlight.EggGame=class extends Eggs{constructor(args){super(args);currentEgg=this;}};}const result=vm.runInContext(fs.readFileSync(path.join(base,script),'utf8'),context,{filename:script});if(script==='resources/app.js')appReady=result;}
 const frame=()=>{now+=50;const callbacks=[...raf.values()];raf.clear();for(const fn of callbacks)fn(now);},click=id=>elements[id].dispatchEvent(new Event('click')),settle=()=>new Promise(resolve=>setImmediate(resolve));
-async function start(kind,lesson='swedish'){const radio=radios.find(r=>r.value===kind);assert(radio,kind+' missing from menu');radio.dispatchEvent(new Event('change'));elements.lesson.value=lesson;elements.lesson.dispatchEvent(new Event('change'));click('start');await settle();assert.equal(elements['setup-error'].textContent,'');assert.equal(elements.play.hidden,false);frame();}
+async function start(kind,lesson='swedish'){const radio=radios.find(r=>r.value===kind);assert(radio,kind+' missing from menu');radio.dispatchEvent(new Event('change'));elements['exercise-group'].value=context.Starlight.exerciseGroup(lesson);elements['exercise-group'].dispatchEvent(new Event('change'));elements.lesson.value=lesson;elements.lesson.dispatchEvent(new Event('change'));click('start');await settle();assert.equal(elements['setup-error'].textContent,'');assert.equal(elements.play.hidden,false);frame();}
 (async()=>{
  if(exerciseSource)assert(elements.start.disabled,'start waits for JSON');
  await appReady;assert.equal(exerciseRequests,exerciseSource?1:0);assert(!elements.start.disabled);
  assert.equal(radios.length,12);assert.match(html,/<title>Skolarkaden<\/title>/);assert.doesNotMatch(html,/id="(?:queue-list|voice-toggle|live-speech|interim)"/);assert.match(html,/<details id="debug-panel"[^>]*>/);assert.doesNotMatch(html,/<details id="debug-panel"[^>]*\bopen\b/);
- const SC=context.Starlight;assert.equal(elements.lesson.options.length,29);assert.deepEqual(elements.lesson.options.map(o=>o.text),Object.values(SC.modes).filter(m=>!m.hidden).map(m=>m.name));
- assert.deepEqual([...html.match(/<div class="setup-grid">[\s\S]*?<div class="menu-bottom">/)[0].matchAll(/<select id="([^"]+)"/g)].map(m=>m[1]),['lesson','input-kind','language','pace']);
+ const SC=context.Starlight;assert.equal(elements.lesson.value,'math-addition');assert.equal(elements['exercise-group'].value,'math');assert.equal(elements.lesson.options.length,8);
+ assert.deepEqual(elements['exercise-group'].options.map(o=>o.text),['Matematik','Bokstäver','Svenska','Engelska','Svenska–engelska','Kinesiska']);
+ assert.equal(radios.filter(r=>r.checked).length,1,'exactly one random game is selected');
+ const selectable=[];
+ for(const group of SC.exerciseGroups){elements['exercise-group'].value=group.id;elements['exercise-group'].dispatchEvent(new Event('change'));for(const option of elements.lesson.options){assert.equal(SC.exerciseGroup(option.value),group.id);selectable.push(option.value);}}
+ assert.deepEqual(selectable.sort(),Object.keys(SC.modes).filter(id=>!SC.modes[id].hidden).sort());
+ elements['exercise-group'].value='translation';elements['exercise-group'].dispatchEvent(new Event('change'));elements.lesson.value='translation-sv-en-8';elements.lesson.dispatchEvent(new Event('change'));
+ elements['exercise-group'].value='math';elements['exercise-group'].dispatchEvent(new Event('change'));assert.equal(elements.lesson.value,'math-addition');
+ elements['exercise-group'].value='translation';elements['exercise-group'].dispatchEvent(new Event('change'));assert.equal(elements.lesson.value,'translation-sv-en-8','returning to a group retains the chosen level');
+ elements['exercise-group'].value='math';elements['exercise-group'].dispatchEvent(new Event('change'));radios.find(r=>r.value==='city').dispatchEvent(new Event('change'));
+ assert(html.indexOf('<div class="setup-grid">')<html.indexOf('<fieldset class="game-picker"'));
+ assert.deepEqual([...html.match(/<div class="setup-grid">[\s\S]*?<fieldset class="game-picker"/)[0].matchAll(/<select id="([^"]+)"/g)].map(m=>m[1]),['exercise-group','lesson','pace','input-kind','language']);
  assert.deepEqual(elements['input-kind'].options.map(o=>o.value),['typing','browser']);assert.deepEqual(elements.pace.options.map(o=>o.textContent),['Lätt','Medel','Svår']);assert(elements.language.disabled);
  elements['input-kind'].value='browser';elements['input-kind'].dispatchEvent(new Event('change'));assert.equal(elements.language.disabled,false);
  elements['input-kind'].value='typing';elements['input-kind'].dispatchEvent(new Event('change'));assert(elements.language.disabled);assert(!elements['install-language']);
@@ -45,6 +55,10 @@ assert(scripts.indexOf('resources/dinosaur.js')<scripts.indexOf('resources/app.j
  for(const source of ['typing','browser'])for(const [lesson,label,answer] of [
   ['swedish-synonyms','orädd','tapper'],['swedish-synonyms','glad','munter'],['swedish-synonyms','börja','sätta igång'],
   ['english-synonyms','furious','mad'],['english-synonyms','tired','worn out'],['swedish-opposites','varm','kylig'],['english-opposites','hot','chilly'],
+  ['swedish-synonyms-4','vederlägga','falsifiera'],['swedish-opposites-4','implicit','uttrycklig'],
+  ['english-synonyms-4','cogent','persuasive'],['english-opposites-4','exacerbate','mitigate'],
+  ['translation-sv-en-4','bagage','baggage'],['translation-sv-en-5','åtgärd','action'],
+  ['translation-sv-en-6','trots detta','nonetheless'],['translation-sv-en-7','avveckla','wind down'],['translation-sv-en-8','oaktat','despite'],
   ['translation-sv-en-1','penna','pen'],['translation-sv-en-2','vakna','wake'],['translation-sv-en-3','låna ut','loan'],
   ['chineseTrad4','水','vatten'],['chineseSimpl4','牛奶','mjölk'],['chinese','日','dag'],['chinese','水','SHUI3']
  ]){

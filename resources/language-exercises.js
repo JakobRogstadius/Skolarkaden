@@ -64,6 +64,7 @@ SC.compileLanguageExercises=function(data){
       items=pairItems(id,d);wordPairs[id]=d.pairs;
     }else check(false,id+'.type');
     const mode=modes[id]={name:d.name,lang:d.language,items,description:d.description,icon:d.icon,color:'#c4afff',placeholder:d.placeholder};
+    if(d.menuLabel!==undefined){check(text(d.menuLabel),id+'.menuLabel');mode.menuLabel=d.menuLabel;}
     if(d.type==='chinese')mode.type='chinese';
     if(d.type==='word-pairs'){mode.type='word-pairs';mode.translation=d.translation;}
     if(id==='letters'){
