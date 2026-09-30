@@ -39,10 +39,15 @@ den kvarvarande färgmängden. En uppgift visas åt gången, så även läxor me
 ett enda svar fungerar. Fel svar har ingen påföljd. Tangentbord, tal, alternativa
 svar, pinyin och tio sekunders ledtrådsfördröjning fungerar som i andra spel.
 
-Varje penselpåfyllning räcker till tre pappersbredder (2 880 bildpunkter).
+Efter varje rätt svar kan båda penslarna användas fritt i 15 sekunders speltid
+utan färgförbrukning. Därefter räcker penselfärgen till tre pappersbredder
+(2 880 bildpunkter), om färghinken inte har använt en del av färgen. Paus stoppar
+nedräkningen; verktygsbyten och fel svar förlänger den inte. Färghinken förbrukar
+alltid färg, även under de första 15 sekunderna.
 Färgförbrukningen följer ritad sträcka, oberoende av antalet musrörelsehändelser.
 Ett klick eller ett kortare penseldrag kostar som 30 bildpunkters ritad sträcka;
-längre penseldrag kostar sin faktiska längd. Penseln stannar när färgen tar slut.
+längre penseldrag kostar sin faktiska längd. Efter friperioden stannar penseln
+när färgen tar slut.
 Färghinken räcker till fem fyllningar. Kantutjämnade pixlar färgas om genom att
 byta ut den gamla bakgrundsfärgens andel, så att tunna ofyllda kanter undviks
 utan att pensellinjens täckning ändras. Färg förbrukas bara när du målar; samma

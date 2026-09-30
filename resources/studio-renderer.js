@@ -61,7 +61,7 @@ class StudioRenderer{
  }
  down(e){
   const g=this.game;if(e.button!==0||!e.isPrimary||g.state!=='playing'||this.dialog?.open||this.pointerId!==undefined)return;
-  e.preventDefault();const p=this.positionCursor(e);if(g.paint<=0){if(!g.pending)g.choose('color',g.color);this.nudgeQuestion();return;}
+  e.preventDefault();const p=this.positionCursor(e);if(!g.canPaint()){if(!g.pending)g.choose('color',g.color);this.nudgeQuestion();return;}
   if(g.pending)g.cancelQuestion();
   const snapshot=this.snapshot();if(g.tool==='bucket'){
    const image=this.ctx.getImageData(0,0,960,640);if(SC.studioFill(image,p.x,p.y,SC.studioColors[g.color][1])){this.remember(snapshot);this.ctx.putImageData(image,0,0);g.consume(.2);}return;
@@ -69,13 +69,15 @@ class StudioRenderer{
   this.remember(snapshot);this.pointerId=e.pointerId;this.paper.setPointerCapture(e.pointerId);this.lastPoint=p;this.strokeLength=0;this.chargedDistance=0;this.segment(p,p);
  }
  segment(a,b){const g=this.game,c=this.ctx,size=SC.studioTools.find(t=>t.id===g.tool).size,capacity=this.paper.width*3;
-  const distance=Math.hypot(a.x-b.x,a.y-b.y),available=Math.max(0,this.chargedDistance-this.strokeLength)+g.paint*capacity;
+  const free=g.brushIsFree(),distance=Math.hypot(a.x-b.x,a.y-b.y),available=free?Infinity:Math.max(0,this.chargedDistance-this.strokeLength)+g.paint*capacity;
   // A click prepays 30 pixels. Moving within that distance costs nothing more;
   // longer strokes are billed by total length, independent of event frequency.
   const travelled=Math.min(distance,available);
   if(distance>available)b={x:a.x+(b.x-a.x)*travelled/distance,y:a.y+(b.y-a.y)*travelled/distance};
   c.fillStyle=c.strokeStyle=SC.studioColors[g.color][1];c.lineWidth=size;c.lineCap=c.lineJoin='round';
   if(a.x===b.x&&a.y===b.y){c.beginPath();c.arc(b.x,b.y,size/2,0,Math.PI*2);c.fill();}else{c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.stroke();}
+  // Free distance must not be charged later if the same stroke outlasts 15 s.
+  if(free){this.strokeLength=0;this.chargedDistance=0;return;}
   this.strokeLength+=travelled;const charge=Math.min(g.paint*capacity,Math.max(30,this.strokeLength)-this.chargedDistance);
   this.chargedDistance+=charge;g.consume(charge/capacity);
   if(!g.paint)this.endStroke();
@@ -87,6 +89,7 @@ class StudioRenderer{
  endStroke(){if(this.pointerId!==undefined&&this.paper.hasPointerCapture(this.pointerId))this.paper.releasePointerCapture(this.pointerId);this.pointerId=undefined;this.lastPoint=null;}
  draw(){
   const g=this.game;if(g.state!=='playing'){this.endStroke();this.cursor.hidden=true;}
+  if(g.pending)this.endStroke();
   const hints=SC.pinyinHints(g),key=g.revision+':'+g.state+':'+this.dirty+':'+this.undoHistory.length+':'+hints.size;if(key===this.key)return;this.key=key;
   const q=s=>this.node.querySelector(s),color=SC.studioColors[g.color][1];
   this.colorButtons.forEach((b,i)=>{b.setAttribute('aria-pressed',String(g.color===i));b.classList.toggle('pending',g.pending?.type==='color'&&g.pending.value===i);});

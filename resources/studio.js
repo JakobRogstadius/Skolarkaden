@@ -12,11 +12,13 @@ class StudioGame{
  constructor({queue=new SC.AnswerQueue(),onEvent=()=>{},random=Math.random}={}){Object.assign(this,{queue,onEvent,random,state:'menu',revision:0});}
  emit(type){this.onEvent({type});}
  start({mode='letters',pace='gentle',lang='sv-SE',items=null,uppercase=false}={}){
-  Object.assign(this,{mode,pace,lang,uppercase,clock:0,state:'playing',color:14,tool:'small',paint:0,pending:null,targets:[],message:'Välj en färg och svara på uppgiften för att fylla på färg.'});
+  Object.assign(this,{mode,pace,lang,uppercase,clock:0,brushFreeUntil:0,state:'playing',color:14,tool:'small',paint:0,pending:null,targets:[],message:'Välj en färg och svara på uppgiften för att fylla på färg.'});
   this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Övningen behöver minst ett svar.');this.queue.clear();this.revision++;
  }
  getTargets(){return this.targets;}getAvailableTargets(){return this.targets;}getActiveEntries(){return [];}getTaskStates(){return new Map();}
  canAnswer(){return this.state==='playing'&&!!this.pending;}
+ brushIsFree(){return this.tool!=='bucket'&&this.clock<this.brushFreeUntil;}
+ canPaint(){return this.paint>0||this.brushIsFree();}
  choose(type,value){
   if(this.state!=='playing'||!(type==='color'?Number.isInteger(value)&&colors[value]:type==='tool'&&tools.some(t=>t.id===value)))return;
   // Tools share the remaining paint. Switching does not refill it or replace
@@ -28,7 +30,7 @@ class StudioGame{
   this.message='Svara för att fylla på färg.';
   this.revision++;this.emit('studio-question');
  }
- cancelQuestion(){if(!this.paint)return;this.pending=null;this.targets=[];this.queue.clear();this.message='Fortsätt måla.';this.revision++;this.emit('studio-ready');}
+ cancelQuestion(){if(!this.canPaint())return;this.pending=null;this.targets=[];this.queue.clear();this.message='Fortsätt måla.';this.revision++;this.emit('studio-ready');}
  consume(amount){const previous=this.paint;this.paint=Math.max(0,this.paint-amount);if(this.paint<1e-8)this.paint=0;
   if(previous>0&&!this.paint){this.choose('color',this.color);this.message='Färgen är slut. Svara för att fylla på.';}
   this.revision++;
@@ -37,10 +39,13 @@ class StudioGame{
  resume(){if(this.state==='paused'){this.state='playing';this.revision++;this.emit('resume');}}
  menu(){this.state='menu';this.queue.clear();}
  update(dt){
-  if(this.state!=='playing')return;this.clock+=dt;if(!this.pending||!this.queue.length)return;
+  if(this.state!=='playing')return;const wasFree=this.brushIsFree();this.clock+=dt;
+  // The bucket may have emptied the shared paint during the free-brush period.
+  if(wasFree&&!this.brushIsFree()&&!this.paint&&!this.pending){this.choose('color',this.color);this.message='Färgen är slut. Svara för att fylla på.';}
+  if(!this.pending||!this.queue.length)return;
   const entry=this.queue.take();if(!entry)return;
   if(!SC.matches(entry.text,this.targets[0].item,this.mode,this.lang,entry.source)){this.message='Försök igen. Ta god tid på dig.';this.revision++;return;}
-  this[this.pending.type]=this.pending.value;this.paint=1;this.pending=null;this.targets=[];this.queue.clear();
+  this[this.pending.type]=this.pending.value;this.paint=1;this.brushFreeUntil=this.clock+15;this.pending=null;this.targets=[];this.queue.clear();
   this.message='Nu kan du måla!';this.revision++;this.emit('studio-ready');
  }
 }

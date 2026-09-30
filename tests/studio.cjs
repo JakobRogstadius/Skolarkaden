@@ -47,6 +47,28 @@ for(const tool of ['small','large']){
 }
 console.log('PASS distance-based paint: 30-pixel dots, event-independent strokes, three-width refill');
 
+function solveRefill(game){game.choose('color',game.color);game.queue.enqueue(game.targets[0].item.answer);game.update(.01);}
+for(const tool of ['small','large']){
+ const r=brush(tool),game=r.game;assert(!game.brushIsFree(),'no free period before a correct answer');solveRefill(game);
+ assert(game.brushIsFree());assert.equal(game.brushFreeUntil-game.clock,15);
+ r.segment({x:0,y:0},{x:6000,y:0});assert.equal(game.paint,1);assert.equal(r.ctx.last[0],6000,'free strokes are not clipped to the distance budget');
+ game.update(14.99);r.segment({x:6000,y:0},{x:6000,y:0});assert.equal(game.paint,1,'dots are free too');
+ const until=game.brushFreeUntil;game.pause();game.update(100);game.resume();assert(game.brushIsFree(),'pause preserves the free period');
+ game.choose('tool','bucket');assert(!game.brushIsFree());game.choose('tool',tool);assert.equal(game.brushFreeUntil,until,'switching tools does not extend the period');
+ game.update(until-game.clock);assert(!game.brushIsFree(),'distance charging starts at exactly 15 seconds');
+ r.segment({x:6000,y:0},{x:6100,y:0});assert(Math.abs(game.paint-(1-100/2880))<1e-9,'a continuous stroke only charges its post-grace distance');
+ solveRefill(game);game.update(15);r.strokeLength=0;r.chargedDistance=0;r.segment({x:0,y:0},{x:0,y:0});assert(Math.abs(game.paint-(1-30/2880))<1e-9,'a dot after the free period costs 30 pixels');
+ game.choose('color',2);game.queue.enqueue('wrong');game.update(.1);assert(!game.brushIsFree(),'wrong answers do not grant free painting');
+ game.queue.enqueue(game.targets[0].item.answer);game.update(.1);assert(game.brushIsFree(),'every correct answer starts a fresh free period');
+ game.start();assert(!game.brushIsFree(),'a new game resets the free period');
+}
+const freeAfterBucket=brush(),bucketGame=freeAfterBucket.game;solveRefill(bucketGame);bucketGame.choose('tool','bucket');
+for(let i=0;i<5;i++)bucketGame.consume(.2);assert.equal(bucketGame.paint,0,'bucket still uses five fills during the free-brush period');assert(!bucketGame.canPaint());
+bucketGame.choose('tool','small');assert(bucketGame.canPaint(),'brushes remain free even if the bucket emptied the paint');bucketGame.cancelQuestion();
+freeAfterBucket.segment({x:0,y:0},{x:6000,y:0});assert.equal(bucketGame.paint,0);assert.equal(freeAfterBucket.ctx.last[0],6000);assert(!bucketGame.pending);
+bucketGame.update(15);assert(!bucketGame.canPaint());assert.equal(bucketGame.pending.value,bucketGame.color,'expiry automatically asks for a refill if the bucket used all paint');
+console.log('PASS 15-second free brushes: timing, pause, tool switching, continuous strokes, correct answers and bucket exclusion');
+
 // Synthetic antialias ramps around a one-pixel outline: recolour only the
 // background component on the clicked side, without shrinking/crossing the ink.
 const rgb=hex=>hex.slice(1).match(/../g).map(c=>parseInt(c,16));
