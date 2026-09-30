@@ -337,5 +337,17 @@ request after a lost response neither duplicates it nor resurrects a picture tha
 has already left the gallery. Receipts contain no image, name or IP. Retrying an
 ID with different data returns 409. No score or completed-game row is created.
 
+The statistics page shows these six pictures with names, timestamps and a delete
+button for each. `GET /admin/artworks` includes their submission IDs;
+`POST /admin/artworks/delete` accepts `{ "submission_id": "<UUID v4>" }` and
+returns `{ "ok": true, "deleted": 1 }` (or `0` if already absent). Both routes
+require the existing `STATS_ADMIN_KEY` bearer token. Deletion also requires the
+allowed origin and JSON content type. The page asks for confirmation before
+permanently removing the selected picture, then refreshes the gallery.
+Other paintings and scores are preserved. Its retry receipt stays for at least
+30 days after deletion, so delayed saves cannot immediately restore the image.
+Deploy the updated Worker to enable these controls; no additional migration is
+needed when the artwork tables already exist.
+
 Run `node cloudflare/build.cjs`, `node tests/artworks.cjs` and `node tests/studio.cjs`
 after changes; `npm test` includes these checks.

@@ -289,7 +289,7 @@ async function statistics(db) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url), origin = request.headers.get('Origin');
-    const admin = ['/admin/stats', '/admin/rename'].includes(url.pathname);
+    const admin = ['/admin/stats', '/admin/rename', '/admin/artworks', '/admin/artworks/delete'].includes(url.pathname);
     const headers = { 'Cache-Control': 'no-store', 'Vary': admin ? 'Origin, Authorization' : 'Origin' };
     if (origin === ALLOWED_ORIGIN) {
       headers['Access-Control-Allow-Origin'] = origin;
@@ -298,20 +298,35 @@ export default {
     }
     const reply = (body, status = 200, extra = {}) => Response.json(body, { status, headers: { ...headers, ...extra } });
     if (origin && origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_not_allowed' }, 403);
-    if (request.method === 'OPTIONS' && ['/scores', '/stats', '/admin/stats', '/admin/rename', '/artworks'].includes(url.pathname)) {
+    if (request.method === 'OPTIONS' && (admin || ['/scores', '/stats', '/artworks'].includes(url.pathname))) {
       return new Response(null, { status: 204, headers });
     }
     try {
       if (admin) {
-        const method = url.pathname === '/admin/stats' ? 'GET' : 'POST';
+        const method = ['/admin/stats', '/admin/artworks'].includes(url.pathname) ? 'GET' : 'POST';
         if (request.method !== method) return reply({ error: 'method_not_allowed' }, 405, { Allow: method + ', OPTIONS' });
         if (typeof env.STATS_ADMIN_KEY !== 'string' || !env.STATS_ADMIN_KEY.length) return reply({ error: 'statistics_not_configured' }, 503);
         if (env.STATS_ADMIN_KEY.length < 12) return reply({ error: 'statistics_key_too_short' }, 503);
         if (!await authorizedStatistics(request, env.STATS_ADMIN_KEY)) return reply({ error: 'unauthorized' }, 401, { 'WWW-Authenticate': 'Bearer' });
-        if (method === 'GET') return reply(await statistics(env.DB));
+        if (url.pathname === '/admin/stats') return reply(await statistics(env.DB));
+        if (url.pathname === '/admin/artworks') {
+          const { results } = await env.DB.prepare('SELECT submission_id, player_name, image, created_at FROM artworks ORDER BY sequence DESC LIMIT 6').all();
+          return reply({ artworks: results });
+        }
         if (origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_required' }, 403);
         if (request.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return reply({ error: 'json_required' }, 415);
         const body = await readBody(request);
+        if (url.pathname === '/admin/artworks/delete') {
+          if (!body || typeof body.submission_id !== 'string' || !UUID.test(body.submission_id)) return reply({ error: 'invalid_artwork' }, 400);
+          // Keep the receipt for at least 30 days after removal, even for an old
+          // picture, so a delayed save retry cannot put it back in the gallery.
+          const result = await env.DB.batch([
+            env.DB.prepare(`UPDATE artwork_receipts SET created_at = CURRENT_TIMESTAMP WHERE submission_id = ?
+              AND EXISTS (SELECT 1 FROM artworks WHERE submission_id = ?)`).bind(body.submission_id, body.submission_id),
+            env.DB.prepare('DELETE FROM artworks WHERE submission_id = ?').bind(body.submission_id)
+          ]);
+          return reply({ ok: true, deleted: Number(result[1].meta.changes) });
+        }
         if (!body || typeof body !== 'object' || Array.isArray(body)) return reply({ error: 'invalid_rename' }, 400);
         const ip = typeof body.ip === 'string' ? body.ip.trim() : '';
         const oldName = body.old_name, newName = typeof body.new_name === 'string' ? body.new_name.normalize('NFC').trim().toUpperCase() : '';

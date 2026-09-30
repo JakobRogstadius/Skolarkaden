@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://skolarkaden-api.jakob-rogstadius.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; connect-src 'self' https://skolarkaden-api.jakob-rogstadius.workers.dev; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>Statistik · Skolarkaden</title>
-<link rel="stylesheet" href="resources/statistics.css?v=5e0662d908bc">
+<link rel="stylesheet" href="resources/statistics.css?v=16682c702729">
 <script defer src="resources/data.js?v=9bbad3d2fcb1"></script>
 <script defer src="resources/language-exercises-data.js?v=3e8be723cfe2"></script>
 <script defer src="resources/language-exercises.js?v=c0b49aaee0a5"></script>
 <script defer src="resources/homework.js?v=91d65cc84311"></script>
-<script defer src="resources/statistics.js?v=f805c39ddaab"></script>
+<script defer src="resources/statistics.js?v=c004a79788e9"></script>
 </head>
 <body>
 <main class="shell">
@@ -41,6 +41,11 @@
         <thead><tr><th scope="col">Tid</th><th scope="col">Namn</th><th scope="col">IP-adress</th><th scope="col">Spel</th><th scope="col">Övning</th><th scope="col">Svårighet</th><th scope="col" class="number">Poäng</th></tr></thead>
         <tbody id="latest"></tbody>
       </table></div>
+    </section>
+    <section class="panel gallery-panel" aria-labelledby="gallery-title">
+      <div class="section-heading"><h2 id="gallery-title">Senaste bidragen till galleriet</h2><p>De sex senaste tavlorna · Ta bort en tavla från det gemensamma galleriet</p></div>
+      <div id="gallery" class="gallery-row" tabindex="0" role="region" aria-label="Senaste tavlorna"></div>
+      <p id="gallery-status" role="status" aria-live="polite"></p>
     </section>
     <section class="charts-section" aria-labelledby="charts-title">
       <div class="section-heading"><h2 id="charts-title">Inskickade resultat per dag</h2><p>Senaste veckan · Idag är en pågående dag</p></div>

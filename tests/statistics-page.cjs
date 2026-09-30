@@ -6,14 +6,19 @@ class Element extends EventTarget{
   set textContent(text){this.ownText=String(text);this.children=[];}get textContent(){return this.ownText+this.children.map(child=>child.textContent).join('');}
   append(...children){this.children.push(...children);}replaceChildren(...children){this.ownText='';this.children=children;}
   setAttribute(name,value){this.attributes[name]=String(value);}focus(){this.focused=true;}
+  querySelectorAll(tag){return this.children.flatMap(child=>[...(child.tagName===tag?[child]:[]),...child.querySelectorAll(tag)]);}
 }
 const nodes=new Map(),get=id=>{if(!nodes.has(id))nodes.set(id,new Element());return nodes.get(id);};
 get('dashboard').hidden=true;get('actions').hidden=true;
 const events=new EventTarget(),requests=[];let result,status=200,pending=null,renameResult,renameStatus=200,renamePending=null,renameFailure=false;
+const galleryRequests=[],confirmations=[];let galleryResult={artworks:[]},galleryStatus=200,galleryPending=null,deleteResult={ok:true,deleted:1},deleteStatus=200,deletePending=null,deleteFailure=false,confirmed=true;
 const context=vm.createContext({console,Intl,Date,URL,Event,EventTarget,AbortController,setTimeout,clearTimeout,
   document:{getElementById:get,createElement:tag=>new Element(tag),createElementNS:(_,tag)=>new Element(tag)},
   addEventListener:(...args)=>events.addEventListener(...args),
-  fetch:async(url,options)=>{requests.push({url,options});if(options.method==='POST'){if(renameFailure)throw Error('network');return renamePending?await renamePending:Response.json(renameResult,{status:renameStatus});}return pending?await pending:Response.json(result,{status});},
+  confirm:message=>{confirmations.push(message);return confirmed;},
+  fetch:async(url,options)=>{
+    if(url.includes('/admin/artworks')){galleryRequests.push({url,options});if(options.method==='POST'){if(deleteFailure)throw Error('network');return deletePending?await deletePending:Response.json(deleteResult,{status:deleteStatus});}return galleryPending?await galleryPending:Response.json(galleryResult,{status:galleryStatus});}
+    requests.push({url,options});if(options.method==='POST'){if(renameFailure)throw Error('network');return renamePending?await renamePending:Response.json(renameResult,{status:renameStatus});}return pending?await pending:Response.json(result,{status});},
   localStorage:{getItem(){throw Error('statistics must not use storage');},setItem(){throw Error('statistics must not persist keys or IPs');}},
   sessionStorage:{getItem(){throw Error('statistics must not use storage');},setItem(){throw Error('statistics must not persist keys or IPs');}}
 });
@@ -23,6 +28,7 @@ const click=async id=>{get(id).dispatchEvent(new Event('click'));await settle();
 const login=async()=>{get('admin-key').value='test-key-not-a-real-credential';get('login').dispatchEvent(new Event('submit',{cancelable:true}));await settle();};
 const rename=async()=>{get('rename-form').dispatchEvent(new Event('submit',{cancelable:true}));await settle();};
 const descendants=node=>[node,...node.children.flatMap(descendants)];
+const deletePainting=async(button=get('gallery').querySelectorAll('button')[0])=>{button.dispatchEvent(new Event('click'));await settle();};
 (async()=>{
   assert.equal(requests.length,0,'opening the page does not request statistics');
   const days=Array.from({length:7},(_,i)=>'2026-09-'+String(i+7).padStart(2,'0'));
@@ -44,6 +50,28 @@ const descendants=node=>[node,...node.children.flatMap(descendants)];
   }
   const chart=get('chart-ip'),legend=chart.children.find(node=>node.className==='legend');assert.equal(legend.children.length,11);assert.match(legend.textContent,/Övriga IP-adresser2/);
   assert.equal(descendants(chart).find(node=>node.tagName==='tbody').children.length,13,'expandable table retains all twelve IPs and the total');
+  assert.match(get('gallery').textContent,/inga tavlor/);
+  const paintings=Array.from({length:6},(_,i)=>({submission_id:'00000000-0000-4000-8000-'+String(i).padStart(12,'0'),player_name:i?'ÅSA':'<img onerror=alert(1)>',created_at:'2026-09-12 22:00:00',image:i===1?'data:image/svg+xml;base64,PHN2Zz4=':'data:image/png;base64,iVBORw0KGgo='}));
+  galleryResult={artworks:paintings};await click('refresh');assert.equal(get('gallery').children.length,6);assert.equal(get('gallery').querySelectorAll('img').length,5,'only PNG data URLs become images');
+  assert.equal(get('gallery').children[0].querySelectorAll('figcaption')[0].ownText,paintings[0].player_name,'gallery names are plain text');assert.match(get('gallery').textContent,/2026-09-13 00:00:00/);
+  assert.match(read('statistics.html'),/img-src 'self' data:/,'CSP permits stored PNG previews');
+  const galleryRead=galleryRequests.at(-1);assert.equal(galleryRead.options.headers.Authorization,sent.options.headers.Authorization);assert.equal(galleryRead.options.cache,'no-store');assert.equal(galleryRead.options.credentials,'omit');
+  let galleryCount=galleryRequests.length;confirmed=false;await deletePainting();assert.equal(galleryRequests.length,galleryCount,'cancelled confirmation never submits');assert.match(confirmations.at(-1),/permanent/);confirmed=true;
+  galleryResult={artworks:paintings.slice(1)};await deletePainting();assert.equal(galleryRequests.length,galleryCount+2,'confirmed delete refreshes the gallery once');
+  const deletion=galleryRequests.at(-2);assert(deletion.url.endsWith('/admin/artworks/delete'));assert.equal(deletion.options.method,'POST');assert.equal(deletion.options.headers.Authorization,sent.options.headers.Authorization);assert.equal(deletion.options.headers['Content-Type'],'application/json');assert.deepEqual(JSON.parse(deletion.options.body),{submission_id:paintings[0].submission_id});
+  assert.equal(get('gallery').children.length,5);assert.match(get('gallery-status').textContent,/har tagits bort/);assert.equal(get('gallery').focused,true);assert(get('gallery').querySelectorAll('button').every(button=>!button.disabled));
+  deleteFailure=true;galleryCount=galleryRequests.length;await deletePainting();assert.equal(galleryRequests.length,galleryCount+1,'ambiguous writes never auto-retry');assert.match(get('gallery-status').textContent,/kunde inte bekräftas/);assert.equal(get('gallery').children.length,5);assert.equal(get('refresh').disabled,false);deleteFailure=false;
+  deleteStatus=404;await deletePainting();assert.match(get('gallery-status').textContent,/Servern behöver uppdateras/);deleteStatus=200;
+  // A gallery response started before deletion cannot restore a removed thumbnail.
+  let resolveGallery;galleryPending=new Promise(resolve=>{resolveGallery=resolve;});await click('refresh');galleryPending=null;
+  galleryResult={artworks:paintings.slice(2)};await deletePainting();resolveGallery(Response.json({artworks:paintings}));await settle();assert.equal(get('gallery').children.length,4);assert(!get('gallery').textContent.includes(paintings[0].player_name));
+  deleteResult={ok:true,deleted:0};galleryResult={artworks:paintings.slice(3)};await deletePainting();assert.match(get('gallery-status').textContent,/inte längre/);assert.equal(get('gallery').children.length,3);deleteResult={ok:true,deleted:1};
+  let resolveDelete;deletePending=new Promise(resolve=>{resolveDelete=resolve;});galleryCount=galleryRequests.length;const oldButton=get('gallery').querySelectorAll('button')[0];await deletePainting(oldButton);await deletePainting(oldButton);assert.equal(galleryRequests.length,galleryCount+1,'duplicate clicks send only one delete');assert(get('gallery').querySelectorAll('button').every(button=>button.disabled));
+  await click('logout');assert.equal(get('gallery').children.length,0);assert.equal(get('gallery-status').textContent,'');assert.equal(galleryRequests.at(-1).options.signal.aborted,true);resolveDelete(Response.json(deleteResult));await settle();assert.equal(galleryRequests.length,galleryCount+1,'late delete response cannot refetch after logout');assert.equal(get('dashboard').hidden,true);deletePending=null;
+  await login();deleteStatus=401;await deletePainting();assert.equal(get('dashboard').hidden,true);assert.equal(get('gallery').children.length,0);assert.match(get('status').textContent,/Logga in igen/);deleteStatus=200;
+  await login();galleryStatus=404;await click('refresh');assert.equal(get('dashboard').hidden,false,'gallery failure leaves score statistics available');assert.match(get('gallery-status').textContent,/Servern behöver uppdateras/);galleryStatus=200;
+  galleryStatus=401;await click('refresh');assert.equal(get('dashboard').hidden,true);assert.equal(get('gallery').children.length,0);galleryStatus=200;await login();
+  galleryPending=new Promise(resolve=>{resolveGallery=resolve;});await click('refresh');await click('logout');resolveGallery(Response.json({artworks:paintings}));await settle();assert.equal(get('gallery').children.length,0,'late gallery response is ignored after logout');galleryPending=null;await login();
   result.latest.push({...result.latest[0],game:'chess',game_version:'v1',score:1});await click('refresh');assert.equal(get('latest').children[1].children[3].textContent,'Schack');assert.equal(get('latest').children[1].children[6].textContent,'½');result.latest.push({...result.latest[0],game:'chess',game_version:'v2',score:1234});await click('refresh');assert.equal(get('latest').children[2].children[6].textContent,(1234).toLocaleString('sv-SE'));
   let requestCount=requests.length;await rename();assert.equal(requests.length,requestCount,'blank fields cannot send a rename');
   get('rename-ip').value='2001:db8::1';get('rename-old-name').value='<svg onload=alert(1)>';get('rename-new-name').value='Å.SA';
@@ -72,6 +100,6 @@ const descendants=node=>[node,...node.children.flatMap(descendants)];
   await login();assert.equal(get('scores-week').textContent,'0');assert.match(get('latest').textContent,/Inga resultat/);assert.match(get('chart-ip').textContent,/Inga inskickade/);
   await click('logout');assert.equal(get('dashboard').hidden,true);assert.equal(get('chart-ip').children.length,0);assert.equal(get('ips-ever').textContent,'');
   let resolve;pending=new Promise(done=>{resolve=done;});await login();await click('logout');resolve(Response.json(result));await settle();assert.equal(get('dashboard').hidden,true,'late requests cannot restore data after logout');pending=null;
-  await login();events.dispatchEvent(new Event('pagehide'));assert.equal(get('dashboard').hidden,true);assert.equal(get('chart-game').children.length,0,'back/forward cache never retains rendered IP data');
+  await login();events.dispatchEvent(new Event('pagehide'));assert.equal(get('dashboard').hidden,true);assert.equal(get('chart-game').children.length,0,'back/forward cache never retains rendered IP data');assert.equal(get('gallery').children.length,0);
   console.log('PASS statistics page: counts/charts/labels, overflow grouping with exact tables, zero days, safe names, authentication errors, logout and stale-request handling.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

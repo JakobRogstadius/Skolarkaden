@@ -24,6 +24,26 @@ const image='data:image/png;base64,'+Buffer.concat([Buffer.from([137,80,78,71,13
  assert.equal(db.prepare('SELECT count(*) AS n FROM artworks').get().n,6);assert.equal(db.prepare('SELECT count(*) AS n FROM highscores').get().n,0,'artworks never create score rows');
  db.prepare("UPDATE artwork_receipts SET created_at = datetime('now', '-40 days') WHERE submission_id = ?").run(saves.at(-1).submission_id);
  assert.equal((await call('POST',saves.at(-1))).status,200,'a visible picture keeps its retry receipt after thirty days');
+ const key='Testkey123!?',target=saves.at(-1),admin=(route='/admin/artworks',method='GET',body,options={})=>worker.fetch(new Request('https://worker.test'+route,{method,headers:{Origin:origin,Authorization:'Bearer '+key,'Content-Type':'application/json',...options.headers},...(body===undefined?{}:{body:options.raw??JSON.stringify(body)})}),options.env||{DB,STATS_ADMIN_KEY:key});
+ const before=db.prepare('SELECT * FROM artworks ORDER BY sequence').all();
+ for(const [route,method,body]of [['/admin/artworks','GET'],['/admin/artworks/delete','POST',{submission_id:target.submission_id}]]){
+  for(const [options,status]of [[{headers:{Authorization:''}},401],[{headers:{Authorization:'Bearer wrong'}},401],[{headers:{Origin:'https://other.test'}},403],[{env:{DB}},503],[{env:{DB,STATS_ADMIN_KEY:'short'}},503]])assert.equal((await admin(route,method,body,options)).status,status);
+  const preflight=await admin(route,'OPTIONS');assert.equal(preflight.status,204);assert.match(preflight.headers.get('Access-Control-Allow-Headers'),/Authorization/);
+ }
+ assert.equal((await admin('/admin/artworks','POST',{})).status,405);assert.equal((await admin('/admin/artworks/delete','GET')).status,405);
+ for(const [body,options,status]of [[{}, {},400],[{submission_id:"' OR 1=1 --"},{},400],[{submission_id:target.submission_id},{headers:{Origin:''}},403],[{submission_id:target.submission_id},{headers:{'Content-Type':'text/plain'}},415],[{}, {raw:'{'},400],[{}, {raw:'x'.repeat(2049)},413]])assert.equal((await admin('/admin/artworks/delete','POST',body,options)).status,status);
+ assert.deepEqual(db.prepare('SELECT * FROM artworks ORDER BY sequence').all(),before,'rejected deletions never change the gallery');
+ const listing=await admin();assert.equal(listing.headers.get('Cache-Control'),'no-store');assert.match(listing.headers.get('Vary'),/Authorization/);
+ assert.deepEqual((await listing.json()).artworks.map(row=>row.submission_id),saves.slice(-6).reverse().map(row=>row.submission_id),'admin listing identifies exactly the latest six paintings');
+ const remove=()=>admin('/admin/artworks/delete','POST',{submission_id:target.submission_id});
+ const removed=await remove();assert.equal(removed.status,200);assert.equal(removed.headers.get('Cache-Control'),'no-store');assert.deepEqual(await removed.json(),{ok:true,deleted:1});
+ assert.deepEqual(db.prepare('SELECT * FROM artworks ORDER BY sequence').all(),before.filter(row=>row.submission_id!==target.submission_id),'delete is scoped to one immutable ID and preserves other rows');
+ assert.deepEqual(await (await remove()).json(),{ok:true,deleted:0},'repeated removal is harmless');
+ const receipt=db.prepare('SELECT created_at FROM artwork_receipts WHERE submission_id=?').get(target.submission_id);assert(Date.now()-Date.parse(receipt.created_at.replace(' ','T')+'Z')<5000,'old receipt retention restarts on deletion');
+ assert.equal((await call('POST',target)).status,200);assert.equal(db.prepare('SELECT count(*) AS n FROM artworks WHERE submission_id=?').get(target.submission_id).n,0,'a delayed save cannot restore a deleted painting');
+ assert.deepEqual((await (await call('GET')).json()).artworks,rows.slice(1),'public gallery reflects deletion immediately');
+ for(const row of before.slice(0,-1))await admin('/admin/artworks/delete','POST',{submission_id:row.submission_id});
+ assert.deepEqual(await (await admin()).json(),{artworks:[]},'removing the last painting yields an empty gallery');
  for(let i=0;i<125;i++)await call('POST',payload);assert.equal((await call('POST',payload)).status,429);
- console.log('PASS artwork validation, CORS, atomic six-picture retention, retry receipts and no scores');
+ console.log('PASS artwork validation, CORS, six-picture retention, private admin listing, authenticated exact-ID deletion, retry receipts and no scores');
 })().catch(e=>{console.error(e);process.exitCode=1;});
