@@ -15,7 +15,7 @@ class Element extends EventTarget{
 const elements=new Map([...html.matchAll(/\bid="([^"]+)"/g)].map(([,id])=>[id,new Element()]));
 const get=id=>{assert(elements.has(id),'missing HTML element '+id);return elements.get(id);};
 get('pace').options=Array.from(html.match(/<select id="pace">([\s\S]*?)<\/select>/)[1].matchAll(/<option value="([^"]+)">([^<]+)<\/option>/g),m=>({value:m[1],textContent:m[2]}));
-const games=Object.fromEntries([...html.matchAll(/<label class="game-card[^\"]*">[\s\S]*?name="game" value="([^"]+)"[\s\S]*?class="card-title">([^<]+)<\/span><\/label>/g)].map(([,id,name])=>[id,name]));
+const games=Object.fromEntries([...html.matchAll(/<label class="game-card[^\"]*">[\s\S]*?name="game" value="([^"]+)"[\s\S]*?class="card-title">([^<]+)<\/span><\/label>/g)].map(([,id,name])=>[id,name]).filter(([id])=>id!=='studio'));
 assert.equal(Object.keys(games).length,12);
 let delayed=false,failStats=false,unavailableStats=false,oldStats=false;const pending=[],requests=[],requestOptions=[],posts=[];
 const context=vm.createContext({console,Event,EventTarget,crypto:webcrypto,AbortController,setTimeout,clearTimeout,addEventListener(){},

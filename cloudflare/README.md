@@ -306,3 +306,36 @@ game tests remain available with `npm test`.
 Official API references: [D1 prepared statements](https://developers.cloudflare.com/d1/worker-api/prepared-statements/),
 [Worker CORS](https://developers.cloudflare.com/workers/examples/cors-header-proxy/),
 [Cloudflare request headers](https://developers.cloudflare.com/fundamentals/reference/http-request-headers/#cf-connecting-ip).
+
+
+## Artwork gallery
+
+Målarateljén stores its **six latest framed pictures globally** in D1, separately
+from scores. Deploy both pieces before using the save button:
+
+1. Run [add-artworks.sql](add-artworks.sql) in the existing D1 **skolarkaden → Console**.
+   It is idempotent and preserves existing scores. New databases include these
+   tables in `schema.sql`.
+2. Replace the Worker code with the complete generated [worker.mjs](worker.mjs),
+   keep the existing `DB` binding, and deploy. A GitHub Pages deployment does not
+   deploy the Worker.
+3. Open `/artworks`; it should return `{"artworks":[]}` before the first save.
+   `/health` advertises `capabilities.artworks: 1` with the new Worker.
+
+`GET /artworks` returns at most six PNG data URLs, player names and timestamps,
+newest first. `POST /artworks` accepts `submission_id` (UUID v4), `player_name`
+(required, 1–10 letters/spaces) and `image` (960×640 PNG data URL, at most 900,000
+characters). The body has a separate 902,048-byte streaming limit; score requests
+keep their original 2 KiB limit. CORS, the shared name filter and the existing
+per-IP submission rate limit apply. Public responses contain no IPs or submission
+IDs, and artwork rows do not store IPs.
+
+A D1 transaction inserts the picture and removes images outside the latest six.
+Small SHA-256 receipts remain for at least 30 days (and while their picture is in
+the gallery), with expired receipts cleaned during saves, so retrying a
+request after a lost response neither duplicates it nor resurrects a picture that
+has already left the gallery. Receipts contain no image, name or IP. Retrying an
+ID with different data returns 409. No score or completed-game row is created.
+
+Run `node cloudflare/build.cjs`, `node tests/artworks.cjs` and `node tests/studio.cjs`
+after changes; `npm test` includes these checks.

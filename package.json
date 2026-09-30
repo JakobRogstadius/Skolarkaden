@@ -2,7 +2,7 @@
   "name": "skolarkaden",
   "version": "1.0.0",
   "private": true,
-  "description": "Tolv fristående lärspel på svenska med text, tal och klick.",
+  "description": "Tretton fristående lärspel på svenska med text, tal och klick.",
   "license": "BSD-2-Clause",
   "scripts": {
     "assets": "node dev/version-assets.cjs",

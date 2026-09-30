@@ -1,6 +1,6 @@
 # Skolarkaden
 
-Tolv små lärspel för tangentbord, mikrofon eller klick. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
+Tretton små lärspel för tangentbord, mikrofon eller klick. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
 
 **Öppna `index.html` i Chrome.** Behåll `resources` bredvid HTML-filen. Ingen installation, byggprocess eller webbserver behövs. Om du laddar ned projektet som ZIP: packa upp hela filen först.
 
@@ -8,7 +8,7 @@ All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och
 
 Alla språkövningar finns i [language-exercises.json](language-exercises.json).
 
-Välj först övningsgrupp och sedan övning/nivå i de två kopplade menyerna ovanför spelen. Grupperna kommer i ordningen Matematik, Bokstäver, Svenska, English, Svenska–engelska och Kinesiska. Matematik 1 (addition) är förvald och ett slumpat spel markeras vid varje sidladdning. Spelsvårigheten väljs separat. Spelen delas in i **Svara snabbt** och **Tid att fundera**, där den senare gruppen innehåller Reversi, Schack och Klossar. Spelkorten visas i fem kolumner på större skärmar, tre på mellanstora och två på smala skärmar, med plats för två rader titeltext. Spelkorten kan väljas med mus, pekskärm eller tangentbord.
+Välj först övningsgrupp och sedan övning/nivå i de två kopplade menyerna ovanför spelen. Grupperna kommer i ordningen Matematik, Bokstäver, Svenska, English, Svenska–engelska och Kinesiska. Matematik 1 (addition) är förvald och ett slumpat spel markeras vid varje sidladdning. Spelsvårigheten väljs separat. Spelen delas in i **Svara snabbt** och **Tid att fundera**, där den senare gruppen innehåller Reversi, Schack, Klossar och Målarateljén. Spelkorten visas i fem kolumner på större skärmar, tre på mellanstora och två på smala skärmar, med plats för två rader titeltext. Spelkorten kan väljas med mus, pekskärm eller tangentbord.
 
 Ordövningarna omfattar svenska och engelska synonymer och motsatser i fyra nivåer vardera: 50 ordpar på nivå 1 och 60 på nivåerna 2–4. Översättning svenska–engelska har åtta nivåer: 50 ordpar på nivåerna 1–3 och 80 på nivåerna 4–8. De högsta nivåerna innehåller avancerat vuxenordförråd. Totalt finns 1 470 ordpar. Varje ordpar har två huvudord och separata listor med godkända alternativa svar i båda riktningarna. Uppgiften visar bara huvudordet. Ett svar visas med mindre text efter tio sekunder. För översättning väljer du svarsspråk med **Översätt till**, även med tangentbord. Konstruktion och underhåll beskrivs i [dev/word-pairs.md](dev/word-pairs.md).
 
@@ -26,6 +26,32 @@ API:t använder Cloudflare Worker + D1. Installationssteg och underhåll finns i
 [cloudflare/README.md](cloudflare/README.md). IP-adresser sparas för framtida moderering
 men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 `resources/highscore-policy.js` och tillämpas både i spelet och i API:t.
+
+## Målarateljén
+
+Ett målarspel utan poäng, tidspress, vinst eller förlust. Klicka på en av åtta färger,
+en liten eller stor pensel eller färghinken. Svara på en uppgift från vald övning
+för att välja och fylla på verktyget. En uppgift visas åt gången, så även läxor med
+ett enda svar fungerar. Fel svar har ingen påföljd. Tangentbord, tal, alternativa
+svar, pinyin och tio sekunders ledtrådsfördröjning fungerar som i andra spel.
+
+Penslarna räcker till ungefär nio hela pappersbredder och färghinken till fem
+fyllningar. Färg förbrukas bara när du målar; samma färg i ett redan fyllt område
+kostar inget. Ett påbörjat penseldrag får avslutas med upp till en extra pappersbredd
+när färgen tar slut. Verktyget vid pekaren och under pappret visar kvarvarande färg.
+Välj samma färg eller verktyg igen för att fylla på. Ångra återställer de senaste
+åtta penseldragen/fyllningarna utan att återställa färgmängden.
+
+**Helskärm** visar spelplan, verktyg, dialoger och svarsfält tillsammans. Ritytan
+behåller alla bildpunkter vid storleksändring. **Färdig** låter dig rama in bilden
+med ett obligatoriskt namn (1–10 bokstäver), fortsätta måla eller bekräfta att
+bilden ska slängas. Ett nytt papper visas först när sparandet lyckas. Ett misslyckat
+sparförsök kan skickas igen. Menyn varnar innan en osparad målning lämnas.
+
+Det gemensamma galleriet visar de sex senaste inramade bilderna i en sidokolumn
+på skärmar bredare än 1 050 px. Klicka på en miniatyr för en större tavla med ram
+och namnskylt. Bilderna är separata från topplistor och spelstatistik.
+Databaslagringen kräver [Cloudflare-uppdateringen för konstverk](cloudflare/README.md#artwork-gallery).
 
 ## Reversi
 
@@ -75,6 +101,7 @@ Varje slutförd skötselåtgärd ger 10 poäng. Flera åtgärder av samma typ i 
 | Reversi | Välj föreslagna drag med dina svar och vinn flest brickor. |
 | Schack | Välj föreslagna drag med dina svar och sätt datorn schackmatt. |
 | Klossar | Para ihop och ta bort alla klossar i mahjong-patiens. |
+| Målarateljén | Måla fritt och rama in dina bilder, helt utan poäng. |
 
 Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övning eller valt språk.
 

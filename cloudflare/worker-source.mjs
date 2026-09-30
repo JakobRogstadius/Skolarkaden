@@ -11,7 +11,7 @@ const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englis
   ...mathExercises, ...languageExercises, 'homework']);
 const PACES = new Set(['gentle', 'steady', 'brave']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1, score_dimensions: 1, admin_statistics: 1, homework: 1, homework_counts: 1 };
+const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1, score_dimensions: 1, admin_statistics: 1, homework: 1, homework_counts: 1, artworks: 1 };
 const EXERCISE_RATING_METHOD = 'top-five-game-percentiles-v1';
 const LANGUAGES = new Set(['sv-SE', 'en-US', 'zh-TW', 'zh-CN']);
 
@@ -62,7 +62,7 @@ async function homeworkCounts(db) {
   return results;
 }
 
-async function readBody(request) {
+async function readBody(request, limit = 2048) {
   // Enforce the actual streamed size, including requests without Content-Length.
   const reader = request.body?.getReader();
   if (!reader) throw new Error('invalid_json');
@@ -72,7 +72,7 @@ async function readBody(request) {
       const { done, value } = await reader.read();
       if (done) break;
       size += value.byteLength;
-      if (size > 2048) { await reader.cancel(); throw new Error('body_too_large'); }
+      if (size > limit) { await reader.cancel(); throw new Error('body_too_large'); }
       chunks.push(value);
     }
   } finally { reader.releaseLock(); }
@@ -80,6 +80,60 @@ async function readBody(request) {
   for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
   try { return JSON.parse(new TextDecoder().decode(bytes)); }
   catch (_) { throw new Error('invalid_json'); }
+}
+
+// Only fixed-size PNGs produced by the drawing canvas are accepted, never SVG/HTML.
+function validArtworkImage(image) {
+  if (typeof image !== 'string' || image.length > 900000 || !/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/.test(image)) return false;
+  let bytes; try { bytes = Uint8Array.from(atob(image.slice(22)), c => c.charCodeAt(0)); } catch (_) { return false; }
+  if (bytes.length < 57 || [137,80,78,71,13,10,26,10].some((v,i) => bytes[i] !== v)) return false;
+  const view = new DataView(bytes.buffer); let offset = 8, hasData = false, first = true;
+  while (offset + 12 <= bytes.length) {
+    const size = view.getUint32(offset), type = String.fromCharCode(...bytes.subarray(offset + 4, offset + 8));
+    if (offset + size + 12 > bytes.length) return false;
+    if (first) {
+      if (type !== 'IHDR' || size !== 13 || view.getUint32(offset + 8) !== 960 || view.getUint32(offset + 12) !== 640 ||
+          bytes[offset + 16] !== 8 || ![2,6].includes(bytes[offset + 17]) || bytes[offset + 18] || bytes[offset + 19] || bytes[offset + 20]) return false;
+      first = false;
+    } else if (type === 'IHDR' || type === 'acTL') return false;
+    if (type === 'IDAT') hasData ||= size > 0;
+    if (type === 'IEND') return size === 0 && hasData && offset + 12 === bytes.length;
+    offset += size + 12;
+  }
+  return false;
+}
+
+async function artworkRequest(request, env, origin, reply) {
+  if (request.method === 'GET') {
+    const { results } = await env.DB.prepare('SELECT player_name, image, created_at FROM artworks ORDER BY sequence DESC LIMIT 6').all();
+    return reply({ artworks: results });
+  }
+  if (request.method !== 'POST') return reply({ error: 'method_not_allowed' }, 405, { Allow: 'GET, POST, OPTIONS' });
+  if (origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_required' }, 403);
+  if (request.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return reply({ error: 'json_required' }, 415);
+  const body = await readBody(request, 902048);
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return reply({ error: 'invalid_artwork' }, 400);
+  const { submission_id: id, image } = body;
+  if (typeof image === 'string' && image.length > 900000) return reply({ error: 'body_too_large' }, 413);
+  const name = typeof body.player_name === 'string' ? body.player_name.normalize('NFC').trim().toUpperCase() : '';
+  if (typeof id !== 'string' || !UUID.test(id) || !/^[\p{L}\p{M} ]{1,10}$/u.test(name) || !validArtworkImage(image)) return reply({ error: 'invalid_artwork' }, 400);
+  if (globalThis.SkolarkadenHighscorePolicy.isBannedName(name)) return reply({ error: 'name_not_allowed' }, 400);
+  if (!await allowSubmission(request, env.DB)) return reply({ error: 'rate_limited' }, 429, { 'Retry-After': '60' });
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify([name, image])));
+  const hash = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+  // D1 batches execute transactionally. Receipt insertion gates concurrent retries;
+  // insertion and retention pruning cannot race or leave seven pictures behind.
+  const result = await env.DB.batch([
+    env.DB.prepare(`INSERT INTO artworks(submission_id, player_name, image)
+      SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM artwork_receipts WHERE submission_id = ?)`)
+      .bind(id, name, image, id),
+    env.DB.prepare('INSERT INTO artwork_receipts(submission_id, payload_hash) VALUES (?, ?) ON CONFLICT(submission_id) DO NOTHING').bind(id, hash),
+    env.DB.prepare('DELETE FROM artworks WHERE sequence NOT IN (SELECT sequence FROM artworks ORDER BY sequence DESC LIMIT 6)'),
+    env.DB.prepare("DELETE FROM artwork_receipts WHERE created_at < datetime('now', '-30 days') AND submission_id NOT IN (SELECT submission_id FROM artworks)")
+  ]);
+  const receipt = await env.DB.prepare('SELECT payload_hash FROM artwork_receipts WHERE submission_id = ?').bind(id).first();
+  if (receipt.payload_hash !== hash) return reply({ error: 'submission_conflict' }, 409);
+  return reply({ ok: true }, result[0].meta.changes ? 201 : 200);
 }
 
 async function allowSubmission(request, db) {
@@ -244,7 +298,7 @@ export default {
     }
     const reply = (body, status = 200, extra = {}) => Response.json(body, { status, headers: { ...headers, ...extra } });
     if (origin && origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_not_allowed' }, 403);
-    if (request.method === 'OPTIONS' && ['/scores', '/stats', '/admin/stats', '/admin/rename'].includes(url.pathname)) {
+    if (request.method === 'OPTIONS' && ['/scores', '/stats', '/admin/stats', '/admin/rename', '/artworks'].includes(url.pathname)) {
       return new Response(null, { status: 204, headers });
     }
     try {
@@ -278,6 +332,7 @@ export default {
         await env.DB.prepare('SELECT client_key FROM score_rate_limits LIMIT 1').all();
         return reply({ ok: true, database: 'connected', api: 'highscores-v1', capabilities: CAPABILITIES });
       }
+      if (url.pathname === '/artworks') return await artworkRequest(request, env, origin, reply);
       if (url.pathname === '/stats') {
         if (request.method !== 'GET') return reply({ error: 'method_not_allowed' }, 405, { Allow: 'GET, OPTIONS' });
         const group = url.searchParams.get('group');

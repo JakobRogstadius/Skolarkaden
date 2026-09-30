@@ -26,9 +26,9 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
     if(file==='resources/app.js'){
       const SC=ctx.Starlight;
       SC.GameSounds=class{unlock(){}play(){}stopCampfire(){}campfire(){}close(){}};
-      for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home','Reversi','Chess','Klossar']){
+      for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home','Reversi','Chess','Klossar','Studio']){
         const Game=SC[name+'Game'];SC[name+'Game']=class extends Game{constructor(options){super(options);currentGame=this;}};
-        SC[name+'Renderer']=class{constructor(canvas,game){this.game=game;}resize(){this.game.resize(1000,700);}destroy(){}scoreEvent(){}};
+        SC[name+'Renderer']=class{constructor(canvas,game){this.game=game;}resize(){this.game.resize?.(1000,700);}destroy(){}scoreEvent(){}};
       }
       const Scores=SC.Highscores;SC.Highscores=class extends Scores{begin(value){selection=value;super.begin(value);}};
       const Input=SC.AnswerInput;SC.AnswerInput=class extends Input{configure(value){captures.push(value);super.configure(value);}};
@@ -47,7 +47,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
     return Response.json({leaderboard:board,scores:top===null?[]:[{score:board==='v2:chess'?1234:top}]});
   });
   await settle();
-  for(const radio of hud.radios){
+  for(const radio of hud.radios.filter(r=>r.value!=='studio')){
     radio.dispatchEvent(new Event('change'));hud.click('start');await settle();
     assert.equal(hud.fields['setup-error'].textContent,'');
     assert.equal(hud.fields.best.textContent,'BÄSTA '+(radio.value==='chess'?(1234).toLocaleString('sv-SE'):top.toLocaleString('sv-SE')),radio.value+' shows online record');
@@ -55,6 +55,11 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
     assert(hud.requests.at(-1).includes(encodeURIComponent(hud.ctx.SkolarkadenHighscorePolicy.versions[radio.value]+':'+radio.value+':')));
     hud.click('pause');hud.click('pause-menu');top++;
   }
+  const studio=boot();await settle();studio.radios.find(r=>r.value==='studio').dispatchEvent(new Event('change'));studio.click('start');await settle();
+  assert.equal(studio.fields['setup-error'].textContent,'');assert.equal(studio.requests.length,0,'studio never reads scores');assert.equal(studio.selection,undefined,'studio never starts score recording');
+  assert(studio.fields.answer.disabled);assert(studio.fields['leaderboard-open'].hidden);assert(studio.fields.pace.closest().hidden);
+  studio.game.choose('color',2);assert(!studio.fields.answer.disabled);studio.fields.answer.value=studio.game.targets[0].item.answer;studio.fields['answer-form'].dispatchEvent(new Event('submit',{cancelable:true}));studio.game.update(.05);assert(studio.fields.answer.disabled);assert.equal(studio.game.color,2);
+  studio.click('pause');studio.click('resume');await settle();assert(studio.fields.answer.disabled);studio.click('pause');studio.click('pause-menu');assert.equal(studio.posts.length,0);
   top=null;hud.click('start');await settle();assert.equal(hud.fields.best.textContent,'BÄSTA 0','empty board');
   hud.click('pause');hud.click('pause-menu');fail=true;hud.click('start');await settle();assert.equal(hud.fields.best.textContent,'BÄSTA —','failure is not zero');
   hud.click('pause');hud.click('pause-menu');fail=false;pending=[];hud.click('start');await settle();assert.equal(hud.fields.best.textContent,'BÄSTA …');
@@ -98,7 +103,7 @@ function boot(search='',fetchHomework=async()=>Response.json(dictionary),fetchSc
   for(const id of ['exercise-group','lesson','input-kind','language'])assert(app.fields[id].disabled,id+' must be locked');
   assert.equal(app.fields['input-kind'].value,'typing');assert.equal(app.fields.language.value,'sv-SE');assert.equal(app.fields.lesson.value,'homework');
   assert.deepEqual(app.fields.lesson.options.map(o=>o.value),['homework']);assert.equal(app.fields['homework-info'].textContent,'Läxa · sv-001');
-  for(const radio of app.radios){
+  for(const radio of app.radios.filter(r=>r.value!=='studio')){
     radio.dispatchEvent(new Event('change'));app.fields.pace.value='brave';app.click('start');await settle();
     assert.equal(app.fields['setup-error'].textContent,'');assert.equal(app.game.mode,'homework');assert.equal(app.game.lang,'sv-SE');assert.equal(app.game.pace,'brave');
     assert.deepEqual(Array.from(app.game.items,i=>i.answer),['hej','hopp','tekopp']);assert.equal(app.captures.at(-1).enabled,false);
