@@ -103,7 +103,6 @@ body.playing.voice-play .arena{height:clamp(540px,calc(100dvh - 82px),900px)}
 #menu .setup-grid{margin:0 0 18px;grid-template-columns:minmax(120px,1fr) minmax(230px,1.8fr) minmax(110px,.85fr) minmax(120px,.9fr) minmax(140px,1fr);gap:10px 12px}
 #menu .setup-help{margin:0}
 #menu #mode-description{grid-column:1 / 4}
-#menu #setup-note{grid-column:4 / 6}
 #menu .game-picker{display:block;min-width:0}
 #menu .game-section+.game-section{margin-top:20px}
 #menu .game-section h2{font-size:23px;margin:0 0 10px}
@@ -115,13 +114,16 @@ body.playing.voice-play .arena{height:clamp(540px,calc(100dvh - 82px),900px)}
 #menu .game-card .card-art{position:static;width:100%;height:68px;gap:0}
 #menu .card-title{display:flex;align-items:center;justify-content:center;min-height:2.4em;font-size:18px;line-height:1.2;overflow-wrap:anywhere}
 #menu .menu-bottom{margin-top:16px}
+#menu .menu-bottom #setup-note{flex:1;min-width:0;margin-right:auto}
+#menu .menu-bottom>button{flex-shrink:0}
 @media(max-width:850px){
   #menu .setup-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  #menu #mode-description,#menu #setup-note{grid-column:1 / -1}
+  #menu #mode-description{grid-column:1 / -1}
   #menu .game-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   #menu .card-title{font-size:16px}
 }
 @media(max-width:599px){
+  #menu .menu-bottom #setup-note{flex-basis:100%}
   #menu .game-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   #menu .game-card,#menu .game-card:has(input:checked){min-height:124px;padding:8px 6px}
   #menu .game-card .card-art{height:60px}

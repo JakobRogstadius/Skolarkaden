@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#142b35"><title>Skolarkaden</title>
 <link rel="icon" type="image/svg+xml" sizes="any" href="resources/favicon.svg?v=e06398b4f9bb">
-<link rel="stylesheet" href="resources/styles.css?v=e7c02352c8c3">
+<link rel="stylesheet" href="resources/styles.css?v=aaca4b510f9b">
 <link rel="stylesheet" href="resources/reversi.css?v=aceee33d36f3">
 <link rel="stylesheet" href="resources/chess.css?v=f0e5373c17d5">
 <link rel="stylesheet" href="resources/klossar.css?v=a4b2e967b9be">
@@ -24,7 +24,6 @@
 <div class="setup-field"><label for="input-kind">Svara med<select id="input-kind"><option value="typing">Tangentbord</option><option value="browser">Röst</option></select></label></div>
 <div class="setup-field" hidden><label for="language"><span id="language-label">Talspråk</span><select id="language" aria-describedby="setup-note" disabled><option value="sv-SE">Svenska</option><option value="en-US">Engelska</option><option value="zh-TW">Mandarin · Taiwan</option><option value="zh-CN">Mandarin · Kina</option></select></label></div>
 <p class="setup-help" id="mode-description" aria-live="polite"></p>
-<p class="setup-help" id="setup-note"></p>
 </div>
 <fieldset class="game-picker" aria-label="Spel">
 <section class="game-section" aria-labelledby="quick-games-title">
@@ -51,7 +50,7 @@
 </div>
 </section>
 </fieldset>
-<div class="menu-bottom"><button id="leaderboard-open" class="quiet">Topplista</button><button class="primary start" id="start">Börja spela <span aria-hidden="true">→</span></button></div>
+<div class="menu-bottom"><p class="setup-help" id="setup-note"></p><button id="leaderboard-open" class="quiet">Topplista</button><button class="primary start" id="start">Börja spela <span aria-hidden="true">→</span></button></div>
 <p id="setup-error" class="error" role="alert"></p>
 </section>
 <section id="play" hidden>
