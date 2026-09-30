@@ -1,13 +1,18 @@
 /* Calm painting practice. Questions buy paint; there is no score or end state. */
 (function(root){
 'use strict';const SC=root.Starlight;
-const colors=[['Svart','#263238'],['Vit','#ffffff'],['Röd','#e64b4b'],['Orange','#f39b36'],['Gul','#f4cf45'],['Grön','#409a64'],['Blå','#4088ce'],['Lila','#9662ba']];
+// Rows are light, standard and dark; each column keeps the same hue.
+const colors=[
+ ['Vit','#ffffff'],['Ljusröd','#f4a6a6'],['Ljusorange','#ffd29a'],['Ljusgul','#fff1a6'],['Ljusgrön','#a4d8ad'],['Ljusblå','#a9d1f4'],['Ljuslila','#d4b5eb'],
+ ['Grå','#8d9497'],['Röd','#e64b4b'],['Orange','#f39b36'],['Gul','#f4cf45'],['Grön','#409a64'],['Blå','#4088ce'],['Lila','#9662ba'],
+ ['Svart','#263238'],['Mörkröd','#ab2935'],['Mörkorange','#b96518'],['Mörkgul','#b08b19'],['Mörkgrön','#23623f'],['Mörkblå','#245486'],['Mörklila','#613781']
+];
 const tools=[{id:'small',name:'Liten pensel',size:8},{id:'large',name:'Stor pensel',size:28},{id:'bucket',name:'Färghink',size:0}];
 class StudioGame{
  constructor({queue=new SC.AnswerQueue(),onEvent=()=>{},random=Math.random}={}){Object.assign(this,{queue,onEvent,random,state:'menu',revision:0});}
  emit(type){this.onEvent({type});}
  start({mode='letters',pace='gentle',lang='sv-SE',items=null,uppercase=false}={}){
-  Object.assign(this,{mode,pace,lang,uppercase,clock:0,state:'playing',color:0,tool:'small',paint:0,pending:null,targets:[],message:'Välj en färg eller pensel och svara på uppgiften för att fylla på färg.'});
+  Object.assign(this,{mode,pace,lang,uppercase,clock:0,state:'playing',color:14,tool:'small',paint:0,pending:null,targets:[],message:'Välj en färg eller pensel och svara på uppgiften för att fylla på färg.'});
   this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Övningen behöver minst ett svar.');this.queue.clear();this.revision++;
  }
  getTargets(){return this.targets;}getAvailableTargets(){return this.targets;}getActiveEntries(){return [];}getTaskStates(){return new Map();}

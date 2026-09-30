@@ -29,16 +29,20 @@ men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 
 ## Målarateljén
 
-Ett målarspel utan poäng, tidspress, vinst eller förlust. Klicka på en av åtta färger,
-en liten eller stor pensel eller färghinken. Svara på en uppgift från vald övning
+Ett målarspel utan poäng, tidspress, vinst eller förlust. Välj bland 21 färger i sju grupper med ljusa, vanliga och mörka nyanser,
+en liten eller stor pensel eller färghinken. Vit och svart är gråskalans ljusaste
+och mörkaste nyanser. Knapparna visar ikoner, med namn som pekhjälp och för skärmläsare. Svara på en uppgift från vald övning
 för att välja och fylla på verktyget. En uppgift visas åt gången, så även läxor med
 ett enda svar fungerar. Fel svar har ingen påföljd. Tangentbord, tal, alternativa
 svar, pinyin och tio sekunders ledtrådsfördröjning fungerar som i andra spel.
 
-Penslarna räcker till ungefär nio hela pappersbredder och färghinken till fem
-fyllningar. Färg förbrukas bara när du målar; samma färg i ett redan fyllt område
-kostar inget. Ett påbörjat penseldrag får avslutas med upp till en extra pappersbredd
-när färgen tar slut. Verktyget vid pekaren och under pappret visar kvarvarande färg.
+Varje penselpåfyllning räcker till tre pappersbredder (2 880 bildpunkter).
+Färgförbrukningen följer ritad sträcka, oberoende av antalet musrörelsehändelser.
+Ett klick eller ett kortare penseldrag kostar som 30 bildpunkters ritad sträcka;
+längre penseldrag kostar sin faktiska längd. Penseln stannar när färgen tar slut.
+Färghinken räcker till fem fyllningar. Färg förbrukas bara när du målar; samma
+färg i ett redan fyllt område kostar inget. Verktyget vid pekaren och under
+pappret visar kvarvarande färg.
 Välj samma färg eller verktyg igen för att fylla på. Ångra återställer de senaste
 åtta penseldragen/fyllningarna utan att återställa färgmängden.
 
