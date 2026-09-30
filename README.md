@@ -40,7 +40,9 @@ Varje penselpåfyllning räcker till tre pappersbredder (2 880 bildpunkter).
 Färgförbrukningen följer ritad sträcka, oberoende av antalet musrörelsehändelser.
 Ett klick eller ett kortare penseldrag kostar som 30 bildpunkters ritad sträcka;
 längre penseldrag kostar sin faktiska längd. Penseln stannar när färgen tar slut.
-Färghinken räcker till fem fyllningar. Färg förbrukas bara när du målar; samma
+Färghinken räcker till fem fyllningar. Kantutjämnade pixlar färgas om genom att
+byta ut den gamla bakgrundsfärgens andel, så att tunna ofyllda kanter undviks
+utan att pensellinjens täckning ändras. Färg förbrukas bara när du målar; samma
 färg i ett redan fyllt område kostar inget. Verktyget vid pekaren och under
 pappret visar kvarvarande färg.
 Välj samma färg eller verktyg igen för att fylla på. Ångra återställer de senaste

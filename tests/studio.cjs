@@ -38,3 +38,34 @@ for(const tool of ['small','large']){
  const partial=brush(tool);partial.segment({x:0,y:0},{x:2800,y:0});partial.segment({x:2800,y:0},{x:3000,y:0});assert.equal(partial.game.paint,0);assert(Math.abs(partial.ctx.last[0]-2880)<1e-6,'the last segment ends exactly when paint is exhausted');
 }
 console.log('PASS distance-based paint: 30-pixel dots, event-independent strokes, three-width refill');
+
+// Synthetic antialias ramps around a one-pixel outline: recolour only the
+// background component on the clicked side, without shrinking/crossing the ink.
+const rgb=hex=>hex.slice(1).match(/../g).map(c=>parseInt(c,16));
+const mix=(background,ink,a)=>background.map((c,i)=>Math.round(c*(1-a)+ink[i]*a));
+function edgePicture(background,ink){
+ const image={width:9,height:5,data:new Uint8ClampedArray(9*5*4)};
+ for(let y=0;y<5;y++)for(let x=0;x<9;x++)image.data.set([...mix(background,ink,[0,0,.25,.75,1,.75,.25,0,0][x]),255],(y*9+x)*4);
+ return image;
+}
+function closePixel(image,x,expected,tolerance=3){const actual=[...image.data.slice((2*9+x)*4,(2*9+x)*4+3)];assert(actual.every((v,i)=>Math.abs(v-expected[i])<=tolerance),`${actual} != ${expected}`);}
+for(const [,hex] of SC.studioColors){
+ if(hex==='#ffffff')continue;
+ const ink=rgb(hex),ramp=edgePicture([255,255,255],ink),original=ramp.data.slice();
+ SC.studioFill(ramp,0,2,hex);
+ for(const x of [0,1,2,3,4])closePixel(ramp,x,ink);
+ for(let y=0;y<5;y++)assert.deepEqual(ramp.data.slice((y*9+4)*4,(y*9+9)*4),original.slice((y*9+4)*4,(y*9+9)*4),'solid outline and opposite side stay unchanged');
+}
+for(const [background,ink] of [[[255,255,255],rgb('#263238')],[rgb('#263238'),[255,255,255]]]){
+ const ramp=edgePicture(background,ink);
+ for(const fill of ['#4088ce','#f4cf45','#e64b4b']){
+  SC.studioFill(ramp,0,2,fill);
+  closePixel(ramp,2,mix(rgb(fill),ink,.25));closePixel(ramp,3,mix(rgb(fill),ink,.75));closePixel(ramp,4,ink,0);closePixel(ramp,7,background,0);
+ }
+}
+console.log('PASS antialiased fill: every outline colour, thin boundaries, light-on-dark and repeated recolouring');
+
+const coincidentalGrey=edgePicture([255,255,255],rgb('#263238'));
+coincidentalGrey.data.set([141,148,151,255],(2*9+2)*4);
+SC.studioFill(coincidentalGrey,0,2,'#263238');closePixel(coincidentalGrey,2,rgb('#263238'));
+console.log('PASS edge blends that coincide with a different palette colour');

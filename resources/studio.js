@@ -38,17 +38,63 @@ class StudioGame{
   this.message='Nu kan du måla!';this.revision++;this.emit('studio-ready');
  }
 }
-// Iterative four-connected fill: bounded memory, tolerant of antialiasing, no recursion.
+// Select a flat region, then replace its colour inside antialiased edge pixels.
+// Unlike widening the colour tolerance, this keeps the solid outline intact.
 function floodFill(image,x,y,hex){
  const {width:w,height:h,data}=image;x=Math.floor(x);y=Math.floor(y);if(x<0||y<0||x>=w||y>=h)return 0;
  const start=(y*w+x)*4,old=Array.from(data.subarray(start,start+3)),color=hex.match(/[a-f\d]{2}/gi).map(n=>parseInt(n,16));
  if(old.every((v,i)=>Math.abs(v-color[i])<=24))return 0;
- const seen=new Uint8Array(w*h),queue=new Int32Array(w*h);let head=0,tail=1,count=0;queue[0]=y*w+x;seen[queue[0]]=1;
- while(head<tail){const p=queue[head++],i=p*4;if(old.some((v,k)=>Math.abs(v-data[i+k])>40))continue;
-  data[i]=color[0];data[i+1]=color[1];data[i+2]=color[2];data[i+3]=255;count++;
+ const source=data.slice(),seen=new Uint8Array(w*h),queue=new Int32Array(w*h),edges=[];
+ const packed=i=>(source[i]<<16)|(source[i+1]<<8)|source[i+2];
+ // Brushes are opaque and use this palette. Nearby paint colours identify the
+ // ink mixed into an edge, including pale outlines on a dark background.
+ const solid=new Set(colors.map(([,hex])=>parseInt(hex.slice(1),16)));solid.add(packed(start));
+ let head=0,tail=1,count=0;queue[0]=y*w+x;seen[queue[0]]=1;
+ while(head<tail){const p=queue[head++],i=p*4;
+  if(old.some((v,k)=>Math.abs(v-source[i+k])>2)){edges.push(p);continue;}
+  seen[p]=2;data[i]=color[0];data[i+1]=color[1];data[i+2]=color[2];data[i+3]=255;count++;
   const add=n=>{if(!seen[n]){seen[n]=1;queue[tail++]=n;}};
   if(p%w)add(p-1);if(p%w<w-1)add(p+1);if(p>=w)add(p-w);if(p<w*(h-1))add(p+w);
- }return count;
+ }
+ // A smooth edge is C = a*ink + (1-a)*old. Find the nearby solid ink and
+ // substitute the new background component, preserving the ink's coverage.
+ // Read only the original pixels so scan order cannot affect the result.
+ for(let pass=0,at=0;pass<2;pass++){
+  const end=edges.length;
+  for(;at<end;at++){
+   const p=edges[at],i=p*4,px=p%w,py=Math.floor(p/w),pixel=packed(i);
+   // A blend can coincidentally equal another swatch (notably grey on black
+   // outlines). Preserve solid paint blocks, rather than every palette match.
+   let solidBlock=false;
+   if(solid.has(pixel))for(let yy=Math.max(0,py-1);yy<=Math.min(h-2,py);yy++)for(let xx=Math.max(0,px-1);xx<=Math.min(w-2,px);xx++){
+    const j=(yy*w+xx)*4;if(packed(j)===pixel&&packed(j+4)===pixel&&packed(j+w*4)===pixel&&packed(j+w*4+4)===pixel)solidBlock=true;
+   }
+   if(solidBlock)continue;
+   const dr=source[i]-old[0],dg=source[i+1]-old[1],db=source[i+2]-old[2];
+   const distance=dr*dr+dg*dg+db*db;let bestError=Infinity,bestContrast=0,coverage=1;
+   for(let yy=Math.max(0,py-2);yy<=Math.min(h-1,py+2);yy++)for(let xx=Math.max(0,px-2);xx<=Math.min(w-1,px+2);xx++){
+    const q=yy*w+xx,j=q*4;if(seen[q]===2||!solid.has(packed(j)))continue;
+    const r=source[j]-old[0],g=source[j+1]-old[1],b=source[j+2]-old[2],contrast=r*r+g*g+b*b;
+    if(contrast<=distance)continue;
+    const a=(dr*r+dg*g+db*b)/contrast;if(a<=0||a>=1)continue;
+    const er=dr-a*r,eg=dg-a*g,eb=db-a*b,error=er*er+eg*eg+eb*eb;
+    if(Math.max(Math.abs(er),Math.abs(eg),Math.abs(eb))>3)continue;
+    if(error<bestError-1e-6||(Math.abs(error-bestError)<1e-6&&contrast>bestContrast)){bestError=error;bestContrast=contrast;coverage=a;}
+   }
+   if(!Number.isFinite(bestError))continue;
+   for(let k=0;k<3;k++)data[i+k]=Math.round(source[i+k]+(1-coverage)*(color[k]-old[k]));
+   count++;
+   // Cover the second antialias pixel at diagonals/corners, but never grow
+   // through solid ink or back out towards the background on its other side.
+   if(pass===0)for(let yy=Math.max(0,py-1);yy<=Math.min(h-1,py+1);yy++)for(let xx=Math.max(0,px-1);xx<=Math.min(w-1,px+1);xx++){
+    const q=yy*w+xx,j=q*4;if(seen[q])continue;
+    const r=source[j]-old[0],g=source[j+1]-old[1],b=source[j+2]-old[2];
+    if(r*r+g*g+b*b<distance)continue;
+    seen[q]=1;edges.push(q);
+   }
+  }
+ }
+ return count;
 }
 SC.StudioGame=StudioGame;SC.studioColors=colors;SC.studioTools=tools;SC.studioFill=floodFill;
 })(globalThis);
