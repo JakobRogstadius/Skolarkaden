@@ -24,13 +24,13 @@ test('Twenty-nine exercises have the requested order and complete, distinct dict
   const t=chinese.slice(0,4).flatMap(m=>Array.from(SC.modes[m].items,i=>i.answer)),s=chinese.slice(4).flatMap(m=>Array.from(SC.modes[m].items,i=>i.answer));assert.equal(t.indexOf(a),s.indexOf(b));assert(t.includes(a));
  }
 });
-test('Every Mandarin entry has a paired Swedish meaning, used only as a hint',()=>{
+test('Every Mandarin entry has a paired Swedish meaning accepted as an answer',()=>{
  for(let level=0;level<4;level++){
   const trad=SC.modes[chinese[level]].items,simpl=SC.modes[chinese[level+4]].items;
   for(let i=0;i<trad.length;i++){
    assert.equal(typeof trad[i].translation,'string');assert(trad[i].translation.trim(),trad[i].answer);
    assert.equal(trad[i].translation,simpl[i].translation,trad[i].answer);
-   assert(!SC.matches(trad[i].translation,trad[i],chinese[level]),trad[i].answer+' Swedish accepted as answer');
+   assert(SC.matches(trad[i].translation,trad[i],chinese[level]),trad[i].answer+' Swedish rejected as answer');
   }
  }
  for(const [answer,translation] of [['水','vatten'],['牛奶','mjölk'],['老師','lärare'],['下雨','regna'],['書包','skolväska']])assert.equal(SC.modes.chineseTrad4.items.find(i=>i.answer===answer).translation,translation);
@@ -120,7 +120,7 @@ test('Every game supports every math lesson, fixed across correct answers, mista
 });
 test('All Chinese lessons retain delayed pinyin, queued-answer suppression and tone-free matching in every game',()=>{
  for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home'])for(const mode of chinese){
-  const {g,target}=firstTarget(name,mode);assert(!SC.pinyinHints(g).has(target));g.clock=target.appearedAt+5.1;assert(SC.pinyinHints(g).has(target));target.pinyinRevealed=false;
+  const {g,target}=firstTarget(name,mode);assert(!SC.pinyinHints(g).has(target));g.clock=target.appearedAt+10.1;assert(SC.pinyinHints(g).has(target));target.pinyinRevealed=false;
   g.queue.enqueue(target.item.hint,'speech');assert(!SC.pinyinHints(g).has(target),name+'/'+mode+' queued');
  }
  for(const mode of ['chinese','chineseSimpl1'])for(const language of ['zh-CN','zh-TW']){

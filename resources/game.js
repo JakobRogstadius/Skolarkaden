@@ -96,7 +96,7 @@
     for(const entry of game.queue.items){const target=targets.find(t=>!handled.has(t)&&SC.matches(entry.text,t.item,game.mode,game.lang,entry.source));if(target)handled.add(target);}
     for(const target of targets){
       if(!target.item.hint&&!target.item.translation)continue;
-      if(game.state==='playing'&&target.appearedAt!==undefined&&game.clock-target.appearedAt>=5-1e-8&&!handled.has(target))target.pinyinRevealed=true;
+      if(game.state==='playing'&&target.appearedAt!==undefined&&game.clock-target.appearedAt>=10-1e-8&&!handled.has(target))target.pinyinRevealed=true;
       // Keep a revealed hint until the task disappears; queue changes must not resize it.
       if(target.pinyinRevealed)hints.add(target);
     }return hints;

@@ -31,7 +31,9 @@ test('Every compound accepts Hanzi and spaced, joined, accented and numbered pin
   const numbered=i.hint.split(' ').map(SC.tonelessPinyinNumber),plain=numbered.map(s=>s.slice(0,-1));
   for(const text of [i.answer,i.hint,i.hint.replace(/ /g,''),...i.aliases])assert(SC.matches(text,i,mode,SC.modes[mode].lang,'text'),i.answer+' / '+text);
   for(const text of [plain.join(' ').toUpperCase(),plain.join(''),numbered.join(' '),numbered.join(''),i.hint.normalize('NFD')])assert(SC.matches(text,i,mode,SC.modes[mode].lang,'speech'),i.answer+' / '+text);
-  assert(!SC.matches(Array.from(i.answer)[0],i,mode,SC.modes[mode].lang,'speech'));assert(!SC.matches(plain[0],i,mode,SC.modes[mode].lang,'speech'));
+  assert(!SC.matches(Array.from(i.answer)[0],i,mode,SC.modes[mode].lang,'speech'));
+  // "ni" is also the complete Swedish translation of 你們 / 你们.
+  assert.equal(SC.matches(plain[0],i,mode,SC.modes[mode].lang,'speech'),i.translation==='ni');
  }
 });
 test('Compound speech accepts paired scripts and tone-free homophones, with word-specific pronunciations',()=>{

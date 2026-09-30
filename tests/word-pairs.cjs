@@ -106,15 +106,15 @@ function render(name,g){
   const drawn=[],stack=[],c=new Proxy({font:'16px system-ui',save(){stack.push(this.font);},restore(){this.font=stack.pop();},measureText(text){return {width:String(text).length*Number(this.font.match(/[\d.]+/)?.[0]||16)*.6};},fillText(text,x,y){drawn.push({text,x,y,font:this.font});}},{get:(o,k)=>k in o?o[k]:k==='createLinearGradient'||k==='createRadialGradient'?()=>({addColorStop(){}}):()=>{}});
   const renderer=Object.create(SC[name+'Renderer'].prototype);Object.assign(renderer,{game:g,ctx:c,dpr:1,stars:[],reduced:true});renderer.draw();return drawn;
 }
-test('All nine games accept alternate answers and render each new exercise with a five-second hint',()=>{
+test('All nine games accept alternate answers and render each new exercise with a ten-second hint',()=>{
   for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home'])for(const mode of modes){
     const g=setup(name,mode,SC.modes[mode].lang),target=g.getTargets()[0];
     // Deterministic task with an alternate answer and no extra visual text.
     target.item=SC.vocabulary(mode,g.lang).find(i=>i.aliases.length&&i.answer!==i.label);
     const task=target.item;assert(task,name+'/'+mode);assert(!SC.pinyinHints(g).has(target));
     let drawn=render(name,g);assert.equal(task.promptContext,undefined);assert.equal(SC.labelHeight(task,34),34,name+' an unrevealed task must keep its compact height');
-    g.clock=target.appearedAt+4.99;assert(!SC.pinyinHints(g).has(target));
-    g.clock=target.appearedAt+5;assert(SC.pinyinHints(g).has(target));drawn=render(name,g);
+    g.clock=target.appearedAt+9.99;assert(!SC.pinyinHints(g).has(target));
+    g.clock=target.appearedAt+10;assert(SC.pinyinHints(g).has(target));drawn=render(name,g);
     const main=drawn.find(t=>t.text===task.label),hint=drawn.find(t=>t.text===task.hint&&t.y>main?.y);
     assert(main&&hint,name+'/'+mode+' missing answer hint');assert(Number(hint.font.match(/[\d.]+/)[0])<Number(main.font.match(/[\d.]+/)[0]),name+' hint must be smaller');
     target.pinyinRevealed=false;

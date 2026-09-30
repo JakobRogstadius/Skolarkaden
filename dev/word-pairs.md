@@ -2,7 +2,7 @@
 
 Each of the seven word-pair exercises in [language-exercises.json](../language-exercises.json) contains 50 pairs under `pairs`. A row is `[main A, main B, alternatives for A, alternatives for B]`. For a prompt of A, accept B and B's alternatives. For a prompt of B, accept A and A's alternatives. Only the two main words become prompts. The lists are independent: an accepted alternative is not automatically a synonym or translation of every other accepted answer.
 
-The task bubble contains only the main word. One preferred answer appears below it in smaller text after five playable seconds. Existing pause and queued-answer rules apply. There are no context labels, word-class labels or example sentences.
+The task bubble contains only the main word. One preferred answer appears below it in smaller text after ten playable seconds. Existing pause and queued-answer rules apply. There are no context labels, word-class labels or example sentences.
 
 Prefer main words with clear meanings. Where an ordinary word has several meanings, include the other valid answers explicitly: `book` accepts `bok` and `boka`; `letter` accepts `bokstav` and `brev`. `Penna` accepts `pen` or `pencil`, but the reverse main word is `pencil`, for which `penna` and `blyertspenna` are accepted. Alternatives such as `mad` and `close` are retained while clearer words are used as synonym prompts.
 

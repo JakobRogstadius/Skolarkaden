@@ -27,7 +27,7 @@ const failures=[];
 for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home'])for(const width of [370,1100])for(const mode of ['swedish-synonyms','english-opposites','translation-sv-en-1']){
   const {g,target}=setup(name,width,mode),view=renderer(name,g);
   view.draw();const before={...view.drawn.find(t=>t.text==='ordpar')},boxBefore={...view.boxes.find(b=>b.item===target.item)};
-  g.clock=target.appearedAt+5;view.draw();
+  g.clock=target.appearedAt+10;view.draw();
   const after=view.drawn.find(t=>t.text==='ordpar'),hint=view.drawn.find(t=>t.text==='svar'),boxAfter=view.boxes.find(b=>b.item===target.item);
   try{
     assert(after&&hint,name+' missing text');assert(hint.y>after.y);assert(boxAfter.h>boxBefore.h);
@@ -46,7 +46,7 @@ for(const width of [370,1100]){
   const targets=Object.values(pot.requests);assert.equal(targets.length,3);
   targets.forEach((t,i)=>{t.item={...t.item,label:'ordpar'+i,answer:'svar'+i,hint:'svar'+i};t.appearedAt=i;});
   g.clock=0;const view=renderer('Garden',g);view.draw();const before=targets.map(t=>({...view.drawn.find(d=>d.text===t.item.label)}));
-  for(const clock of [5,6,7]){g.clock=clock;view.draw();targets.forEach((t,i)=>{
+  for(const clock of [10,11,12]){g.clock=clock;view.draw();targets.forEach((t,i)=>{
     const after=view.drawn.find(d=>d.text===t.item.label);assert(Math.abs(after.x-before[i].x)<.001&&Math.abs(after.y-before[i].y)<.001,'stacked garden word moved');
   });}
 }
