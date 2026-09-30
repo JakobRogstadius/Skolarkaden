@@ -54,9 +54,14 @@ class StudioRenderer{
  undo(){if(this.game.state!=='playing'||this.game.pending||!this.undoHistory.length)return;this.endStroke();const previous=this.undoHistory.pop();this.ctx.putImageData(previous.image,0,0);this.dirty=previous.dirty;this.savePayload=null;this.key=null;}
  point(e){const r=this.paper.getBoundingClientRect();return {x:(e.clientX-r.left)*960/r.width,y:(e.clientY-r.top)*640/r.height,cssX:e.clientX-r.left,cssY:e.clientY-r.top};}
  positionCursor(e){const p=this.point(e);this.cursor.style.left=p.cssX+'px';this.cursor.style.top=p.cssY+'px';this.cursor.hidden=e.pointerType==='touch'||this.game.state!=='playing'||!!this.dialog?.open;return p;}
+ nudgeQuestion(){
+  this.draw();const question=this.node.querySelector('.studio-question');
+  question.style.setProperty('--studio-refill-color',SC.studioColors[this.game.pending.value][1]);
+  question.classList.remove('studio-refill-nudge');void question.offsetWidth;question.classList.add('studio-refill-nudge');
+ }
  down(e){
   const g=this.game;if(e.button!==0||!e.isPrimary||g.state!=='playing'||this.dialog?.open||this.pointerId!==undefined)return;
-  e.preventDefault();const p=this.positionCursor(e);if(g.paint<=0){if(!g.pending)g.choose('color',g.color);return;}
+  e.preventDefault();const p=this.positionCursor(e);if(g.paint<=0){if(!g.pending)g.choose('color',g.color);this.nudgeQuestion();return;}
   if(g.pending)g.cancelQuestion();
   const snapshot=this.snapshot();if(g.tool==='bucket'){
    const image=this.ctx.getImageData(0,0,960,640);if(SC.studioFill(image,p.x,p.y,SC.studioColors[g.color][1])){this.remember(snapshot);this.ctx.putImageData(image,0,0);g.consume(.2);}return;
@@ -85,14 +90,14 @@ class StudioRenderer{
   const hints=SC.pinyinHints(g),key=g.revision+':'+g.state+':'+this.dirty+':'+this.undoHistory.length+':'+hints.size;if(key===this.key)return;this.key=key;
   const q=s=>this.node.querySelector(s),color=SC.studioColors[g.color][1];
   this.colorButtons.forEach((b,i)=>{b.setAttribute('aria-pressed',String(g.color===i));b.classList.toggle('pending',g.pending?.type==='color'&&g.pending.value===i);});
-  this.toolButtons.forEach((b,i)=>{b.setAttribute('aria-pressed',String(g.tool===SC.studioTools[i].id));b.classList.toggle('pending',g.pending?.value===SC.studioTools[i].id);});
+  this.toolButtons.forEach((b,i)=>b.setAttribute('aria-pressed',String(g.tool===SC.studioTools[i].id)));
   this.cursor.style.transform=g.tool==='bucket'?'translate(-5px,-48px)':'translate(-22px,-48px)';this.cursor.innerHTML=toolArt(g.tool,color,g.paint);
   const reward=q('.studio-paint-tool');
   if(g.pending?.type==='color'){reward.innerHTML='<span class="studio-reward-color" style="background:'+SC.studioColors[g.pending.value][1]+'"></span>';reward.setAttribute('aria-label',SC.studioColors[g.pending.value][0]);}
-  else if(g.pending?.type==='tool'){reward.innerHTML=toolArt(g.pending.value,color,1);reward.setAttribute('aria-label',SC.studioTools.find(t=>t.id===g.pending.value).name);}
   else{reward.innerHTML=toolArt(g.tool,color,g.paint);reward.setAttribute('aria-label',Math.round(g.paint*100)+' procent färg kvar');}
   q('.studio-status').textContent=g.message;q('.studio-undo').disabled=!this.undoHistory.length||!!g.pending;q('.studio-finish').disabled=!this.dirty;
   const target=g.targets[0];this.play.style.setProperty('--studio-question-extra',target?.item.diagram?'78px':'0px');const question=q('.studio-question');question.replaceChildren();q('.studio-hint').textContent='';
+  if(!target)question.classList.remove('studio-refill-nudge');
   if(target){if(target.item.diagram){const diagram=el('canvas','studio-diagram');diagram.width=280;diagram.height=180;diagram.setAttribute('aria-label',target.item.label);SC.drawMathDiagram(diagram.getContext('2d'),target.item.diagram,{x:0,y:0,w:280,h:180});question.append(diagram);}else question.textContent=target.item.label;
    if(hints.has(target))q('.studio-hint').textContent=[target.item.hint,target.item.translation].filter(Boolean).join(' · ');
   }

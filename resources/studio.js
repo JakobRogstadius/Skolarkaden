@@ -12,17 +12,20 @@ class StudioGame{
  constructor({queue=new SC.AnswerQueue(),onEvent=()=>{},random=Math.random}={}){Object.assign(this,{queue,onEvent,random,state:'menu',revision:0});}
  emit(type){this.onEvent({type});}
  start({mode='letters',pace='gentle',lang='sv-SE',items=null,uppercase=false}={}){
-  Object.assign(this,{mode,pace,lang,uppercase,clock:0,state:'playing',color:14,tool:'small',paint:0,pending:null,targets:[],message:'Välj en färg eller pensel och svara på uppgiften för att fylla på färg.'});
+  Object.assign(this,{mode,pace,lang,uppercase,clock:0,state:'playing',color:14,tool:'small',paint:0,pending:null,targets:[],message:'Välj en färg och svara på uppgiften för att fylla på färg.'});
   this.items=SC.beginPractice(this,items);if(!this.items.length)throw new Error('Övningen behöver minst ett svar.');this.queue.clear();this.revision++;
  }
  getTargets(){return this.targets;}getAvailableTargets(){return this.targets;}getActiveEntries(){return [];}getTaskStates(){return new Map();}
  canAnswer(){return this.state==='playing'&&!!this.pending;}
  choose(type,value){
   if(this.state!=='playing'||!(type==='color'?Number.isInteger(value)&&colors[value]:type==='tool'&&tools.some(t=>t.id===value)))return;
+  // Tools share the remaining paint. Switching does not refill it or replace
+  // a colour question that is already waiting for an answer.
+  if(type==='tool'){this.tool=value;this.revision++;return;}
   const base=this.items[Math.floor(this.random()*this.items.length)],item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};
   item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
   this.pending={type,value};this.targets=[{item,appearedAt:this.clock}];this.queue.clear();
-  this.message=type==='color'?'Svara för att fylla på färg.':'Svara för att välja verktyget och fylla på färg.';
+  this.message='Svara för att fylla på färg.';
   this.revision++;this.emit('studio-question');
  }
  cancelQuestion(){if(!this.paint)return;this.pending=null;this.targets=[];this.queue.clear();this.message='Fortsätt måla.';this.revision++;this.emit('studio-ready');}

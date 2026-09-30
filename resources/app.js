@@ -60,7 +60,7 @@ function menuUpdate(){
     reversi:'Välj ett drag genom att svara på dess uppgift. Få flest brickor för att vinna mot datorn.',
     chess:'Välj ett drag genom att svara på dess uppgift. Sätt datorns kung schackmatt.',
     klossar:'Klicka på en fri kloss och dess matchande svar. Para ihop alla klossar för att tömma brädet.',
-    studio:'Svara på uppgifter för att välja färger och verktyg. Måla i din egen takt, utan poäng.'
+    studio:'Svara på uppgifter för att fylla på färg. Byt verktyg fritt och måla i din egen takt, utan poäng.'
   }[kind];
   $('pace').closest('.setup-field').hidden=kind==='studio';$('leaderboard-open').hidden=kind==='studio';
   $('keyboard').hidden=clickOnly||mode!=='bopomofo';

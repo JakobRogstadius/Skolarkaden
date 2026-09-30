@@ -33,8 +33,9 @@ Ett målarspel utan poäng, tidspress, vinst eller förlust. Välj bland 21 fär
 en liten eller stor pensel eller färghinken. Vit och svart är gråskalans ljusaste
 och mörkaste nyanser. Under pappret kommer verktygen först, följda av färgerna
 i ett rutnät med sju kolumner och tre rader: ljusa, vanliga och mörka. Därefter
-visas uppgiften med en ikon för färgen eller verktyget som svaret ger. Knapparna visar ikoner, med namn som pekhjälp och för skärmläsare. Svara på en uppgift från vald övning
-för att välja och fylla på verktyget. En uppgift visas åt gången, så även läxor med
+visas uppgiften med en ikon för färgen som svaret ger. Knapparna visar ikoner, med namn som pekhjälp och för skärmläsare. Svara på en uppgift från vald övning
+för att välja och fylla på färg. Verktyg byts direkt utan uppgift och behåller
+den kvarvarande färgmängden. En uppgift visas åt gången, så även läxor med
 ett enda svar fungerar. Fel svar har ingen påföljd. Tangentbord, tal, alternativa
 svar, pinyin och tio sekunders ledtrådsfördröjning fungerar som i andra spel.
 
@@ -48,7 +49,9 @@ utan att pensellinjens täckning ändras. Färg förbrukas bara när du målar; 
 färg i ett redan fyllt område kostar inget. Verktyget vid pekaren visar kvarvarande
 färg, liksom verktygsikonen under pappret när ingen uppgift väntar.
 När färgen tar slut visas automatiskt en ny uppgift för att fylla på samma färg.
-Det går också att välja en färg eller ett verktyg för att fylla på tidigare.
+Det går också att välja en färg för att fylla på tidigare. Ett försök att måla
+utan färg markerar uppgiften med en rundad ram i färgen som ska fyllas på;
+ramen tonas bort under 1,5 sekunder.
 Om färg finns kvar avbryter ett klick på pappret ett väntande val och fortsätter
 måla med den nuvarande färgen och penseln eller hinken. Ångra återställer de senaste
 åtta penseldragen/fyllningarna utan att återställa färgmängden.
