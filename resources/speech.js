@@ -31,9 +31,19 @@ SC.splitSwedish=function(text,{lesson,language,candidates=[]},history=[],offset=
 // Split joined romanized dictation into complete pinyin syllables. Never match
 // fragments of a syllable (e.g. an inside shan); preserve raw single syllables.
 let chineseSyllables;
-SC.chineseSpeechAtoms=function(text){
+const chineseTranslationLexicons=new WeakMap();
+SC.chineseTranslationLexicon=function(context){
+  const items=SC.modes[context?.lesson]?.items||[],cached=chineseTranslationLexicons.get(items);
+  if(cached)return cached;
+  const forms=new Set(items.flatMap(SC.chineseTranslationAnswers)),words=new Set([...forms].flatMap(s=>s.split(' ').map(SC.speechNormalize)));
+  const lexicon={forms,words};chineseTranslationLexicons.set(items,lexicon);return lexicon;
+};
+SC.chineseSpeechAtoms=function(text,context){
   chineseSyllables??=new Set(Object.values(SC.mandarinPinyin));
+  const {words}=SC.chineseTranslationLexicon(context);
   return SC.speechWords(text,'chinese').flatMap(SC.splitChineseDigits).flatMap(raw=>{
+    // A Swedish word such as "mina" must not become pinyin syllables "mi na".
+    if(words.has(SC.speechNormalize(raw)))return [raw];
     const key=/\p{Script=Han}/u.test(raw)?null:SC.chineseSpeechPinyin(raw);if(!key||chineseSyllables.has(key))return [raw];
     const parts=Array(key.length+1).fill(null);parts[key.length]=[];
     for(let i=key.length-1;i>=0;i--)for(let j=Math.min(key.length,i+6);j>i;j--){
@@ -43,22 +53,24 @@ SC.chineseSpeechAtoms=function(text){
   });
 };
 SC.chineseTargetPinyin=item=>SC.tonelessPinyin(item.hint)||SC.chineseSpeechPinyin(item.answer);
+SC.chineseTargetKeys=item=>[SC.chineseTargetPinyin(item),...SC.chineseTranslationAnswers(item).map(text=>'translation:'+text)].filter(Boolean);
 // Search speech spans for visible answers, preferring complete longer words.
 // Punctuation and recognition-result boundaries are not word boundaries.
 // Sent history retains boundaries after a target disappears from the screen.
 SC.groupChineseSpeech=function(atoms,context,history=[],offset=0){
-  const out=[],targets=new Set((context.candidates||[]).map(SC.chineseTargetPinyin).filter(Boolean));
+  const out=[],targets=new Set((context.candidates||[]).flatMap(SC.chineseTargetKeys)),{forms}=SC.chineseTranslationLexicon(context);
   const maxLength=Math.max(0,...[...targets].map(k=>k.length),...history.flatMap(t=>t.keys||[]).filter(k=>k.startsWith('pinyin:')).map(k=>k.length-7));
   for(let i=0;i<atoms.length;i++){
-    const previous=history[offset+out.length],remembered=key=>previous?.sent&&previous.keys.includes('pinyin:'+key);
+    const previous=history[offset+out.length],remembered=text=>previous?.sent&&previous.keys.includes(SC.speechIdentity(text,context.lesson,context.language));
     let best=null,known=null,text='',final=true,allowed=null;
     for(let j=i;j<atoms.length;j++){
-      text+=(text&&/[a-züê]/iu.test(text+atoms[j].text)?' ':'')+atoms[j].text;final=final&&atoms[j].final;
+      text+=(text&&/[a-zåäöüê]/iu.test(text+atoms[j].text)?' ':'')+atoms[j].text;final=final&&atoms[j].final;
       if(atoms[j].allowed)allowed=allowed===null?new Set(atoms[j].allowed):new Set([...allowed].filter(k=>atoms[j].allowed.has(k)));
-      const key=SC.chineseSpeechPinyin(text);if(!key||key.length>maxLength)break;
-      const matched=targets.has(key)&&(allowed===null||allowed.has(key)),token={text,final,matched,key,end:j};
-      if(remembered(key)){known=token;break;}
+      const pinyin=SC.chineseSpeechPinyin(text),translation=SC.speechNormalize(text);
+      const key=[pinyin,'translation:'+translation].find(k=>targets.has(k)&&(allowed===null||allowed.has(k))),matched=!!key,token={text,final,matched,key,end:j};
+      if(remembered(text)){known=token;break;}
       if(matched)best=token;
+      if((!pinyin||pinyin.length>maxLength)&&![...forms].some(form=>form.startsWith(translation)&&/^[\s\p{P}]/u.test(form.slice(translation.length))))break;
     }
     const selected=known||best;
     if(selected){out.push(selected);i=selected.end;}else out.push({...atoms[i],matched:false});
@@ -69,7 +81,7 @@ SC.groupChineseSpeech=function(atoms,context,history=[],offset=0){
 // enqueueing every alternative as a separate answer. A small beam allows words
 // to span results even when both syllables occur only in secondary alternatives.
 SC.chineseSpeechResults=function(results,context,history,cache=[]){
-  const allowed=new Set((context.candidates||[]).map(SC.chineseTargetPinyin).filter(Boolean));
+  const allowed=new Set((context.candidates||[]).flatMap(SC.chineseTargetKeys));
   let firstChanged=results.length;
   const records=results.map((result,i)=>{
     const texts=[...new Set(Array.from(result,a=>a.transcript||''))],signature=JSON.stringify([result.isFinal,texts]);
@@ -78,19 +90,19 @@ SC.chineseSpeechResults=function(results,context,history,cache=[]){
   });
   // Revisit only the changed results and enough preceding results to complete
   // a word. Completed dictation must not make each callback progressively slower.
-  const lookback=Math.max(1,...(context.candidates||[]).map(item=>Array.from(item.answer).length));
+  const lookback=Math.max(1,...(context.candidates||[]).map(item=>Math.max(Array.from(item.answer).length,...SC.chineseTranslationAnswers(item).map(text=>text.split(' ').length))));
   const mutable=firstChanged===results.length?results.length:Math.max(0,firstChanged-lookback+1);
   let beam=[{atoms:[],texts:[],score:0}];
   for(let i=0;i<records.length;i++){
-    if(i<mutable){const text=records[i].text;beam[0].texts.push(text);beam[0].atoms.push(...SC.chineseSpeechAtoms(text).map(text=>({text,final:results[i].isFinal,allowed:records[i].allowed})));continue;}
+    if(i<mutable){const text=records[i].text;beam[0].texts.push(text);beam[0].atoms.push(...SC.chineseSpeechAtoms(text,context).map(text=>({text,final:results[i].isFinal,allowed:records[i].allowed})));continue;}
     const next=[];
     for(const path of beam)for(const text of records[i].choices){
-      const atoms=[...path.atoms,...SC.chineseSpeechAtoms(text).map(text=>({text,final:results[i].isFinal,allowed:records[i].allowed}))];
+      const atoms=[...path.atoms,...SC.chineseSpeechAtoms(text,context).map(text=>({text,final:results[i].isFinal,allowed:records[i].allowed}))];
       const grouped=SC.groupChineseSpeech(atoms,context,history);
-      const score=grouped.reduce((sum,t,index)=>sum+(history[index]?.sent&&history[index].keys.includes(SC.speechIdentity(t.text,context.lesson,context.language))?1000:0)+(t.matched?10*(SC.chineseSpeechPinyin(t.text)?.length||0):0),0);
+      const score=grouped.reduce((sum,t,index)=>sum+(history[index]?.sent&&history[index].keys.includes(SC.speechIdentity(t.text,context.lesson,context.language))?1000:0)+(t.matched?10*(t.key.startsWith('translation:')?SC.speechNormalize(t.text).length:SC.chineseSpeechPinyin(t.text)?.length||0):0),0);
       // Keep promising incomplete alternatives until the next result arrives.
-      const tail=SC.chineseSpeechPinyin(atoms.at(-1)?.text||'');
-      const prefix=tail&&[...allowed].some(k=>k.startsWith(tail))?tail.length:0;
+      const rawTail=atoms.at(-1)?.text||'',tail=SC.chineseSpeechPinyin(rawTail),translationTail='translation:'+SC.speechNormalize(rawTail);
+      const prefix=Math.max(tail&&[...allowed].some(k=>k.startsWith(tail))?tail.length:0,[...allowed].some(k=>k.startsWith(translationTail+' '))?rawTail.length:0);
       next.push({atoms,texts:[...path.texts,text],score:score+prefix});
     }
     next.sort((a,b)=>b.score-a.score);beam=next.slice(0,8);
@@ -131,7 +143,7 @@ SC.groupPairSpeech=function(atoms,context,history=[],offset=0){
 SC.pairSpeechPrefix=(text,context)=>[...SC.pairSpeechLexicon(context).forms].some(form=>form.startsWith(SC.speechNormalize(text)+' '));
 SC.tokenizeSpeech=function(text,context,history=[],offset=0){
   const {lesson,language}=context,words=SC.speechWords(text,lesson),out=[];
-  if(SC.isChinese(lesson))return SC.groupChineseSpeech(SC.chineseSpeechAtoms(text).map(text=>({text})),context,history,offset).map(t=>t.text);
+  if(SC.isChinese(lesson))return SC.groupChineseSpeech(SC.chineseSpeechAtoms(text,context).map(text=>({text})),context,history,offset).map(t=>t.text);
   if(SC.hasSpeechPhrases(lesson))return SC.groupPairSpeech(words.map(text=>({text})),context,history,offset).map(t=>t.text);
   for(let i=0;i<words.length;i++){
     let word=words[i],v=SC.speechNormalize(word);

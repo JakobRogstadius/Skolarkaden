@@ -53,8 +53,8 @@ function draw(name,g){
   for(const input of ['','typing','browser','invalid'])await assert.rejects(SC.loadHomework('sv-001',input),/input måste vara keyboard eller voice/);
   for(const response of [()=>Response.json({}, {status:404}),()=>new Response('{'),()=>{throw Error('offline');}]){ctx.fetch=async()=>response();await assert.rejects(SC.loadHomework('test'),/kunde inte läsas/);}
   await load(good);const bank=SC.modes.homework.items[0];
-  for(const text of ['銀行','yín háng','yin hang','yinhang','yin2 hang2','YIN2HANG2'])for(const source of ['text','speech'])assert(SC.matches(text,bank,'homework','zh-TW',source),text);
-  for(const text of ['bank','你','yinxing','yin'])assert(!SC.matches(text,bank,'homework','zh-TW'),text+' must not match');
+  for(const text of ['bank','銀行','yín háng','yin hang','yinhang','yin2 hang2','YIN2HANG2'])for(const source of ['text','speech'])assert(SC.matches(text,bank,'homework','zh-TW',source),text);
+  for(const text of ['你','yinxing','yin'])assert(!SC.matches(text,bank,'homework','zh-TW'),text+' must not match');
   assert.equal(SC.chineseSpeechPinyin('銀行'),'yinhang','explicit homework reading overrides the default character reading');
   let speechContext={lesson:'homework',language:'zh-TW',candidates:[bank]},sent=[];
   let stream=new SC.SpeechStream({getContext:()=>speechContext,enqueue:text=>{sent.push(text);return {text};}});
@@ -73,8 +73,8 @@ function draw(name,g){
     for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home'])for(const pace of ['gentle','steady','brave']){
       const g=game(name,pace),target=g.getTargets()[0],item=target.item;
       assert.equal(item.answer,entry.words[0][0]);assert.equal(item.label,item.answer);
-      g.clock=target.appearedAt+4.99;assert(!SC.pinyinHints(g).has(target),name+' early hint');
-      g.clock=target.appearedAt+5;assert(SC.pinyinHints(g).has(target),name+' missing hint');
+      g.clock=target.appearedAt+9.99;assert(!SC.pinyinHints(g).has(target),name+' early hint');
+      g.clock=target.appearedAt+10;assert(SC.pinyinHints(g).has(target),name+' missing hint');
       const drawn=draw(name,g),main=drawn.find(t=>t.text===item.label),translation=drawn.find(t=>t.text===item.translation);
       assert(main&&translation&&translation.y>main.y,name+' missing translation');
       if(item.hint)assert(drawn.some(t=>t.text===item.hint&&t.y<main.y),name+' missing pronunciation');

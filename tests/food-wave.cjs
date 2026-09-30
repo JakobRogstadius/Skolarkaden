@@ -26,7 +26,7 @@ console.log('PASS food: 12 complete waves, exact 34+6 arrival intervals, served/
 for(const width of [320,390,1100])for(const count of [3,6,12,18])for(const mode of ['swedishLong','math-diagrams','chineseTrad4']){
  const g=new SC.FoodTruckGame({random:rng(17)});g.start({pace:'brave',mode});while(g.customers.length<count)g.spawn();
  const height=SC.foodSceneHeight(width,count-1);g.resize(width,height);
- g.customers.forEach(p=>{p.status='waiting';p.appearedAt=0;});g.clock=6;g.queue.enqueue(g.customers[0].item.answer);g.work(.05);g.queue.enqueue(g.customers[1].item.answer);
+ g.customers.forEach(p=>{p.status='waiting';p.appearedAt=0;});g.clock=11;g.queue.enqueue(g.customers[0].item.answer);g.work(.05);g.queue.enqueue(g.customers[1].item.answer);
  const boxes=[],badges=[],c=new Proxy({font:'16px system-ui',measureText(s){return {width:[...s].length*9};},fillText(s){if(s==='KÖ')badges.push(s);}},{get:(o,k)=>k in o?o[k]:k==='createLinearGradient'||k==='createRadialGradient'?()=>({addColorStop(){}}):()=>{}});
  const r=Object.create(SC.FoodTruckRenderer.prototype);Object.assign(r,{ctx:c,game:g,dpr:1,reduced:true,rememberScoreAnchor(p,box){boxes.push(box);}});r.draw();assert.equal(boxes.length,count);assert.equal(badges.length,1);
  for(const [i,b] of boxes.entries()){assert(b.x>=0&&b.x+b.w<=width&&b.y>=140&&b.y+b.h<=height);for(const a of boxes.slice(i+1))assert(!(a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y),'overlapping food labels');}

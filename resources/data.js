@@ -79,6 +79,11 @@
     'en-US':{ay:'a',bee:'b',be:'b',see:'c',sea:'c',dee:'d',ee:'e',eff:'f',gee:'g',aitch:'h',eye:'i',jay:'j',kay:'k',el:'l',em:'m',en:'n',oh:'o',pea:'p',pee:'p',cue:'q',queue:'q',are:'r',ess:'s',tea:'t',tee:'t',you:'u',vee:'v','double you':'w',doubleyou:'w',ex:'x',why:'y',zed:'z',zee:'z'}
   };
   SC.speechNormalize=value=>String(value??'').normalize('NFKC').toLocaleLowerCase('sv-SE').trim().replace(/^["“”'‘’«»(\[]+|["“”'‘’«»)\],.!?;:。！？、，]+$/gu,'').trim().replace(/\s+/g,' ');
+  // Slashes and semicolons separate meanings; parentheses add optional context.
+  SC.chineseTranslationAnswers=item=>{
+    const text=item.translation||'',plain=text.replace(/\([^)]*\)/g,'');
+    return [...new Set([text,...plain.split(/[\/;]/)].map(SC.speechNormalize).filter(Boolean))];
+  };
   SC.tonelessPinyin=function(value){
     // Preserve vowels, but accept spaced/joined syllables and per-syllable tones.
     const v=SC.speechNormalize(value).replace(/u:/g,'ü').replace(/v/g,'ü').normalize('NFD').replace(/[\u0300\u0301\u0304\u030c]/g,'').normalize('NFC');
@@ -150,7 +155,8 @@
     if(v===SC.normalize(item.answer))return true;
     if(SC.isMath(mode)){const n=SC.spokenNumber(v,lang,source);return n!==null&&String(n)===item.answer;}
     if(SC.isChinese(mode)){
-      if(mode==='homework'&&SC.tonelessPinyin(v)&&SC.tonelessPinyin(v)===SC.tonelessPinyin(item.hint))return true;
+      if(SC.chineseTranslationAnswers(item).includes(SC.speechNormalize(v)))return true;
+      if(SC.tonelessPinyin(v)&&SC.tonelessPinyin(v)===SC.tonelessPinyin(item.hint))return true;
       if(item.aliases?.some(a=>SC.normalize(a)===v))return true;
       if(source==='speech'){
         const heard=SC.chineseSpeechPinyin(v),expected=SC.tonelessPinyin(item.hint)||SC.chineseSpeechPinyin(item.answer);
@@ -165,6 +171,7 @@
     return false;
   };
   SC.sameInput=(a,b,mode,lang)=>{
+    if(SC.isChinese(mode)&&SC.modes[mode].items.some(item=>SC.matches(a.text,item,mode,lang,a.source)&&SC.matches(b.text,item,mode,lang,b.source)))return true;
     const identity=e=>{
       if(SC.isMath(mode))return SC.spokenNumber(e.text,lang,e.source)??SC.normalize(e.text);
       if(e.source==='speech')return SC.speechIdentity(e.text,mode,lang);

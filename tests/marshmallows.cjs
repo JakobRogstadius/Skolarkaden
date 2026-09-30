@@ -79,7 +79,7 @@ test('Inspection pivots about a fixed elbow, preserves arm and stick lengths, an
 test('Six labels stay separate with short letters, long words, math and mixed pinyin at narrow and wide sizes',()=>{
  const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
  for(const [width,height] of [[320,540],[370,740],[1100,540],[1100,740]])for(const mode of ['letters','swedishLong','englishLong','math-addition','chinese']){
-  const {g}=setup({mode,pace:'brave'});g.resize(width,height);while(g.spawn());tick(g,.85);g.clock+=6;g.getTargets().forEach((p,i)=>{p.appearedAt=i%2?g.clock:0;p.roast=.2+i*.25;});
+  const {g}=setup({mode,pace:'brave'});g.resize(width,height);while(g.spawn());tick(g,.85);g.clock+=11;g.getTargets().forEach((p,i)=>{p.appearedAt=i%2?g.clock:0;p.roast=.2+i*.25;});
   const c=new Proxy({font:'16px system-ui',measureText(text){const size=Number(this.font.match(/([\d.]+)px/)?.[1]||16);return {width:Array.from(text).reduce((n,ch)=>n+size*(/\p{Script=Han}/u.test(ch)?1:.6),0)};},fillText(text,x,y,max){assert(Number.isFinite(x)&&Number.isFinite(y));if(max!==undefined)assert(max>0);}},{get:(o,k)=>k in o?o[k]:k==='createLinearGradient'||k==='createRadialGradient'?()=>({addColorStop(){}}):()=>{}});
   const r=Object.create(SC.MarshmallowRenderer.prototype);Object.assign(r,{ctx:c,game:g,dpr:1,reduced:false});r.draw();assert.equal(r.labelBoxes.length,6);
   for(const [i,b] of r.labelBoxes.entries()){assert(b.x>=0&&b.y>=126&&b.x+b.w<=width&&b.y+b.h<=height);assert(r.labelBoxes.slice(i+1).every(a=>!overlap(a,b)),width+'/'+mode);if(mode==='letters')assert(b.w<=32);}

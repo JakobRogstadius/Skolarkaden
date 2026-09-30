@@ -45,7 +45,8 @@ assert(scripts.indexOf('resources/dinosaur.js')<scripts.indexOf('resources/app.j
  for(const source of ['typing','browser'])for(const [lesson,label,answer] of [
   ['swedish-synonyms','orädd','tapper'],['swedish-synonyms','glad','munter'],['swedish-synonyms','börja','sätta igång'],
   ['english-synonyms','furious','mad'],['english-synonyms','tired','worn out'],['swedish-opposites','varm','kylig'],['english-opposites','hot','chilly'],
-  ['translation-sv-en-1','penna','pen'],['translation-sv-en-2','vakna','wake'],['translation-sv-en-3','låna ut','loan']
+  ['translation-sv-en-1','penna','pen'],['translation-sv-en-2','vakna','wake'],['translation-sv-en-3','låna ut','loan'],
+  ['chineseTrad4','水','vatten'],['chineseSimpl4','牛奶','mjölk'],['chinese','日','dag'],['chinese','水','SHUI3']
  ]){
   elements['input-kind'].value=source;await start('dinosaur',lesson);currentGame.spawnIn=10000;currentGame.walkSpeed=0;currentGame.runSpeed=0;
   const target=currentGame.getTargets()[0];target.item={...SC.modes[lesson].items.find(i=>i.label===label)};target.item.label=target.item.label.toUpperCase();assert.notEqual(answer,target.item.answer);
@@ -55,8 +56,8 @@ assert(scripts.indexOf('resources/dinosaur.js')<scripts.indexOf('resources/app.j
  }
  elements['input-kind'].value='typing';console.log('PASS alternative answers through the actual typing/speech input, queue, game action and scoring.');
  assert.equal(elements.hints,undefined);await start('dinosaur','chinese');currentGame.spawnIn=10000;currentGame.walkSpeed=0;currentGame.runSpeed=0;const character=currentGame.getTargets()[0];
- while(currentGame.clock-character.appearedAt<4.8)frame();assert(!elements.targets.textContent.includes(character.item.hint));click('pause');for(let i=0;i<30;i++)frame();assert(!elements.targets.textContent.includes(character.item.hint));click('resume');await settle();
- while(currentGame.clock-character.appearedAt<5.2)frame();assert(elements.targets.textContent.includes(character.item.hint));click('pause-menu');
+ while(currentGame.clock-character.appearedAt<9.8)frame();assert(!elements.targets.textContent.includes(character.item.hint));click('pause');for(let i=0;i<30;i++)frame();assert(!elements.targets.textContent.includes(character.item.hint));click('resume');await settle();
+ while(currentGame.clock-character.appearedAt<10.2)frame();assert(elements.targets.textContent.includes(character.item.hint));click('pause-menu');
  for(const kind of ['marshmallows','eggs','city','food','garden','hive','paint','home']){await start(kind);frame();assert.equal(elements.objective.closest('.hud-objective').hidden,['marshmallows','eggs'].includes(kind));if(['marshmallows','eggs'].includes(kind))assert.equal(elements.objective.textContent,'');else assert(elements.objective.textContent.length>0);click('pause-menu');assert.equal(elements.menu.hidden,false);}
 
  await start('home','letters');assert.equal(elements['game-title'].textContent,'Städa hemmet');assert.equal(elements.play.dataset.game,'home');assert.equal(currentHome.children,1);currentHome.chooseActivity=()=>false;currentHome.people.slice(1).forEach(p=>p.activity=null);const chore=currentHome.createTask('toys',{x:6,y:10.45});elements.answer.value=chore.item.answer;elements.answer.dispatchEvent(new Event('input'));assert.equal(currentHome.queue.length,1);for(let i=0;i<200&&currentHome.hits<1;i++)frame();assert.equal(currentHome.hits,1);for(let i=0;i<4;i++)frame();assert.equal(elements.score.textContent,'20');assert.equal(elements.objective.textContent,'1 / 40');click('pause');const homeClock=currentHome.clock;frame();assert.equal(currentHome.clock,homeClock);click('resume');await settle();assert.equal(currentHome.state,'playing');

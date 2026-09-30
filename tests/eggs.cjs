@@ -10,7 +10,7 @@ function setup(options={}){const events=[],g=new SC.EggGame({random:rng(8),onEve
 function hatch(g,e){g.crack(e);g.hatch(e);}
 function finish(g){for(let i=0;i<80&&['playing','celebrating','mourning'].includes(g.state);i++)g.update(.05);}
 test('Range is 130 scaled pixels: distant targets stay reserved until approached, including across hatching',()=>{
- const {g,e}=setup({mode:'chinese'});Object.assign(g.player,{x:.1,y:.9,facing:1});Object.assign(e,{x:.85,y:.5,home:{x:.85,y:.5}});g.crack(e);const entry=g.queue.enqueue(e.item.answer),x=g.player.x;g.work(.05);assert.equal(g.flameRange,130);assert(g.player.x>x);assert.equal(g.job.firing,false);assert.equal(e.stage,'cracking');assert(!g.getAvailableTargets().includes(e));assert.equal(g.getTaskStates().get(e),'active');assert.equal(g.queue.enqueue(e.item.answer),undefined);g.clock+=6;assert(!SC.pinyinHints(g).has(e));g.hatch(e);assert.equal(g.job.target,e);assert.equal(g.job.entry,entry);
+ const {g,e}=setup({mode:'chinese'});Object.assign(g.player,{x:.1,y:.9,facing:1});Object.assign(e,{x:.85,y:.5,home:{x:.85,y:.5}});g.crack(e);const entry=g.queue.enqueue(e.item.answer),x=g.player.x;g.work(.05);assert.equal(g.flameRange,130);assert(g.player.x>x);assert.equal(g.job.firing,false);assert.equal(e.stage,'cracking');assert(!g.getAvailableTargets().includes(e));assert.equal(g.getTaskStates().get(e),'active');assert.equal(g.queue.enqueue(e.item.answer),undefined);g.clock+=11;assert(!SC.pinyinHints(g).has(e));g.hatch(e);assert.equal(g.job.target,e);assert.equal(g.job.entry,entry);
  for(let i=0;i<300&&!g.job.firing;i++)g.work(.05);assert(g.job.firing);assert(g.inFlameRange(e));assert.equal(e.stage,'burning');
  const a=g.flamePose(e),limit=g.flameRange*g.scale();e.x=(a.x+limit+.01)/g.width;e.y=(a.y+12*g.scale())/g.height;assert(!g.inFlameRange(e));e.x-=.02/g.width;assert(g.inFlameRange(e));
 });
@@ -51,9 +51,9 @@ test('Death animation already burning finishes even during a lost round',()=>{
 test('Wrong answers obey queue limits; distinct matching targets allow duplicate answers',()=>{
  const {g,e}=setup();g.crack(e);g.crack(g.eggs[1]);g.eggs[1].item={...e.item};for(let i=0;i<15;i++)g.queue.enqueue('wrong '+i);assert.equal(g.queue.length,2);g.queue.enqueue(e.item.answer);g.queue.enqueue(e.item.answer);assert.equal(g.queue.length,4);assert.equal(g.queue.enqueue(e.item.answer),undefined);tick(g,4);assert.equal(g.hits,2);assert.equal(g.shots,4);assert.equal(g.score,20);
 });
-test('All exercises and Mandarin speech matching work; pinyin appears after five seconds and survives hatching',()=>{
+test('All exercises and Mandarin speech matching work; pinyin appears after ten seconds and survives hatching',()=>{
  for(const mode of Object.keys(SC.modes)){const {g,e}=setup({mode});g.crack(e);g.queue.enqueue(e.item.answer);tick(g,1);assert.equal(g.hits,1,mode);}
- const {g,e}=setup({mode:'chinese',lang:'zh-TW'});g.crack(e);e.item={label:'十',answer:'十',hint:'shí'};g.clock=e.appearedAt+4.95;assert(!SC.pinyinHints(g).has(e));g.pause();tick(g,8);assert(!SC.pinyinHints(g).has(e));g.resume();g.clock+=.05;assert(SC.pinyinHints(g).has(e));g.hatch(e);assert(SC.pinyinHints(g).has(e));g.queue.enqueue('是','speech');g.work(.05);assert.equal(e.stage,'burning');
+ const {g,e}=setup({mode:'chinese',lang:'zh-TW'});g.crack(e);e.item={label:'十',answer:'十',hint:'shí'};g.clock=e.appearedAt+9.95;assert(!SC.pinyinHints(g).has(e));g.pause();tick(g,8);assert(!SC.pinyinHints(g).has(e));g.resume();g.clock+=.05;assert(SC.pinyinHints(g).has(e));g.hatch(e);assert(SC.pinyinHints(g).has(e));g.queue.enqueue('是','speech');g.work(.05);assert.equal(e.stage,'burning');
  const numbers=setup({mode:'chinese',lang:'zh-CN'});numbers.g.crack(numbers.e);numbers.g.crack(numbers.g.eggs[1]);numbers.e.item={answer:'三',label:'三',hint:'sān'};numbers.g.eggs[1].item={answer:'八',label:'八',hint:'bā'};
  const stream=new SC.SpeechStream({getContext:()=>({lesson:'chinese',language:'zh-CN',candidates:numbers.g.getTargets().map(t=>t.item)}),enqueue:text=>numbers.g.queue.enqueue(text,'speech'),revise:(e,text)=>numbers.g.queue.revise(e,text)});stream.update([Object.assign([{transcript:'38'}],{isFinal:false})]);tick(numbers.g,2);assert.equal(numbers.g.hits,2);
 });
@@ -99,7 +99,7 @@ test('Twenty-one dark labels fit at minimum height, including delayed hints and 
  const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
  for(const [w,h] of [[320,540],[370,740],[620,540],[700,540],[800,540],[1100,540]])for(const mode of ['letters','swedishLong','chinese','math-diagrams']){
   const diagramHeight=mode==='math-diagrams'&&w<600?Math.max(h,740):h;
-  const g=new SC.EggGame({random:rng(8)});g.start({pace:'brave',mode});g.resize(w,diagramHeight);for(const e of g.eggs){g.crack(e);if(e.id%2)g.hatch(e);}g.clock+=6;const {r,stack}=drawing(g);r.draw();assert.equal(stack.length,0);assert.equal(r.labelBoxes.length,21);
+  const g=new SC.EggGame({random:rng(8)});g.start({pace:'brave',mode});g.resize(w,diagramHeight);for(const e of g.eggs){g.crack(e);if(e.id%2)g.hatch(e);}g.clock+=11;const {r,stack}=drawing(g);r.draw();assert.equal(stack.length,0);assert.equal(r.labelBoxes.length,21);
   for(const [i,b] of r.labelBoxes.entries()){assert(b.x>=0&&b.y>=120&&b.x+b.w<=w&&b.y+b.h<=diagramHeight);assert(r.labelBoxes.slice(i+1).every(a=>!overlap(a,b)),[w,h,mode,i].join('/'));if(mode==='letters')assert(b.w<=34);}
   const e=g.eggs[0];g.catch(e,g.people[1]);r.draw();g.killHuman(e);r.draw();g.queue.enqueue(e.item.answer);g.work(.05);r.draw();tick(g,1);r.draw();g.finish(false);tick(g,.5);r.draw();assert.equal(stack.length,0);
  }

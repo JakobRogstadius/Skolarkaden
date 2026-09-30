@@ -23,7 +23,7 @@ g.queue.enqueue(target.item.answer);g.update(.05);r.draw();assert.equal(r.cells.
 g.pause();r.draw();assert.equal(r.status.textContent,'Paus');g.resume();
 g.start({mode:'math-diagrams'});while(g.phase!=='answer')g.update(.05);r.draw();assert.equal(r.node.querySelectorAll('.rv-diagram').length,3);
 g.start({mode:'chinese',lang:'zh-TW'});while(g.phase!=='answer')g.update(.05);r.draw();assert(r.node.querySelectorAll('.rv-hint').every(e=>e.textContent==='\u00a0'));
-g.update(6);r.draw();assert(r.node.querySelectorAll('.rv-hint').some(e=>e.textContent!=='\u00a0'));
+g.update(10);r.draw();assert(r.node.querySelectorAll('.rv-hint').some(e=>e.textContent!=='\u00a0'));
 g.board=new Int8Array(64).fill(1);g.beginTurn(1);r.draw();assert.equal(r.status.textContent,'Du vann! 64–0');assert.equal(r.choices.children.length,1);
 r.destroy();assert.equal(canvas.hidden,false);assert.equal(arena.children.length,1);
 console.log('PASS Reversi renderer: board, question markers, preview, flips, counts, pause, diagrams, hints, result and cleanup.');

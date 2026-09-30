@@ -1,7 +1,7 @@
 /* Turn-based practice: an answer selects one move; no answer timer or move cap. */
 (function(root){
 'use strict';const SC=root.Starlight,R=SC.Reversi;
-const answerForms=item=>[item.answer,...item.aliases||[],...item.speechAliases||[],...(item.hint?[item.hint]:[])].filter(Boolean);
+const answerForms=item=>[item.answer,...item.aliases||[],...item.speechAliases||[],...(item.hint?[item.hint]:[]),...SC.chineseTranslationAnswers(item)].filter(Boolean);
 SC.reversiAnswerOverlap=(a,b,mode,lang)=>[a,b].some((item,i)=>answerForms(item).some(text=>['text','speech'].some(source=>SC.matches(text,item,mode,lang,source)&&SC.matches(text,[b,a][i],mode,lang,source))));
 SC.reversiDistinctItems=function(items,needed,mode,lang,random=Math.random){
  const pool=R.shuffled(items,random),chosen=[];let best=[];
