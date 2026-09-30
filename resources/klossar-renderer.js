@@ -81,11 +81,17 @@ class KlossarRenderer{
   fitText(tile,button){
     if(tile.item.diagram||tile.removed)return;
     const face=button.firstElementChild;
-    // Keep up to ten characters on one line. Longer labels can wrap;
-    // shrink the whole font evenly, never stretch or crop its glyphs.
-    face.style.whiteSpace=Array.from(tile.item.label).length<=10?'nowrap':'normal';
+    // Try a single line first, allowing long labels to shrink by up to 15%
+    // before wrapping. Keep up to ten characters on one line as before.
+    face.style.whiteSpace='nowrap';
     let size=Math.min(22,this.geometry.cell*.18);face.style.fontSize=size+'px';
-    while(size>1&&(face.scrollWidth>face.clientWidth||face.scrollHeight>face.clientHeight)){size=Math.max(1,size-.5);face.style.fontSize=size+'px';}
+    const singleLineMin=Math.max(1,size*.85),canWrap=Array.from(tile.item.label).length>10;
+    const overflows=()=>face.scrollWidth>face.clientWidth||face.scrollHeight>face.clientHeight;
+    if(canWrap){
+      while(size>singleLineMin&&overflows()){size=Math.max(singleLineMin,size-.5);face.style.fontSize=size+'px';}
+      if(overflows())face.style.whiteSpace='normal';
+    }
+    while(size>1&&overflows()){size=Math.max(1,size-.5);face.style.fontSize=size+'px';}
   }
   position(tile){const p=this.geometry;return {x:p.padding+(tile.x-tile.z*.12-p.minX)*p.cell,y:p.padding+(tile.y-tile.z*.12-p.minY)*p.row};}
   placePuff(node,effect){const p=this.position(effect);node.style.left=p.x+'px';node.style.top=p.y+'px';node.style.width=this.geometry.tileWidth+'px';node.style.height=this.geometry.tileHeight+'px';}
