@@ -100,7 +100,7 @@ body.playing.voice-play .arena{height:clamp(540px,calc(100dvh - 82px),900px)}
 /* Compact menu; native radios retain keyboard navigation without a visible dot. */
 #menu .intro{margin:10px 0 22px}
 #menu .intro h1{font-size:clamp(36px,5vw,52px)}
-#menu .setup-grid{margin:0 0 18px;grid-template-columns:minmax(120px,1fr) minmax(230px,1.8fr) minmax(110px,.85fr) minmax(120px,.9fr) minmax(140px,1fr);gap:10px 12px}
+#menu .setup-grid{margin:0 0 18px;grid-template-columns:minmax(120px,1fr) minmax(230px,1.8fr) minmax(120px,.9fr) minmax(110px,.85fr) minmax(140px,1fr);gap:10px 12px}
 #menu .setup-help{margin:0}
 #menu .game-picker{display:block;min-width:0}
 #menu .game-section+.game-section{margin-top:20px}

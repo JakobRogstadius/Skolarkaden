@@ -39,7 +39,7 @@ async function start(kind,lesson='swedish'){const radio=radios.find(r=>r.value==
  elements['exercise-group'].value='translation';elements['exercise-group'].dispatchEvent(new Event('change'));assert.equal(elements.lesson.value,'translation-sv-en-8','returning to a group retains the chosen level');
  elements['exercise-group'].value='math';elements['exercise-group'].dispatchEvent(new Event('change'));radios.find(r=>r.value==='city').dispatchEvent(new Event('change'));
  assert(html.indexOf('<div class="setup-grid">')<html.indexOf('<fieldset class="game-picker"'));
- assert.deepEqual([...html.match(/<div class="setup-grid">[\s\S]*?<fieldset class="game-picker"/)[0].matchAll(/<select id="([^"]+)"/g)].map(m=>m[1]),['exercise-group','lesson','pace','input-kind','language']);
+ assert.deepEqual([...html.match(/<div class="setup-grid">[\s\S]*?<fieldset class="game-picker"/)[0].matchAll(/<select id="([^"]+)"/g)].map(m=>m[1]),['exercise-group','lesson','input-kind','pace','language']);
  assert.deepEqual(elements['input-kind'].options.map(o=>o.value),['typing','browser']);assert.deepEqual(elements.pace.options.map(o=>o.textContent),['Lätt','Medel','Svår']);assert(elements.language.disabled);
  elements['input-kind'].value='browser';elements['input-kind'].dispatchEvent(new Event('change'));assert.equal(elements.language.disabled,false);
  elements['input-kind'].value='typing';elements['input-kind'].dispatchEvent(new Event('change'));assert(elements.language.disabled);assert(!elements['install-language']);
