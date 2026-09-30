@@ -21,9 +21,9 @@ function toolArt(tool,color,paint){
  const wide=tool==='large',left=wide?8:16,right=48-left;
  return '<svg viewBox="0 0 48 58" aria-hidden="true"><path d="M20 30L19 6Q24-2 29 6l-1 24" fill="#c99b62" stroke="#594634" stroke-width="2"/><path d="M'+left+' 35h'+(right-left)+'v17q-12 9-'+(right-left)+' 0z" fill="#e1d3aa" stroke="#65513e" stroke-width="2"/><path d="M'+(left+1)+' '+(54-19*level)+'h'+(right-left-2)+'V52q-'+(right-left)/2+' 8-'+(right-left-2)+' 0z" fill="'+color+'" opacity="'+(level?1:0)+'"/><path d="M'+left+' 27h'+(right-left)+'v11H'+left+'z" fill="#9baeb0" stroke="#526569" stroke-width="2"/><path d="M'+(left+3)+' 30h'+(right-left-6)+'" stroke="#e9f0e8" stroke-width="2"/></svg>';
 }
-async function request(method,body){
+async function request(method,body,before){
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
- try{const response=await fetch(API+'/artworks',{method,credentials:'omit',signal:controller.signal,...(body?{headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});
+ try{const response=await fetch(API+'/artworks'+(before?'?before='+before:''),{method,credentials:'omit',signal:controller.signal,...(body?{headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{})});
   const data=await response.json().catch(()=>({}));
   if(!response.ok){const error=new Error(data.error==='name_not_allowed'?'Välj ett annat namn.':response.status===413?'Bilden är för stor för att sparas. Ångra några penseldrag och försök igen.':response.status===429?'Vänta en minut och försök spara igen.':response.status===404?'Galleriet är inte aktiverat på servern ännu.':'Galleriet kunde inte nås. Försök igen.');error.status=response.status;throw error;}return data;
  }catch(error){if(error.name==='AbortError')throw new Error('Sparandet tog för lång tid. Försök igen.');throw error;}finally{clearTimeout(timer);}
@@ -32,7 +32,7 @@ class StudioRenderer{
  constructor(canvas,game){
   this.canvas=canvas;this.game=game;this.destroyed=false;this.undoHistory=[];this.dirty=false;this.play=document.getElementById('play');canvas.hidden=true;
   this.node=el('div','studio-scene');canvas.parentElement.append(this.node);
-  this.node.innerHTML='<div class="studio-work"><div class="studio-paper-wrap"><canvas class="studio-paper" width="960" height="640" aria-label="Rityta. Rita med musen eller fingret."></canvas><div class="studio-cursor" hidden></div></div><aside class="studio-gallery" aria-label="De sex senaste tavlorna"><h2>Vårt galleri</h2><div class="studio-thumbnails"></div><p class="studio-gallery-status" role="status"></p></aside></div><div class="studio-toolbar"><div class="studio-paint-controls"><div class="studio-tools" role="group" aria-label="Verktyg"></div><div class="studio-colors" role="group" aria-label="Färger"></div><div class="studio-question-panel"><div class="studio-paint-tool" role="img"></div><div class="studio-feedback"><p class="studio-status" role="status"></p><div class="studio-question"></div><p class="studio-hint"></p></div></div></div><div class="studio-actions"><button type="button" class="studio-undo">↶ Ångra</button><button type="button" class="studio-fullscreen">Helskärm</button><button type="button" class="studio-finish primary">Färdig</button></div></div>';
+  this.node.innerHTML='<div class="studio-work"><div class="studio-paper-wrap"><canvas class="studio-paper" width="960" height="640" aria-label="Rityta. Rita med musen eller fingret."></canvas><div class="studio-cursor" hidden></div></div><aside class="studio-gallery" aria-label="De 200 senaste tavlorna"><h2>Vårt galleri</h2><div class="studio-thumbnails"></div><p class="studio-gallery-status" role="status"></p></aside></div><div class="studio-toolbar"><div class="studio-paint-controls"><div class="studio-tools" role="group" aria-label="Verktyg"></div><div class="studio-colors" role="group" aria-label="Färger"></div><div class="studio-question-panel"><div class="studio-paint-tool" role="img"></div><div class="studio-feedback"><p class="studio-status" role="status"></p><div class="studio-question"></div><p class="studio-hint"></p></div></div></div><div class="studio-actions"><button type="button" class="studio-undo">↶ Ångra</button><button type="button" class="studio-fullscreen">Helskärm</button><button type="button" class="studio-finish primary">Färdig</button></div></div>';
   const q=s=>this.node.querySelector(s);this.paper=q('.studio-paper');this.ctx=this.paper.getContext('2d',{willReadFrequently:true});this.cursor=q('.studio-cursor');this.clearPaper();
   this.colorButtons=SC.studioColors.map(([name,color],i)=>{const b=el('button','studio-color');b.type='button';b.title=name;b.setAttribute('aria-label',name);b.innerHTML='<span style="background:'+color+'"></span>';b.onclick=()=>this.choose('color',i);q('.studio-colors').append(b);return b;});
   this.toolButtons=SC.studioTools.map(t=>{const b=el('button','studio-tool');b.type='button';b.title=t.name;b.setAttribute('aria-label',t.name);b.innerHTML=toolArt(t.id,'#637567',1);b.onclick=()=>this.choose('tool',t.id);q('.studio-tools').append(b);return b;});
@@ -43,6 +43,7 @@ class StudioRenderer{
   this.paper.addEventListener('pointerdown',e=>this.down(e));this.paper.addEventListener('pointermove',e=>this.move(e));
   for(const type of ['pointerup','pointercancel','lostpointercapture'])this.paper.addEventListener(type,()=>this.endStroke());
   this.paper.addEventListener('pointerleave',()=>{this.cursor.hidden=true;this.lastPoint=null;});this.paper.addEventListener('contextmenu',e=>e.preventDefault());
+  this.galleryList=q('.studio-thumbnails');this.galleryList.tabIndex=0;this.galleryList.addEventListener('scroll',()=>this.moreGallery());
   this.onBeforeUnload=e=>{if(this.dirty){e.preventDefault();e.returnValue='';}};root.addEventListener('beforeunload',this.onBeforeUnload);
   this.last=0;const frame=now=>{const dt=this.last?Math.min(.05,(now-this.last)/1000):0;this.last=now;game.update(dt);this.draw();this.raf=requestAnimationFrame(frame);};this.raf=requestAnimationFrame(frame);this.draw();this.loadGallery();
  }
@@ -115,7 +116,7 @@ class StudioRenderer{
   if(!this.dirty||this.dialog?.open)return;const d=this.openDialog('Vad vill du göra med din bild?');
   const preview=el('img','studio-finish-preview');preview.src=this.paper.toDataURL('image/png');preview.alt='Din målning';d.append(preview);
   const form=el('form','studio-save-form'),label=el('label','','Ditt namn på tavlan'),name=el('input','');name.type='text';name.required=true;name.maxLength=10;name.autocomplete='off';name.setAttribute('aria-label','Ditt namn på tavlan');label.append(name);form.append(label);
-  const help=el('p','','Tavlan och namnet visas i det gemensamma galleriet. De sex senaste tavlorna sparas.');form.append(help);
+  const help=el('p','','Tavlan och namnet visas i det gemensamma galleriet. De 200 senaste tavlorna sparas.');form.append(help);
   const error=el('p','error');error.setAttribute('role','alert');form.append(error);
   const actions=el('div','studio-dialog-actions'),save=iconButton('primary','frame','Rama in'),trash=iconButton('studio-danger','trash','Släng bilden'),back=iconButton('quiet','brush','Fortsätt måla');save.type='submit';actions.append(save,trash,back);form.append(actions);d.append(form);
   let saving=false;d.addEventListener('cancel',e=>{if(saving)e.preventDefault();});back.onclick=()=>d.close();
@@ -134,12 +135,22 @@ class StudioRenderer{
   };
   d.showModal();name.focus();
  }
- async loadGallery(){
-  if(this.loadingGallery)return;this.loadingGallery=true;const status=this.node.querySelector('.studio-gallery-status');status.textContent='Hämtar tavlor…';
-  try{const data=await request('GET');if(this.destroyed)return;const list=this.node.querySelector('.studio-thumbnails');list.replaceChildren();
-   for(const artwork of (data.artworks||[]).slice(0,6)){const b=el('button','studio-thumbnail'),img=el('img','');b.type='button';img.src=artwork.image;img.alt='Målning av '+artwork.player_name;b.title=img.alt;b.setAttribute('aria-label',img.alt);b.append(img);b.onclick=()=>this.showArtwork(artwork);list.append(b);}
-   status.textContent=data.artworks?.length?'':'Här visas de senaste inramade tavlorna.';
-  }catch(error){if(!this.destroyed)status.textContent=error.message;}finally{this.loadingGallery=false;}
+ moreGallery(){const list=this.galleryList,horizontal=list.scrollWidth>list.clientWidth+1;
+  const remaining=horizontal?list.scrollWidth-list.scrollLeft-list.clientWidth:list.scrollHeight-list.scrollTop-list.clientHeight;
+  if(list.clientHeight&&remaining<160)this.loadGallery(true);
+ }
+ async loadGallery(more=false){
+  if(this.destroyed||more&&(this.loadingGallery||!this.galleryCursor))return;
+  const version=this.galleryVersion=(this.galleryVersion||0)+1,before=more?this.galleryCursor:null;
+  this.loadingGallery=true;const status=this.node.querySelector('.studio-gallery-status'),list=this.galleryList;let loaded=false;
+  if(!more){this.galleryCursor=null;this.galleryCount=0;list.replaceChildren();list.scrollTop=0;list.scrollLeft=0;}
+  status.textContent=more?'Hämtar fler tavlor…':'Hämtar tavlor…';
+  try{const data=await request('GET',null,before);if(this.destroyed||version!==this.galleryVersion)return;
+   for(const artwork of (data.artworks||[]).slice(0,200-this.galleryCount)){const b=el('button','studio-thumbnail'),img=el('img','');b.type='button';img.loading='lazy';img.decoding='async';img.width=960;img.height=640;img.src=artwork.image;img.alt='Målning av '+artwork.player_name;b.title=img.alt;b.setAttribute('aria-label',img.alt);b.append(img);b.onclick=()=>this.showArtwork(artwork);list.append(b);this.galleryCount++;}
+   this.galleryCursor=this.galleryCount<200&&Number.isSafeInteger(data.next_cursor)&&data.next_cursor>0&&data.next_cursor<(before||Infinity)?data.next_cursor:null;
+   status.textContent=this.galleryCount?'':'Här visas de senaste inramade tavlorna.';loaded=true;
+  }catch(error){if(!this.destroyed&&version===this.galleryVersion)status.textContent=error.message;}
+  finally{if(version===this.galleryVersion){this.loadingGallery=false;if(loaded)this.moreGallery();}}
  }
  confirmLeave(leave){if(this.dialog?.open)return;const d=this.openDialog('Lämna målningen?');d.append(el('p','','Bilden är inte inramad och försvinner om du går till menyn.'));
   const stay=iconButton('primary','brush','Behåll bilden'),go=iconButton('studio-danger','leave','Släng och gå till menyn');stay.onclick=()=>d.close();go.onclick=()=>{d.close();leave();};d.append(stay,go);d.showModal();stay.focus();}

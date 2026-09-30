@@ -5,7 +5,7 @@ const games={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikup
 const difficulties={gentle:'Lätt',steady:'Medel',brave:'Svår'},number=new Intl.NumberFormat('sv-SE');
 const palette=['#287d68','#647ac0','#d39536','#a76fba','#c5685c','#42a6a0','#a48b4d','#738855','#c67f9c','#557f98','#8a6855','#777777'];
 const color=index=>palette[index]||'hsl('+Math.round(index*137.508%360)+' 48% '+(38+index%3*10)+'%)';
-let key='',controller=null,generation=0,renameController=null,galleryController=null,deleteController=null,artworks=[];
+let key='',controller=null,generation=0,renameController=null,galleryController=null,deleteController=null,artworks=[],galleryCursor=null;
 const element=(tag,text,className)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(className)node.className=className;return node;};
 const svg=(tag,attributes={},text)=>{const node=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [key,value]of Object.entries(attributes))node.setAttribute(key,value);if(text!==undefined)node.textContent=text;return node;};
 const label=(dimension,id)=>dimension==='ip'?(id||'IP saknas'):dimension==='game'?(games[id]||id||'Spel saknas'):(SC.modes[SC.canonicalLesson(id)]?.name||id||'Övning saknas');
@@ -35,23 +35,27 @@ function renderGallery(){
   for(const artwork of artworks){
     const card=element('figure',undefined,'gallery-card'),caption=element('figcaption',artwork.player_name),time=element('time',timestamp(artwork.created_at)),button=element('button','Ta bort','gallery-delete');
     if(typeof artwork.image==='string'&&/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/.test(artwork.image)){
-      const image=element('img');image.src=artwork.image;image.alt='Målning av '+artwork.player_name;image.width=960;image.height=640;card.append(image);
+      const image=element('img');image.loading='lazy';image.decoding='async';image.src=artwork.image;image.alt='Målning av '+artwork.player_name;image.width=960;image.height=640;card.append(image);
     }else card.append(element('p','Förhandsvisning saknas.'));
     caption.append(time);button.type='button';button.disabled=!!deleteController;button.setAttribute('aria-label','Ta bort tavlan av '+artwork.player_name+' från '+timestamp(artwork.created_at));
     button.addEventListener('click',()=>deleteArtwork(artwork));card.append(caption,button);target.append(card);
   }
   if(!artworks.length)target.append(element('p','Det finns inga tavlor i galleriet.','empty'));
 }
-async function loadGallery(message=''){
+async function loadGallery(message='',more=false){
+  if(more&&(!galleryCursor||galleryController||deleteController||!key))return;
+  const before=more?galleryCursor:null;if(!more)galleryCursor=null;
   galleryController?.abort();const request=galleryController=new AbortController(),submittedKey=key,timeout=setTimeout(()=>request.abort(),20000),status=$('gallery-status');
   const active=()=>galleryController===request&&key===submittedKey;
   status.className='';status.textContent='Hämtar tavlor…';
   try{
-    const response=await fetch(api.replace('/stats','/artworks'),{headers:{Authorization:'Bearer '+key},cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',signal:request.signal});
+    const response=await fetch(api.replace('/stats','/artworks')+(before?'?before='+before:''),{headers:{Authorization:'Bearer '+key},cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',signal:request.signal});
     const data=await response.json();if(!active())return;
     if(response.status===401){clear();$('status').className='error';$('status').textContent='Fel administratörsnyckel. Logga in igen.';$('admin-key').focus();return;}
     if(!response.ok||!Array.isArray(data.artworks))throw new Error(response.status===404?'upgrade':'unavailable');
-    artworks=data.artworks.slice(0,6);renderGallery();status.textContent=message;
+    const scroll=$('gallery').scrollLeft;artworks=(more?artworks.concat(data.artworks):data.artworks).slice(0,200);
+    galleryCursor=artworks.length<200&&Number.isSafeInteger(data.next_cursor)&&data.next_cursor>0&&data.next_cursor<(before||Infinity)?data.next_cursor:null;
+    renderGallery();$('gallery').scrollLeft=more?scroll:0;status.textContent=message;
   }catch(error){if(active()){status.className='error';status.textContent=(message?message+' ':'')+(error.message==='upgrade'?'Servern behöver uppdateras för att visa galleriet.':'Tavlorna kunde inte hämtas. Tryck på Uppdatera för att försöka igen.');}}
   finally{clearTimeout(timeout);if(active())galleryController=null;}
 }
@@ -128,7 +132,7 @@ function render(data){
 function clear(){
   key='';generation++;controller?.abort();controller=null;$('admin-key').value='';$('dashboard').hidden=true;$('actions').hidden=true;$('login').hidden=false;
   renameController?.abort();renameController=null;$('rename-fields').disabled=false;
-  galleryController?.abort();galleryController=null;deleteController?.abort();deleteController=null;artworks=[];
+  galleryController?.abort();galleryController=null;deleteController?.abort();deleteController=null;artworks=[];galleryCursor=null;
   $('gallery').replaceChildren();$('gallery-status').textContent='';$('gallery-status').className='';
   for(const id of ['rename-ip','rename-old-name','rename-new-name'])$(id).value='';
   $('rename-status').textContent='';$('rename-status').className='';
@@ -183,6 +187,7 @@ async function rename(){
   finally{clearTimeout(timeout);if(active()){renameController=null;$('rename-fields').disabled=false;$('refresh').disabled=!!controller||!!deleteController;}}
 }
 $('login').addEventListener('submit',event=>{event.preventDefault();key=$('admin-key').value.trim();$('admin-key').value='';if(key)load();});
+$('gallery').addEventListener('scroll',()=>{const list=$('gallery');if(list.scrollWidth-list.scrollLeft-list.clientWidth<300)loadGallery('',true);});
 $('rename-form').addEventListener('submit',event=>{event.preventDefault();rename();});
 $('refresh').addEventListener('click',()=>load());$('logout').addEventListener('click',()=>{clear();$('admin-key').focus();});
 // Clear secrets and rendered IPs before a page can enter the back/forward cache.

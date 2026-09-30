@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS score_rate_limits (
 CREATE INDEX IF NOT EXISTS idx_score_rate_limits_expiry
 ON score_rate_limits (expires_at);
 
--- Safe to run again. The six latest pictures form one shared gallery.
+-- Safe to run again. The 200 latest pictures form one shared gallery.
 CREATE TABLE IF NOT EXISTS artworks (
     sequence INTEGER PRIMARY KEY AUTOINCREMENT,
     submission_id TEXT NOT NULL UNIQUE,

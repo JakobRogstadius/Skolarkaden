@@ -75,3 +75,14 @@ body.playing.mobile-play #play:fullscreen{height:var(--play-height,100dvh);paddi
 body.playing.mobile-play #play:fullscreen .arena{flex:1;max-width:none;min-height:0}
 body.playing.mobile-play #play:fullscreen .studio-work,body.playing.mobile-play #play:fullscreen .studio-toolbar{max-width:none}
 body.playing.mobile-play .klossar-scene{top:74px}
+
+/* Portrait touch devices put a swipeable gallery above the paper. Its height
+   follows the drawing area, so the answer field still fits above the keyboard. */
+@media(orientation:portrait){
+ body.playing.mobile-play #play .studio-work{flex-direction:column;justify-content:flex-start;gap:6px}
+ body.playing.mobile-play #play .studio-gallery{position:relative;inset:auto;order:-1;display:flex;flex:none;width:100%;height:min(88px,30cqh)}
+ body.playing.mobile-play .studio-gallery h2{display:none}
+ body.playing.mobile-play #play .studio-thumbnails{grid-auto-flow:column;grid-template-rows:minmax(0,1fr);grid-auto-rows:auto;grid-auto-columns:calc((min(88px,30cqh) - 20px)*1.5 + 16px);align-content:stretch;overflow-x:auto;overflow-y:hidden;gap:7px;padding:2px}
+ body.playing.mobile-play .studio-gallery-status{font-size:10px;line-height:1.2;margin:2px 0}
+ body.playing.mobile-play .studio-paper-wrap{width:min(100cqw,calc((100cqh - min(88px,30cqh) - 6px)*1.5));margin:auto}
+}

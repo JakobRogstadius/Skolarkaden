@@ -89,7 +89,8 @@ const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englis
   ...mathExercises, ...languageExercises, 'homework']);
 const PACES = new Set(['gentle', 'steady', 'brave']);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1, score_dimensions: 1, admin_statistics: 1, homework: 1, homework_counts: 1, artworks: 1 };
+const ARTWORK_RETENTION = 200, ARTWORK_PAGE_SIZE = 20;
+const CAPABILITIES = { combined_boards: true, game_boards: true, submission_lookup: true, score_settings: 1, named_math_ids: 1, popularity_boards: 1, exercise_ratings: 1, score_dimensions: 1, admin_statistics: 1, homework: 1, homework_counts: 1, artworks: 1, artwork_retention: ARTWORK_RETENTION, artwork_page_size: ARTWORK_PAGE_SIZE };
 const EXERCISE_RATING_METHOD = 'top-five-game-percentiles-v1';
 const LANGUAGES = new Set(['sv-SE', 'en-US', 'zh-TW', 'zh-CN']);
 
@@ -181,11 +182,21 @@ function validArtworkImage(image) {
   return false;
 }
 
+async function artworkPage(request, env, reply, admin = false) {
+  const raw = new URL(request.url).searchParams.get('before');
+  const before = raw === null ? Number.MAX_SAFE_INTEGER : Number(raw);
+  if (raw !== null && (!/^[1-9]\d*$/.test(raw) || !Number.isSafeInteger(before))) return reply({ error: 'invalid_cursor' }, 400);
+  // Bound image data per response; the sequence cursor stays stable across new
+  // saves and deletions while someone scrolls through the gallery.
+  const { results } = await env.DB.prepare(`SELECT sequence, ${admin ? 'submission_id, ' : ''}player_name, image, created_at
+    FROM artworks WHERE sequence < ? ORDER BY sequence DESC LIMIT ?`).bind(before, ARTWORK_PAGE_SIZE + 1).all();
+  const page = results.slice(0, ARTWORK_PAGE_SIZE);
+  return reply({ artworks: page.map(({ sequence, ...artwork }) => artwork),
+    ...(results.length > ARTWORK_PAGE_SIZE ? { next_cursor: page.at(-1).sequence } : {}) });
+}
+
 async function artworkRequest(request, env, origin, reply) {
-  if (request.method === 'GET') {
-    const { results } = await env.DB.prepare('SELECT player_name, image, created_at FROM artworks ORDER BY sequence DESC LIMIT 6').all();
-    return reply({ artworks: results });
-  }
+  if (request.method === 'GET') return artworkPage(request, env, reply);
   if (request.method !== 'POST') return reply({ error: 'method_not_allowed' }, 405, { Allow: 'GET, POST, OPTIONS' });
   if (origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_required' }, 403);
   if (request.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return reply({ error: 'json_required' }, 415);
@@ -200,13 +211,13 @@ async function artworkRequest(request, env, origin, reply) {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify([name, image])));
   const hash = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
   // D1 batches execute transactionally. Receipt insertion gates concurrent retries;
-  // insertion and retention pruning cannot race or leave seven pictures behind.
+  // insertion and retention pruning cannot race or exceed the gallery limit.
   const result = await env.DB.batch([
     env.DB.prepare(`INSERT INTO artworks(submission_id, player_name, image)
       SELECT ?, ?, ? WHERE NOT EXISTS (SELECT 1 FROM artwork_receipts WHERE submission_id = ?)`)
       .bind(id, name, image, id),
     env.DB.prepare('INSERT INTO artwork_receipts(submission_id, payload_hash) VALUES (?, ?) ON CONFLICT(submission_id) DO NOTHING').bind(id, hash),
-    env.DB.prepare('DELETE FROM artworks WHERE sequence NOT IN (SELECT sequence FROM artworks ORDER BY sequence DESC LIMIT 6)'),
+    env.DB.prepare('DELETE FROM artworks WHERE sequence NOT IN (SELECT sequence FROM artworks ORDER BY sequence DESC LIMIT ?)').bind(ARTWORK_RETENTION),
     env.DB.prepare("DELETE FROM artwork_receipts WHERE created_at < datetime('now', '-30 days') AND submission_id NOT IN (SELECT submission_id FROM artworks)")
   ]);
   const receipt = await env.DB.prepare('SELECT payload_hash FROM artwork_receipts WHERE submission_id = ?').bind(id).first();
@@ -387,10 +398,7 @@ export default {
         if (env.STATS_ADMIN_KEY.length < 12) return reply({ error: 'statistics_key_too_short' }, 503);
         if (!await authorizedStatistics(request, env.STATS_ADMIN_KEY)) return reply({ error: 'unauthorized' }, 401, { 'WWW-Authenticate': 'Bearer' });
         if (url.pathname === '/admin/stats') return reply(await statistics(env.DB));
-        if (url.pathname === '/admin/artworks') {
-          const { results } = await env.DB.prepare('SELECT submission_id, player_name, image, created_at FROM artworks ORDER BY sequence DESC LIMIT 6').all();
-          return reply({ artworks: results });
-        }
+        if (url.pathname === '/admin/artworks') return artworkPage(request, env, reply, true);
         if (origin !== ALLOWED_ORIGIN) return reply({ error: 'origin_required' }, 403);
         if (request.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase() !== 'application/json') return reply({ error: 'json_required' }, 415);
         const body = await readBody(request);

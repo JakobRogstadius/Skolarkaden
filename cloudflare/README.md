@@ -310,8 +310,13 @@ Official API references: [D1 prepared statements](https://developers.cloudflare.
 
 ## Artwork gallery
 
-Målarateljén stores its **six latest framed pictures globally** in D1, separately
-from scores. Deploy both pieces before using the save button:
+Målarateljén stores its **200 latest framed pictures globally** in D1, separately
+from scores. **Upgrading an existing gallery from six to 200 pictures only
+requires deploying the updated `worker.mjs`; do not recreate the database or
+rerun a migration.** The old Worker keeps deleting pictures beyond six until
+replaced. This change does not restore already-deleted pictures.
+
+For a first-time setup, deploy both pieces before using the save button:
 
 1. Run [add-artworks.sql](add-artworks.sql) in the existing D1 **skolarkaden → Console**.
    It is idempotent and preserves existing scores. New databases include these
@@ -320,25 +325,28 @@ from scores. Deploy both pieces before using the save button:
    keep the existing `DB` binding, and deploy. A GitHub Pages deployment does not
    deploy the Worker.
 3. Open `/artworks`; it should return `{"artworks":[]}` before the first save.
-   `/health` advertises `capabilities.artworks: 1` with the new Worker.
+   `/health` advertises `capabilities.artworks: 1`, `artwork_retention: 200` and
+   `artwork_page_size: 20` with the new Worker.
 
-`GET /artworks` returns at most six PNG data URLs, player names and timestamps,
-newest first. `POST /artworks` accepts `submission_id` (UUID v4), `player_name`
+`GET /artworks` returns at most 20 PNG data URLs, player names and timestamps,
+newest first. When more pictures exist, the response includes `next_cursor`;
+request `/artworks?before=<next_cursor>` for the next page. Both galleries load
+pages as they scroll, keeping individual responses small even with 200 pictures. `POST /artworks` accepts `submission_id` (UUID v4), `player_name`
 (required, 1–10 letters/spaces) and `image` (960×640 PNG data URL, at most 900,000
 characters). The body has a separate 902,048-byte streaming limit; score requests
 keep their original 2 KiB limit. CORS, the shared name filter and the existing
 per-IP submission rate limit apply. Public responses contain no IPs or submission
 IDs, and artwork rows do not store IPs.
 
-A D1 transaction inserts the picture and removes images outside the latest six.
+A D1 transaction inserts the picture and removes images outside the latest 200.
 Small SHA-256 receipts remain for at least 30 days (and while their picture is in
 the gallery), with expired receipts cleaned during saves, so retrying a
 request after a lost response neither duplicates it nor resurrects a picture that
 has already left the gallery. Receipts contain no image, name or IP. Retrying an
 ID with different data returns 409. No score or completed-game row is created.
 
-The statistics page shows these six pictures with names, timestamps and a delete
-button for each. `GET /admin/artworks` includes their submission IDs;
+The statistics page shows these 200 pictures with names, timestamps and a delete
+button for each. `GET /admin/artworks` uses the same pagination and includes submission IDs;
 `POST /admin/artworks/delete` accepts `{ "submission_id": "<UUID v4>" }` and
 returns `{ "ok": true, "deleted": 1 }` (or `0` if already absent). Both routes
 require the existing `STATS_ADMIN_KEY` bearer token. Deletion also requires the

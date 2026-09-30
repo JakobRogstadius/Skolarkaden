@@ -7,7 +7,9 @@ const header=Buffer.alloc(13);header.writeUInt32BE(960);header.writeUInt32BE(640
 const image='data:image/png;base64,'+Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]),chunk('IHDR',header),chunk('IDAT',deflateSync(Buffer.alloc((960*3+1)*640))),chunk('IEND',Buffer.alloc(0))]).toString('base64');
 (async()=>{
  const worker=(await import('../cloudflare/worker.mjs')).default,origin='https://jakobrogstadius.github.io';
- const call=(method,body,headers={})=>worker.fetch(new Request('https://worker.test/artworks',{method,headers:{Origin:origin,'Content-Type':'application/json','CF-Connecting-IP':'192.0.2.5',...headers},...(body===undefined?{}:{body:JSON.stringify(body)})}),{DB});
+ const call=(method,body,headers={},query='')=>worker.fetch(new Request('https://worker.test/artworks'+query,{method,headers:{Origin:origin,'Content-Type':'application/json','CF-Connecting-IP':'192.0.2.5',...headers},...(body===undefined?{}:{body:JSON.stringify(body)})}),{DB});
+ const allPages=async fetchPage=>{const rows=[];let cursor=null;do{const response=await fetchPage(cursor);assert.equal(response.status,200);const data=await response.json();assert(data.artworks.length<=20,'image responses are bounded to 20 paintings');rows.push(...data.artworks);if(data.next_cursor)assert(!cursor||data.next_cursor<cursor,'cursor moves backwards');cursor=data.next_cursor;}while(cursor);return rows;};
+ const publicRows=()=>allPages(cursor=>call('GET',undefined,{},cursor?'?before='+cursor:''));
  assert.equal((await call('OPTIONS')).status,204);assert.deepEqual(await (await call('GET')).json(),{artworks:[]});
  const payload={submission_id:webcrypto.randomUUID(),player_name:'Åsa',image};
  assert.equal((await call('POST',payload)).status,201);assert.equal((await call('POST',payload)).status,200);assert.equal((await call('POST',{...payload,player_name:'ANN'})).status,409);
@@ -15,13 +17,13 @@ const image='data:image/png;base64,'+Buffer.concat([Buffer.from([137,80,78,71,13
  for(const change of [{player_name:''},{player_name:' '},{player_name:'<img>'},{player_name:'FUCK'},{submission_id:'wrong'},{image:'data:image/svg+xml;base64,PHN2Zz4='},{image:image.slice(0,-24)}])assert.equal((await call('POST',{...payload,...change})).status,400);
  assert.equal((await call('POST',payload,{Origin:'https://other.test'})).status,403);assert.equal((await call('POST',payload,{'Content-Type':'text/plain'})).status,415);
  assert.equal((await call('POST',{...payload,image:'a'.repeat(910000)})).status,413);
- const saves=Array.from({length:8},(_,i)=>({...payload,submission_id:webcrypto.randomUUID(),player_name:'NAMN'+String.fromCharCode(65+i)}));
- for(const p of saves)assert.equal((await call('POST',p)).status,201);
+ const saves=Array.from({length:205},(_,i)=>({...payload,submission_id:webcrypto.randomUUID(),player_name:'NAMN'+String.fromCharCode(65+Math.floor(i/26),65+i%26)}));
+ for(const [i,p] of saves.entries()){assert.equal((await call('POST',p,{'CF-Connecting-IP':'192.0.2.'+(20+i%50)})).status,201);assert.equal(db.prepare('SELECT count(*) AS n FROM artworks').get().n,Math.min(i+2,200),'every save retains up to 200 pictures');}
  assert((await Promise.all(Array.from({length:5},()=>call('POST',saves.at(-1))))).every(r=>r.status===200),'concurrent retries stay idempotent');
- const rows=(await (await call('GET')).json()).artworks;assert.equal(rows.length,6);assert.deepEqual(rows.map(r=>r.player_name),saves.slice(-6).reverse().map(r=>r.player_name));
+ const rows=await publicRows();assert.equal(rows.length,200);assert.deepEqual(rows.map(r=>r.player_name),saves.slice(-200).reverse().map(r=>r.player_name));
  assert(rows.every(r=>Object.keys(r).sort().join(',')==='created_at,image,player_name'),'public response excludes IDs and IPs');
- assert.equal((await call('POST',payload)).status,200,'retry of retired artwork is acknowledged');assert.deepEqual((await (await call('GET')).json()).artworks,rows,'retired artwork is not resurrected');
- assert.equal(db.prepare('SELECT count(*) AS n FROM artworks').get().n,6);assert.equal(db.prepare('SELECT count(*) AS n FROM highscores').get().n,0,'artworks never create score rows');
+ assert.equal((await call('POST',payload)).status,200,'retry of retired artwork is acknowledged');assert.deepEqual(await publicRows(),rows,'retired artwork is not resurrected');
+ assert.equal(db.prepare('SELECT count(*) AS n FROM artworks').get().n,200);assert.equal(db.prepare('SELECT count(*) AS n FROM highscores').get().n,0,'artworks never create score rows');
  db.prepare("UPDATE artwork_receipts SET created_at = datetime('now', '-40 days') WHERE submission_id = ?").run(saves.at(-1).submission_id);
  assert.equal((await call('POST',saves.at(-1))).status,200,'a visible picture keeps its retry receipt after thirty days');
  const key='Testkey123!?',target=saves.at(-1),admin=(route='/admin/artworks',method='GET',body,options={})=>worker.fetch(new Request('https://worker.test'+route,{method,headers:{Origin:origin,Authorization:'Bearer '+key,'Content-Type':'application/json',...options.headers},...(body===undefined?{}:{body:options.raw??JSON.stringify(body)})}),options.env||{DB,STATS_ADMIN_KEY:key});
@@ -34,16 +36,20 @@ const image='data:image/png;base64,'+Buffer.concat([Buffer.from([137,80,78,71,13
  for(const [body,options,status]of [[{}, {},400],[{submission_id:"' OR 1=1 --"},{},400],[{submission_id:target.submission_id},{headers:{Origin:''}},403],[{submission_id:target.submission_id},{headers:{'Content-Type':'text/plain'}},415],[{}, {raw:'{'},400],[{}, {raw:'x'.repeat(2049)},413]])assert.equal((await admin('/admin/artworks/delete','POST',body,options)).status,status);
  assert.deepEqual(db.prepare('SELECT * FROM artworks ORDER BY sequence').all(),before,'rejected deletions never change the gallery');
  const listing=await admin();assert.equal(listing.headers.get('Cache-Control'),'no-store');assert.match(listing.headers.get('Vary'),/Authorization/);
- assert.deepEqual((await listing.json()).artworks.map(row=>row.submission_id),saves.slice(-6).reverse().map(row=>row.submission_id),'admin listing identifies exactly the latest six paintings');
+ assert.equal((await listing.json()).artworks.length,20);
+ const adminRows=await allPages(cursor=>admin('/admin/artworks'+(cursor?'?before='+cursor:'')));assert.deepEqual(adminRows.map(row=>row.submission_id),saves.slice(-200).reverse().map(row=>row.submission_id),'admin can scroll through all 200 retained paintings');
+ for(const cursor of ['', '0', '-1', '1.5', 'wrong', '9007199254740992']){assert.equal((await call('GET',undefined,{},'?before='+cursor)).status,400);assert.equal((await admin('/admin/artworks?before='+cursor)).status,400);}
+ const firstPage=await (await call('GET')).json();
  const remove=()=>admin('/admin/artworks/delete','POST',{submission_id:target.submission_id});
  const removed=await remove();assert.equal(removed.status,200);assert.equal(removed.headers.get('Cache-Control'),'no-store');assert.deepEqual(await removed.json(),{ok:true,deleted:1});
  assert.deepEqual(db.prepare('SELECT * FROM artworks ORDER BY sequence').all(),before.filter(row=>row.submission_id!==target.submission_id),'delete is scoped to one immutable ID and preserves other rows');
  assert.deepEqual(await (await remove()).json(),{ok:true,deleted:0},'repeated removal is harmless');
  const receipt=db.prepare('SELECT created_at FROM artwork_receipts WHERE submission_id=?').get(target.submission_id);assert(Date.now()-Date.parse(receipt.created_at.replace(' ','T')+'Z')<5000,'old receipt retention restarts on deletion');
  assert.equal((await call('POST',target)).status,200);assert.equal(db.prepare('SELECT count(*) AS n FROM artworks WHERE submission_id=?').get(target.submission_id).n,0,'a delayed save cannot restore a deleted painting');
- assert.deepEqual((await (await call('GET')).json()).artworks,rows.slice(1),'public gallery reflects deletion immediately');
+ assert.deepEqual(await publicRows(),rows.slice(1),'public gallery reflects deletion immediately');
+ const nextPage=await (await call('GET',undefined,{},'?before='+firstPage.next_cursor)).json();assert.deepEqual(nextPage.artworks,rows.slice(20,40),'deleting a newer picture does not skip older pictures during scrolling');
  for(const row of before.slice(0,-1))await admin('/admin/artworks/delete','POST',{submission_id:row.submission_id});
  assert.deepEqual(await (await admin()).json(),{artworks:[]},'removing the last painting yields an empty gallery');
  for(let i=0;i<125;i++)await call('POST',payload);assert.equal((await call('POST',payload)).status,429);
- console.log('PASS artwork validation, CORS, six-picture retention, private admin listing, authenticated exact-ID deletion, retry receipts and no scores');
+ console.log('PASS artwork validation, CORS, 200-picture retention, bounded cursor pagination, private admin listing, authenticated exact-ID deletion, retry receipts and no scores');
 })().catch(e=>{console.error(e);process.exitCode=1;});

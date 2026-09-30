@@ -1,4 +1,4 @@
--- Safe to run again. The six latest pictures form one shared gallery.
+-- Safe to run again. The 200 latest pictures form one shared gallery.
 CREATE TABLE IF NOT EXISTS artworks (
     sequence INTEGER PRIMARY KEY AUTOINCREMENT,
     submission_id TEXT NOT NULL UNIQUE,

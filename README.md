@@ -67,8 +67,11 @@ med ett obligatoriskt namn (1–10 bokstäver), fortsätta måla eller bekräfta
 bilden ska slängas. Ett nytt papper visas först när sparandet lyckas. Ett misslyckat
 sparförsök kan skickas igen. Menyn varnar innan en osparad målning lämnas.
 
-Det gemensamma galleriet visar de sex senaste inramade bilderna i en sidokolumn
-på skärmar bredare än 1 050 px. Klicka på en miniatyr för en större tavla med ram
+Det gemensamma galleriet behåller de 200 senaste inramade bilderna. Sidokolumnen
+kan skrollas och hämtar äldre bilder i omgångar om 20. Den visas
+på skärmar bredare än 1 050 px. På mobiler och surfplattor i stående läge
+visas galleriet i stället som en horisontellt skrollbar rad ovanför pappret.
+Klicka på en miniatyr för en större tavla med ram
 och namnskylt. Bilderna är separata från topplistor och spelstatistik.
 Databaslagringen kräver [Cloudflare-uppdateringen för konstverk](cloudflare/README.md#artwork-gallery).
 
