@@ -22,11 +22,14 @@ class StudioGame{
   const base=this.items[Math.floor(this.random()*this.items.length)],item=SC.isMath(this.mode)?SC.makeMath(base.answer,this.random,SC.mathLevel(this.mode)):{...base};
   item.label=SC.lessonLabel(item.label,this.mode,this.uppercase);
   this.pending={type,value};this.targets=[{item,appearedAt:this.clock}];this.queue.clear();
-  this.message='Svara för att välja '+(type==='color'?colors[value][0].toLowerCase():tools.find(t=>t.id===value).name.toLowerCase())+' och fylla på färg.';
+  this.message=type==='color'?'Svara för att fylla på färg.':'Svara för att välja verktyget och fylla på färg.';
   this.revision++;this.emit('studio-question');
  }
- cancelQuestion(){this.pending=null;this.targets=[];this.queue.clear();this.message=this.paint?'Fortsätt måla.':'Välj en färg eller pensel för att fylla på.';this.revision++;this.emit('studio-ready');}
- consume(amount){this.paint=Math.max(0,this.paint-amount);if(this.paint<1e-8)this.paint=0;if(!this.paint)this.message='Färgen är slut. Välj färgen eller verktyget igen och svara för att fylla på.';this.revision++;}
+ cancelQuestion(){if(!this.paint)return;this.pending=null;this.targets=[];this.queue.clear();this.message='Fortsätt måla.';this.revision++;this.emit('studio-ready');}
+ consume(amount){const previous=this.paint;this.paint=Math.max(0,this.paint-amount);if(this.paint<1e-8)this.paint=0;
+  if(previous>0&&!this.paint){this.choose('color',this.color);this.message='Färgen är slut. Svara för att fylla på.';}
+  this.revision++;
+ }
  pause(){if(this.state==='playing'){this.state='paused';this.queue.clear();this.revision++;this.emit('pause');}}
  resume(){if(this.state==='paused'){this.state='playing';this.revision++;this.emit('resume');}}
  menu(){this.state='menu';this.queue.clear();}

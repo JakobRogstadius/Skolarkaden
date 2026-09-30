@@ -31,7 +31,9 @@ men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 
 Ett målarspel utan poäng, tidspress, vinst eller förlust. Välj bland 21 färger i sju grupper med ljusa, vanliga och mörka nyanser,
 en liten eller stor pensel eller färghinken. Vit och svart är gråskalans ljusaste
-och mörkaste nyanser. Knapparna visar ikoner, med namn som pekhjälp och för skärmläsare. Svara på en uppgift från vald övning
+och mörkaste nyanser. Under pappret kommer verktygen först, följda av färgerna
+i ett rutnät med sju kolumner och tre rader: ljusa, vanliga och mörka. Därefter
+visas uppgiften med en ikon för färgen eller verktyget som svaret ger. Knapparna visar ikoner, med namn som pekhjälp och för skärmläsare. Svara på en uppgift från vald övning
 för att välja och fylla på verktyget. En uppgift visas åt gången, så även läxor med
 ett enda svar fungerar. Fel svar har ingen påföljd. Tangentbord, tal, alternativa
 svar, pinyin och tio sekunders ledtrådsfördröjning fungerar som i andra spel.
@@ -43,9 +45,12 @@ längre penseldrag kostar sin faktiska längd. Penseln stannar när färgen tar 
 Färghinken räcker till fem fyllningar. Kantutjämnade pixlar färgas om genom att
 byta ut den gamla bakgrundsfärgens andel, så att tunna ofyllda kanter undviks
 utan att pensellinjens täckning ändras. Färg förbrukas bara när du målar; samma
-färg i ett redan fyllt område kostar inget. Verktyget vid pekaren och under
-pappret visar kvarvarande färg.
-Välj samma färg eller verktyg igen för att fylla på. Ångra återställer de senaste
+färg i ett redan fyllt område kostar inget. Verktyget vid pekaren visar kvarvarande
+färg, liksom verktygsikonen under pappret när ingen uppgift väntar.
+När färgen tar slut visas automatiskt en ny uppgift för att fylla på samma färg.
+Det går också att välja en färg eller ett verktyg för att fylla på tidigare.
+Om färg finns kvar avbryter ett klick på pappret ett väntande val och fortsätter
+måla med den nuvarande färgen och penseln eller hinken. Ångra återställer de senaste
 åtta penseldragen/fyllningarna utan att återställa färgmängden.
 
 **Helskärm** visar spelplan, verktyg, dialoger och svarsfält tillsammans. Ritytan
