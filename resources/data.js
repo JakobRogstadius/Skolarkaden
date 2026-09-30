@@ -28,7 +28,7 @@
   // The menu and exercise popularity boards share this order and membership.
   SC.exerciseGroups=Object.freeze([
     {id:'math',name:'Matematik'},{id:'letters',name:'Bokstäver'},
-    {id:'swedish',name:'Svenska'},{id:'english',name:'Engelska'},
+    {id:'swedish',name:'Svenska'},{id:'english',name:'English'},
     {id:'translation',name:'Svenska–engelska'},{id:'chinese',name:'Kinesiska'}
   ].map(Object.freeze));
   SC.exerciseGroup=id=>{

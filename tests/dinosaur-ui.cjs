@@ -29,7 +29,7 @@ async function start(kind,lesson='swedish'){const radio=radios.find(r=>r.value==
  await appReady;assert.equal(exerciseRequests,exerciseSource?1:0);assert(!elements.start.disabled);
  assert.equal(radios.length,12);assert.match(html,/<title>Skolarkaden<\/title>/);assert.doesNotMatch(html,/id="(?:queue-list|voice-toggle|live-speech|interim)"/);assert.match(html,/<details id="debug-panel"[^>]*>/);assert.doesNotMatch(html,/<details id="debug-panel"[^>]*\bopen\b/);
  const SC=context.Starlight;assert.equal(elements.lesson.value,'math-addition');assert.equal(elements['exercise-group'].value,'math');assert.equal(elements.lesson.options.length,8);
- assert.deepEqual(elements['exercise-group'].options.map(o=>o.text),['Matematik','Bokstäver','Svenska','Engelska','Svenska–engelska','Kinesiska']);
+ assert.deepEqual(elements['exercise-group'].options.map(o=>o.text),['Matematik','Bokstäver','Svenska','English','Svenska–engelska','Kinesiska']);
  assert.equal(radios.filter(r=>r.checked).length,1,'exactly one random game is selected');
  const selectable=[];
  for(const group of SC.exerciseGroups){elements['exercise-group'].value=group.id;elements['exercise-group'].dispatchEvent(new Event('change'));for(const option of elements.lesson.options){assert.equal(SC.exerciseGroup(option.value),group.id);selectable.push(option.value);}}

@@ -1330,7 +1330,7 @@
       "placeholder": "Type the answer…",
       "translation": false,
       "level": 1,
-      "menuLabel": "Motsatser 1 · Grundord",
+      "menuLabel": "Opposites 1 · Basic words",
       "pairs": [
         ["big","small",["large","huge"],["little","tiny"]],
         ["long","short",[],[]],
@@ -1393,7 +1393,7 @@
       "placeholder": "Type the answer…",
       "translation": false,
       "level": 2,
-      "menuLabel": "Motsatser 2 · Everyday contrasts",
+      "menuLabel": "Opposites 2 · Everyday contrasts",
       "pairs": [
         ["generous","stingy",["giving"],["miserly","mean"]],
         ["brave","cowardly",["courageous"],["timid","fearful"]],
@@ -1466,7 +1466,7 @@
       "placeholder": "Type the answer…",
       "translation": false,
       "level": 3,
-      "menuLabel": "Motsatser 3 · Society and reasoning",
+      "menuLabel": "Opposites 3 · Society and reasoning",
       "pairs": [
         ["objective","subjective",["unbiased"],["biased"]],
         ["impartial","biased",["neutral"],["partial"]],
@@ -1539,7 +1539,7 @@
       "placeholder": "Type the answer…",
       "translation": false,
       "level": 4,
-      "menuLabel": "Motsatser 4 · Advanced contrasts",
+      "menuLabel": "Opposites 4 · Advanced contrasts",
       "pairs": [
         ["implicit","explicit",["implied"],["express","stated"]],
         ["latent","manifest",["hidden"],["evident","apparent"]],
@@ -1612,7 +1612,7 @@
       "placeholder": "Type the answer…",
       "translation": false,
       "level": 1,
-      "menuLabel": "Synonymer 1 · Grundord",
+      "menuLabel": "Synonyms 1 · Basic words",
       "pairs": [
         ["happy","glad",["glad","cheerful","joyful","pleased","delighted"],["happy","cheerful","joyful","pleased","delighted"]],
         ["sad","unhappy",["unhappy","miserable","sorrowful","upset","down","blue","depressed","downcast","low"],["sad","miserable","sorrowful","upset","down","blue","depressed","downcast","low"]],
@@ -1675,7 +1675,7 @@
       "placeholder": "Type the answer…",
       "translation": false,
       "level": 2,
-      "menuLabel": "Synonymer 2 · Everyday vocabulary",
+      "menuLabel": "Synonyms 2 · Everyday vocabulary",
       "pairs": [
         ["accurate","correct",["precise","exact"],["precise","exact"]],
         ["careful","cautious",["wary"],["wary"]],
@@ -1748,7 +1748,7 @@
       "placeholder": "Type the answer…",
       "translation": false,
       "level": 3,
-      "menuLabel": "Synonymer 3 · Society and working life",
+      "menuLabel": "Synonyms 3 · Society and working life",
       "pairs": [
         ["adequate","sufficient",["enough"],["enough"]],
         ["appropriate","suitable",["fitting"],["fitting"]],
@@ -1821,7 +1821,7 @@
       "placeholder": "Type the answer…",
       "translation": false,
       "level": 4,
-      "menuLabel": "Synonymer 4 · Advanced adult vocabulary",
+      "menuLabel": "Synonyms 4 · Advanced adult vocabulary",
       "pairs": [
         ["abstruse","obscure",["arcane","esoteric"],["arcane","esoteric"]],
         ["acquiescent","compliant",["submissive"],["submissive"]],
