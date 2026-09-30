@@ -10,8 +10,6 @@ const icons={
  frame:'<rect x="2" y="3" width="20" height="18" rx="1"/><path d="M5 17 10 11l4 4 3-3 2 3M5 6h14v12H5z"/><circle cx="15.5" cy="8.5" r="1"/>',
  trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7"/>',
  brush:'<path d="m9 14 9-11a2 2 0 0 1 3 3L10 17M9 14c-7-1-4 6-7 7 7 1 10-1 8-4z"/>',
- play:'<path d="m7 3 14 9-14 9z"/>',
- home:'<path d="m2 11 10-9 10 9M5 9v12h5v-7h4v7h5V9"/>',
  leave:'<path d="M10 3H3v18h7m-2-9h13m-5-5 5 5-5 5"/>',
  waiting:'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>'
 };
@@ -41,7 +39,6 @@ class StudioRenderer{
   for(let hue=0;hue<7;hue++)for(let shade=0;shade<3;shade++)q('.studio-colors').append(this.colorButtons[hue+shade*7]);
   this.toolButtons=SC.studioTools.map(t=>{const b=el('button','studio-tool');b.type='button';b.title=t.name;b.setAttribute('aria-label',t.name);b.innerHTML=toolArt(t.id,'#637567',1);b.onclick=()=>this.choose('tool',t.id);q('.studio-tools').append(b);return b;});
   for(const [selector,icon,label] of [['.studio-undo','undo','Ångra'],['.studio-fullscreen','fullscreen','Helskärm'],['.studio-finish','done','Färdig'],['.studio-cancel','brush','Fortsätt måla']])setIcon(q(selector),icon,label);
-  this.sharedButtons=[['resume','play','Fortsätt spela'],['pause-menu','home','Till menyn']].map(([id,icon,label])=>{const button=document.getElementById(id),saved={button,html:button.innerHTML,title:button.getAttribute('title'),label:button.getAttribute('aria-label')};setIcon(button,icon,label);return saved;});
   q('.studio-cancel').onclick=()=>game.cancelQuestion();q('.studio-undo').onclick=()=>this.undo();q('.studio-finish').onclick=()=>this.finish();
   this.fullscreenButton=q('.studio-fullscreen');this.fullscreenButton.onclick=()=>this.fullscreen();this.onFullscreen=()=>{const full=document.fullscreenElement===this.play;setIcon(this.fullscreenButton,full?'shrink':'fullscreen',full?'Lämna helskärm':'Helskärm');};document.addEventListener('fullscreenchange',this.onFullscreen);
   if(!this.play.requestFullscreen)this.fullscreenButton.hidden=true;
@@ -136,7 +133,7 @@ class StudioRenderer{
  confirmLeave(leave){if(this.dialog?.open)return;const d=this.openDialog('Lämna målningen?');d.append(el('p','','Bilden är inte inramad och försvinner om du går till menyn.'));
   const stay=iconButton('primary','brush','Behåll bilden'),go=iconButton('studio-danger','leave','Släng och gå till menyn');stay.onclick=()=>d.close();go.onclick=()=>{d.close();leave();};d.append(stay,go);d.showModal();stay.focus();}
  showArtwork(artwork){if(this.dialog?.open)return;const d=this.openDialog('I vårt galleri'),frame=el('figure','studio-frame'),img=el('img','');img.src=artwork.image;img.alt='Målning av '+artwork.player_name;frame.append(img,el('figcaption','studio-plaque',artwork.player_name));d.append(frame);const close=iconButton('primary','brush','Tillbaka till målningen');close.onclick=()=>d.close();d.append(close);d.showModal();close.focus();}
- destroy(){this.destroyed=true;cancelAnimationFrame(this.raf);this.endStroke();this.dialog?.remove();document.removeEventListener('fullscreenchange',this.onFullscreen);root.removeEventListener('beforeunload',this.onBeforeUnload);if(document.fullscreenElement===this.play)document.exitFullscreen().catch(()=>{});for(const {button,html,title,label} of this.sharedButtons){button.innerHTML=html;button.classList.remove('studio-icon-button');for(const [key,value] of [['title',title],['aria-label',label]])if(value===null)button.removeAttribute(key);else button.setAttribute(key,value);}this.play.style.removeProperty('--studio-question-extra');this.node.remove();this.canvas.hidden=false;}
+ destroy(){this.destroyed=true;cancelAnimationFrame(this.raf);this.endStroke();this.dialog?.remove();document.removeEventListener('fullscreenchange',this.onFullscreen);root.removeEventListener('beforeunload',this.onBeforeUnload);if(document.fullscreenElement===this.play)document.exitFullscreen().catch(()=>{});this.play.style.removeProperty('--studio-question-extra');this.node.remove();this.canvas.hidden=false;}
 }
 SC.StudioRenderer=StudioRenderer;
 })(globalThis);
