@@ -31,6 +31,12 @@ for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'
     assert(parseFloat(renderer.board.style.width)<=size.width+.001,'the entire board fits the viewport width');
     assert(parseFloat(renderer.board.style.height)<=size.height+.001,'the entire board fits the viewport height');
     for(const tile of g.tiles){const button=renderer.buttons.get(tile.id);assert.equal(button.disabled,!g.free(tile));assert.equal(button.attributes['aria-pressed'],'false');assert.equal(button.attributes.title,SC.isChinese(mode)&&tile.side==='problem'?tile.chinese.translation:'');
+      const p=renderer.position(tile),w=renderer.geometry.tileWidth,h=renderer.geometry.tileHeight;
+      const visiblyCovered=g.tiles.some(other=>{
+        if(other.z<=tile.z)return false;
+        const q=renderer.position(other);return p.x<q.x+w&&q.x<p.x+w&&p.y<q.y+h&&q.y<p.y+h;
+      });
+      assert.equal(button.disabled,visiblyCovered,'only actual overlap from a higher tile disables selection');
       for(const key of ['left','top','width','height'])assert(Number.isFinite(parseFloat(button.style[key])));
       assert(parseFloat(button.style.left)>=0&&parseFloat(button.style.top)>=0);
       assert(parseFloat(button.style.left)+parseFloat(button.style.width)<=parseFloat(renderer.board.style.width));

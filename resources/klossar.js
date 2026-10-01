@@ -13,29 +13,30 @@ const layouts=Object.freeze([
 const pairCounts=Object.freeze({gentle:20,steady:30,brave:40});
 const overlap=(a,b)=>Math.abs(a.x-b.x)<.99&&Math.abs(a.y-b.y)<.99;
 function isFree(tile,tiles){
-  if(tile.removed)return false;
-  let left=false,right=false;
-  for(const other of tiles){
-    if(other===tile||other.removed)continue;
-    if(other.z>tile.z&&overlap(tile,other))return false;
-    if(other.z===tile.z&&Math.abs(other.y-tile.y)<.99){
-      const dx=other.x-tile.x;
-      if(dx<0&&dx>=-1.01)left=true;
-      if(dx>0&&dx<=1.01)right=true;
-    }
-  }
-  return !left||!right;
+  return !tile.removed&&!tiles.some(other=>!other.removed&&other.z>tile.z&&overlap(tile,other));
 }
 function layoutSlots(id,pace){
   const layout=layouts.find(l=>l.id===id);
   if(!layout||!pairCounts[pace])throw new Error('Okänd klossbana eller svårighet.');
   const floor=layout.rows.flatMap((row,y)=>Array.from(row).flatMap((cell,x)=>cell==='#'?[{x,y,z:0}]:[]));
-  // Keep the whole silhouette at every difficulty. Higher levels add supported,
-  // progressively smaller layers, rather than squeezing more tiles into gaps.
+  // Keep the silhouette, with staggered upper layers bridging two to four
+  // tiles below. Each layer uses one grid, so its own tiles never overlap.
   const cx=floor.reduce((n,p)=>n+p.x,0)/floor.length,cy=floor.reduce((n,p)=>n+p.y,0)/floor.length;
-  const inner=[...floor].sort((a,b)=>((a.x-cx)**2+(a.y-cy)**2)-((b.x-cx)**2+(b.y-cy)**2)||a.y-b.y||a.x-b.x);
   const layers={gentle:[8],steady:[20,8],brave:[28,16,4]}[pace];
-  return [...floor,...layers.flatMap((count,i)=>inner.slice(0,count).map(p=>({...p,z:i+1})))].map((p,id)=>({...p,id}));
+  const slots=[...floor];let below=floor;
+  for(const [i,count] of layers.entries()){
+    const [dx,dy]=[[.5,.5],[.5,0],[0,.5]][i],candidates=new Map();
+    for(const tile of below)for(const x of [tile.x-dx,tile.x+dx])for(const y of [tile.y-dy,tile.y+dy]){
+      const support=below.reduce((area,t)=>area+Math.max(0,1-Math.abs(t.x-x))*Math.max(0,1-Math.abs(t.y-y)),0);
+      // At least half the tile rests on the preceding layer. Prefer full
+      // support and central positions before allowing edge overhangs.
+      if(support>=.5)candidates.set(x+','+y,{x,y,z:i+1,support});
+    }
+    const ranked=[...candidates.values()].sort((a,b)=>b.support-a.support||((a.x-cx)**2+(a.y-cy)**2)-((b.x-cx)**2+(b.y-cy)**2)||a.y-b.y||a.x-b.x);
+    if(ranked.length<count)throw new Error('Klossbanan saknar stöd för nästa lager.');
+    below=ranked.slice(0,count).map(({x,y,z})=>({x,y,z}));slots.push(...below);
+  }
+  return slots.map((p,id)=>({...p,id}));
 }
 function removalOrder(slots,random=Math.random){
   // Try varied paths through the stack. The final attempt peels one even-sized

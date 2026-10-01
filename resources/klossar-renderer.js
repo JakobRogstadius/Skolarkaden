@@ -19,7 +19,7 @@ class KlossarRenderer{
       }
       this.caption.append(toggle);
     }else this.caption.append(element('span','klossar-exercise-name',SC.modes[game.mode].name));
-    this.caption.append(element('span','klossar-rule','Fri ovansida + fri vänster- eller högerkant'));
+    this.caption.append(element('span','klossar-rule','Välj klossar med helt fri ovansida'));
     this.viewport=element('div','klossar-viewport');this.viewport.setAttribute('aria-label','Spelplan');
     this.board=element('div','klossar-board');this.viewport.append(this.board);
     this.instructions=element('p','klossar-instructions','Välj två klossar som hör ihop. Klicka igen för att avmarkera.');
@@ -63,10 +63,10 @@ class KlossarRenderer{
   layout(){
     this.creatures.resize();
     const g=this.game,width=this.viewport.clientWidth,height=this.viewport.clientHeight;if(!width||!height)return;
-    const points=g.slots.map(t=>({x:t.x-t.z*.12,y:t.y-t.z*.12}));
+    const points=g.slots;
     const minX=Math.min(...points.map(p=>p.x)),minY=Math.min(...points.map(p=>p.y));
     const columns=Math.max(...points.map(p=>p.x))-minX+1,rows=Math.max(...points.map(p=>p.y))-minY+1;
-    // Fit the entire stack, including its layer offsets and shadows, to the
+    // Fit the entire stack, including its half-tile offsets and shadows, to the
     // available content box. Text length must never enlarge the board.
     const padding=Math.min(18,width/8,height/8),ratio=.58;
     const cell=Math.min(144,(width-padding*2)/columns,(height-padding*2)/rows/ratio),row=cell*ratio,gap=Math.min(3,cell*.04);
@@ -96,7 +96,7 @@ class KlossarRenderer{
     }
     while(size>1&&overflows()){size=Math.max(1,size-.5);face.style.fontSize=size+'px';}
   }
-  position(tile){const p=this.geometry;return {x:p.padding+(tile.x-tile.z*.12-p.minX)*p.cell,y:p.padding+(tile.y-tile.z*.12-p.minY)*p.row};}
+  position(tile){const p=this.geometry;return {x:p.padding+(tile.x-p.minX)*p.cell,y:p.padding+(tile.y-p.minY)*p.row};}
   placePuff(node,effect){const p=this.position(effect);node.style.left=p.x+'px';node.style.top=p.y+'px';node.style.width=this.geometry.tileWidth+'px';node.style.height=this.geometry.tileHeight+'px';}
   scoreEvent(event){
     if(event.type==='pause'||event.type==='resume')this.lastTime=performance.now();

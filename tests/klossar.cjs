@@ -52,17 +52,30 @@ console.log('PASS hint legality, cancellation, repeated requests, pause, persist
 }
 console.log('PASS all 37 bopomofo/pinyin pairs, distinct similar sounds, a complete round and unchanged shared keyboard/speech answers');
 
-// Covering and both horizontal sides matter; above/below neighbours do not.
+// Neighbours never block a tile. Any overlap from a higher layer does.
 const center={x:1,y:1,z:0},left={x:0,y:1,z:0},right={x:2,y:1,z:0},top={x:1,y:0,z:0},cover={x:1,y:1,z:1};
-assert(SC.klossarIsFree(center,[center,left,top]));assert(!SC.klossarIsFree(center,[center,left,right]));
+assert(SC.klossarIsFree(center,[center,left,top]));assert(SC.klossarIsFree(center,[center,left,right,top,{x:1,y:2,z:0}]));
 assert(!SC.klossarIsFree(center,[center,cover]));cover.removed=true;assert(SC.klossarIsFree(center,[center,cover]));
 assert(!SC.klossarIsFree(center,[center,{x:1.5,y:1.5,z:1}]));
+assert(SC.klossarIsFree(center,[center,{x:2,y:1,z:1}]),'touching edges do not cover a tile');
+assert(!SC.klossarIsFree(center,[center,{x:.5,y:.5,z:3}]),'a higher layer still blocks when intermediate layers are gone');
+for(const [dx,dy,count] of [[.5,0,2],[0,.5,2],[.5,.5,3],[.5,.5,4]]){
+  const base=[{x:0,y:0,z:0},{x:1,y:0,z:0},{x:0,y:1,z:0},{x:1,y:1,z:0}].slice(0,count===3?3:4),upper={x:dx,y:dy,z:1},tiles=[...base,upper];
+  assert.equal(base.filter(t=>!SC.klossarIsFree(t,tiles)).length,count);
+  assert(SC.klossarIsFree(upper,tiles));upper.removed=true;assert(base.every(t=>SC.klossarIsFree(t,tiles)));
+}
 
 let deals=0;
 for(const layout of SC.klossarLayouts)for(const [pace,count] of Object.entries(SC.klossarPairCounts))for(let seed=1;seed<=30;seed++){
   const {g}=setup({layout:layout.id,pace,mode:'math-addition'},seed);
   assert.equal(g.tiles.length,count*2);assert.equal(new Set(g.tiles.map(t=>[t.x,t.y,t.z].join(','))).size,count*2);
-  for(const tile of g.tiles)if(tile.z)assert(g.tiles.some(t=>t.x===tile.x&&t.y===tile.y&&t.z===tile.z-1),'upper tiles have support');
+  const area=(a,b)=>Math.max(0,1-Math.abs(a.x-b.x))*Math.max(0,1-Math.abs(a.y-b.y));
+  for(const tile of g.tiles){
+    assert(Number.isInteger(tile.x*2)&&Number.isInteger(tile.y*2),'positions use a half-tile grid');
+    assert(!g.tiles.some(t=>t!==tile&&t.z===tile.z&&area(tile,t)>0),'tiles on the same layer never overlap');
+    if(tile.z)assert(g.tiles.filter(t=>t.z===tile.z-1).reduce((sum,t)=>sum+area(tile,t),0)>=.5,'upper tiles have at least half their area supported');
+  }
+  assert(g.tiles.length-g.getAvailableTargets().length>({gentle:8,steady:28,brave:48}[pace]),'staggered layers cover more tiles than the old aligned layers');
   for(const [a,b] of g.order){assert(g.free(g.tiles[a])&&g.free(g.tiles[b]));assert(SC.klossarMatches(g.tiles[a],g.tiles[b]));g.tiles[a].removed=g.tiles[b].removed=true;}
   assert.equal(g.getTargets().length,0);deals++;
 }
