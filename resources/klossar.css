@@ -23,14 +23,14 @@ body.playing .arena.klossar{height:clamp(580px,calc(100dvh - 86px),1040px);backg
 .klossar-board{position:relative;flex:none;isolation:isolate}
 /* Keep an opaque base below the same gradient in every state. Transitioning
    the background shorthand used to expose the offset tiles underneath. */
-.klossar-tile{position:absolute;display:block;margin:0;padding:2px;border:1px solid #eee6c4;border-radius:6px;color:var(--tile-ink,#234d47);box-shadow:1px var(--tile-depth) 0 #a79971,2px calc(var(--tile-depth) + 2px) 0 #7f7b59,3px calc(var(--tile-depth) + 4px) 7px #091e2470;outline:none;transition:background-color .12s,border-color .12s;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.klossar-tile{position:absolute;display:block;margin:0;padding:2px;border:1px solid #eee6c4;border-radius:6px;color:var(--tile-ink,#234d47);box-shadow:1px var(--tile-depth) 0 #a79971,var(--tile-side-x) var(--tile-side-y) 0 #7f7b59,3px calc(var(--tile-depth) + 4px) 7px #091e2470;outline:none;transition:background-color .12s,border-color .12s;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 .klossar-tile,.klossar-tile:hover:enabled{background-color:var(--tile-color,#f1e4c4);background-image:linear-gradient(140deg,#fffced80,#ffffff00)}
 .klossar-tile::after{content:'';position:absolute;inset:0;border:2px solid transparent;border-radius:inherit;pointer-events:none}
 .klossar-tile:hover:enabled:not(.is-selected):not(.is-wrong){--tile-color:#fffdec}
 .klossar-tile:hover:enabled:not(.is-selected):not(.is-wrong)::after{border-color:#79b59a}
 .klossar-tile:disabled{opacity:1;cursor:default}
-.klossar-tile.is-blocked{--tile-color:#aeb6a2;border-color:#ccceba;box-shadow:1px var(--tile-depth) 0 #7f8067,2px calc(var(--tile-depth) + 2px) 0 #66725d,3px calc(var(--tile-depth) + 4px) 7px #091e2460}
-.klossar-tile.is-selected{--tile-color:#c9f0d9;box-shadow:1px var(--tile-depth) 0 #628d72,2px calc(var(--tile-depth) + 2px) 0 #4e7762,0 0 12px #a3ffd559}
+.klossar-tile.is-blocked{--tile-color:#aeb6a2;border-color:#ccceba;box-shadow:1px var(--tile-depth) 0 #7f8067,var(--tile-side-x) var(--tile-side-y) 0 #66725d,3px calc(var(--tile-depth) + 4px) 7px #091e2460}
+.klossar-tile.is-selected{--tile-color:#c9f0d9;box-shadow:1px var(--tile-depth) 0 #628d72,var(--tile-side-x) var(--tile-side-y) 0 #4e7762,0 0 12px #a3ffd559}
 .klossar-tile.is-selected::after{border:3px solid #8bffd0}
 .klossar-tile:focus-visible{outline:none}
 .klossar-tile:focus-visible::after{border:3px solid #ffd080}

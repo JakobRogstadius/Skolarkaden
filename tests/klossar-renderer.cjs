@@ -31,15 +31,21 @@ for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'
     assert(parseFloat(renderer.board.style.width)<=size.width+.001,'the entire board fits the viewport width');
     assert(parseFloat(renderer.board.style.height)<=size.height+.001,'the entire board fits the viewport height');
     for(const tile of g.tiles){const button=renderer.buttons.get(tile.id);assert.equal(button.disabled,!g.free(tile));assert.equal(button.attributes['aria-pressed'],'false');assert.equal(button.attributes.title,SC.isChinese(mode)&&tile.side==='problem'?tile.chinese.translation:'');
-      const p=renderer.position(tile),w=renderer.geometry.tileWidth,h=renderer.geometry.tileHeight;
-      const visiblyCovered=g.tiles.some(other=>{
+      const p=renderer.position(tile),w=renderer.geometry.tileWidth,h=renderer.geometry.tileHeight,{depthX,depthY}=renderer.geometry;
+      // Compare footprints on the table; perspective only lifts the faces.
+      const footprint={x:p.x+tile.z*depthX,y:p.y+tile.z*depthY};
+      const covered=g.tiles.some(other=>{
         if(other.z<=tile.z)return false;
-        const q=renderer.position(other);return p.x<q.x+w&&q.x<p.x+w&&p.y<q.y+h&&q.y<p.y+h;
+        const q=renderer.position(other);q.x+=other.z*depthX;q.y+=other.z*depthY;
+        return footprint.x<q.x+w&&q.x<footprint.x+w&&footprint.y<q.y+h&&q.y<footprint.y+h;
       });
       const z=Number(button.style.zIndex);
       assert(Number.isInteger(z),'CSS must accept the stacking order even for half-row positions');
-      for(const other of g.tiles)if(other.z<tile.z)assert(z>Number(renderer.buttons.get(other.id).style.zIndex),'upper tiles must actually draw above every lower tile');
-      assert.equal(button.disabled,visiblyCovered,'only actual overlap from a higher tile disables selection');
+      for(const other of g.tiles)if(other.z<tile.z||other.z===tile.z&&(other.y<tile.y||other.y===tile.y&&other.x<tile.x))assert(z>Number(renderer.buttons.get(other.id).style.zIndex),'draw tiles in layer, row and column order');
+      assert.equal(button.disabled,covered,'only a higher tile covering the footprint disables selection');
+      const upper=renderer.position({...tile,z:tile.z+1});
+      assert(Math.abs(upper.x+depthX-p.x)<1e-8&&Math.abs(upper.y+depthY-p.y)<1e-8,'the upper tile side ends exactly on the supporting face');
+      assert.equal(depthX,parseFloat(renderer.board.style['--tile-side-x']));assert.equal(depthY,parseFloat(renderer.board.style['--tile-side-y']));
       for(const key of ['left','top','width','height'])assert(Number.isFinite(parseFloat(button.style[key])));
       assert(parseFloat(button.style.left)>=0&&parseFloat(button.style.top)>=0);
       assert(parseFloat(button.style.left)+parseFloat(button.style.width)<=parseFloat(renderer.board.style.width));
@@ -109,3 +115,17 @@ console.log('PASS creature reveal once per removed tile, independent randomness,
   g.state='won';renderer.draw();assert(renderer.hintButton.disabled);renderer.destroy();
 }
 console.log('PASS hint button, pair animation classes, single charge, cancellation and disabled states');
+
+{
+  viewport={width:350,height:470};
+  const g=new SC.KlossarGame({random:()=>.31});g.start({mode:'letters',layout:'turtle'});
+  const arena=new Element(),canvas=new Element('canvas');arena.append(canvas);
+  const renderer=new SC.KlossarRenderer(canvas,g,{creatureRandom:()=>1});
+  const left=g.tiles[0],right=g.tiles.find(t=>t.z===left.z&&t.y===left.y&&t.x>left.x);
+  [left.x,right.x]=[right.x,left.x];renderer.layout();
+  assert(Number(renderer.buttons.get(left.id).style.zIndex)>Number(renderer.buttons.get(right.id).style.zIndex),'the right-hand tile draws in front after positions change, regardless of its original ID');
+  g.tiles.reverse();renderer.layout();
+  assert(Number(renderer.buttons.get(left.id).style.zIndex)>Number(renderer.buttons.get(right.id).style.zIndex),'array order cannot change side overlap');
+  renderer.destroy();
+}
+console.log('PASS perspective alignment and stable same-row overlap after tile repositioning');

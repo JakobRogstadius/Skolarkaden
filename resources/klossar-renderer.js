@@ -63,21 +63,27 @@ class KlossarRenderer{
   layout(){
     this.creatures.resize();
     const g=this.game,width=this.viewport.clientWidth,height=this.viewport.clientHeight;if(!width||!height)return;
-    const points=g.slots;
+    const columns=Math.max(...g.slots.map(p=>p.x))-Math.min(...g.slots.map(p=>p.x))+1;
+    const rows=Math.max(...g.slots.map(p=>p.y))-Math.min(...g.slots.map(p=>p.y))+1,maxZ=Math.max(...g.slots.map(p=>p.z));
+    // Reserve room for perspective as well as the footprint. Each upper face
+    // rises by exactly the solid side's offset, so its base rests on the face below.
+    const padding=Math.min(18,width/8,height/8),ratio=.58,depthX=2;
+    const cell=Math.min(144,(width-padding*2-maxZ*depthX)/columns,(height-padding*2-maxZ*2)/(rows*ratio+maxZ*.04));
+    const row=cell*ratio,gap=Math.min(3,cell*.04),depth=Math.min(4,cell*.04),depthY=depth+2;
+    const points=g.slots.map(t=>({x:t.x*cell-t.z*depthX,y:t.y*row-t.z*depthY}));
     const minX=Math.min(...points.map(p=>p.x)),minY=Math.min(...points.map(p=>p.y));
-    const columns=Math.max(...points.map(p=>p.x))-minX+1,rows=Math.max(...points.map(p=>p.y))-minY+1;
-    // Fit the entire stack, including its half-tile offsets and shadows, to the
-    // available content box. Text length must never enlarge the board.
-    const padding=Math.min(18,width/8,height/8),ratio=.58;
-    const cell=Math.min(144,(width-padding*2)/columns,(height-padding*2)/rows/ratio),row=cell*ratio,gap=Math.min(3,cell*.04);
-    this.geometry={minX,minY,cell,row,padding,tileWidth:cell-gap,tileHeight:row-gap};
-    this.board.style.width=columns*cell+padding*2+'px';this.board.style.height=rows*row+padding*2+'px';
-    this.board.style.setProperty('--tile-depth',Math.min(4,cell*.04)+'px');
+    this.geometry={minX,minY,cell,row,padding,depthX,depthY,tileWidth:cell-gap,tileHeight:row-gap};
+    this.board.style.width=Math.max(...points.map(p=>p.x))-minX+cell+padding*2+'px';
+    this.board.style.height=Math.max(...points.map(p=>p.y))-minY+row+padding*2+'px';
+    this.board.style.setProperty('--tile-depth',depth+'px');
+    this.board.style.setProperty('--tile-side-x',depthX+'px');
+    this.board.style.setProperty('--tile-side-y',depthY+'px');
+    // Give every tile a distinct integer priority, independent of DOM order
+    // and original IDs, including after a reshuffle or half-tile placement.
+    const order=new Map([...g.tiles].sort((a,b)=>a.z-b.z||a.y-b.y||a.x-b.x||a.id-b.id).map((t,i)=>[t.id,10+i]));
     for(const tile of g.tiles){
       const button=this.buttons.get(tile.id),p=this.position(tile);
-      // CSS z-index accepts integers only; half-row positions must not turn
-      // upper tiles into auto-stacked elements behind the tiles they cover.
-      Object.assign(button.style,{left:p.x+'px',top:p.y+'px',width:this.geometry.tileWidth+'px',height:this.geometry.tileHeight+'px',zIndex:String(10+tile.z*100+Math.round(tile.y*2))});
+      Object.assign(button.style,{left:p.x+'px',top:p.y+'px',width:this.geometry.tileWidth+'px',height:this.geometry.tileHeight+'px',zIndex:String(order.get(tile.id))});
       this.fitText(tile,button);
     }
     for(const [id,node] of this.puffs){const effect=g.effects.find(e=>e.id===id);if(effect)this.placePuff(node,effect);}
@@ -98,7 +104,7 @@ class KlossarRenderer{
     }
     while(size>1&&overflows()){size=Math.max(1,size-.5);face.style.fontSize=size+'px';}
   }
-  position(tile){const p=this.geometry;return {x:p.padding+(tile.x-p.minX)*p.cell,y:p.padding+(tile.y-p.minY)*p.row};}
+  position(tile){const p=this.geometry;return {x:p.padding+tile.x*p.cell-tile.z*p.depthX-p.minX,y:p.padding+tile.y*p.row-tile.z*p.depthY-p.minY};}
   placePuff(node,effect){const p=this.position(effect);node.style.left=p.x+'px';node.style.top=p.y+'px';node.style.width=this.geometry.tileWidth+'px';node.style.height=this.geometry.tileHeight+'px';}
   scoreEvent(event){
     if(event.type==='pause'||event.type==='resume')this.lastTime=performance.now();
