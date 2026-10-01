@@ -60,6 +60,7 @@ body.playing.mobile-play .studio-scene{flex:1;min-height:0;padding:5px 8px;displ
 body.playing.mobile-play .studio-work{container-type:size;display:flex;align-items:center;justify-content:center;flex:1;min-height:0;width:100%;max-width:none}
 body.playing.mobile-play .studio-paper-wrap{width:min(100cqw,150cqh);height:auto;aspect-ratio:3/2;flex:none}
 body.playing.mobile-play .studio-paper{width:100%;height:auto;aspect-ratio:3/2}
+body.playing.mobile-play .arena.studio{container-name:studio-viewport}
 body.playing.mobile-play .studio-gallery{display:none}
 body.playing.mobile-play .studio-toolbar{flex:none;width:100%;max-width:none;margin:0;gap:4px;grid-template-columns:minmax(0,1fr) 100px}
 body.playing.mobile-play .studio-paint-controls{--studio-control-size:28px;gap:5px 12px;grid-template-columns:28px minmax(0,214px);justify-content:start}
@@ -75,6 +76,25 @@ body.playing.mobile-play #play:fullscreen{height:var(--play-height,100dvh);paddi
 body.playing.mobile-play #play:fullscreen .arena{flex:1;max-width:none;min-height:0}
 body.playing.mobile-play #play:fullscreen .studio-work,body.playing.mobile-play #play:fullscreen .studio-toolbar{max-width:none}
 body.playing.mobile-play .klossar-scene{top:74px}
+
+/* Tablets have room for one balanced tray: tools, palette, question, actions.
+   Query the usable arena, so opening the keyboard restores the compact tray. */
+@container studio-viewport (min-width:700px) and (min-height:500px){
+ body.playing.mobile-play #play .studio-toolbar{
+  --studio-tablet-size:clamp(44px,5cqw,60px);
+  max-width:1100px;align-self:center;gap:16px;
+  grid-template-columns:var(--studio-tablet-size) calc(7 * var(--studio-tablet-size) + 18px) minmax(180px,1fr) var(--studio-tablet-size);
+ }
+ body.playing.mobile-play .studio-paint-controls{display:contents}
+ body.playing.mobile-play .studio-question-panel{grid-column:auto;min-height:0;gap:12px}
+ body.playing.mobile-play .studio-paint-tool{width:40px}
+ body.playing.mobile-play .studio-paint-tool svg{height:54px}
+ body.playing.mobile-play .studio-status{font-size:15px;line-height:1.4;margin-bottom:6px}
+ body.playing.mobile-play .studio-question{font-size:clamp(30px,3.5cqw,38px)}
+ body.playing.mobile-play .studio-hint{font-size:14px;line-height:1.4;margin-top:6px}
+ body.playing.mobile-play .studio-actions{width:100%;grid-template-columns:minmax(0,1fr);gap:3px;justify-self:stretch}
+ body.playing.mobile-play .arena.studio .studio-diagram{width:168px;max-width:100%;height:108px}
+}
 
 /* Portrait touch devices put a swipeable gallery above the paper. Its height
    follows the drawing area, so the answer field still fits above the keyboard. */
