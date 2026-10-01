@@ -36,6 +36,9 @@ for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'
         if(other.z<=tile.z)return false;
         const q=renderer.position(other);return p.x<q.x+w&&q.x<p.x+w&&p.y<q.y+h&&q.y<p.y+h;
       });
+      const z=Number(button.style.zIndex);
+      assert(Number.isInteger(z),'CSS must accept the stacking order even for half-row positions');
+      for(const other of g.tiles)if(other.z<tile.z)assert(z>Number(renderer.buttons.get(other.id).style.zIndex),'upper tiles must actually draw above every lower tile');
       assert.equal(button.disabled,visiblyCovered,'only actual overlap from a higher tile disables selection');
       for(const key of ['left','top','width','height'])assert(Number.isFinite(parseFloat(button.style[key])));
       assert(parseFloat(button.style.left)>=0&&parseFloat(button.style.top)>=0);

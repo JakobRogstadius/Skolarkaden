@@ -59,6 +59,12 @@ assert(!SC.klossarIsFree(center,[center,cover]));cover.removed=true;assert(SC.kl
 assert(!SC.klossarIsFree(center,[center,{x:1.5,y:1.5,z:1}]));
 assert(SC.klossarIsFree(center,[center,{x:2,y:1,z:1}]),'touching edges do not cover a tile');
 assert(!SC.klossarIsFree(center,[center,{x:.5,y:.5,z:3}]),'a higher layer still blocks when intermediate layers are gone');
+{
+  const base=[{x:0,y:0},{x:1,y:0},{x:0,y:1},{x:1,y:1}];
+  const positions=SC.klossarSupportedPositions(base).map(p=>p.x+','+p.y).sort();
+  assert.deepEqual(Array.from(positions),[0,.5,1].flatMap(x=>[0,.5,1].map(y=>x+','+y)).sort(),'a 2×2 base has exactly nine fully supported half-grid positions');
+  assert.equal(SC.klossarSupportedPositions(base.slice(0,3)).length,5,'a missing corner must not support a tile across the hole');
+}
 for(const [dx,dy,count] of [[.5,0,2],[0,.5,2],[.5,.5,3],[.5,.5,4]]){
   const base=[{x:0,y:0,z:0},{x:1,y:0,z:0},{x:0,y:1,z:0},{x:1,y:1,z:0}].slice(0,count===3?3:4),upper={x:dx,y:dy,z:1},tiles=[...base,upper];
   assert.equal(base.filter(t=>!SC.klossarIsFree(t,tiles)).length,count);
@@ -73,7 +79,7 @@ for(const layout of SC.klossarLayouts)for(const [pace,count] of Object.entries(S
   for(const tile of g.tiles){
     assert(Number.isInteger(tile.x*2)&&Number.isInteger(tile.y*2),'positions use a half-tile grid');
     assert(!g.tiles.some(t=>t!==tile&&t.z===tile.z&&area(tile,t)>0),'tiles on the same layer never overlap');
-    if(tile.z)assert(g.tiles.filter(t=>t.z===tile.z-1).reduce((sum,t)=>sum+area(tile,t),0)>=.5,'upper tiles have at least half their area supported');
+    if(tile.z)assert.equal(g.tiles.filter(t=>t.z===tile.z-1).reduce((sum,t)=>sum+area(tile,t),0),1,'every upper tile is fully supported without any overhang');
   }
   assert(g.tiles.length-g.getAvailableTargets().length>({gentle:8,steady:28,brave:48}[pace]),'staggered layers cover more tiles than the old aligned layers');
   for(const [a,b] of g.order){assert(g.free(g.tiles[a])&&g.free(g.tiles[b]));assert(SC.klossarMatches(g.tiles[a],g.tiles[b]));g.tiles[a].removed=g.tiles[b].removed=true;}

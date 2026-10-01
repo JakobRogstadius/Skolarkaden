@@ -75,7 +75,9 @@ class KlossarRenderer{
     this.board.style.setProperty('--tile-depth',Math.min(4,cell*.04)+'px');
     for(const tile of g.tiles){
       const button=this.buttons.get(tile.id),p=this.position(tile);
-      Object.assign(button.style,{left:p.x+'px',top:p.y+'px',width:this.geometry.tileWidth+'px',height:this.geometry.tileHeight+'px',zIndex:String(10+tile.z*100+tile.y)});
+      // CSS z-index accepts integers only; half-row positions must not turn
+      // upper tiles into auto-stacked elements behind the tiles they cover.
+      Object.assign(button.style,{left:p.x+'px',top:p.y+'px',width:this.geometry.tileWidth+'px',height:this.geometry.tileHeight+'px',zIndex:String(10+tile.z*100+Math.round(tile.y*2))});
       this.fitText(tile,button);
     }
     for(const [id,node] of this.puffs){const effect=g.effects.find(e=>e.id===id);if(effect)this.placePuff(node,effect);}

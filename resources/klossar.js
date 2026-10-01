@@ -15,26 +15,37 @@ const overlap=(a,b)=>Math.abs(a.x-b.x)<.99&&Math.abs(a.y-b.y)<.99;
 function isFree(tile,tiles){
   return !tile.removed&&!tiles.some(other=>!other.removed&&other.z>tile.z&&overlap(tile,other));
 }
+function supportedPositions(below){
+  const candidates=new Map();
+  for(const tile of below)for(const dx of [-.5,0,.5])for(const dy of [-.5,0,.5]){
+    const x=tile.x+dx,y=tile.y+dy;
+    const support=below.reduce((area,t)=>area+Math.max(0,1-Math.abs(t.x-x))*Math.max(0,1-Math.abs(t.y-y)),0);
+    if(support===1)candidates.set(x+','+y,{x,y});
+  }
+  return [...candidates.values()];
+}
 function layoutSlots(id,pace){
   const layout=layouts.find(l=>l.id===id);
   if(!layout||!pairCounts[pace])throw new Error('Okänd klossbana eller svårighet.');
   const floor=layout.rows.flatMap((row,y)=>Array.from(row).flatMap((cell,x)=>cell==='#'?[{x,y,z:0}]:[]));
-  // Keep the silhouette, with staggered upper layers bridging two to four
-  // tiles below. Each layer uses one grid, so its own tiles never overlap.
+  // Keep the silhouette. Upper tiles can bridge neighbours on the half-tile
+  // grid, but their entire footprint must rest on the preceding layer.
   const cx=floor.reduce((n,p)=>n+p.x,0)/floor.length,cy=floor.reduce((n,p)=>n+p.y,0)/floor.length;
-  const layers={gentle:[8],steady:[20,8],brave:[28,16,4]}[pace];
+  const distance=p=>(p.x-cx)**2+(p.y-cy)**2;
+  const layers={gentle:[8],steady:[18,10],brave:[24,16,8]}[pace];
   const slots=[...floor];let below=floor;
   for(const [i,count] of layers.entries()){
-    const [dx,dy]=[[.5,.5],[.5,0],[0,.5]][i],candidates=new Map();
-    for(const tile of below)for(const x of [tile.x-dx,tile.x+dx])for(const y of [tile.y-dy,tile.y+dy]){
-      const support=below.reduce((area,t)=>area+Math.max(0,1-Math.abs(t.x-x))*Math.max(0,1-Math.abs(t.y-y)),0);
-      // At least half the tile rests on the preceding layer. Prefer full
-      // support and central positions before allowing edge overhangs.
-      if(support>=.5)candidates.set(x+','+y,{x,y,z:i+1,support});
+    const bridges=p=>below.filter(t=>overlap(p,t)).length;
+    const rank=(a,b)=>bridges(b)-bridges(a)||distance(a)-distance(b)||a.y-b.y||a.x-b.x;
+    const candidates=supportedPositions(below).sort(rank);
+    // Start with a supported, non-overlapping packing of exactly the required
+    // size, then move tiles to better bridging positions without losing space.
+    const layer=[...below].sort((a,b)=>distance(a)-distance(b)||a.y-b.y||a.x-b.x).slice(0,count).map(({x,y})=>({x,y,z:i+1}));
+    for(let pass=0;pass<2;pass++)for(const tile of [...layer].sort((a,b)=>distance(b)-distance(a))){
+      const better=candidates.find(p=>rank(p,tile)<0&&!layer.some(t=>t!==tile&&overlap(p,t)));
+      if(better)Object.assign(tile,better);
     }
-    const ranked=[...candidates.values()].sort((a,b)=>b.support-a.support||((a.x-cx)**2+(a.y-cy)**2)-((b.x-cx)**2+(b.y-cy)**2)||a.y-b.y||a.x-b.x);
-    if(ranked.length<count)throw new Error('Klossbanan saknar stöd för nästa lager.');
-    below=ranked.slice(0,count).map(({x,y,z})=>({x,y,z}));slots.push(...below);
+    below=layer;slots.push(...below);
   }
   return slots.map((p,id)=>({...p,id}));
 }
@@ -206,5 +217,5 @@ class KlossarGame{
     if(this.feedback){this.feedback.left-=dt;if(this.feedback.left<=0){this.feedback=null;this.selected=[];this.revision++;}}
   }
 }
-Object.assign(SC,{KlossarGame,klossarLayouts:layouts,klossarPairCounts:pairCounts,klossarLayout:layoutSlots,klossarRemovalOrder:removalOrder,klossarIsFree:isFree,klossarMatches:matches,klossarScore:score});
+Object.assign(SC,{KlossarGame,klossarLayouts:layouts,klossarPairCounts:pairCounts,klossarLayout:layoutSlots,klossarSupportedPositions:supportedPositions,klossarRemovalOrder:removalOrder,klossarIsFree:isFree,klossarMatches:matches,klossarScore:score});
 })(globalThis);
