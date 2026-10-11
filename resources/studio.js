@@ -3,9 +3,9 @@
 'use strict';const SC=root.Starlight;
 // Rows are light, standard and dark; each column keeps the same hue.
 const colors=[
- ['Vit','#ffffff'],['Ljusröd','#f4a6a6'],['Ljusbrun','#d6b08a'],['Ljusorange','#ffd29a'],['Ljusgul','#fff1a6'],['Ljusgrön','#a4d8ad'],['Ljusblå','#a9d1f4'],['Ljuslila','#d4b5eb'],
- ['Grå','#8d9497'],['Röd','#e64b4b'],['Brun','#94603b'],['Orange','#f39b36'],['Gul','#f4cf45'],['Grön','#409a64'],['Blå','#4088ce'],['Lila','#9662ba'],
- ['Svart','#263238'],['Mörkröd','#ab2935'],['Mörkbrun','#57351f'],['Mörkorange','#b96518'],['Mörkgul','#b08b19'],['Mörkgrön','#23623f'],['Mörkblå','#245486'],['Mörklila','#613781']
+ ['Vit','#ffffff'],['Ljusröd','#f4a6a6'],['Ljusbrun','#d6b08a'],['Ljusorange','#ffd29a'],['Ljusgul','#fff1a6'],['Ljusgrön','#a4d8ad'],['Ljusturkos','#a0ddd5'],['Ljusblå','#a9d1f4'],['Ljuslila','#d4b5eb'],
+ ['Grå','#8d9497'],['Röd','#e64b4b'],['Brun','#94603b'],['Orange','#f39b36'],['Gul','#f4cf45'],['Grön','#409a64'],['Turkos','#36a89c'],['Blå','#4088ce'],['Lila','#9662ba'],
+ ['Svart','#263238'],['Mörkröd','#ab2935'],['Mörkbrun','#57351f'],['Mörkorange','#b96518'],['Mörkgul','#b08b19'],['Mörkgrön','#23623f'],['Mörkturkos','#1e6963'],['Mörkblå','#245486'],['Mörklila','#613781']
 ];
 const tools=[{id:'small',name:'Liten pensel',size:8},{id:'large',name:'Stor pensel',size:28},{id:'bucket',name:'Färghink',size:0}];
 class StudioGame{
