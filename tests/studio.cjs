@@ -3,8 +3,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const context=vm.createContext({Event,EventTarget,CustomEvent,console,performance});
 for(const name of ['pinyin','data','language-exercises-data','language-exercises','homework','voice','speech','input','game','studio','studio-renderer'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+name+'.js'),'utf8'),context);
 const SC=context.Starlight,events=[],g=new SC.StudioGame({random:()=>.4,onEvent:e=>events.push(e.type)});
-g.start({mode:'math-addition'});assert.equal(g.paint,0);g.choose('color',2);assert.equal(g.color,14,'choosing a colour does not unlock it');
-g.queue.enqueue('wrong');g.update(.1);assert.equal(g.paint,0);assert.equal(g.color,14);assert(g.canAnswer());
+g.start({mode:'math-addition'});assert.equal(g.paint,0);g.choose('color',2);assert.equal(SC.studioColors[g.color][0],'Svart','choosing a colour does not unlock it');
+g.queue.enqueue('wrong');g.update(.1);assert.equal(g.paint,0);assert.equal(SC.studioColors[g.color][0],'Svart');assert(g.canAnswer());
 g.queue.enqueue(g.targets[0].item.answer);g.update(.1);assert.equal(g.color,2);assert.equal(g.paint,1);assert(!g.canAnswer());
 g.consume(.7);assert(Math.abs(g.paint-.3)<1e-9);g.update(100000);assert(Math.abs(g.paint-.3)<1e-9,'paint never expires with time');
 for(const tool of ['large','small','bucket']){g.choose('tool',tool);assert.equal(g.tool,tool,'tools switch immediately');assert(!g.pending);assert(!g.canAnswer());assert(Math.abs(g.paint-.3)<1e-9,'switching tools preserves remaining paint');}

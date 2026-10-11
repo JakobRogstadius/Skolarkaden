@@ -29,7 +29,7 @@ men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 
 ## Målarateljén
 
-Ett målarspel utan poäng, tidspress, vinst eller förlust. Välj bland 21 färger i sju grupper med ljusa, vanliga och mörka nyanser,
+Ett målarspel utan poäng, tidspress, vinst eller förlust. Välj bland 24 färger i åtta grupper med ljusa, vanliga och mörka nyanser,
 en liten eller stor pensel eller färghinken. Vit och svart är gråskalans ljusaste
 och mörkaste nyanser. Under pappret kommer verktygen först, följda av färgerna
 i ett rutnät med sju kolumner och tre rader: ljusa, vanliga och mörka. Därefter
