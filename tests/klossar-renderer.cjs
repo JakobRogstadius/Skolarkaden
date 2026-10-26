@@ -42,7 +42,7 @@ for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'
       const z=Number(button.style.zIndex);
       assert(Number.isInteger(z),'CSS must accept the stacking order even for half-row positions');
       for(const other of g.tiles)if(other.z<tile.z||other.z===tile.z&&(other.y<tile.y||other.y===tile.y&&other.x<tile.x))assert(z>Number(renderer.buttons.get(other.id).style.zIndex),'draw tiles in layer, row and column order');
-      assert.equal(button.disabled,covered,'only a higher tile covering the footprint disables selection');
+      assert.equal(button.disabled,covered,layout.id+'/'+pace+': only a higher tile covering the footprint disables selection');
       const upper=renderer.position({...tile,z:tile.z+1});
       assert(Math.abs(upper.x+depthX-p.x)<1e-8&&Math.abs(upper.y+depthY-p.y)<1e-8,'the upper tile side ends exactly on the supporting face');
       assert.equal(depthX,parseFloat(renderer.board.style['--tile-side-x']));assert.equal(depthY,parseFloat(renderer.board.style['--tile-side-y']));
@@ -74,7 +74,7 @@ for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'
   g.resume();now+=2000;renderer.advance(now);renderer.draw();assert.equal(g.elapsed,elapsed+2);assert.equal(renderer.puffs.size,0);
   renderer.destroy();assert.equal(arena.children.length,1);assert.equal(observed,0);
 }
-assert.equal(cancelled,60);console.log('PASS DOM rendering for all five layouts and three difficulties: landscape tiles fit wide, short and narrow viewports; long words, Chinese, equations, diagrams, selection, smoke, wiggles, pause timing and cleanup');
+assert.equal(cancelled,48);console.log('PASS DOM rendering for all four layouts and three difficulties: landscape tiles fit wide, short and narrow viewports; long words, Chinese, equations, diagrams, selection, smoke, wiggles, pause timing and cleanup');
 
 // Force the rare effect through the actual removal/rendering path. All draws
 // belong to the visual RNG, so even a busy scene cannot alter the next deal.
@@ -118,7 +118,7 @@ console.log('PASS hint button, pair animation classes, single charge, cancellati
 
 {
   viewport={width:350,height:470};
-  const g=new SC.KlossarGame({random:()=>.31});g.start({mode:'letters',layout:'turtle'});
+  const g=new SC.KlossarGame({random:()=>.31});g.start({mode:'letters',layout:'square'});
   const arena=new Element(),canvas=new Element('canvas');arena.append(canvas);
   const renderer=new SC.KlossarRenderer(canvas,g,{creatureRandom:()=>1});
   const left=g.tiles[0],right=g.tiles.find(t=>t.z===left.z&&t.y===left.y&&t.x>left.x);

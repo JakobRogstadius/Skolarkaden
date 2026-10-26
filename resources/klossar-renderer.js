@@ -69,10 +69,12 @@ class KlossarRenderer{
     // rises by exactly the solid side's offset, so its base rests on the face below.
     const padding=Math.min(18,width/8,height/8),ratio=.58,depthX=2;
     const cell=Math.min(144,(width-padding*2-maxZ*depthX)/columns,(height-padding*2-maxZ*2)/(rows*ratio+maxZ*.04));
-    const row=cell*ratio,gap=Math.min(3,cell*.04),depth=Math.min(4,cell*.04),depthY=depth+2;
+    const row=cell*ratio,depth=Math.min(4,cell*.04),depthY=depth+2;
     const points=g.slots.map(t=>({x:t.x*cell-t.z*depthX,y:t.y*row-t.z*depthY}));
     const minX=Math.min(...points.map(p=>p.x)),minY=Math.min(...points.map(p=>p.y));
-    this.geometry={minX,minY,cell,row,padding,depthX,depthY,tileWidth:cell-gap,tileHeight:row-gap};
+    // Match the .99 footprint used by the coverage rule on both axes. A fixed
+    // pixel gap could otherwise hide a shell's small but blocking overhang.
+    this.geometry={minX,minY,cell,row,padding,depthX,depthY,tileWidth:cell*.99,tileHeight:row*.99};
     this.board.style.width=Math.max(...points.map(p=>p.x))-minX+cell+padding*2+'px';
     this.board.style.height=Math.max(...points.map(p=>p.y))-minY+row+padding*2+'px';
     this.board.style.setProperty('--tile-depth',depth+'px');
