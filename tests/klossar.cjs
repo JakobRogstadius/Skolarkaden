@@ -72,7 +72,7 @@ for(const [dx,dy,count] of [[.5,0,2],[0,.5,2],[.5,.5,3],[.5,.5,4]]){
 }
 
 let deals=0;
-assert.deepEqual(Array.from(SC.klossarLayouts,l=>l.id),['square','igloo','pyramid','snake','bridge']);
+assert.deepEqual(Array.from(SC.klossarLayouts,l=>l.id),['square','igloo','pyramid','snake','bridge','v']);
 for(const layout of SC.klossarLayouts)for(const [pace,count] of Object.entries(SC.klossarPairCounts))for(let seed=1;seed<=30;seed++){
   const {g}=setup({layout:layout.id,pace,mode:'math-addition'},seed);
   assert.equal(g.tiles.length,count*2);assert.equal(new Set(g.tiles.map(t=>[t.x,t.y,t.z].join(','))).size,count*2);
@@ -85,7 +85,8 @@ for(const layout of SC.klossarLayouts)for(const [pace,count] of Object.entries(S
       if(tile.z)assert.equal(g.tiles.filter(t=>t.z===tile.z-1).reduce((sum,t)=>sum+area(tile,t),0),1,'square and snake tiles have full support');
     }
   }
-  assert(g.getAvailableTargets().length<=({gentle:9,steady:13,brave:20}[pace]),'deep stacks limit the opening selection');
+  const openingLimit=(layout.id==='v'?{gentle:12,steady:16,brave:20}:{gentle:9,steady:13,brave:20})[pace];
+  assert(g.getAvailableTargets().length<=openingLimit,'deep stacks limit the opening selection');
   for(const [a,b] of g.order){assert(g.free(g.tiles[a])&&g.free(g.tiles[b]));assert(SC.klossarMatches(g.tiles[a],g.tiles[b]));g.tiles[a].removed=g.tiles[b].removed=true;}
   assert.equal(g.getTargets().length,0);deals++;
 }
@@ -96,7 +97,7 @@ for(const layout of SC.klossarLayouts)for(const pace of Object.keys(SC.klossarPa
   for(const [a,b] of order){assert(a!==b&&SC.klossarIsFree(tiles[a],tiles)&&SC.klossarIsFree(tiles[b],tiles));tiles[a].removed=tiles[b].removed=true;}
   assert(tiles.every(t=>t.removed),'fallback removes every tile exactly once');
 }
-console.log('PASS '+deals+' solvable deals, five silhouettes, 20/30/40 pairs, support, hollow overhangs and fallback');
+console.log('PASS '+deals+' solvable deals, '+SC.klossarLayouts.length+' silhouettes, 20/30/40 pairs, support, hollow overhangs and fallback');
 
 let rounds=0,shuffles=0;
 for(const mode of Object.keys(SC.modes).filter(id=>id!=='homework'))for(let seed=1;seed<=4;seed++){

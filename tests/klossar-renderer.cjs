@@ -74,7 +74,7 @@ for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'
   g.resume();now+=2000;renderer.advance(now);renderer.draw();assert.equal(g.elapsed,elapsed+2);assert.equal(renderer.puffs.size,0);
   renderer.destroy();assert.equal(arena.children.length,1);assert.equal(observed,0);
 }
-assert.equal(cancelled,4*SC.klossarLayouts.length*3);console.log('PASS DOM rendering for all five layouts and three difficulties: landscape tiles fit wide, short and narrow viewports; long words, Chinese, equations, diagrams, selection, smoke, wiggles, pause timing and cleanup');
+assert.equal(cancelled,4*SC.klossarLayouts.length*3);console.log('PASS DOM rendering for all layouts and three difficulties: landscape tiles fit wide, short and narrow viewports; long words, Chinese, equations, diagrams, selection, smoke, wiggles, pause timing and cleanup');
 
 // Force the rare effect through the actual removal/rendering path. All draws
 // belong to the visual RNG, so even a busy scene cannot alter the next deal.
