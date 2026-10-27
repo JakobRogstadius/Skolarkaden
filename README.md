@@ -308,13 +308,20 @@ Klassiska skript används så att `file://` fungerar utan modulladdare, externa 
 
 `AnswerQueue` innehåller `{id, text, source}`. Spelen tar emot kön via konstruktorn och hämtar svar med `take()`. En policy anger aktuella mål, redan påbörjade svar och matchningsregler. `AnswerInput` behöver ett textfält, ett formulär, en mikrofon och en kö; knappar är valfria. Värden kan aktivera fokusbevakning med `retainFocus`, som ska vara sann endast under aktivt spel utan öppna dialoger.
 
-Testerna använder endast Node.js standardbibliotek (Node 22.13+ för SQLite-testet):
+Testerna använder endast Node.js standardbibliotek (Node 22.13+ för SQLite-testet). Standardkommandot väljer berörda tester utifrån grenens ändringar samt staged, unstaged och nya filer:
 
 ```sh
 npm test
+npm test -- --list             # Visa valda tester och varför de behövs
+npm test -- --area=paint       # Fokuserat arbete med ett spel
+npm run test:all               # Alla ordinarie tester före sammanslagning
+npm test -- --area=paint --extended  # Även spelets större simuleringar
+npm run test:extended          # Alla ordinarie och utökade tester
 ```
 
-Efter ändringar i `resources`: kör `npm run assets` och checka in den uppdaterade `index.html` tillsammans med filerna. Skript och stilmallar får innehållsbaserade versionsnycklar så att webbläsaren hämtar rätt version efter en uppdatering. `npm test` kontrollerar att nycklarna är aktuella. Spelens poängversioner påverkas inte.
+Jämförelsen utgår från gemensam förfader med `origin/main` (annars lokal `main`); använd `npm test -- --base=REF` för en annan bas. Ändringar i gemensamma moduler kan behöva flera spels tester. Okända kodfiler väljer konservativt alla ordinarie tester. Se [tests/README.md](tests/README.md) för beroendekarta, placering och utökade tester.
+
+Efter ändringar i `resources`: kör `npm run assets` och checka in uppdaterade HTML-filer tillsammans med resurserna. Skript och stilmallar får innehållsbaserade versionsnycklar så att webbläsaren hämtar rätt version efter en uppdatering. Resursändringar väljer automatiskt versionskontrollen. Enbart genererade versionsnycklar i HTML utökar inte urvalet till alla apptester. Spelens poängversioner påverkas inte.
 
 `npm run dev` startar en valfri lokal granskningsserver med testfixturer. Den behövs inte för att spela. Se `AUDIT.md` för kontroller och kända verifieringsbegränsningar.
 

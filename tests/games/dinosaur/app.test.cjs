@@ -1,0 +1,20 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {boot}=require('../../helpers/app.cjs');
+(async()=>{
+ const app=boot();await app.appReady;
+ const {elements,radios,document,context,scripts,html,storage,recognitions,frame,click,settle,start}=app,SC=context.Starlight;
+ await start('dinosaur');assert.equal(elements['game-title'].textContent,'Hungrig dinosaurie');assert.equal(elements.play.dataset.game,'dinosaur');app.currentGame.spawnIn=10000;const p=app.currentGame.getTargets()[0];p.look={...p.look,exotic:false};
+ elements.answer.value=p.item.answer;elements['answer-form'].dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(app.currentGame.queue.length,1);assert.equal(elements.answer.value,'');
+ for(let i=0;i<500&&app.currentGame.hits<1;i++)frame();assert.equal(app.currentGame.hits,1);for(let i=0;i<4;i++)frame();assert.equal(elements.score.textContent,'15');assert.equal(elements.secondary.textContent,'');
+ click('pause');assert.equal(app.currentGame.state,'paused');assert.equal(elements['pause-overlay'].hidden,false);const time=app.currentGame.elapsed;frame();assert.equal(app.currentGame.elapsed,time);click('resume');await settle();assert.equal(app.currentGame.state,'playing');
+ app.currentGame.passed=40;app.currentGame.escaped=39;app.currentGame.spawned=40;frame();assert.equal(elements.answer.disabled,true);assert.equal(elements.pause.disabled,true);for(let i=0;i<60;i++)frame();assert.equal(elements['end-overlay'].hidden,false);assert.equal(elements['result-title'].textContent,'Mätt och belåten!');assert.equal(elements['result-game'].textContent,'Hungrig dinosaurie');assert.equal(document.activeElement,elements['score-name']);assert.match(elements['result-context'].textContent,/Lätt/);
+ click('again');await settle();assert.equal(app.currentGame.score,0);assert.equal(app.currentGame.passed,0);assert.equal(elements['end-overlay'].hidden,true);click('pause-menu');assert.equal(elements.menu.hidden,false);
+ await start('dinosaur','letters');app.currentGame.spawnIn=10000;elements.answer.value=app.currentGame.getTargets()[0].item.answer;elements.answer.dispatchEvent(new Event('input'));assert.equal(app.currentGame.queue.length,1);assert.equal(elements.answer.value,'');assert.equal(elements['answer-form'].querySelector('[type=submit]'),null);click('pause-menu');
+ await start('dinosaur','chinese');app.currentGame.spawnIn=10000;app.currentGame.walkSpeed=0;app.currentGame.runSpeed=0;const character=app.currentGame.getTargets()[0];
+ while(app.currentGame.clock-character.appearedAt<9.8)frame();assert(!elements.targets.textContent.includes(character.item.hint));click('pause');for(let i=0;i<30;i++)frame();assert(!elements.targets.textContent.includes(character.item.hint));click('resume');await settle();
+ while(app.currentGame.clock-character.appearedAt<10.2)frame();assert(elements.targets.textContent.includes(character.item.hint));click('pause-menu');
+ elements['input-kind'].value='browser';await start('dinosaur');assert.equal(elements['input-dock'].hidden,true);assert(elements.answer.disabled);const heard=app.currentGame.getTargets()[0].item.answer;let r=recognitions.at(-1);r.onresult({results:[Object.assign([{transcript:heard,confidence:.9}],{isFinal:false})],resultIndex:0});assert.equal(app.currentGame.queue.items[0].text,heard);assert.match(elements['speech-log'].value,/PRELIMINÄR/);
+ r.onerror({error:'network'});assert.equal(app.currentGame.state,'paused');assert.equal(elements['pause-overlay'].hidden,false);assert.match(elements['resume-error'].textContent,/nätverksanslutning/);click('resume');await settle();assert.equal(app.currentGame.state,'playing');assert.notEqual(recognitions.at(-1),r);click('pause-menu');elements['input-kind'].value='typing';await start('dinosaur');assert.equal(elements['input-dock'].hidden,false);assert.equal(elements.answer.disabled,false);click('pause-menu');
+ console.log('PASS games/dinosaur/app.test.cjs');
+})().catch(error=>{console.error(error);process.exitCode=1;});
