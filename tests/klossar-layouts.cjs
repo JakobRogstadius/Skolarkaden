@@ -35,6 +35,17 @@ for(const layout of SC.klossarLayouts)for(const [pace,target] of Object.entries(
     assert(roof.every(t=>Math.abs(t.x)<=.55&&Math.abs(t.y)<=.55));
   }
   if(layout.id==='square'&&pace!=='gentle')for(const t of tiles)assert(tiles.some(p=>p.z===t.z&&p.x===-t.x&&p.y===t.y),'medium and hard squares are left/right symmetric');
+  if(layout.id==='bridge'){
+    const deckZ=pace==='brave'?3:2;
+    for(let z=0;z<deckZ;z++){
+      const xs=[...new Set(tiles.filter(t=>t.z===z).map(t=>t.x))].sort((a,b)=>a-b);
+      assert.equal(xs.length,2,'the bridge has two separate supports');
+      assert(xs[0]<-1&&xs[1]>1,'there is an open gap below the deck');
+    }
+    const span=[...new Set(tiles.filter(t=>t.z===deckZ).map(t=>t.x))].sort((a,b)=>a-b);
+    for(let i=1;i<span.length;i++)assert.equal(span[i]-span[i-1],1,'the deck continuously connects the supports');
+    for(const t of tiles)assert(tiles.some(p=>p.z===t.z&&p.x===-t.x&&p.y===t.y),'the bridge is left/right symmetric');
+  }
   console.log(`PASS ${layout.id}/${pace}: ${tiles.length} tiles, average ${mean.toFixed(1)} active`);
 }
 const hard=SC.klossarLayout('pyramid','brave');
