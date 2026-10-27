@@ -46,6 +46,26 @@ for(const layout of SC.klossarLayouts)for(const [pace,target] of Object.entries(
     for(let i=1;i<span.length;i++)assert.equal(span[i]-span[i-1],1,'the deck continuously connects the supports');
     for(const t of tiles)assert(tiles.some(p=>p.z===t.z&&p.x===-t.x&&p.y===t.y),'the bridge is left/right symmetric');
   }
+  if(layout.id==='v'){
+    assert.equal(new Set(tiles.map(t=>t.z)).size,5,'the V has five horizontal tiers');
+    let previous;
+    for(let z=0;z<5;z++){
+      const tier=tiles.filter(t=>t.z===z),left=tier.filter(t=>t.x<0).sort((a,b)=>b.y-a.y);
+      assert.equal(tier.length,left.length*2,'the V has two equal arms');
+      for(const t of left)assert(tier.some(p=>p.x===-t.x&&p.y===t.y),'each V tier is symmetric');
+      assert.equal(left[0].x,-.5,'the two tiles at the point touch');
+      for(let i=1;i<left.length;i++){
+        assert.equal(left[i].x,left[i-1].x-.5,'each arm grows outward');
+        assert.equal(left[i].y,left[i-1].y-1,'each arm is an edge-connected staircase');
+      }
+      const width=-2*left.at(-1).x+1,depth=left[0].y-left.at(-1).y+1,point=left[0].y;
+      if(previous){
+        assert(width>previous.width&&depth>previous.depth,'every higher V is wider and deeper');
+        assert(point>previous.point,'the point advances so the arms flare outward instead of merely extending their ends');
+      }
+      previous={width,depth,point};
+    }
+  }
   console.log(`PASS ${layout.id}/${pace}: ${tiles.length} tiles, average ${mean.toFixed(1)} active`);
 }
 const hard=SC.klossarLayout('pyramid','brave');

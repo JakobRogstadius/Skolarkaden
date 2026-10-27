@@ -94,7 +94,7 @@ costs were repeated app simulations and broad seed/viewport matrices.
 - Historical source-text checks were removed where current behavior is covered;
   translation language selection is checked through the actual app.
 
-The ordinary set has 78 smaller suites and took about 49 seconds in the same
+The ordinary set has 78 smaller suites and took about 49–53 seconds in the same
 environment. More files make ownership and selection narrower; they do not
 mean every edit runs more tests. The focused Paint command passed in about
 3.4 seconds; the seven extended suites together took about 47 seconds.
