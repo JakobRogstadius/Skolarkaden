@@ -36,7 +36,16 @@
     const label=(text,x,y)=>{c.fillStyle=textColor;c.fillText(String(text),x,y);};
     const values=diagram.unknownFirst?[diagram.answer,diagram.known]:[diagram.known,diagram.answer];
     const labels=diagram.unknownFirst?['?',diagram.known]:[diagram.known,'?'];
-    if(diagram.kind==='pie'){
+    if(diagram.kind==='multiplication-grid'){
+      const cell=9,gap=2,width=diagram.columns*cell+(diagram.columns-1)*gap,height=diagram.rows*cell+(diagram.rows-1)*gap;
+      const x=3+(66-width)/2,y=(72-height)/2;
+      c.lineWidth=1;c.fillStyle='#c6d6bd';
+      for(let row=0;row<diagram.rows;row++)for(let column=0;column<diagram.columns;column++){
+        const left=x+column*(cell+gap),top=y+row*(cell+gap);
+        c.fillRect(left,top,cell,cell);c.strokeRect(left,top,cell,cell);
+      }
+      label('= ?',87,36);
+    }else if(diagram.kind==='pie'){
       const total=values[0]+values[1],radius=29;
       // Anchor the first slice boundary at twelve o'clock.
       let angle=-Math.PI/2;

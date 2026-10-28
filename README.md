@@ -221,7 +221,7 @@ Svenska och engelska har korta och längre ord. Bokstavsövningen väljer ett sl
 
 Varje svensk och engelsk ordlista innehåller 100 olika ord. Korta ord har högst fem bokstäver och långa ord har 6–12. Kinesiska har fyra kumulativa nivåer i traditionell respektive förenklad skrift. Nivå 1 innehåller 30 enkla tecken och nivå 2 lägger till 50 tecken. Nivå 3 och 4 lägger sedan till 75 respektive 100 tvåteckensord, där minst ett tecken redan förekommer på en lägre nivå. Tidigare uppgifter finns kvar: totalt 30, 80, 155 och 255 uppgifter, varav de två högsta nivåerna blandar tecken och ord. Exempel är 牛奶 och 朋友 i nivå 3, 老師 och 書包 i nivå 4. Tangentbord och tal kan ange hela orden som kinesiska tecken, pinyin eller svenska översättningar. Det gäller även kinesiska läxor. Angivna betydelser separerade med / eller ; godkänns var för sig, och parentesförklaringar är valfria. [Alla uppgifter och urvalsprinciper](dev/mandarin-levels.md). De båda skrifterna har motsvarande tecken och samma pinyin. Val av talspråk ändrar inte tecknens skrift.
 
-Matematiken har åtta fasta nivåer. Nivån ändras aldrig under en omgång och ger inte högre poäng för svårare uppgifter.
+Matematiken har nio fasta övningar. Övningen ändras aldrig under en omgång och ger inte högre poäng för svårare uppgifter.
 
 | Övning | Uppgifter |
 | --- | --- |
@@ -230,11 +230,14 @@ Matematiken har åtta fasta nivåer. Nivån ändras aldrig under en omgång och 
 | Matematik 3 (enkla diagram) | Tvådelade cirkeldiagram med summa 4, eller lika stora delar med jämn summa 2–10. Lodräta/vågräta staplar med storleksförhållande 1, 1,5, 2, 3 eller 4. Prickar och tallinjer med steg 1, 3–4 inre markeringar och ändpunkter inom 0–10. Svar 1–10; diagramtypen väljs bland dem som kan visa det aktuella svaret. |
 | Matematik 4 (enkla ekvationer) | Två tal 0–9 till vänster: a + b = 10 + ? eller a + b = 10 − ?. Svar 0–10. |
 | Matematik 5 (10–100) | Två tal 10–100 med addition eller subtraktion; svar 0–200. |
+| Enkel multiplikation | En bild med 2–6 rader och 2–6 kolumner av kvadratiska rutor, följd av = ?. Svara med antalet rutor (4–36), eller matcha bilden med talet i Klossar och Trassel. |
 | Matematik 6 (×) | Multiplikationstabellerna 1–10. |
 | Matematik 7 (× och ÷) | Multiplikation och exakt division i tabellerna 1–10. |
 | Matematik 8 (ekvationer) | Lös x med en eller två av +, −, × och ÷, utan parenteser. Vanlig prioriteringsordning gäller. x är ett entydigt positivt heltal 1–20. |
 
-Menyn visar övning, tangentbord/röst, talspråk och svårighet i den ordningen. Talspråk är avstängt vid tangentbordsinmatning. Lätt, Medel och Svår styr spelets utmaning. Matematikens befintliga extra speltid gäller på alla åtta nivåer.
+Menyn visar övning, tangentbord/röst, talspråk och svårighet i den ordningen. Talspråk är avstängt vid tangentbordsinmatning. Lätt, Medel och Svår styr spelets utmaning. Matematikens befintliga extra speltid gäller på alla nio övningar.
+
+Enkel multiplikation använder övnings-ID `math-simple-multiplication`. Publicera den uppdaterade `cloudflare/worker.mjs` för att ta emot dess topplistepoäng; ingen databasmigrering behövs.
 
 Talade heltal upp till 200 stöds på svenska, engelska och mandarin. Uttryck som ”one hundred twenty three” och ”ett hundra tjugo tre” hålls ihop. I Matematik 5–7 väntar det sista preliminära talet på nästa svar eller slutlig transkription, så att ”one” inte skickas innan det hinner bli ”one hundred”.
 

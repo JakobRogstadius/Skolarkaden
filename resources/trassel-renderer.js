@@ -61,7 +61,7 @@ class TrasselRenderer{
         const diagram=document.createElement('canvas');diagram.width=224;diagram.height=160;diagram.setAttribute('aria-hidden','true');
         const ctx=diagram.getContext('2d');ctx.scale(2,2);SC.drawMathDiagram(ctx,tile.item.diagram,{x:0,y:0,w:112,h:80},{textColor:'#742f36'});face.append(diagram);
       }else face.textContent=tile.item.label;
-      button.setAttribute('aria-label',tile.item.diagram?'Matteuppgift':tile.item.label);button.title=tile.item.tooltip||tile.item.label;
+      button.setAttribute('aria-label',tile.item.diagram&&tile.item.label==='?'?'Matteuppgift':tile.item.label);button.title=tile.item.tooltip||tile.item.label;
       button.append(face);this.faces.append(button);this.faceNodes.set(tile.id,button);
       let size=Math.min(23,this.scale*.54);face.style.fontSize=size+'px';
       while(size>8&&(face.scrollWidth>face.clientWidth||face.scrollHeight>face.clientHeight)){size=Math.max(8,size-.5);face.style.fontSize=size+'px';}

@@ -97,8 +97,8 @@ function drawing(g){const stack=[],texts=[],c=new Proxy({font:'16px system-ui',s
  const r=Object.create(SC.EggRenderer.prototype);Object.assign(r,{ctx:c,game:g,dpr:1,reduced:false});return {r,stack,texts};}
 test('Twenty-one dark labels fit at minimum height, including delayed hints and long words',()=>{
  const overlap=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
- for(const [w,h] of [[320,540],[370,740],[620,540],[700,540],[800,540],[1100,540]])for(const mode of ['letters','swedishLong','chinese','math-diagrams']){
-  const diagramHeight=mode==='math-diagrams'&&w<600?Math.max(h,740):h;
+ for(const [w,h] of [[320,540],[370,740],[620,540],[700,540],[800,540],[1100,540]])for(const mode of ['letters','swedishLong','chinese','math-diagrams','math-simple-multiplication']){
+  const diagramHeight=['math-diagrams','math-simple-multiplication'].includes(mode)&&w<600?Math.max(h,740):h;
   const g=new SC.EggGame({random:rng(8)});g.start({pace:'brave',mode});g.resize(w,diagramHeight);for(const e of g.eggs){g.crack(e);if(e.id%2)g.hatch(e);}g.clock+=11;const {r,stack}=drawing(g);r.draw();assert.equal(stack.length,0);assert.equal(r.labelBoxes.length,21);
   for(const [i,b] of r.labelBoxes.entries()){assert(b.x>=0&&b.y>=120&&b.x+b.w<=w&&b.y+b.h<=diagramHeight);assert(r.labelBoxes.slice(i+1).every(a=>!overlap(a,b)),[w,h,mode,i].join('/'));if(mode==='letters')assert(b.w<=34);}
   const e=g.eggs[0];g.catch(e,g.people[1]);r.draw();g.killHuman(e);r.draw();g.queue.enqueue(e.item.answer);g.work(.05);r.draw();tick(g,1);r.draw();g.finish(false);tick(g,.5);r.draw();assert.equal(stack.length,0);

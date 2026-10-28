@@ -215,7 +215,7 @@ class EggRenderer extends SC.SceneRenderer{
  labels(){
   const c=this.ctx,g=this.game,w=g.width,h=g.height,states=g.getTaskStates(),hints=SC.pinyinHints(g),targets=g.getTargets(),narrow=w<700,top=122,font=(SC.isChinese(g.mode)||g.mode==='bopomofo')?22:narrow?14:18;
   // Use compact rows and natural text widths before adding columns for a full arena.
-  const slotH=g.mode==='math-diagrams'?82:(SC.isChinese(g.mode)||SC.isWordPair(g.mode)?font+36:font+6)+2,rows=Math.max(1,Math.floor((h-top-8+2)/slotH));
+  const slotH=targets.some(t=>t.item.diagram)?82:(SC.isChinese(g.mode)||SC.isWordPair(g.mode)?font+36:font+6)+2,rows=Math.max(1,Math.floor((h-top-8+2)/slotH));
   const naturalWidth=Math.max(22,...targets.map(e=>SC.labelWidth(c,e.item,{font:'bold '+font+'px system-ui',hint:e.item.hint,translation:e.item.translation,hintFont:'12px system-ui',max:w-16})));
   const cols=Math.max(1,Math.min(8,Math.floor((w-16)/(naturalWidth+2))),Math.ceil(targets.length/rows)),maxWidth=(w-16)/cols-2;
   const overlaps=(a,b)=>a.x<b.x+b.w+2&&a.x+a.w+2>b.x&&a.y<b.y+b.h+2&&a.y+a.h+2>b.y;

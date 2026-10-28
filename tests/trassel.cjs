@@ -66,7 +66,7 @@ assert.equal(done(E.hint(board,tiles,lines,{budget:{remaining:0}})).status,'unkn
 }
 console.log('PASS hint priority, innocent later routes, persistent gray, rerouting and single charges');
 
-for(const pace of ['gentle','steady','brave'])for(const mode of ['letters','math-addition','math-diagrams','math-equations','chineseTrad4','bopomofo','swedish-synonyms','translation-sv-en-1','swedishLong','homework']){
+for(const pace of ['gentle','steady','brave'])for(const mode of ['letters','math-addition','math-diagrams','math-simple-multiplication','math-equations','chineseTrad4','bopomofo','swedish-synonyms','translation-sv-en-1','swedishLong','homework']){
   const options={pace,mode,...(mode==='homework'?{items:[{label:'A',answer:'a'}]}:{})}, {g,events}=setup(options);
   assert.equal(g.board.cells.length,{gentle:37,steady:61,brave:91}[pace]);assert(g.maxUnused>0);assert.equal(g.tiles.length,g.total*2);
   if(mode!=='homework')assert.equal(new Set(g.pairs.map(p=>p.key)).size,g.total,mode+' distinct answers');
