@@ -10,17 +10,17 @@
   };
   SC.modes={};
   const lesson=(name,lang,items,description,icon='Aa')=>({name,lang,items,description,icon,color:'#c4afff',placeholder:'Skriv svaret…'});
-  // Keep IDs, generator levels and existing names stable when inserting exercises.
+  // Keep IDs and generator levels stable when inserting or renaming exercises.
   const mathLessons=[
-    {id:'addition',mathLevel:0,name:'Matematik 1 (+)',menuLabel:'1 · Addition',description:'Addition med talen 0–10',legacyId:'math'},
-    {id:'addition-subtraction',mathLevel:1,name:'Matematik 2 (+ och −)',menuLabel:'2 · Addition och subtraktion',description:'Addition och subtraktion inom 0–20',legacyId:'math2'},
-    {id:'diagrams',mathLevel:6,name:'Matematik 3 (enkla diagram)',menuLabel:'3 · Enkla diagram',description:'Räkna prickar och läs diagram och tallinjer · svar 1–10'},
-    {id:'simple-equations',mathLevel:7,name:'Matematik 4 (enkla ekvationer)',menuLabel:'4 · Enkla ekvationer',description:'Vilket tal gör båda sidor lika? Till exempel 7 + 5 = 10 + ?'},
-    {id:'large-numbers',mathLevel:2,name:'Matematik 5 (10–100)',menuLabel:'5 · Större tal',description:'Addition och subtraktion med talen 10–100',legacyId:'math3'},
+    {id:'addition',mathLevel:0,name:'Addition',menuLabel:'Addition',description:'Addition med talen 0–10',legacyId:'math'},
+    {id:'addition-subtraction',mathLevel:1,name:'Addition och subtraktion',menuLabel:'Addition och subtraktion',description:'Addition och subtraktion inom 0–20',legacyId:'math2'},
+    {id:'diagrams',mathLevel:6,name:'Enkla diagram',menuLabel:'Enkla diagram',description:'Räkna prickar och läs diagram och tallinjer · svar 1–10'},
+    {id:'simple-equations',mathLevel:7,name:'Enkla ekvationer',menuLabel:'Enkla ekvationer',description:'Vilket tal gör båda sidor lika? Till exempel 7 + 5 = 10 + ?'},
+    {id:'large-numbers',mathLevel:2,name:'Större tal',menuLabel:'Större tal',description:'Addition och subtraktion med talen 10–100',legacyId:'math3'},
     {id:'simple-multiplication',mathLevel:8,name:'Enkel multiplikation',menuLabel:'Enkel multiplikation',description:'Hur många rutor? Ett rutnät med 2–6 rader och 2–6 kolumner'},
-    {id:'multiplication',mathLevel:3,name:'Matematik 6 (×)',menuLabel:'6 · Multiplikation',description:'Multiplikationstabellerna 1–10',legacyId:'math4'},
-    {id:'multiplication-division',mathLevel:4,name:'Matematik 7 (× och ÷)',menuLabel:'7 · Multiplikation och division',description:'Multiplikation och division i tabellerna 1–10',legacyId:'math5'},
-    {id:'equations',mathLevel:5,name:'Matematik 8 (ekvationer)',menuLabel:'8 · Ekvationer',description:'Skriv det positiva heltal som x står för',legacyId:'math6'}
+    {id:'multiplication',mathLevel:3,name:'Multiplikation',menuLabel:'Multiplikation',description:'Multiplikationstabellerna 1–10',legacyId:'math4'},
+    {id:'multiplication-division',mathLevel:4,name:'Multiplikation och division',menuLabel:'Multiplikation och division',description:'Multiplikation och division i tabellerna 1–10',legacyId:'math5'},
+    {id:'equations',mathLevel:5,name:'Ekvationer',menuLabel:'Ekvationer',description:'Skriv det positiva heltal som x står för',legacyId:'math6'}
   ];
   SC.legacyMathIds=Object.freeze(Object.fromEntries(mathLessons.filter(m=>m.legacyId).map(m=>[m.legacyId,'math-'+m.id])));
   SC.canonicalLesson=mode=>Object.hasOwn(SC.legacyMathIds,mode)?SC.legacyMathIds[mode]:mode;

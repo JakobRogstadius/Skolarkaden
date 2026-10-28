@@ -1886,7 +1886,7 @@
       ]
     },
     "translation-sv-en-1": {
-      "name": "Översättning svenska-engelska 1",
+      "name": "Djur, mat och saker",
       "language": "en-US",
       "type": "word-pairs",
       "description": "Översätt vanliga ord för djur, mat och saker. Välj vilket språk du vill svara på. Ett svar visas efter tio sekunder.",
@@ -1898,7 +1898,7 @@
         "en-US"
       ],
       "level": 1,
-      "menuLabel": "1 · Djur, mat och saker",
+      "menuLabel": "Djur, mat och saker",
       "pairs": [
         ["katt","cat",["kisse","misse","kissemiss"],[]],
         ["hund","dog",["vovve"],[]],
@@ -1953,7 +1953,7 @@
       ]
     },
     "translation-sv-en-2": {
-      "name": "Översättning svenska-engelska 2",
+      "name": "Vardagliga verb och egenskaper",
       "language": "en-US",
       "type": "word-pairs",
       "description": "Översätt vardagliga verb och beskrivande ord. Välj vilket språk du vill svara på. Ett svar visas efter tio sekunder.",
@@ -1965,7 +1965,7 @@
         "en-US"
       ],
       "level": 2,
-      "menuLabel": "2 · Vardagliga verb och egenskaper",
+      "menuLabel": "Vardagliga verb och egenskaper",
       "pairs": [
         ["äta","eat",["äter","ät","käka","käkar"],[]],
         ["dricka","drink",["dryck","dricker","drick"],[]],
@@ -2020,7 +2020,7 @@
       ]
     },
     "translation-sv-en-3": {
-      "name": "Översättning svenska-engelska 3",
+      "name": "Skola och omvärld",
       "language": "en-US",
       "type": "word-pairs",
       "description": "Översätt ord om skolan, omvärlden och handlingar. Välj vilket språk du vill svara på. Ett svar visas efter tio sekunder.",
@@ -2032,7 +2032,7 @@
         "en-US"
       ],
       "level": 3,
-      "menuLabel": "3 · Skola och omvärld",
+      "menuLabel": "Skola och omvärld",
       "pairs": [
         ["bibliotek","library",[],[]],
         ["lärare","teacher",["lärarinna","undervisare"],[]],
@@ -2087,7 +2087,7 @@
       ]
     },
     "translation-sv-en-4": {
-      "name": "Översättning svenska–engelska 4 · Vardag och självständighet",
+      "name": "Vardag och självständighet",
       "language": "en-US",
       "type": "word-pairs",
       "description": "80 ordpar · Vardag och självständighet. Välj vilket språk du vill svara på. Ett svar visas efter tio sekunder.",
@@ -2096,7 +2096,7 @@
       "translation": true,
       "languages": ["sv-SE","en-US"],
       "level": 4,
-      "menuLabel": "4 · Vardag och självständighet",
+      "menuLabel": "Vardag och självständighet",
       "pairs": [
         ["ansöka","apply",["söka"],["make an application"]],
         ["boka tid","make an appointment",["beställa tid"],["book an appointment"]],
@@ -2181,7 +2181,7 @@
       ]
     },
     "translation-sv-en-5": {
-      "name": "Översättning svenska–engelska 5 · Arbetsliv och samhälle",
+      "name": "Arbetsliv och samhälle",
       "language": "en-US",
       "type": "word-pairs",
       "description": "80 ordpar · Arbetsliv och samhälle. Välj vilket språk du vill svara på. Ett svar visas efter tio sekunder.",
@@ -2190,7 +2190,7 @@
       "translation": true,
       "languages": ["sv-SE","en-US"],
       "level": 5,
-      "menuLabel": "5 · Arbetsliv och samhälle",
+      "menuLabel": "Arbetsliv och samhälle",
       "pairs": [
         ["anställd","employee",["arbetstagare"],["employed"]],
         ["arbetsgivare","employer",[],[]],
@@ -2275,7 +2275,7 @@
       ]
     },
     "translation-sv-en-6": {
-      "name": "Översättning svenska–engelska 6 · Diskussion och analys",
+      "name": "Diskussion och analys",
       "language": "en-US",
       "type": "word-pairs",
       "description": "80 ordpar · Diskussion och analys. Välj vilket språk du vill svara på. Ett svar visas efter tio sekunder.",
@@ -2284,7 +2284,7 @@
       "translation": true,
       "languages": ["sv-SE","en-US"],
       "level": 6,
-      "menuLabel": "6 · Diskussion och analys",
+      "menuLabel": "Diskussion och analys",
       "pairs": [
         ["antagande","assumption",["förmodan"],["adoption"]],
         ["slutsats","conclusion",["avslutning"],["inference"]],
@@ -2369,7 +2369,7 @@
       ]
     },
     "translation-sv-en-7": {
-      "name": "Översättning svenska–engelska 7 · Avancerat sak- och fackspråk",
+      "name": "Avancerat sak- och fackspråk",
       "language": "en-US",
       "type": "word-pairs",
       "description": "80 ordpar · Avancerat sak- och fackspråk. Välj vilket språk du vill svara på. Ett svar visas efter tio sekunder.",
@@ -2378,7 +2378,7 @@
       "translation": true,
       "languages": ["sv-SE","en-US"],
       "level": 7,
-      "menuLabel": "7 · Avancerat sak- och fackspråk",
+      "menuLabel": "Avancerat sak- och fackspråk",
       "pairs": [
         ["vederlägga","refute",["motbevisa"],["disprove","rebut"]],
         ["styrka","substantiate",["belägga"],["strength","corroborate","confirm"]],
@@ -2463,7 +2463,7 @@
       ]
     },
     "translation-sv-en-8": {
-      "name": "Översättning svenska–engelska 8 · Mycket avancerat och nyanserat",
+      "name": "Mycket avancerat och nyanserat",
       "language": "en-US",
       "type": "word-pairs",
       "description": "80 ordpar · Mycket avancerat och nyanserat. Välj vilket språk du vill svara på. Ett svar visas efter tio sekunder.",
@@ -2472,7 +2472,7 @@
       "translation": true,
       "languages": ["sv-SE","en-US"],
       "level": 8,
-      "menuLabel": "8 · Mycket avancerat och nyanserat",
+      "menuLabel": "Mycket avancerat och nyanserat",
       "pairs": [
         ["vederhäftig","reliable",["tillförlitlig","pålitlig"],["credible","trustworthy","sound"]],
         ["oförvitlig","impeccable",["oklanderlig"],["irreproachable","blameless"]],

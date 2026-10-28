@@ -8,7 +8,7 @@ All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och
 
 Alla språkövningar finns i [language-exercises.json](language-exercises.json).
 
-Välj först övningsgrupp och sedan övning/nivå i de två kopplade menyerna ovanför spelen. Grupperna kommer i ordningen Matematik, Bokstäver, Svenska, English, Svenska–engelska och Kinesiska. Matematik 1 (addition) är förvald och ett slumpat spel markeras vid varje sidladdning. Spelsvårigheten väljs separat. Spelen delas in i **Svara snabbt** och **Tid att fundera**, där den senare gruppen innehåller Reversi, Schack, Klossar, Trassel och Målarateljén. Spelkorten visas i fem kolumner på större skärmar, tre på mellanstora och två på smala skärmar, med plats för två rader titeltext. Spelkorten kan väljas med mus, pekskärm eller tangentbord.
+Välj först övningsgrupp och sedan övning/nivå i de två kopplade menyerna ovanför spelen. Grupperna kommer i ordningen Matematik, Bokstäver, Svenska, English, Svenska–engelska och Kinesiska. Addition är förvald och ett slumpat spel markeras vid varje sidladdning. Spelsvårigheten väljs separat. Spelen delas in i **Svara snabbt** och **Tid att fundera**, där den senare gruppen innehåller Reversi, Schack, Klossar, Trassel och Målarateljén. Spelkorten visas i fem kolumner på större skärmar, tre på mellanstora och två på smala skärmar, med plats för två rader titeltext. Spelkorten kan väljas med mus, pekskärm eller tangentbord.
 
 Ordövningarna omfattar svenska och engelska synonymer och motsatser i fyra nivåer vardera: 50 ordpar på nivå 1 och 60 på nivåerna 2–4. Översättning svenska–engelska har åtta nivåer: 50 ordpar på nivåerna 1–3 och 80 på nivåerna 4–8. De högsta nivåerna innehåller avancerat vuxenordförråd. Totalt finns 1 470 ordpar. Varje ordpar har två huvudord och separata listor med godkända alternativa svar i båda riktningarna. Uppgiften visar bara huvudordet. Ett svar visas med mindre text efter tio sekunder. För översättning väljer du svarsspråk med **Översätt till**, även med tangentbord. Konstruktion och underhåll beskrivs i [dev/word-pairs.md](dev/word-pairs.md).
 
@@ -225,21 +225,21 @@ Matematiken har nio fasta övningar. Övningen ändras aldrig under en omgång o
 
 | Övning | Uppgifter |
 | --- | --- |
-| Matematik 1 (+) | Addition med två tal 0–10; svar 0–20. |
-| Matematik 2 (+ och −) | Addition och subtraktion inom 0–20; inga negativa svar. |
-| Matematik 3 (enkla diagram) | Tvådelade cirkeldiagram med summa 4, eller lika stora delar med jämn summa 2–10. Lodräta/vågräta staplar med storleksförhållande 1, 1,5, 2, 3 eller 4. Prickar och tallinjer med steg 1, 3–4 inre markeringar och ändpunkter inom 0–10. Svar 1–10; diagramtypen väljs bland dem som kan visa det aktuella svaret. |
-| Matematik 4 (enkla ekvationer) | Två tal 0–9 till vänster: a + b = 10 + ? eller a + b = 10 − ?. Svar 0–10. |
-| Matematik 5 (10–100) | Två tal 10–100 med addition eller subtraktion; svar 0–200. |
+| Addition | Addition med två tal 0–10; svar 0–20. |
+| Addition och subtraktion | Addition och subtraktion inom 0–20; inga negativa svar. |
+| Enkla diagram | Tvådelade cirkeldiagram med summa 4, eller lika stora delar med jämn summa 2–10. Lodräta/vågräta staplar med storleksförhållande 1, 1,5, 2, 3 eller 4. Prickar och tallinjer med steg 1, 3–4 inre markeringar och ändpunkter inom 0–10. Svar 1–10; diagramtypen väljs bland dem som kan visa det aktuella svaret. |
+| Enkla ekvationer | Två tal 0–9 till vänster: a + b = 10 + ? eller a + b = 10 − ?. Svar 0–10. |
+| Större tal | Två tal 10–100 med addition eller subtraktion; svar 0–200. |
 | Enkel multiplikation | En bild med 2–6 rader och 2–6 kolumner av kvadratiska rutor. Antalet kolumner står ovanför rutnätet och antalet rader till vänster, inom samma bildstorlek som enkla diagram (112 × 80). Svara med produkten (4–36), eller matcha bilden med talet i Klossar och Trassel. Talade svar som ”trettiosex” och ”trettio sex” godkänns som 36. |
-| Matematik 6 (×) | Multiplikationstabellerna 1–10. |
-| Matematik 7 (× och ÷) | Multiplikation och exakt division i tabellerna 1–10. |
-| Matematik 8 (ekvationer) | Lös x med en eller två av +, −, × och ÷, utan parenteser. Vanlig prioriteringsordning gäller. x är ett entydigt positivt heltal 1–20. |
+| Multiplikation | Multiplikationstabellerna 1–10. |
+| Multiplikation och division | Multiplikation och exakt division i tabellerna 1–10. |
+| Ekvationer | Lös x med en eller två av +, −, × och ÷, utan parenteser. Vanlig prioriteringsordning gäller. x är ett entydigt positivt heltal 1–20. |
 
 Menyn visar övning, tangentbord/röst, talspråk och svårighet i den ordningen. Talspråk är avstängt vid tangentbordsinmatning. Lätt, Medel och Svår styr spelets utmaning. Matematikens befintliga extra speltid gäller på alla nio övningar.
 
 Enkel multiplikation använder övnings-ID `math-simple-multiplication`. Publicera den uppdaterade `cloudflare/worker.mjs` för att ta emot dess topplistepoäng; ingen databasmigrering behövs.
 
-Talade heltal upp till 200 stöds på svenska, engelska och mandarin. Uttryck som ”one hundred twenty three” och ”ett hundra tjugo tre” hålls ihop. I Matematik 5–7 väntar det sista preliminära talet på nästa svar eller slutlig transkription, så att ”one” inte skickas innan det hinner bli ”one hundred”.
+Talade heltal upp till 200 stöds på svenska, engelska och mandarin. Uttryck som ”one hundred twenty three” och ”ett hundra tjugo tre” hålls ihop. I övningarna **Större tal**, **Enkel multiplikation**, **Multiplikation** och **Multiplikation och division** väntar det sista preliminära talet på nästa svar eller slutlig transkription, så att ”one” inte skickas innan det hinner bli ”one hundred”.
 
 I mandarinövningarna visas pinyin ovanför svaret och en svensk betydelse under det efter tio sekunder om uppgiften ännu inte har besvarats. Tecknet eller ordet ligger centrerat mellan ledtrådarna. Rutan växer runt sin tidigare mittpunkt där det finns plats; vid skärmkanter eller trängsel flyttas den för att undvika överlappning. Tiden räknas från att uppgiften syns, och paus räknas inte. Köade och pågående korrekta svar behöver ingen ny ledtråd; en redan visad ledtråd ligger kvar tills uppgiften försvinner. Tal jämförs som pinyin utan toner; till exempel kan 是 eller 事 matcha 十. Olika stavelser som `si` och `shi` skiljs åt. I kinesiska teckenövningar kan en transkription som `38` bli två svar, medan `10` hålls ihop. Mattesvar delas inte på det sättet. Bopomofo har tangentkonvertering och en tangenthjälp under **Så spelar du**. I röstläge jämförs symbolernas uttal med transkriberade kinesiska tecken eller pinyin, till exempel 波 / bo → ㄅ, 佛 / fo → ㄈ och 是 / shi → ㄕ. Toner ignoreras, men olika ljud som si / shi och en / eng hålls isär. För ㄝ accepteras även ye (也 / 耶), eftersom ljudet ê saknar ett vanligt fristående ord för taltjänsten. En följd som 波坡摸佛 blir fyra svar; rättningar till pinyin eller symboler skapar inga extra handlingar. Tangentbordets teckenkonvertering påverkas inte.
 
@@ -350,7 +350,7 @@ På telefon och surfplatta: öppna webbplatsen via HTTPS, välj **Röst** och ti
 
 Enhetsval, ljudbehandling och rullande testinspelning styr talinmatningen endast när `start(audioTrack)` används. Med vanliga `start()` bestämmer taltjänsten mikrofon och ljudbehandling; inställningsdialogens nivåmätare och inspelningstest är då ett separat mikrofontest som stängs före spelstart.
 
-För bokstäver, korta svenska/engelska ord, bopomofo och mandarinövningar där flertalet svar är enstaka tecken begär appen `noiseSuppression: false`. Samma inställning används för de korta talsvaren (0–20) i Matematik 1–4 och 8. Ekodämpning och automatisk nivå behålls om ljudbehandling är påslagen. Övriga övningar återgår till normal brusreducering. Inställningen tillämpas före taligenkänning, även när mikrofonen återanvänds; enhetsvalet och användarens avstängning av all ljudbehandling bevaras. Sessionsloggen visar ljudspårets faktiska inställningar, eftersom enheter kan ignorera önskemålet.
+För bokstäver, korta svenska/engelska ord, bopomofo och mandarinövningar där flertalet svar är enstaka tecken begär appen `noiseSuppression: false`. Samma inställning används för de korta talsvaren (0–20) i Addition, Addition och subtraktion, Enkla diagram, Enkla ekvationer och Ekvationer. Ekodämpning och automatisk nivå behålls om ljudbehandling är påslagen. Övriga övningar återgår till normal brusreducering. Inställningen tillämpas före taligenkänning, även när mikrofonen återanvänds; enhetsvalet och användarens avstängning av all ljudbehandling bevaras. Sessionsloggen visar ljudspårets faktiska inställningar, eftersom enheter kan ignorera önskemålet.
 
 Detta är en möjlig förbättring för korta, svaga ljud, inte en verifierad lösning på igenkänningsproblemen. [Media Capture API](https://w3c.github.io/mediacapture-main/#dom-mediatrackconstraintset-noisesuppression) styr mikrofonens brusreducering; [Web Speech API](https://webaudio.github.io/web-speech-api/#speechreco-attributes) har ingen inställning för taldetekteringens känslighet eller minsta yttrandelängd. Kontinuerlig lyssning och preliminära resultat är redan aktiverade.
 
