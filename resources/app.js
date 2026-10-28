@@ -13,6 +13,26 @@ let homeworkReady=!homeworkRequested;
 const queue=new SC.AnswerQueue(),microphone=new SC.Microphone(),sounds=new SC.GameSounds(),tileSpeech=new SC.KlossarSpeech();
 const input=new SC.AnswerInput({field:$('answer'),form:$('answer-form'),queue,microphone,retainFocus:()=>!isTileGame()&&game?.state==='playing'&&!document.querySelector('dialog[open]'),getCandidates:()=>game?.state==='playing'?game.getTargets().map(t=>t.item):[]});
 let game,renderer,kind='city',busy=false,soundOn=true,lastOptions=null,log=[],lastTargetKey=null,lastUi=0,uiFrame,replaying=null,lifecycle=0;
+let diagramReading=0;
+function startListening(){if(!diagramReading)input.start();}
+$('arena').addEventListener('click',e=>{
+  if(!soundOn||game?.state!=='playing')return;
+  const button=e.target.closest?.('button'),source=button||e.target;
+  const canvases=source.tagName?.toLowerCase()==='canvas'?[source]:Array.from(source.querySelectorAll?.('canvas')||[]);
+  for(const canvas of canvases){
+    const rect=canvas.getBoundingClientRect(),keyboard=button&&e.detail===0;
+    const speech=SC.mathDiagramSpeechAt(canvas,keyboard?rect.left+rect.width/2:e.clientX,keyboard?rect.top+rect.height/2:e.clientY);
+    if(!speech)continue;
+    const token=++diagramReading,currentGame=game,currentLifecycle=lifecycle;
+    // The prompt must not be transcribed as the player's answer.
+    if(input.voice.enabled)input.cancel();
+    tileSpeech.play(speech,{onEnd:()=>{
+      if(diagramReading!==token)return;diagramReading=0;
+      if(game===currentGame&&lifecycle===currentLifecycle&&game.state==='playing'&&input.enabled&&input.voice.enabled)startListening();
+    }});
+    break;
+  }
+},{capture:true});
 const playViewport=new SC.PlayViewport(),navigation=new SC.GameNavigation({onBack:confirmGameBack});
 let resumeAfterBack=false;
 const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet',reversi:'Reversi',chess:'Schack',klossar:'Klossar',trassel:'Trassel',studio:'Målarateljén'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer],home:[SC.HomeGame,SC.HomeRenderer],reversi:[SC.ReversiGame,SC.ReversiRenderer],chess:[SC.ChessGame,SC.ChessRenderer],klossar:[SC.KlossarGame,SC.KlossarRenderer],trassel:[SC.TrasselGame,SC.TrasselRenderer],studio:[SC.StudioGame,SC.StudioRenderer]};
@@ -104,13 +124,13 @@ async function loadBest(){
 }
 function onGameEvent(e){
   if(kind==='studio'&&['studio-question','studio-ready','studio-dialog','resume'].includes(e.type)){
-    const enabled=game.canAnswer()&&!game.dialogOpen;input.setEnabled(enabled);$('answer').value='';if(enabled&&input.voice.enabled)input.start();lastTargetKey=null;return;
+    const enabled=game.canAnswer()&&!game.dialogOpen;input.setEnabled(enabled);$('answer').value='';if(enabled&&input.voice.enabled)startListening();lastTargetKey=null;return;
   }
   if(e.type==='klossar-select'){if(soundOn)tileSpeech.play(e.tile.item.speech);return;}
-  if(e.type==='pause')tileSpeech.stop();
+  if(e.type==='pause'||e.type==='end')tileSpeech.stop();
   if(renderer?.game===game)renderer.scoreEvent(e);
   if(isBoardGame()&&['reversi-ready','reversi-wait','chess-ready','chess-wait'].includes(e.type)){
-    const enabled=game.canAnswer();input.setEnabled(enabled);$('answer').value='';if(enabled&&input.voice.enabled)input.start();
+    const enabled=game.canAnswer();input.setEnabled(enabled);$('answer').value='';if(enabled&&input.voice.enabled)startListening();
   }
   const mapped={early:'camp-check',think:kind==='marshmallows'?'camp-check':'think',fire:'laser',impact:'crash',hit:kind==='city'?'explosion':kind==='food'?'serve':kind==='hive'?'honey':kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-gulp':kind==='marshmallows'?'camp-good':kind==='home'?'home-clean':isTileGame()?'honey':null,miss:kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-air':'miss','customer-left':'miss','plant-dead':'crash',need:null,impatient:'tick','klossar-display':null};
   const sound=Object.hasOwn(mapped,e.type)?mapped[e.type]:e.type;
@@ -145,7 +165,7 @@ async function start(){
     sounds.stopCampfire();sounds.stopDinosaurVoices?.();sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
     const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});game.viewportKind=kind;lastOptions=options();$('arena').className='arena '+kind;$('arena').dataset.exercise=lastOptions.mode;$('play').dataset.game=kind;game.start({...lastOptions,...(kind==='trassel'?{shape:root.innerWidth<600&&root.innerHeight>root.innerWidth?'tall':root.innerHeight<550&&root.innerWidth>root.innerHeight?'wide':'hex'}:{})});if(kind!=='studio')highscores.begin({...scoreSelection(lastOptions),letterKeys:game.mode==='letters'?game.items.map(i=>i.answer):null});queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),discardUnmatched:entry=>!isQuestionGame()&&entry.source==='speech'&&SC.isChinese(game.mode),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
     if(kind!=='studio')loadBest();$('game-title').textContent=names[kind];$('objective').closest('.hud-objective').hidden=['marshmallows','eggs','studio'].includes(kind);$('answer').placeholder=input.singleLetter()?'…':SC.modes[game.mode].placeholder.replace('…',' ↵');$('answer-hint').textContent=typingHint();$('keyboard').hidden=isTileGame()||game.mode!=='bopomofo';$('input-dock').hidden=isTileGame()||input.voice.enabled;document.body.classList.add('playing');document.body.classList.toggle('voice-play',input.voice.enabled);
-    input.setEnabled(!isTileGame()&&(!isQuestionGame()||game.canAnswer()));if(input.enabled&&input.voice.enabled)input.start();
+    input.setEnabled(!isTileGame()&&(!isQuestionGame()||game.canAnswer()));if(input.enabled&&input.voice.enabled)startListening();
     playViewport.update();renderer.resize();navigation.enter();if(!isTileGame())input.focus();lastTargetKey=null;renderUi();
   }catch(error){$('setup-error').textContent=error.message; $('resume-error').textContent=error.message;if($('menu').hidden){$('end-overlay').hidden=false;$('result-title').textContent=error.message;}}
   finally{busy=false;$('start').disabled=false;$('again').disabled=false;}
@@ -153,11 +173,11 @@ async function start(){
 function pause(){if(game?.state!=='playing')return;game.pause();input.setEnabled(false);$('pause-overlay').hidden=false;$('resume-error').textContent='';$('resume').focus({preventScroll:true});renderUi();}
 async function resume(){
   if(busy||game?.state!=='paused')return;const token=++lifecycle;busy=true;$('resume').disabled=true;
-  try{const preparation=!isTileGame()&&input.prepare();if(preparation)await preparation;if(token!==lifecycle)return;$('pause-overlay').hidden=true;game.resume();const canAnswer=isQuestionGame()?game.canAnswer():!isTileGame()&&(kind!=='eggs'||game.player.status!=='dead');input.setEnabled(canAnswer);if(canAnswer&&input.voice.enabled)input.start();if(canAnswer)input.focus();}
+  try{const preparation=!isTileGame()&&input.prepare();if(preparation)await preparation;if(token!==lifecycle)return;$('pause-overlay').hidden=true;game.resume();const canAnswer=isQuestionGame()?game.canAnswer():!isTileGame()&&(kind!=='eggs'||game.player.status!=='dead');input.setEnabled(canAnswer);if(canAnswer&&input.voice.enabled)startListening();if(canAnswer)input.focus();}
   catch(error){$('resume-error').textContent=error.message;}finally{busy=false;$('resume').disabled=false;}
 }
 function menu(){navigation.leave(showMenu);}
-function showMenu(){highscores.dismiss();sounds.stopCampfire();sounds.stopDinosaurVoices?.();tileSpeech.stop();lifecycle++;input.setEnabled(false);game?.menu();renderer?.destroy();renderer=null;queue.clear();$('play').hidden=true;$('menu').hidden=false;document.body.classList.remove('playing','voice-play');menuUpdate();$('start').focus({preventScroll:true});}
+function showMenu(){lifecycle++;highscores.dismiss();sounds.stopCampfire();sounds.stopDinosaurVoices?.();tileSpeech.stop();input.setEnabled(false);game?.menu();renderer?.destroy();renderer=null;queue.clear();$('play').hidden=true;$('menu').hidden=false;document.body.classList.remove('playing','voice-play');menuUpdate();$('start').focus({preventScroll:true});}
 function confirmGameBack(){
   if($('leave-game').open)return;
   resumeAfterBack=game?.state==='playing';pause();

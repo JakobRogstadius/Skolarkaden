@@ -235,7 +235,7 @@ Matematiken har nio fasta övningar. Övningen ändras aldrig under en omgång o
 | Enkla diagram | Tvådelade cirkeldiagram med summa 4, eller lika stora delar med jämn summa 2–10. Lodräta/vågräta staplar med storleksförhållande 1, 1,5, 2, 3 eller 4. Prickar och tallinjer med steg 1, 3–4 inre markeringar och ändpunkter inom 0–10. Svar 1–10; diagramtypen väljs bland dem som kan visa det aktuella svaret. |
 | Enkla ekvationer | Två tal 0–9 till vänster: a + b = 10 + ? eller a + b = 10 − ?. Svar 0–10. |
 | Större tal | Två tal 10–100 med addition eller subtraktion; svar 0–200. |
-| Enkel multiplikation | En bild med 2–6 rader och 2–6 kolumner av kvadratiska rutor. Antalet kolumner står ovanför rutnätet och antalet rader till vänster, inom samma bildstorlek som enkla diagram (112 × 80). Svara med produkten (4–36), eller matcha bilden med talet i Klossar och Trassel. Talade svar som ”trettiosex” och ”trettio sex” godkänns som 36. |
+| Enkel multiplikation | En bild med 2–6 rader och 2–6 kolumner. Rutnätet fyller hela bildytan (112 × 80), utan marginaler eller siffror. Klicka på bilden för att höra ”N gånger M” på svenska. Svara med produkten (4–36), eller matcha bilden med talet i Klossar och Trassel. Talade svar som ”trettiosex” och ”trettio sex” godkänns som 36. |
 | Multiplikation | Multiplikationstabellerna 1–10. |
 | Multiplikation och division | Multiplikation och exakt division i tabellerna 1–10. |
 | Ekvationer | Lös x med en eller två av +, −, × och ÷, utan parenteser. Vanlig prioriteringsordning gäller. x är ett entydigt positivt heltal 1–20. |

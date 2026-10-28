@@ -22,28 +22,45 @@ for(const [answer,choices] of pool)for(let index=0;index<choices.length;index++)
   assert.equal(SC.labelWidth({},item),112);assert.equal(SC.labelHeight(item,20),80);
   assert(SC.matches(String(answer),item,mode));assert(!SC.matches(String(answer+1),item,mode));
   for(const lang of ['sv-SE','en-US','zh-CN','zh-TW'])assert(SC.matches(SC.numberName(answer,lang),item,mode,lang,'speech'));
-  // Inspect what is actually drawn: one separate square per unit, and no visible answer.
-  const squares=[],texts=[],c=new Proxy({
-    fillRect(x,y,w,h){squares.push({x,y,w,h});},
-    fillText(text,x,y){texts.push({text:String(text),x,y});}
-  },{get:(target,key)=>key in target?target[key]:()=>{}});
-  SC.drawMathDiagram(c,d,{x:0,y:0,w:112,h:80});
-  assert.equal(squares.length,answer);assert.deepEqual(texts.map(t=>t.text),[String(d.columns),String(d.rows)]);
-  const top=texts[0],left=texts[1],grid={x:Math.min(...squares.map(s=>s.x)),y:Math.min(...squares.map(s=>s.y)),right:Math.max(...squares.map(s=>s.x+s.w)),bottom:Math.max(...squares.map(s=>s.y+s.h))};
-  assert.equal(top.x,(grid.x+grid.right)/2);assert.equal(left.y,(grid.y+grid.bottom)/2);
-  // Reserve the full 16 px font height and a 12 px digit width inside the diagram.
-  for(const t of texts)assert(t.x-6>=0&&t.x+6<=104&&t.y-8>=0&&t.y+8<=72);
-  assert(top.y+8<grid.y);assert(left.x+6<grid.x);
-  assert.equal(new Set(squares.map(s=>s.x)).size,d.columns);
-  assert.equal(new Set(squares.map(s=>s.y)).size,d.rows);
-  for(const [i,s] of squares.entries()){
-    assert.equal(s.w,s.h);assert(s.w>0&&s.x>=.5&&s.y>=.5&&s.x+s.w+.5<=104&&s.y+s.h+.5<=72);
-    assert(squares.slice(i+1).every(t=>s.x+s.w<t.x||t.x+t.w<s.x||s.y+s.h<t.y||t.y+t.h<s.y));
+  // All units fill the image, with no outer margins, text or answer.
+  for(const box of [{x:0,y:0,w:112,h:80},{x:9,y:13,w:56,h:40},{x:4,y:8,w:280,h:180}]){
+    const cells=[],texts=[],borders=[],c=new Proxy({
+      fillRect(x,y,w,h){cells.push({x,y,w,h});},
+      strokeRect(x,y,w,h){borders.push({x,y,w,h,lineWidth:this.lineWidth});},
+      fillText(text){texts.push(text);}
+    },{get:(target,key)=>key in target?target[key]:()=>{}});
+    SC.drawMathDiagram(c,d,box);
+    assert.equal(cells.length,answer);assert.deepEqual(texts,[]);
+    const scale=Math.min(box.w/112,box.h/80,1),w=112*scale,h=80*scale,x=box.x+(box.w-w)/2,y=box.y+(box.h-h)/2;
+    const near=(a,b)=>assert(Math.abs(a-b)<1e-8,`${a} != ${b}`);
+    near(Math.min(...cells.map(s=>s.x)),x);near(Math.min(...cells.map(s=>s.y)),y);
+    near(Math.max(...cells.map(s=>s.x+s.w)),x+w);near(Math.max(...cells.map(s=>s.y+s.h)),y+h);
+    assert.equal(new Set(cells.map(s=>s.x)).size,d.columns);assert.equal(new Set(cells.map(s=>s.y)).size,d.rows);
+    near(cells.reduce((sum,s)=>sum+s.w*s.h,0),w*h);
+    for(const [i,s] of cells.entries()){
+      near(s.w,w/d.columns);near(s.h,h/d.rows);
+      assert(cells.slice(i+1).every(t=>s.x+s.w<=t.x+1e-8||t.x+t.w<=s.x+1e-8||s.y+s.h<=t.y+1e-8||t.y+t.h<=s.y+1e-8));
+    }
+    assert.equal(borders.length,1);const border=borders[0];
+    near(border.x-border.lineWidth/2,x);near(border.y-border.lineWidth/2,y);
+    near(border.x+border.w+border.lineWidth/2,x+w);near(border.y+border.h+border.lineWidth/2,y+h);
   }
 }
 assert.equal(seen.size,25);
 for(let rows=2;rows<=6;rows++)for(let columns=2;columns<=6;columns++)assert(seen.has(rows+'x'+columns));
 for(const answer of [0,1,5,7,35,37,49])assert.throws(()=>SC.makeMath(answer,Math.random,level),{name:'RangeError'});
+// Hit testing follows canvas transforms, CSS scaling and object-fit letterboxing.
+for(const m of [{a:2,b:0,c:0,d:2,e:100,f:120},{a:0,b:2,c:-2,d:0,e:300,f:100}]){
+  const canvas={width:1000,height:600,getBoundingClientRect:()=>({left:20,top:40,width:500,height:400})};
+  const c=new Proxy({canvas,getTransform:()=>m},{get:(target,key)=>key in target?target[key]:()=>{}});
+  const d={kind:'multiplication-grid',rows:3,columns:6,answer:18};
+  SC.drawMathDiagram(c,d,{x:0,y:0,w:112,h:80});
+  const point=(x,y)=>[20+(m.a*x+m.c*y+m.e)/2,90+(m.b*x+m.d*y+m.f)/2];
+  const speech=SC.mathDiagramSpeechAt(canvas,...point(56,40));
+  assert.equal(speech.text,'tre gånger sex');assert.equal(speech.lang,'sv-SE');
+  assert.equal(SC.mathDiagramSpeechAt(canvas,...point(-1,40)),null);
+  SC.clearMathDiagramHits(canvas);assert.equal(SC.mathDiagramSpeechAt(canvas,...point(56,40)),null,'old frame is no longer clickable');
+}
 const item=SC.makeMath(36,()=>0,level),speechContext={lesson:mode,language:'sv-SE',candidates:[item,SC.makeMath(30,()=>0,level)]};
 const result=(transcript,isFinal=false)=>Object.assign([{transcript}],{isFinal});
 for(const text of ['36','trettiosex','trettio sex','Trettiosex.']){
@@ -54,4 +71,4 @@ for(const text of ['36','trettiosex','trettio sex','Trettiosex.']){
   stream.update([result(text,true)]);assert.equal(sent.length,1);assert(SC.matches(sent[0].text,item,mode,'sv-SE','speech'));
   stream.update([result(text,true)]);assert.equal(sent.length,1,'a repeated final result is not a second answer');
 }
-console.log('PASS All 25 labelled grids fit the simple-diagram area; products, typed/spoken answers and interim Swedish transcripts');
+console.log('PASS All 25 grids fill the unlabelled 112 × 80 diagram area; products, typed/spoken answers and interim Swedish transcripts');
