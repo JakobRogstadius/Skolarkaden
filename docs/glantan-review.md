@@ -68,3 +68,17 @@ The GitHub Pages game is independent of the separately deployed Cloudflare
 score worker. Its updated generated source is included; no SQL migration is
 required. Until that Worker is deployed, the new leaderboard reports its
 unavailability and replay still works.
+
+## Published verification
+
+[PR #10](https://github.com/JakobRogstadius/Skolarkaden/pull/10) was merged as
+`74570b0ac492415c528af92ad7b29a55c0cf6d81`. GitHub Pages deployment run
+`40780621721` completed successfully for that commit.
+
+The [public game](https://jakobrogstadius.github.io/Skolarkaden/?game=glantan)
+was opened after deployment. Two typed correct answers recruited a warrior
+(population 3 to 4); another answer advanced castle research to 1/4. Pausing
+worked. The live leaderboard displayed its expected not-ready message; the
+separate Cloudflare Worker has not been deployed.
+
+![Live Klockgläntan, with a research payment in progress](klockglantan-live-1793226889947.jpg)

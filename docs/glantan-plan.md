@@ -21,7 +21,7 @@ Klockgläntan is a small moss-and-brass settlement keeping its bell alive agains
 3. [complete] Add illustrated canvas world, compact responsive controls, shared exercise adapter, map exploration and camera.
 4. [complete] Add persistence/replay, coherent sound/feedback, difficulty tuning and shared application/score integration.
 5. [complete] Run focused domain/integration checks, browser playthroughs and long simulation checks. Obtain designer review; fix concrete findings.
-6. [in progress] Verify affected shared behaviour and publish the reviewed playable version. Document any deployment limits truthfully.
+6. [complete] Verify affected shared behaviour and publish the reviewed playable version. Document any deployment limits truthfully.
 
 ## Module ownership
 
@@ -54,4 +54,5 @@ Tests under `tests/glantan/` run independently: world/navigation, purchases/prog
 - Implemented and regression-tested all six findings from the actual-build designer review. Second review confirms viable mixed-army wins, no reproduced expedition deadlocks, and optional eight-answer investments. See [review and measurements](glantan-review.md).
 - Final balance probe is independently runnable in `dev/glantan-balance.cjs`; nine full paid-answer runs passed across easy/slow and hard play. Shared 68-suite verification passed after updating the new-renderer DOM fixture and rerunning its affected suite.
 - Browser verified desktop, phone portrait, constrained keyboard-sized viewport, diagram tasks, victory/defeat and same-map replay. Developer fixtures never submit synthetic scores.
-- Release candidate is ready for publication. Cloudflare leaderboard source is prepared separately; gameplay and replay do not depend on its deployment.
+- Published through PR #10, merged as `74570b0ac492415c528af92ad7b29a55c0cf6d81`. GitHub Pages run `40780621721` completed successfully. The public game was launched and verified with a paid recruit and partial research purchase.
+- Cloudflare leaderboard source is prepared separately; its deployment remains outstanding. The live leaderboard reports that it is not ready for this game; gameplay, local saves and replay work independently.
