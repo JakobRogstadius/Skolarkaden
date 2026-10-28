@@ -37,14 +37,16 @@
     const values=diagram.unknownFirst?[diagram.answer,diagram.known]:[diagram.known,diagram.answer];
     const labels=diagram.unknownFirst?['?',diagram.known]:[diagram.known,'?'];
     if(diagram.kind==='multiplication-grid'){
-      const cell=9,gap=2,width=diagram.columns*cell+(diagram.columns-1)*gap,height=diagram.rows*cell+(diagram.rows-1)*gap;
-      const x=3+(66-width)/2,y=(72-height)/2;
+      // Fit both dimension labels inside the same 104 × 72 content area as other diagrams.
+      const cell=8,gap=1,width=diagram.columns*cell+(diagram.columns-1)*gap,height=diagram.rows*cell+(diagram.rows-1)*gap;
+      const x=(104-width)/2+8,y=18+(54-height)/2;
       c.lineWidth=1;c.fillStyle='#c6d6bd';
       for(let row=0;row<diagram.rows;row++)for(let column=0;column<diagram.columns;column++){
         const left=x+column*(cell+gap),top=y+row*(cell+gap);
         c.fillRect(left,top,cell,cell);c.strokeRect(left,top,cell,cell);
       }
-      label('= ?',87,36);
+      label(diagram.columns,x+width/2,y-10);
+      label(diagram.rows,x-12,y+height/2);
     }else if(diagram.kind==='pie'){
       const total=values[0]+values[1],radius=29;
       // Anchor the first slice boundary at twelve o'clock.

@@ -248,7 +248,7 @@
     if(level===6)return {...word(String(answer)),label:'?',diagram:SC.makeDiagram(Number(answer),rng),mathLevel:level};
     if(level===8){
       const diagram={...choices[Math.floor(rng()*choices.length)]};
-      return {...word(String(answer)),label:`${diagram.rows} rader med ${diagram.columns} rutor = ?`,diagram,mathLevel:level};
+      return {...word(String(answer)),label:`${diagram.rows} rader och ${diagram.columns} kolumner`,diagram,mathLevel:level};
     }
     return {...word(String(answer)),label:choices[Math.floor(rng()*choices.length)],mathLevel:level};
   };
