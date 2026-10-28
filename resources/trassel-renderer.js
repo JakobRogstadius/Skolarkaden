@@ -8,7 +8,16 @@ class TrasselRenderer{
     Object.assign(this,{canvas,game,pointer:null,lastTime:performance.now(),lastRevision:-1,board:null,destroyed:false});
     this.reduced=root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     this.host=element('section','trassel-scene');this.host.setAttribute('aria-label','Trassel');
-    this.caption=element('div','trassel-caption');this.caption.append(element('span','trassel-exercise',SC.modes[game.mode].name));
+    this.caption=element('div','trassel-caption');this.displayButtons=new Map();
+    if(SC.isChinese(game.mode)){
+      const toggle=element('div','klossar-chinese-toggle');toggle.setAttribute('role','group');toggle.setAttribute('aria-label','Matcha kinesiska tecken med');
+      for(const [value,label] of [['pinyin','Pinyin'],['translation','Översättningar']]){
+        const button=element('button','',label);button.type='button';
+        button.addEventListener('click',()=>{this.advance(performance.now());game.setChineseDisplay(value);this.draw();});
+        toggle.append(button);this.displayButtons.set(value,button);
+      }
+      this.caption.append(toggle);
+    }else this.caption.append(element('span','trassel-exercise',SC.modes[game.mode].name));
     this.preview=element('div','trassel-preview','Koppla ihop rött och blått. Tomma rutor får vara kvar.');
     if(game.pairs.some(p=>p.problem.diagram)){this.preview.classList.add('with-diagrams');this.preview.textContent='Tryck på en uppgift för att se den större.';}
     this.viewport=element('div','trassel-viewport');this.surface=element('div','trassel-board');this.surface.tabIndex=0;
@@ -63,8 +72,7 @@ class TrasselRenderer{
       }else face.textContent=tile.item.label;
       button.setAttribute('aria-label',tile.item.diagram&&tile.item.label==='?'?'Matteuppgift':tile.item.label);button.title=tile.item.tooltip||tile.item.label;
       button.append(face);this.faces.append(button);this.faceNodes.set(tile.id,button);
-      let size=Math.min(23,this.scale*.54);face.style.fontSize=size+'px';
-      while(size>8&&(face.scrollWidth>face.clientWidth||face.scrollHeight>face.clientHeight)){size=Math.max(8,size-.5);face.style.fontSize=size+'px';}
+      this.fitText(face);
       button.addEventListener('click',e=>{if(e.detail===0&&this.game.ready()){this.keyboard=true;this.game.begin(tile.id);this.focusTile(tile.id);this.draw();}});
     }
     for(const wall of board.walls){
@@ -79,8 +87,13 @@ class TrasselRenderer{
     return distance<=this.scale?best:null;
   }
   position(e){const r=this.surface.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top};}
+  fitText(face){
+    let size=Math.min(23,this.scale*.54);face.style.fontSize=size+'px';
+    while(size>8&&(face.scrollWidth>face.clientWidth||face.scrollHeight>face.clientHeight)){size=Math.max(8,size-.5);face.style.fontSize=size+'px';}
+  }
   focusTile(id){
     const tile=this.game.tileById?.get(id);if(!tile)return;
+    this.previewTile=id;
     this.preview.replaceChildren();const label=element('span','',tile.item.label||'Matteuppgift');label.style.color=tile.side==='problem'?'#742f36':'#243f75';
     this.preview.append(label);
     if(tile.item.diagram){const c=document.createElement('canvas');c.width=224;c.height=160;const ctx=c.getContext('2d');ctx.scale(2,2);SC.drawMathDiagram(ctx,tile.item.diagram,{x:0,y:0,w:112,h:80},{textColor:'#742f36'});this.preview.replaceChildren(c);}
@@ -140,7 +153,19 @@ class TrasselRenderer{
         node.setAttribute('d',this.pathData(line.path));node.style.stroke=line.gray?'#8d9497':line.color;node.classList.toggle('is-gray',!!line.gray);
       }
       for(const [key,node] of this.pathNodes)if(!drawn.some(l=>l.key===key)){node.remove();this.pathNodes.delete(key);}
-      for(const [id,node] of this.faceNodes){const line=g.lineAt(id);node.disabled=!g.ready();const cap=this.capNodes.get(id);cap.style.stroke=line?(line.gray?'#8d9497':line.color):'';cap.style.strokeWidth=line?2:'';}
+      for(const [id,node] of this.faceNodes){
+        const tile=g.tileById.get(id),face=node.firstElementChild,line=g.lineAt(id);
+        if(!tile.item.diagram&&face.textContent!==tile.item.label){face.textContent=tile.item.label;node.setAttribute('aria-label',tile.item.label);this.fitText(face);}
+        node.title=tile.item.tooltip||tile.item.label;node.disabled=!g.ready();
+        const cap=this.capNodes.get(id);cap.style.stroke=line?(line.gray?'#8d9497':line.color):'';cap.style.strokeWidth=line?2:'';
+      }
+      for(const [value,button] of this.displayButtons){
+        button.setAttribute('aria-pressed',String(value===g.chineseDisplay));
+        button.disabled=!g.ready()||!!g.active||value==='translation'&&!g.canTranslate();
+        button.title=value==='translation'&&!g.canTranslate()?'Översättning saknas i övningen.':'';
+      }
+      if(this.lastDisplay!==g.chineseDisplay&&this.previewTile!==undefined)this.focusTile(this.previewTile);
+      this.lastDisplay=g.chineseDisplay;
       this.message.textContent=g.message;
       this.hintButton.disabled=!g.ready()||!!g.active||!g.lines.length||g.lastHintRevision===g.boardRevision;
       this.scissors.hidden=!g.cut||!g.ready();

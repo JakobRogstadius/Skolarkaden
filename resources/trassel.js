@@ -17,7 +17,7 @@ class TrasselGame{
   emit(type,detail={}){this.onEvent({type,...detail});}
   menu(){Object.assign(this,{state:'menu',phase:'ready',revision:0,clock:0,elapsed:0,score:0,lines:[],tiles:[],effects:[],active:null,search:null,cut:null});}
   start({mode='letters',pace='gentle',lang='sv-SE',items=null,shape='hex'}={}){
-    this.menu();this.queue.clear();Object.assign(this,{mode,pace,lang,uppercase:false,hits:0,shots:0,mistakes:0,hints:0,sequence:0,boardRevision:0,lastHintRevision:-1,message:'Förbereder spelplanen…'});
+    this.menu();this.queue.clear();Object.assign(this,{mode,pace,lang,uppercase:false,chineseDisplay:'pinyin',hits:0,shots:0,mistakes:0,hints:0,sequence:0,boardRevision:0,lastHintRevision:-1,message:'Förbereder spelplanen…'});
     this.profile=profiles[pace];if(!this.profile)throw new Error('Okänd svårighet.');
     this.total=this.profile.pairs;this.shape=shape;this.board=E.makeBoard(this.profile.radius,shape);this.items=SC.beginPractice(this,items);
     // Prefer distinct visible answers, so an otherwise distant pair cannot be
@@ -32,7 +32,7 @@ class TrasselGame{
   tilesFor(paths,mask,order=paths.map((_,i)=>i)){
     return order.flatMap(i=>{
       const path=paths[i],pair=this.pairs[i],[a,b]=mask&(1<<i)?[path[0],path.at(-1)]:[path.at(-1),path[0]];
-      return [{id:a,side:'problem',key:pair.key,item:pair.problem},{id:b,side:'answer',key:pair.key,item:{label:pair.answer,speech:pair.answerSpeech}}];
+      return [{id:a,side:'problem',key:pair.key,item:pair.problem,chinese:pair.chinese},{id:b,side:'answer',key:pair.key,item:{label:pair.answer,speech:pair.answerSpeech},chinese:pair.chinese}];
     });
   }
   *prepare(){
@@ -49,6 +49,18 @@ class TrasselGame{
   getTargets(){return this.tiles;}
   getAvailableTargets(){return this.tiles.filter(t=>!this.lineAt(t.id));}
   getActiveEntries(){return [];}
+  canTranslate(){return SC.isChinese(this.mode)&&this.tiles.length>0&&this.tiles.every(t=>!!t.chinese?.translation);}
+  setChineseDisplay(display){
+    if(!SC.isChinese(this.mode)||!this.ready()||this.active||!['pinyin','translation'].includes(display)||display===this.chineseDisplay||display==='translation'&&!this.canTranslate())return false;
+    // Pair selection makes the matching groups identical in both views. Keep
+    // keys, routes, hint marks and the certified optimum unchanged.
+    this.chineseDisplay=display;this.cut=null;
+    for(const tile of this.tiles){
+      if(tile.side==='answer')tile.item.label=tile.chinese[display];
+      else tile.item.tooltip=tile.chinese[display==='pinyin'?'translation':'pinyin'];
+    }
+    this.revision++;this.emit('trassel-display');return true;
+  }
   lineAt(id){return this.lines.find(l=>l.path.includes(id));}
   ready(){return this.state==='playing'&&this.phase==='ready';}
   changed(){this.boardRevision++;this.revision++;this.hits=this.lines.length;this.refreshScore();}

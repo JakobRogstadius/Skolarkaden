@@ -219,8 +219,26 @@ function pairFor(item,mode,random,lang){
   const speech=letterSpeech(item.label,lang);
   return {problem:{label:item.label.toLocaleUpperCase('sv-SE'),speech},answer:item.label.toLocaleLowerCase('sv-SE'),answerSpeech:speech,key:'case:'+readingKey(item.label)};
 }
+function bilingualPool(items,random){
+  // Trassel keeps its geometry when switching answer display. Select a maximum
+  // one-to-one set of readings/meanings so both views have the same matches.
+  // Keep all Hanzi variants of a selected reading/meaning, including repeats.
+  const entries=shuffle(items,random).map(item=>({item,reading:readingKey(item.hint),meaning:item.translation?.trim()?'translation:'+readingKey(item.translation):'missing:'+readingKey(item.hint)}));
+  const choices=new Map(),owners=new Map();
+  for(const {reading,meaning} of entries){if(!choices.has(reading))choices.set(reading,new Set());choices.get(reading).add(meaning);}
+  function assign(reading,seen){
+    for(const meaning of choices.get(reading)){
+      if(seen.has(meaning))continue;seen.add(meaning);
+      if(!owners.has(meaning)||assign(owners.get(meaning),seen)){owners.set(meaning,reading);return true;}
+    }
+    return false;
+  }
+  for(const reading of choices.keys())assign(reading,new Set());
+  return entries.filter(({reading,meaning})=>owners.get(meaning)===reading).map(({item})=>item);
+}
 function makePairs(items,mode,count,random,lang,unique=false){
   let pool=items;
+  if(unique&&SC.isChinese(mode))pool=bilingualPool(pool,random);
   if(SC.isWordPair(mode)){
     // Avoid overlapping synonym/translation answer sets across different keys.
     // Every displayed valid answer stays interchangeable; no invisible pair IDs.

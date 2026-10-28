@@ -33,6 +33,11 @@ Koppla ihop röda uppgifter med blå svar genom att dra linjer mellan hexagonern
 Linjer får inte dela rutor eller passera väggar. Alla par ska vara anslutna; tomma rutor får vara kvar.
 En spelplan är en omgång. Lätt har 37 rutor och 4 par, Medel 61 rutor och 6 par, Svår 91 rutor och 8 par.
 Uppgifter, svar, typsnitt och färger för texten följer Klossars matchningsregler. Likadana svar är utbytbara.
+Vid kinesiska övningar väljer du Pinyin eller Översättningar ovanför brädet, som i Klossar.
+Den kinesiska rutans pekhjälp visar det andra alternativet. Saknas översättning är det valet avstängt.
+Urvalet behåller så många olika svar som möjligt med entydig koppling mellan pinyin och översättning,
+så att ett byte bevarar matchningar, linjer, grå markeringar och det bevisade optimumet.
+Avsluta en pågående dragning innan du byter. Även kinesiska läxor stöds.
 
 Släpp före ett svar, eller nå ett felaktigt svar, så dras linjen tillbaka. Dra bakåt för att förkorta
 pågående linje. En färdig linje kan ändras från valfri ände: följ den bakåt och dra sedan en ny väg.
