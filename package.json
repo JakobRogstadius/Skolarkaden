@@ -2,11 +2,12 @@
   "name": "skolarkaden",
   "version": "1.0.0",
   "private": true,
-  "description": "Fjorton fristående lärspel på svenska med text, tal och klick.",
+  "description": "Femton fristående lärspel på svenska med text, tal och klick.",
   "license": "BSD-2-Clause",
   "scripts": {
     "assets": "node dev/version-assets.cjs",
     "dev": "node dev/serve.cjs",
-    "test": "node dev/version-assets.cjs --check && node tests/run.cjs"
+    "test": "node dev/version-assets.cjs --check && node tests/run.cjs",
+    "test:glantan": "node tests/glantan/run.cjs"
   }
 }

@@ -11,7 +11,7 @@ SC.modes.homework={...SC.homeworkMode};
 const homeworkQuery=new URLSearchParams(root.location?.search||''),homeworkRequested=homeworkQuery.get('mode')==='homework';
 let homeworkReady=!homeworkRequested;
 const queue=new SC.AnswerQueue(),microphone=new SC.Microphone(),sounds=new SC.GameSounds(),tileSpeech=new SC.KlossarSpeech();
-const input=new SC.AnswerInput({field:$('answer'),form:$('answer-form'),queue,microphone,retainFocus:()=>!isTileGame()&&game?.state==='playing'&&!document.querySelector('dialog[open]'),getCandidates:()=>game?.state==='playing'?game.getTargets().map(t=>t.item):[]});
+const input=new SC.AnswerInput({field:$('answer'),form:$('answer-form'),queue,microphone,retainFocus:()=>!isTileGame()&&kind!=='glantan'&&game?.state==='playing'&&!document.querySelector('dialog[open]'),getCandidates:()=>game?.state==='playing'?game.getTargets().map(t=>t.item):[]});
 let game,renderer,kind='city',busy=false,soundOn=true,lastOptions=null,log=[],lastTargetKey=null,lastUi=0,uiFrame,replaying=null,lifecycle=0;
 let diagramReading=0;
 function startListening(){if(!diagramReading)input.start();}
@@ -35,11 +35,11 @@ $('arena').addEventListener('click',e=>{
 },{capture:true});
 const playViewport=new SC.PlayViewport(),navigation=new SC.GameNavigation({onBack:confirmGameBack});
 let resumeAfterBack=false;
-const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet',reversi:'Reversi',chess:'Schack',klossar:'Klossar',trassel:'Trassel',studio:'Målarateljén'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer],home:[SC.HomeGame,SC.HomeRenderer],reversi:[SC.ReversiGame,SC.ReversiRenderer],chess:[SC.ChessGame,SC.ChessRenderer],klossar:[SC.KlossarGame,SC.KlossarRenderer],trassel:[SC.TrasselGame,SC.TrasselRenderer],studio:[SC.StudioGame,SC.StudioRenderer]};
+const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet',reversi:'Reversi',chess:'Schack',klossar:'Klossar',trassel:'Trassel',glantan:'Klockgläntan',studio:'Målarateljén'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer],home:[SC.HomeGame,SC.HomeRenderer],reversi:[SC.ReversiGame,SC.ReversiRenderer],chess:[SC.ChessGame,SC.ChessRenderer],klossar:[SC.KlossarGame,SC.KlossarRenderer],trassel:[SC.TrasselGame,SC.TrasselRenderer],glantan:[SC.GlantanGame,SC.GlantanRenderer],studio:[SC.StudioGame,SC.StudioRenderer]};
 const isTileGame=()=>['klossar','trassel'].includes(kind);
 const isBoardGame=()=>['reversi','chess'].includes(kind);
 const highscores=new SC.Highscores({getSelection:()=>scoreSelection(),games:Object.fromEntries(Object.entries(names).filter(([id])=>id!=='studio'))});
-const isQuestionGame=()=>isBoardGame()||kind==='studio';
+const isQuestionGame=()=>isBoardGame()||kind==='studio'||kind==='glantan';
 function scoreSelection(selected=options()){
   return {kind,mode:selected.mode,pace:selected.pace,input:isTileGame()?'click':$('input-kind').value,lang:selected.lang,spokenLanguage:isTileGame()?null:$('language').value,uppercase:isTileGame()?null:selected.uppercase,homeworkId:selected.homeworkId,soundEnabled:soundOn,reducedMotion:root.matchMedia('(prefers-reduced-motion: reduce)').matches,
     label:[names[kind],SC.modes[selected.mode].name,
@@ -84,6 +84,7 @@ function menuUpdate(){
     chess:'Välj ett drag genom att svara på dess uppgift. Sätt datorns kung schackmatt.',
     klossar:'Klicka på en fri kloss och dess matchande svar. Para ihop alla klossar för att tömma brädet.',
     trassel:'Dra linjer mellan uppgifter och svar som hör ihop. Linjer får inte korsa varandra eller väggar.',
+    glantan:'Bygg en glänta, värva hjältar och sätt belöningar. Rätt svar i rad betalar. Världen fortsätter medan du svarar.',
     studio:'Svara på uppgifter för att fylla på färg. Byt verktyg fritt och måla i din egen takt, utan poäng.'
   }[kind];
   $('pace').closest('.setup-field').hidden=kind==='studio';$('leaderboard-open').hidden=kind==='studio';
@@ -97,7 +98,7 @@ $('exercise-group').addEventListener('change',()=>{
   $('language').value=SC.modes[$('lesson').value].lang;menuUpdate();
 });
 const gameRadios=[...document.querySelectorAll('[name=game]')];
-const initialGame=gameRadios[Math.floor(Math.random()*gameRadios.length)];kind=initialGame.value;
+const initialGame=gameRadios.find(r=>r.value===homeworkQuery.get('game'))||gameRadios[Math.floor(Math.random()*gameRadios.length)];kind=initialGame.value;
 for(const radio of gameRadios){radio.checked=radio===initialGame;radio.addEventListener('change',()=>{kind=radio.value;menuUpdate();});}
 function record(detail){
   // A bounded diagnostic history, independent from the gameplay FIFO.
@@ -123,6 +124,12 @@ async function loadBest(){
   finally{if(game===currentGame){bestLoading=false;renderUi();}}
 }
 function onGameEvent(e){
+  if(kind==='glantan'&&e.type==='glantan-ready'){
+    const enabled=game.canAnswer();input.setEnabled(enabled);$('answer').value='';
+    if(enabled&&input.voice.enabled)startListening();
+    else if(enabled)$('answer').focus({preventScroll:true});
+    lastTargetKey=null;
+  }
   if(kind==='studio'&&['studio-question','studio-ready','studio-dialog','resume'].includes(e.type)){
     const enabled=game.canAnswer()&&!game.dialogOpen;input.setEnabled(enabled);$('answer').value='';if(enabled&&input.voice.enabled)startListening();lastTargetKey=null;return;
   }
@@ -132,7 +139,7 @@ function onGameEvent(e){
   if(isBoardGame()&&['reversi-ready','reversi-wait','chess-ready','chess-wait'].includes(e.type)){
     const enabled=game.canAnswer();input.setEnabled(enabled);$('answer').value='';if(enabled&&input.voice.enabled)startListening();
   }
-  const mapped={early:'camp-check',think:kind==='marshmallows'?'camp-check':'think',fire:'laser',impact:'crash',hit:kind==='city'?'explosion':kind==='food'?'serve':kind==='hive'?'honey':kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-gulp':kind==='marshmallows'?'camp-good':kind==='home'?'home-clean':isTileGame()?'honey':null,miss:kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-air':'miss','customer-left':'miss','plant-dead':'crash',need:null,impatient:'tick','klossar-display':null};
+  const mapped={'glantan-purchase':'honey','glantan-bell':'glantan-bell','glantan-ready':null,early:'camp-check',think:kind==='marshmallows'?'camp-check':'think',fire:'laser',impact:'crash',hit:kind==='city'?'explosion':kind==='food'?'serve':kind==='hive'?'honey':kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-gulp':kind==='marshmallows'?'camp-good':kind==='home'?'home-clean':kind==='glantan'?'tick':isTileGame()?'honey':null,miss:kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-air':'miss','customer-left':'miss','plant-dead':'crash',need:null,impatient:'tick','klossar-display':null};
   const sound=Object.hasOwn(mapped,e.type)?mapped[e.type]:e.type;
   if(soundOn&&sound&&!(e.type==='end'))sounds.play(sound,input.listening?.23:1);
   if(e.type==='rare-arrival')notice('✦ '+SC.rarePeople.find(r=>r.id===e.look.exotic).name);
@@ -146,24 +153,26 @@ function onGameEvent(e){
   if(e.type==='end'){
     highscores.finish(e.score);
     input.setEnabled(false);$('pause').disabled=true;$('end-overlay').hidden=false;$('pause-overlay').hidden=true;
-    $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Trädgården är klar.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!',eggs:'Skeppet är säkrat!',home:'Skönt att vara klar!',klossar:'Alla klossar är borta!',trassel:'Trasslet är löst!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'Alla plantor vissnade.',hive:'Honungen räckte inte.',eggs:'Rymdkrypen tog över.'}[kind]);
+    $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Trädgården är klar.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!',eggs:'Skeppet är säkrat!',home:'Skönt att vara klar!',klossar:'Alla klossar är borta!',trassel:'Trasslet är löst!',glantan:'Gläntan klingar igen!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'Alla plantor vissnade.',hive:'Honungen räckte inte.',eggs:'Rymdkrypen tog över.',glantan:'Klockborgen tystnade.'}[kind]);
     if(isBoardGame())$('result-title').textContent=(e.draw?(kind==='chess'?'Remi!':'Oavgjort!'):e.won?'Du vann!':'Datorn vann.')+' '+(kind==='chess'?SC.ChessScoring.resultText(e.resultScore):SC.formatGameScore(kind,e.score))+'–'+(kind==='chess'?SC.ChessScoring.resultText(e.botScore):SC.formatGameScore(kind,e.botScore))+(kind==='chess'?' · '+e.reason:'');
     $('result-game').textContent=names[kind];$('result-context').textContent=SC.modes[game.mode].name+' · '+{gentle:'Lätt',steady:'Medel',brave:'Svår'}[game.pace];
     $('chess-result-breakdown').hidden=kind!=='chess';$('chess-result-breakdown').textContent=kind==='chess'?SC.ChessScoring.summary(e.scoreParts):'';
     $('trassel-result-breakdown').hidden=kind!=='trassel';
     $('trassel-result-breakdown').textContent=kind==='trassel'?['Tid '+Math.round(e.scoreParts.time),'Utrymme '+Math.round(e.scoreParts.optimality),'Rätt svar '+Math.round(e.scoreParts.accuracy),'Ledtrådar −'+e.scoreParts.penalty].join(' · '):'';
+    $('glantan-result-breakdown').hidden=kind!=='glantan';$('glantan-same-map').hidden=kind!=='glantan';
+    if(kind==='glantan')$('glantan-result-breakdown').textContent=game.world.destroyed+' bon röjda · '+game.world.kills+' monster besegrade · '+(game.shots?Math.round(game.hits/game.shots*100):0)+' % rätt · '+SC.Glantan.clockText(game.clock);
     highscores.showEnd();
     if(soundOn&&!(kind!=='city'&&e.won))sounds.play(e.won?'win':'miss');
   }
   lastTargetKey=null;
 }
-async function start(){
+async function start({glantanSeed=null,fresh=false}={}){
   if(busy||!homeworkReady)return;const token=++lifecycle;busy=true;$('start').disabled=true;$('again').disabled=true;$('setup-error').textContent='';
   tileSpeech.stop();
   try{
     input.setEnabled(false);input.configure({...speechOptions(),...(isQuestionGame()?{turnBased:true}:{})});const preparation=!isTileGame()&&input.prepare();if(preparation)await preparation;if(token!==lifecycle)return;
     sounds.stopCampfire();sounds.stopDinosaurVoices?.();sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
-    const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});game.viewportKind=kind;lastOptions=options();$('arena').className='arena '+kind;$('arena').dataset.exercise=lastOptions.mode;$('play').dataset.game=kind;game.start({...lastOptions,...(kind==='trassel'?{shape:root.innerWidth<600&&root.innerHeight>root.innerWidth?'tall':root.innerHeight<550&&root.innerWidth>root.innerHeight?'wide':'hex'}:{})});if(kind!=='studio')highscores.begin({...scoreSelection(lastOptions),letterKeys:game.mode==='letters'?game.items.map(i=>i.answer):null});queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),discardUnmatched:entry=>!isQuestionGame()&&entry.source==='speech'&&SC.isChinese(game.mode),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
+    const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});game.viewportKind=kind;lastOptions=options();$('arena').className='arena '+kind;$('arena').dataset.exercise=lastOptions.mode;$('play').dataset.game=kind;game.start({...lastOptions,...(kind==='glantan'?{seed:glantanSeed,fresh}:{}),...(kind==='trassel'?{shape:root.innerWidth<600&&root.innerHeight>root.innerWidth?'tall':root.innerHeight<550&&root.innerWidth>root.innerHeight?'wide':'hex'}:{})});if(kind!=='studio')highscores.begin({...scoreSelection(lastOptions),letterKeys:game.mode==='letters'?game.items.map(i=>i.answer):null});queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),discardUnmatched:entry=>!isQuestionGame()&&entry.source==='speech'&&SC.isChinese(game.mode),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
     if(kind!=='studio')loadBest();$('game-title').textContent=names[kind];$('objective').closest('.hud-objective').hidden=['marshmallows','eggs','studio'].includes(kind);$('answer').placeholder=input.singleLetter()?'…':SC.modes[game.mode].placeholder.replace('…',' ↵');$('answer-hint').textContent=typingHint();$('keyboard').hidden=isTileGame()||game.mode!=='bopomofo';$('input-dock').hidden=isTileGame()||input.voice.enabled;document.body.classList.add('playing');document.body.classList.toggle('voice-play',input.voice.enabled);
     input.setEnabled(!isTileGame()&&(!isQuestionGame()||game.canAnswer()));if(input.enabled&&input.voice.enabled)startListening();
     playViewport.update();renderer.resize();navigation.enter();if(!isTileGame())input.focus();lastTargetKey=null;renderUi();
@@ -181,7 +190,7 @@ function showMenu(){lifecycle++;highscores.dismiss();sounds.stopCampfire();sound
 function confirmGameBack(){
   if($('leave-game').open)return;
   resumeAfterBack=game?.state==='playing';pause();
-  $('leave-game-message').textContent=kind==='studio'&&renderer?.dirty?'Bilden är inte inramad och försvinner om du går till menyn.':'Omgången avslutas om du lämnar spelet.';
+  $('leave-game-message').textContent=kind==='glantan'?'Gläntan sparas. Du kan fortsätta nästa gång.':kind==='studio'&&renderer?.dirty?'Bilden är inte inramad och försvinner om du går till menyn.':'Omgången avslutas om du lämnar spelet.';
   (document.fullscreenElement||document.body).append($('leave-game'));
   $('leave-game').showModal();$('leave-game-stay').focus();
 }
@@ -189,7 +198,7 @@ function stayInGame(){ $('leave-game').close();if(resumeAfterBack)resume(); }
 $('leave-game-stay').addEventListener('click',stayInGame);
 $('leave-game').addEventListener('cancel',e=>{e.preventDefault();stayInGame();});
 $('leave-game-confirm').addEventListener('click',()=>{$('leave-game').close();for(const dialog of document.querySelectorAll('dialog[open]'))dialog.close();menu();});
-$('start').addEventListener('click',start);$('again').addEventListener('click',()=>highscores.leave(start));$('pause').addEventListener('click',pause);$('resume').addEventListener('click',resume);$('pause-menu').addEventListener('click',()=>kind==='studio'&&renderer?.dirty?renderer.confirmLeave(menu):menu());$('end-menu').addEventListener('click',()=>highscores.leave(menu));
+$('start').addEventListener('click',start);$('again').addEventListener('click',()=>highscores.leave(()=>start({fresh:true}),{allowUnsaved:kind==='glantan'}));$('glantan-same-map').addEventListener('click',()=>highscores.leave(()=>start({glantanSeed:game.world.seed,fresh:true}),{allowUnsaved:true}));$('pause').addEventListener('click',pause);$('resume').addEventListener('click',resume);$('pause-menu').addEventListener('click',()=>kind==='studio'&&renderer?.dirty?renderer.confirmLeave(menu):menu());$('end-menu').addEventListener('click',()=>highscores.leave(menu,{allowUnsaved:kind==='glantan'}));
 root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){
   // Canvas labels are primary. Keep a compact alternative for assistive technology.
@@ -215,6 +224,7 @@ function renderUi(){
   else if(kind==='marshmallows'||kind==='eggs'){objective='';secondary='';value=0;}
   else if(isBoardGame()){objective=game.turns+' drag';secondary=kind==='chess'?(game.phase==='end'?game.reason:'Du spelar vit'):'Datorn: '+SC.formatGameScore(kind,game.botScore);value=0;}
   else if(isTileGame()){objective=game.hits+' / '+game.total+' par';secondary=SC.klossarClock(game.elapsed);value=game.hits/game.total*100;}
+  else if(kind==='glantan'){const w=game.world,G=SC.Glantan;objective=G.population(w)+' / '+G.capacity(w)+' invånare';secondary=w.lairs.filter(G.alive).length+' bon kvar · '+Math.ceil(G.castle(w).hp/G.castle(w).maxHp*100)+' % borg';value=G.castle(w).hp/G.castle(w).maxHp*100;}
   else if(kind==='home'){objective=Math.min(game.cleaned,game.total)+' / '+game.total;secondary='';value=Math.min(100,game.cleaned/game.total*100);}
   else if(kind==='paint'||kind==='dinosaur'){objective=game.passed+' / '+game.total;secondary='';value=game.passed/game.total*100;}
   else{const flowers=game.pots.filter(p=>p.bloom).length;objective=flowers+' / '+game.pots.length+' ✿';secondary='';value=game.pots.reduce((sum,p)=>sum+(p.dead?1:p.growth),0)/game.pots.length*100;}

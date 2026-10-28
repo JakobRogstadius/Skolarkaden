@@ -1,6 +1,6 @@
 # Skolarkaden
 
-Fjorton små lärspel för tangentbord, mikrofon eller klick. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
+Femton lärspel för tangentbord, mikrofon eller klick. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
 
 **Öppna `index.html` i Chrome.** Behåll `resources` bredvid HTML-filen. Ingen installation, byggprocess eller webbserver behövs. Om du laddar ned projektet som ZIP: packa upp hela filen först.
 
@@ -26,6 +26,35 @@ API:t använder Cloudflare Worker + D1. Installationssteg och underhåll finns i
 [cloudflare/README.md](cloudflare/README.md). IP-adresser sparas för framtida moderering
 men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 `resources/highscore-policy.js` och tillämpas både i spelet och i API:t.
+
+## Klockgläntan
+
+Ett strategispel i realtid med en liten glänta av mossa, koppar och klingande toner.
+Bygg på kartans rutnät, rekrytera självständiga väktare, spejare, örtvårdare och klangvävare,
+och sätt belöningar som lockar till tillfälliga expeditioner. Valda handlingar betalas med
+1–4 rätta svar i rad. Fel svar eller byte av handling nollställer betalningen, men byten
+ger inte en ny uppgift. En blockerad tomt behåller betalningen tills monstren är borta.
+
+Bostäder ger fyra platser vardera, högst 24 hjältar. Hjältar får erfarenhet från strid,
+läkning och upptäckter; fallna veteraner kan återkallas. Kunskapsträdet har permanenta vägval.
+Ett valfritt underverk eller en mästarförmåga kostar åtta svar och kan bara köpas en gång.
+Stormklockan läker, stärker modet och hejdar angripare; sex rätta svar laddar den, även
+över brutna följder. Monsterbon vaknar vid olika tider, förstärks och kan sprida högst två
+nya bon. Yttre bon har egna försvarare som vaknar vid anfall. Alla bon och monster måste
+bort; förstörs klockborgen är omgången förlorad.
+
+Mus och pekskärm: välj med klick/tryck, dra kartan, zooma med hjul, nypning eller knappar.
+Upptäckta områden fortsätter vara synliga. Paus stoppar världen. Omgång och aktuell betalning
+sparas i webbläsaren; välj samma övning och svårighet för att fortsätta. Efteråt kan du spela
+samma karta med en ny strategi eller skapa en ny karta. `?game=glantan` förväljer spelet.
+Om topplisteservern inte är tillgänglig kan du ändå spela igen eller lämna resultatet.
+
+Moduler och aktuell plan: [docs/glantan-plan.md](docs/glantan-plan.md).
+Designgranskning och mätningar: [docs/glantan-review.md](docs/glantan-review.md).
+Kör bara berörda tester med `node tests/glantan/run.cjs world orders adapter simulation`
+(utelämna domäner som inte berörs). `npm test` inkluderar hela spelets svit.
+Lokala webbläsarprov finns i `/audit-glantan.html` och `/audit-glantan-viewport.html` via
+utvecklingsservern; syntetiska resultat skickas aldrig till den riktiga topplistan.
 
 ## Trassel
 

@@ -6,7 +6,7 @@
 // Bump only the affected game's version when its scoring/rules change.
 // Home stays on v1 during its initial tuning, by the owner's decision.
 // Chess keeps v2 for the ranked-choice scoring change at the owner's request.
-const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1',reversi:'v1',chess:'v2',klossar:'v1',trassel:'v1'});
+const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1',reversi:'v1',chess:'v2',klossar:'v1',trassel:'v1',glantan:'v1'});
 const mathExercises=Object.freeze(['math-addition','math-diagrams','math-addition-subtraction','math-simple-equations','math-large-numbers','math-simple-multiplication','math-multiplication','math-multiplication-division','math-equations']);
 const languageExercises=Object.freeze([
   ...['swedish-opposites','swedish-synonyms','english-opposites','english-synonyms'].flatMap(id=>[id,...[2,3,4].map(level=>id+'-'+level)]),
@@ -81,7 +81,7 @@ root.SkolarkadenHighscorePolicy=Object.freeze({versions,mathExercises,languageEx
 // (also add-score-settings.sql if settings_json is absent);
 // new databases use schema.sql. No browser API key is used.
 const ALLOWED_ORIGIN = 'https://jakobrogstadius.github.io';
-const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home', 'reversi', 'chess', 'klossar', 'trassel']);
+const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home', 'reversi', 'chess', 'klossar', 'trassel', 'glantan']);
 const { mathExercises, languageExercises } = globalThis.SkolarkadenHighscorePolicy;
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',

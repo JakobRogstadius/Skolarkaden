@@ -5,6 +5,16 @@ The website remains on GitHub Pages. No API token belongs in the frontend.
 
 ## Update the existing installation
 
+### Klockgläntan
+
+Deploy the complete generated `worker.mjs` to **skolarkaden-api**, retaining the
+existing **DB** binding, to accept `v1:glantan` scores. No SQL migration is needed.
+GitHub Pages publication does not deploy this Worker. Gameplay, local run saves,
+same-map replay and new-map replay work without the score service. Until the Worker
+is updated the scoreboard reports that this game's leaderboard is not ready.
+Run `node tests/highscores.cjs` for actual SQL, all three difficulties and the
+new game's replay behavior when a score upload fails.
+
 ### Reversi
 
 Deploy the complete generated [worker.mjs](worker.mjs) to **skolarkaden-api**,

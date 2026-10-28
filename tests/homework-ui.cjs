@@ -27,7 +27,7 @@ const windowListeners=new Map(),history={state:null,replaceState(s){this.state=s
     if(file==='resources/app.js'){
       const SC=ctx.Starlight;
       SC.GameSounds=class{unlock(){}play(){}stopCampfire(){}campfire(){}close(){}};
-      for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home','Reversi','Chess','Klossar','Trassel','Studio']){
+      for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home','Reversi','Chess','Klossar','Trassel','Glantan','Studio']){
         const Game=SC[name+'Game'];SC[name+'Game']=class extends Game{constructor(options){super(options);currentGame=this;}};
         SC[name+'Renderer']=class{constructor(canvas,game){this.game=game;}resize(){this.game.resize?.(1000,700);}destroy(){}scoreEvent(){}};
       }
@@ -65,6 +65,18 @@ const windowListeners=new Map(),history={state:null,replaceState(s){this.state=s
   assert.match(trassel.fields['trassel-result-breakdown'].textContent,/Tid .*Utrymme .*Rätt svar .*Ledtrådar/);
   const trasselScore=trassel.game.score;trassel.click('again');await settle();await settle();assert.equal(trassel.posts[0].leaderboard_key,'v1:trassel:math-addition:gentle');assert.equal(trassel.posts[0].score,trasselScore);assert.equal(trassel.posts[0].settings.input_mode,'click');
   console.log('PASS Trassel app: click-only input, complete board, score breakdown, submission and replay');
+  const glantan=boot('?game=glantan');await settle();glantan.click('start');await settle();
+  assert.equal(glantan.fields['setup-error'].textContent,'');assert(glantan.fields.answer.disabled);
+  assert.equal(glantan.captures.at(-1).turnBased,true,'speech waits for a complete answer while simulation stays realtime');
+  const G=glantan.ctx.Starlight.Glantan;glantan.game.choose({type:'recruit',id:'warrior'});assert(!glantan.fields.answer.disabled);
+  for(let i=0;i<2;i++){glantan.fields.answer.value=glantan.game.targets[0].item.answer;glantan.fields['answer-form'].dispatchEvent(new Event('submit',{cancelable:true}));glantan.game.update(.1);}
+  assert.equal(G.population(glantan.game.world),4);assert(glantan.fields.answer.disabled);
+  glantan.game.choose({type:'research',id:'castle2'});glantan.click('pause');assert(glantan.fields.answer.disabled);glantan.click('resume');await settle();assert(!glantan.fields.answer.disabled);
+  const seed=glantan.game.world.seed;glantan.game.world.lairs.forEach(l=>{l.hp=0;});glantan.game.world.monsters=[];glantan.game.update(.1);await settle();
+  assert.equal(glantan.fields['result-title'].textContent,'Gläntan klingar igen!');assert(!glantan.fields['glantan-same-map'].hidden);
+  glantan.click('glantan-same-map');await settle();await settle();assert.equal(glantan.game.world.seed,seed);assert.equal(G.population(glantan.game.world),3);assert.equal(glantan.game.world.time,0);
+  assert.equal(glantan.posts[0].leaderboard_key,'v1:glantan:math-addition:gentle');
+  console.log('PASS Klockgläntan app: realtime intent input, typed purchases, pause/resume, result and same-map replay');
   const studio=boot();await settle();studio.radios.find(r=>r.value==='studio').dispatchEvent(new Event('change'));studio.click('start');await settle();
   assert.equal(studio.fields['setup-error'].textContent,'');assert.equal(studio.requests.length,0,'studio never reads scores');assert.equal(studio.selection,undefined,'studio never starts score recording');
   assert(studio.fields.answer.disabled);assert(studio.fields['leaderboard-open'].hidden);assert(studio.fields.pace.closest().hidden);

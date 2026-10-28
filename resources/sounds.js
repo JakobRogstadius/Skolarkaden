@@ -172,6 +172,7 @@
         else if(kind==='bee-flight'){tone(180,240,.14,0,.009,'triangle');}
         else if(kind==='nectar'){tone(940,1100,.07,0,.012,'sine');}
         else if(kind==='honey'){[660,880].forEach((n,i)=>tone(n,n,.11,i*.08,.019,'sine'));}
+        else if(kind==='glantan-bell'){[392,588,784].forEach((n,i)=>tone(n,n*.998,1.35-i*.15,i*.07,.025/(i+1),'sine'));}
         else if(kind==='hive-full'||kind==='rare-earned'){[523,784,1047,1319].forEach((n,i)=>tone(n,n,.17,i*.12,.024,'triangle'));}
         else if(kind==='rare-arrival'){[880,1109,1320].forEach((n,i)=>tone(n,n,.14,i*.13,.019,'sine'));}
         else if(kind==='season'){tone(440,660,.2,0,.018,'sine');tone(660,880,.2,.21,.018,'sine');}

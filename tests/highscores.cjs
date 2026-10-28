@@ -112,7 +112,7 @@ class Element extends EventTarget{
   const selection={kind:'city',mode:'swedish',pace:'gentle',input:'typing',lang:'sv-SE',label:'Meteorregn'};
   assert.equal(context.Starlight.highscoreBoardKey(selection),'v2:city');
   assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'eggs'}),'v2:eggs');
-  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,['home','reversi','klossar','trassel'].includes(game)?'v1':'v2');
+  for(const [game,version] of Object.entries(context.SkolarkadenHighscorePolicy.versions))assert.equal(version,['home','reversi','klossar','trassel','glantan'].includes(game)?'v1':'v2');
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v2:eggs:swedish:gentle'}))).status,201);
   assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:eggs:swedish:gentle'}))).status,400);
   assert.equal(context.Starlight.highscoreBoardKey({...selection,kind:'home'}),'v1:home');
@@ -173,6 +173,9 @@ class Element extends EventTarget{
   ui.begin(selection);ui.finish(1);await ui.open(selection,ui.result);const count=posts.length;ui.dismiss();assert.equal(posts.length,count,'closing without action never posts');
   ui.begin(selection);ui.finish(7);await ui.open(selection,ui.result);get('score-name').value='BOSSE';failOnce=true;continued=false;await ui.leave(()=>{continued=true;});assert.equal(continued,false);assert.equal(ui.result.saved,false);await ui.leave(()=>{continued=true;});assert(continued);assert.deepEqual(posts.at(-1),posts.at(-2));
   // A saved top-ten player occupies exactly one ranked row, even with duplicate names/scores.
+  ui.begin({...selection,kind:'glantan'});ui.finish(1234);await ui.open({...selection,kind:'glantan'},ui.result);failOnce=true;continued=false;
+  await ui.leave(()=>{continued=true;},{allowUnsaved:true});assert(continued,'new-game replay works while the separate score service is unavailable');assert.equal(ui.result.saved,false,'a failed upload is never reported as saved');
+  for(const pace of ['gentle','steady','brave'])assert.equal((await call('POST','/scores',payload({leaderboard_key:'v1:glantan:swedish:'+pace}))).status,201);
   boardData={scores:Array.from({length:10},(_,i)=>({player_name:'BOSSE',score:99,is_player:i===4})),rank:5,saved:true};
   await ui.open(selection,ui.result);assert.equal(get('end-scores-list').children.length,10);assert.equal(get('end-scores-list').children.filter(row=>row.className.includes('player-row')).length,1);
   const configured={...selection,kind:'home',mode:'letters',pace:'brave',input:'browser',lang:'sv-SE',spokenLanguage:'sv-SE',uppercase:true,letterKeys:['å','ä','ö'],soundEnabled:false,reducedMotion:true};
