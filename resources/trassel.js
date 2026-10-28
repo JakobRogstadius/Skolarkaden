@@ -31,17 +31,32 @@ class TrasselGame{
     });
   }
   *prepare(){
-    for(let attempt=0;;attempt++){
-      const candidate=attempt<16?E.construct(this.profile.radius,this.total,this.random,this.shape):E.fallback(this.profile.radius,this.total,this.shape);
+    let chosen,reserve,remaining=2000;
+    search:for(let attempt=0;attempt<12&&remaining>0;attempt++){
+      const candidate=E.construct(this.profile.radius,this.total,this.random,this.shape);
       if(!candidate){yield;continue;}
-      const tiles=this.tilesFor(candidate.paths),result=attempt<16?
-        yield* E.solve(candidate.board,tiles,[],{budget:{remaining:1600}}):
-        {status:'solved',paths:candidate.paths,cost:this.total*2};
-      if(result.status!=='solved'||result.cost>=candidate.board.cells.length){yield;continue;}
-      this.board=candidate.board;this.tiles=tiles;this.solution=result.paths;this.maxUnused=this.board.cells.length-result.cost;
-      this.adj=E.graph(this.board);this.tileById=new Map(tiles.map(t=>[t.id,t]));this.phase='ready';this.search=null;
-      this.message='Dra mellan uppgifter och svar som hör ihop.';this.revision++;this.refreshScore();this.emit('trassel-ready');return;
+      const witness=E.pathStats(candidate.board,candidate.paths);
+      if(witness.bendy===this.total&&witness.fill>=.85&&witness.detour>=this.total*2.5)reserve=candidate;
+      const tiles=this.tilesFor(candidate.paths);
+      for(let round=0;round<this.total*4+8&&remaining>0;round++){
+        const limit=Math.min(300,remaining),budget={remaining:limit},result=yield* E.solve(candidate.board,tiles,[],{budget});
+        remaining-=limit-budget.remaining;
+        if(result.status!=='solved')break;
+        if(E.quality(candidate.board,tiles,result,this.profile.radius).acceptable){chosen={candidate,tiles,result};break search;}
+        if(!E.blockShortcut(candidate,result.paths,this.random))break;
+        yield;
+      }
+      yield;
     }
+    if(!chosen){
+      const candidate=E.fallback(this.profile.radius,this.total,this.shape,this.random,reserve),tiles=this.tilesFor(candidate.paths);
+      const result=yield* E.solve(candidate.board,tiles);
+      chosen={candidate,tiles,result};
+    }
+    const {candidate,tiles,result}=chosen;
+    this.board=candidate.board;this.tiles=tiles;this.solution=result.paths;this.maxUnused=this.board.cells.length-result.cost;
+    this.adj=E.graph(this.board);this.tileById=new Map(tiles.map(t=>[t.id,t]));this.phase='ready';this.search=null;
+    this.message='Dra mellan uppgifter och svar som hör ihop.';this.revision++;this.refreshScore();this.emit('trassel-ready');
   }
   resize(width,height){Object.assign(this,{width,height});}
   getTargets(){return this.tiles;}

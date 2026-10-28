@@ -5,15 +5,10 @@ const element=(tag,cls,text)=>{const n=document.createElement(tag);n.className=c
 const svg=(tag,attrs={})=>{const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n;};
 class TrasselRenderer{
   constructor(canvas,game){
-    Object.assign(this,{canvas,game,zoom:1,pan:false,pointer:null,lastTime:performance.now(),lastRevision:-1,board:null,destroyed:false});
+    Object.assign(this,{canvas,game,pointer:null,lastTime:performance.now(),lastRevision:-1,board:null,destroyed:false});
     this.reduced=root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     this.host=element('section','trassel-scene');this.host.setAttribute('aria-label','Trassel');
     this.caption=element('div','trassel-caption');this.caption.append(element('span','trassel-exercise',SC.modes[game.mode].name));
-    this.tools=element('div','trassel-tools');
-    const control=(text,title,fn)=>{const b=element('button','',text);b.type='button';b.title=title;b.setAttribute('aria-label',title);b.addEventListener('click',fn);this.tools.append(b);return b;};
-    control('−','Zooma ut',()=>this.setZoom(this.zoom/1.35));control('Passa','Visa hela spelplanen',()=>this.setZoom(1));control('+','Zooma in',()=>this.setZoom(this.zoom*1.35));
-    this.panButton=control('↔','Flytta spelplanen',()=>{this.pan=!this.pan;this.game.cancel();this.lastRevision=-1;this.draw();});
-    this.caption.append(this.tools);
     this.preview=element('div','trassel-preview','Koppla ihop rött och blått. Tomma rutor får vara kvar.');
     if(game.pairs.some(p=>p.problem.diagram)){this.preview.classList.add('with-diagrams');this.preview.textContent='Tryck på en uppgift för att se den större.';}
     this.viewport=element('div','trassel-viewport');this.surface=element('div','trassel-board');this.surface.tabIndex=0;
@@ -39,7 +34,6 @@ class TrasselRenderer{
     document.fonts?.ready.then(()=>{if(!this.destroyed)this.layout();});this.layout();
   }
   advance(now){const dt=Math.max(0,(now-this.lastTime)/1000);this.lastTime=now;this.game.update(dt);}
-  setZoom(zoom){this.game.cancel();this.zoom=Math.max(1,Math.min(3,zoom));this.layout();}
   layout(){
     const board=this.game.board;if(!board)return;
     const width=this.viewport.clientWidth,height=this.viewport.clientHeight;if(!width||!height)return;
@@ -48,7 +42,7 @@ class TrasselRenderer{
     const rx=rotate?1:Math.sqrt(3)/2,ry=rotate?Math.sqrt(3)/2:1;
     const minX=Math.min(...this.units.map(c=>c.x))-rx-.22,minY=Math.min(...this.units.map(c=>c.y))-ry-.22;
     const spanX=Math.max(...this.units.map(c=>c.x))+rx+.22-minX,spanY=Math.max(...this.units.map(c=>c.y))+ry+.22-minY;
-    this.scale=Math.min((width-12)/spanX,(height-12)/spanY,64)*this.zoom;
+    this.scale=Math.min((width-12)/spanX,(height-12)/spanY,64);
     this.points=this.units.map(c=>({x:(c.x-minX)*this.scale,y:(c.y-minY)*this.scale}));
     const w=spanX*this.scale,h=spanY*this.scale;this.surface.style.width=w+'px';this.surface.style.height=h+'px';
     this.svg.setAttribute('viewBox',`0 0 ${w} ${h}`);this.svg.setAttribute('width',w);this.svg.setAttribute('height',h);
@@ -92,7 +86,7 @@ class TrasselRenderer{
     if(tile.item.diagram){const c=document.createElement('canvas');c.width=224;c.height=160;const ctx=c.getContext('2d');ctx.scale(2,2);SC.drawMathDiagram(ctx,tile.item.diagram,{x:0,y:0,w:112,h:80},{textColor:'#742f36'});this.preview.replaceChildren(c);}
   }
   down(e){
-    if(!this.game.ready()||this.pan||e.button!==0)return;
+    if(!this.game.ready()||e.button!==0)return;
     if(this.pointer!==null){this.cancel();return;}
     const p=this.position(e),id=this.locate(p.x,p.y);if(id===null)return;
     this.advance(performance.now());this.keyboard=false;this.game.cut=null;this.game.begin(id);this.focusTile(id);
@@ -146,14 +140,13 @@ class TrasselRenderer{
         node.setAttribute('d',this.pathData(line.path));node.style.stroke=line.gray?'#8d9497':line.color;node.classList.toggle('is-gray',!!line.gray);
       }
       for(const [key,node] of this.pathNodes)if(!drawn.some(l=>l.key===key)){node.remove();this.pathNodes.delete(key);}
-      for(const [id,node] of this.faceNodes){const line=g.lineAt(id);node.disabled=!g.ready()||this.pan;const cap=this.capNodes.get(id);cap.style.stroke=line?(line.gray?'#8d9497':line.color):'';cap.style.strokeWidth=line?2:'';}
+      for(const [id,node] of this.faceNodes){const line=g.lineAt(id);node.disabled=!g.ready();const cap=this.capNodes.get(id);cap.style.stroke=line?(line.gray?'#8d9497':line.color):'';cap.style.strokeWidth=line?2:'';}
       this.message.textContent=g.message;
       this.hintButton.disabled=!g.ready()||!!g.active||!g.lines.length||g.lastHintRevision===g.boardRevision;
       this.scissors.hidden=!g.cut||!g.ready();
       if(g.cut){const p=this.points[g.cut.tile];Object.assign(this.scissors.style,{left:p.x+'px',top:p.y+'px'});}
       this.lastRevision=g.revision;this.lastState=g.state;this.lastPhase=g.phase;
     }
-    this.panButton.setAttribute('aria-pressed',String(this.pan));this.surface.classList.toggle('is-panning',this.pan);
     this.host.classList.toggle('is-paused',g.state==='paused');
     this.cover.hidden=g.phase==='ready';this.cover.textContent=g.phase==='preparing'?'Lägger ut trasslet…':'Kontrollerar linjerna…';
     this.ghosts.replaceChildren();

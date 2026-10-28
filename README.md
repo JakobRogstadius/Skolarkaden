@@ -39,7 +39,7 @@ pågående linje. En färdig linje kan ändras från valfri ände: följ den bak
 Den motsatta änden ligger kvar. Släpper du ändringen utan ett matchande svar dras resten av linjen tillbaka.
 Ett tryck på en linje visar saxen; ett tryck på saxen klipper och låter båda delarna dra sig mot ändarna.
 Linjer får färg i ordningen de läggs, ur Målarateljéns palett. Ändringar behåller linjens ursprungliga färg och ordning.
-På telefoner blir brädet högre i stående läge och bredare i liggande läge, med samma antal rutor och par. En påbörjad bana roteras vid behov när skärmen vrids. Zoomknapparna och flyttläget ↔ hjälper på små skärmar. Tangentbord: välj en uppgift med Enter, gå med Q W E A S D,
+På telefoner blir brädet högre i stående läge och bredare i liggande läge, med samma antal rutor och par. En påbörjad bana roteras vid behov när skärmen vrids. Hela brädet anpassas automatiskt till skärmen. Tryck på en uppgift för att se den större. Tangentbord: välj en uppgift med Enter, gå med Q W E A S D,
 avsluta med Enter. Paus döljer spelplanen och stoppar tiden.
 
 **Ledtråd** kontrollerar om färdiga linjer kan ingå tillsammans i någon fullständig lösning.
@@ -59,12 +59,27 @@ Upprepade återanslutningar kan inte förbättra svarsprecisionen. Slutdialogen 
 Poängen under spel är en preliminär andel baserad på antalet färdiga par. Tidsreferenserna behöver kalibreras med speldata
 för att bedöma hur nära svårighetsnivåernas medelpoäng ligger varandra.
 
-Bräden byggs från fullständiga vägar, med väggar som bevarar dessa. En separat exakt sökning bevisar
-minsta sammanlagda väglängden före start. Sökningen delar varje rutkonflikt mellan två vägar i två möjligheter
-och använder kortaste vägar samt minsta kostnad för tillåtna parningar som undre gräns.
-Den första konfliktfria lösningen i kostnadsordning är optimal. Sökningarna fördelas över bildrutor;
-förberedelse och ledtrådskontroll räknas inte som speltid, och brädet döljs under kontrollen.
-Efter 16 misslyckade genereringsförsök används ett enkelt bräde vars optimum följer direkt av intilliggande par.
+Bräden byggs genom att växa och flytta ändarna på fullständiga, slingrande vägar. Väggar stänger
+först genvägar mellan olika delar av samma väg. Den exakta lösaren bedömer därefter de verkliga
+uppgifterna och svaren, även när likadana svar är utbytbara. För enkla lösningar försvåras genom
+att stänga fler genvägar, utan att blockera de ursprungliga fullständiga vägarna.
+
+En godkänd optimal lösning använder minst 65 / 70 / 75 % av rutorna på lätt / medel / svår nivå.
+Minst tre fjärdedelar av linjerna har två eller fler svängar och inga anslutningar är kortare än fyra rutor.
+Även utan andra linjer behöver minst hälften av uppgifterna två svängar för att nå något matchande svar.
+Dessutom måste linjerna konkurrera om utrymme: det gemensamma optimumet är minst 1 / 2 / 3 rutor
+längre än den bästa parningen av oberoende kortaste vägar. Omvägarna jämfört med fria hexavstånd
+är sammanlagt minst 6 / 12 / 20 steg. Frivilliga sicksackvägar kan alltså inte kvalificera ett enkelt bräde.
+
+Sökningen delar varje rutkonflikt mellan två vägar i två möjligheter och använder kortaste vägar samt
+minsta kostnad för tillåtna parningar som undre gräns. Den första konfliktfria lösningen i kostnadsordning
+är optimal; mellan lika kostnader prioriteras färre konflikter. Oförändrade delsökningar återanvänds.
+Sökningarna fördelas över bildrutor; förberedelse och ledtrådskontroll räknas inte som speltid,
+och brädet döljs under kontrollen. Genereringen begränsas till 12 kandidater och 2 000 söknoder.
+Om gränsen nås behålls en slingrande kandidat med minst två svängar på varje linje; om ingen sådan
+finns används ett av flera förkontrollerade reservbräden. Extra väggar gör dess nät till ett träd: varje kant måste användas om och endast om den
+avskiljer ett udda antal ändpunkter. Därmed är hela lösningen och optimumet entydiga även för identiska svar.
+Reservbräden använder minst 85 % av rutorna; de ersätter aldrig en svår sökning med intilliggande par.
 
 Riktad kontroll: `node tests/trassel.cjs`, `node tests/tile-scores.cjs` och `node tests/homework-ui.cjs`.
 **Driftsättning:** publicera den uppdaterade `cloudflare/worker.mjs` för att API:t ska ta emot Trassels `v1`-poäng och klickläge.

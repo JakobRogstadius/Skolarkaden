@@ -4,11 +4,10 @@
 body.playing .arena.trassel{height:clamp(540px,calc(100dvh - 86px),1040px);background:radial-gradient(ellipse at 50% 40%,#315d58,#173b3b 85%);border-color:#628b78}
 .arena.trassel>canvas{display:none}.arena.trassel .hud{z-index:2;background:linear-gradient(#173b3bf2,#173b3bcc,transparent)}.arena.trassel .overlay{z-index:6}.arena.trassel #best{display:block}
 .trassel-scene{position:absolute;inset:102px 12px 10px;display:flex;flex-direction:column;gap:7px;min-height:0}
-.trassel-caption{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 8px}.trassel-exercise{font:20px Georgia,serif;color:#eee1bc}
-.trassel-tools{display:flex;gap:4px;flex-shrink:0}.trassel-tools button{font-size:14px;padding:5px 10px;background:#214743;border-color:#65847b;border-radius:7px}.trassel-tools [aria-pressed=true]{background:#eee1bc;color:#214743}
+.trassel-caption{display:flex;align-items:center;justify-content:center;gap:10px;padding:0 8px}.trassel-exercise{font:20px Georgia,serif;color:#eee1bc}
 .trassel-preview{height:33px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#efe6cf;border-radius:8px;font:700 16px KlossarSans,Arial,sans-serif;text-align:center;color:#59675f;padding:3px 10px;overflow:hidden}.trassel-preview canvas{width:112px!important;height:32px!important;object-fit:contain}
 .trassel-viewport{position:relative;flex:1;min-height:0;overflow:auto;border:1px solid #cbe7c22a;border-radius:14px;background:radial-gradient(ellipse,#ffffff06,transparent);overscroll-behavior:contain;scrollbar-width:thin}
-.trassel-board{position:relative;flex:none;margin:6px auto;touch-action:none;user-select:none;-webkit-user-select:none}.trassel-board.is-panning{touch-action:pan-x pan-y;cursor:grab}
+.trassel-board{position:relative;flex:none;margin:6px auto;touch-action:none;user-select:none;-webkit-user-select:none}
 .trassel-board>svg{position:absolute;inset:0;overflow:visible;pointer-events:none}.trassel-hex{fill:#e7ddc3;stroke:#fcf3df;stroke-width:1}.trassel-hex.is-endpoint{fill:#fff6dc}
 .trassel-wall{stroke:#183e3a;stroke-width:calc(var(--hex-size)*.13);stroke-linecap:round}
 .trassel-route{fill:none;stroke-width:calc(var(--hex-size)*.18);stroke-linecap:round;stroke-linejoin:round;transition:stroke .65s;pointer-events:none}.trassel-route.is-gray{stroke-dasharray:calc(var(--hex-size)*.16) calc(var(--hex-size)*.1)}
@@ -17,11 +16,10 @@ body.playing .arena.trassel{height:clamp(540px,calc(100dvh - 86px),1040px);backg
 .trassel-scissors{position:absolute;transform:translate(-50%,-50%);width:40px;height:40px;padding:0;border-radius:50%;font-size:27px;background:#fff5dd;color:#263e3a;border:2px solid #315a50;box-shadow:0 2px 8px #0006;z-index:3}
 .trassel-footer{display:flex;align-items:center;justify-content:space-between;gap:10px}.trassel-message{margin:0;color:#dae8d9;font-size:13px;line-height:1.3}.trassel-hint{flex-shrink:0;font-size:13px;padding:8px 12px;background:#214743;color:#eee1bc;border-color:#65847b}.trassel-instructions{margin:0;color:#aac7bb;text-align:center;font-size:12px;line-height:1.3}
 .trassel-cover{position:absolute;inset:0;display:grid;place-items:center;background:#214743;color:#eee1bc;font:22px Georgia,serif;z-index:4}.trassel-scene.is-paused .trassel-board,.trassel-scene.is-paused .trassel-preview{visibility:hidden}
-.trassel-board.is-panning .trassel-item{pointer-events:none}
 .trassel-exercise{font-family:Georgia,KlossarSerif,'Noto Serif CJK TC',serif}
 .trassel-preview.with-diagrams{height:88px}.trassel-preview.with-diagrams canvas{width:112px!important;height:80px!important}
 [data-game=trassel] .end-scoreboard{--board-accent:#e8d5a3;--board-bg:#183f39;--board-panel:#315c4b}
-@media(max-width:599px){.trassel-scene{inset:92px 6px 8px;gap:5px}.trassel-caption{padding:0 2px;gap:6px}.trassel-exercise{font-size:16px}.trassel-tools button{padding:5px 8px;font-size:12px}.trassel-preview{font-size:14px;height:30px}.trassel-message{font-size:12px}.trassel-hint{font-size:12px;padding:7px 8px}.trassel-instructions{font-size:10px}.arena.trassel .hud-objective{min-width:75px}}
+@media(max-width:599px){.trassel-scene{inset:92px 6px 8px;gap:5px}.trassel-caption{padding:0 2px;gap:6px}.trassel-exercise{font-size:16px}.trassel-preview{font-size:14px;height:30px}.trassel-message{font-size:12px}.trassel-hint{font-size:12px;padding:7px 8px}.trassel-instructions{font-size:10px}.arena.trassel .hud-objective{min-width:75px}}
 
 @media(max-height:550px) and (orientation:landscape){
  .trassel-scene{inset:72px 8px 6px;display:grid;grid-template-columns:minmax(0,1fr) 190px;grid-template-rows:auto auto minmax(0,1fr);gap:6px 12px}

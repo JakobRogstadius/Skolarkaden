@@ -33,6 +33,20 @@ for(let seed=1;seed<=150;seed++){
 }
 console.log('PASS exact optimum and impossible boards against exhaustive enumeration');
 
+// The forest shortcut must agree with enumeration for both valid pairings and
+// bottlenecks where two otherwise reachable connections cannot coexist.
+for(let seed=1;seed<=80;seed++){
+  const random=rng(seed),board=E.hex(1),adj=E.graph(board),parent=board.cells.map(c=>c.id),find=a=>parent[a]===a?a:find(parent[a]);
+  const edges=adj.flatMap((ns,a)=>ns.filter(b=>a<b).map(b=>[a,b])).map(pair=>({pair,r:random()})).sort((a,b)=>a.r-b.r),open=new Set();
+  for(const {pair:[a,b]} of edges)if(find(a)!==find(b)&&random()<.9){parent[find(a)]=find(b);open.add(E.edge(a,b));}
+  board.walls=edges.map(({pair:[a,b]})=>E.edge(a,b)).filter(e=>!open.has(e));
+  const ids=board.cells.map(c=>({id:c.id,r:random()})).sort((a,b)=>a.r-b.r).slice(0,4).map(c=>c.id),tiles=ids.map((id,i)=>({id,side:i%2?'answer':'problem',key:seed%2?0:i>>1}));
+  const expected=brute(board,tiles),result=done(E.solve(board,tiles));
+  assert.equal(result.status,Number.isFinite(expected)?'solved':'impossible');
+  if(Number.isFinite(expected)){assert.equal(result.cost,expected);assert.equal(done(E.solve(board,tiles,[{path:result.paths[0]}])).cost,expected);}
+}
+console.log('PASS forest solvability and optimum against exhaustive enumeration');
+
 // A and B are individually viable but mutually incompatible. C is newer than
 // both, is innocent, and must be restored after the older conflict is found.
 const board=E.hex(3);board.walls=['31:35','26:31','13:19','13:20'];
@@ -84,8 +98,27 @@ for(const pace of ['gentle','steady','brave']){
   assert.equal(SC.trasselScore({...base,mistakes:p.pairs}).accuracy,SC.trasselScore(base).accuracy/2);
   assert.equal(SC.trasselScore({...base,hints:1}).total,p.max*.95);
 }
-for(const shape of ['tall','wide'])for(const pace of ['gentle','steady','brave']){
+for(const shape of ['hex','tall','wide'])for(const pace of ['gentle','steady','brave']){
   const {g}=setup({shape,pace});assert.equal(g.board.cells.length,{gentle:37,steady:61,brave:91}[pace]);assert.equal(done(E.solve(g.board,g.tiles,g.solution.map(path=>({path})))).status,'solved');
-  const fallback=E.fallback(g.profile.radius,g.total,shape),tiles=g.tilesFor(fallback.paths);assert.equal(done(E.solve(fallback.board,tiles)).cost,g.total*2);
+  for(let variant=0;variant<4;variant++){
+    const fallback=E.fallback(g.profile.radius,g.total,shape,()=>variant/4),tiles=g.tilesFor(fallback.paths).map(t=>({...t,key:0}));
+    const result=done(E.solve(fallback.board,tiles)),cost=fallback.paths.reduce((n,p)=>n+p.length,0),stats=E.pathStats(fallback.board,result.paths);
+    assert.equal(result.status,'solved');assert.equal(result.cost,cost,'tree routes remain optimal with interchangeable answers');
+    assert.equal(stats.bendy,g.total,'fallback never substitutes straight or adjacent pairs');assert(stats.fill>=.85&&stats.fill<1);assert(stats.minLength>=5);
+  }
 }
+// Difficulty is measured on optimal routes with the actual answer keys.
+// Cover all board shapes and both distinct and completely interchangeable answers.
+for(const shape of ['hex','tall','wide'])for(const pace of ['gentle','steady','brave'])for(const duplicate of [false,true])for(const seed of [2,17,39]){
+  const {g}=setup({shape,pace,...(duplicate?{mode:'homework',items:[{label:'A',answer:'a'}]}:{mode:'letters'})},seed),stats=E.pathStats(g.board,g.solution);
+  assert(stats.fill>={gentle:.65,steady:.7,brave:.75}[pace]);assert(stats.fill<1);
+  assert(stats.bendy>=Math.ceil(g.total*.75));assert(stats.detour>=g.total*g.profile.radius/2);assert(stats.minLength>=4);
+}
+// Optional bends in a witness must not masquerade as compulsory turns.
+{
+  const board=E.hex(1),path=[0,1,4,6,5,2],tiles=[{id:0,side:'problem',key:0},{id:2,side:'answer',key:0}];
+  const quality=E.quality(board,tiles,{paths:[path],cost:path.length,lowerBound:2},3);
+  assert.equal(quality.forcedBendy,0);assert.equal(quality.acceptable,false);
+}
+console.log('PASS winding optimal layouts, compulsory-turn check and nontrivial fallbacks for every size and shape');
 console.log('PASS all exercise families, three sizes, release/cut/reroute, walls, wrong answers, pause, completion and scoring');
