@@ -347,5 +347,5 @@ class KlossarGame{
     if(this.feedback){this.feedback.left-=dt;if(this.feedback.left<=0){this.feedback=null;this.selected=[];this.revision++;}}
   }
 }
-Object.assign(SC,{KlossarGame,klossarLayouts:layouts,klossarPairCounts:pairCounts,klossarLayout:layoutSlots,klossarSupportedPositions:supportedPositions,klossarRemovalOrder:removalOrder,klossarIsFree:isFree,klossarMatches:matches,klossarScore:score});
+Object.assign(SC,{KlossarGame,makeMatchingPairs:makePairs,klossarLayouts:layouts,klossarPairCounts:pairCounts,klossarLayout:layoutSlots,klossarSupportedPositions:supportedPositions,klossarRemovalOrder:removalOrder,klossarIsFree:isFree,klossarMatches:matches,klossarScore:score});
 })(globalThis);

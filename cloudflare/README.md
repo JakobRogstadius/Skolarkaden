@@ -359,3 +359,10 @@ needed when the artwork tables already exist.
 
 Run `node cloudflare/build.cjs`, `node tests/artworks.cjs` and `node tests/studio.cjs`
 after changes; `npm test` includes these checks.
+
+## Trassel
+
+Deploy the generated `worker.mjs` before publishing the Trassel frontend. It adds the
+`trassel` game at score version `v1`, accepts its click input settings, and caps scores
+at 20,000. Existing games retain their versions; no database migration is needed.
+Run `node cloudflare/build.cjs` and `node tests/tile-scores.cjs` after changes.
