@@ -141,40 +141,6 @@ function* hint(board,tiles,lines,{budget={remaining:25000}}={}){
   }
   return {status:'impossible'};
 }
-const shuffle=(values,random)=>values.map(v=>({v,r:random()})).sort((a,b)=>a.r-b.r).map(x=>x.v);
-function construct(radius,count,random=Math.random,shape='hex'){
- const board=makeBoard(radius,shape),adj=graph(board),occupied=new Set(),paths=[];
- // Start small, then grow and exchange path ends while preserving disjointness.
- for(let i=0;i<count;i++){
-  const edges=shuffle(board.cells.map(c=>c.id).filter(id=>!occupied.has(id)),random);
-  const a=edges.find(id=>adj[id].some(v=>!occupied.has(v)));if(a===undefined)return null;
-  const b=shuffle(adj[a].filter(v=>!occupied.has(v)),random)[0];paths.push([a,b]);occupied.add(a);occupied.add(b);
- }
- const target=Math.round(board.cells.length*.88),minLength=5,maxLength=Math.ceil(board.cells.length/count*1.7);
- for(let step=0;step<1500;step++){
-  const i=Math.floor(random()*count),p=paths[i];if(random()<.5)p.reverse();
-  const ns=shuffle(adj[p.at(-1)],random);
-  for(const v of ns){
-   const own=p.indexOf(v);
-   if(own>=0){if(own<p.length-2&&random()<.25){paths[i]=p.slice(0,own+1).concat(p.slice(own+1).reverse());break;}continue;}
-   if(p.length>=maxLength)continue;
-   if(!occupied.has(v)){
-    if(occupied.size<target){p.push(v);occupied.add(v);break;}
-    if(p.length>minLength&&random()<.2){occupied.delete(p.shift());p.push(v);occupied.add(v);break;}
-    continue;
-   }
-   const j=paths.findIndex((q,k)=>k!==i&&(q[0]===v||q.at(-1)===v));
-   if(j>=0&&paths[j].length>minLength&&(p.length<minLength||random()<.25)){
-    const q=paths[j];if(q[0]===v)q.shift();else q.pop();p.push(v);break;
-   }
-  }
- }
- if(paths.some(p=>p.length<minLength))return null;
- const protectedEdges=new Set(paths.flatMap(p=>p.slice(1).map((b,i)=>edge(p[i],b))));
- const owner=new Map(paths.flatMap((p,i)=>p.map(v=>[v,i])));
- board.walls=adj.flatMap((ns,a)=>ns.filter(b=>a<b&&owner.has(a)&&owner.get(a)===owner.get(b)&&!protectedEdges.has(edge(a,b))).map(b=>edge(a,b)));
- return {board,paths};
-}
 function pathStats(board,paths){
   const turns=paths.map(p=>p.slice(2).filter((id,i)=>{
     const a=board.cells[p[i]],b=board.cells[p[i+1]],c=board.cells[id];return b.q-a.q!==c.q-b.q||b.r-a.r!==c.r-b.r;
@@ -184,50 +150,16 @@ function pathStats(board,paths){
   },0);
   return {fill:cost/board.cells.length,bendy:turns.filter(n=>n>=2).length,turns:turns.reduce((a,b)=>a+b,0),detour,minLength:Math.min(...paths.map(p=>p.length))};
 }
-function quality(board,tiles,result,radius){
-  const adj=graph(board),ends=new Set(tiles.map(t=>t.id)),sources=tiles.filter(t=>t.side==='problem');
-  const directed=adj.map((ns,a)=>ns.map(b=>({id:b,dir:dirs.findIndex(([q,r])=>board.cells[b].q-board.cells[a].q===q&&board.cells[b].r-board.cells[a].r===r)})));
-  // 0–1 shortest paths count the fewest turns to ANY matching answer, even
-  // without competing routes. Optional zigzags cannot pass this lower bound.
-  let forcedBendy=0;
-  for(const source of sources){
-    const distance=new Int16Array(adj.length*6).fill(999),queue=[];let head=0,tail=0;
-    for(let d=0;d<6;d++){const state=source.id*6+d;distance[state]=0;queue[tail++]=state;}
-    while(head<tail){
-      const state=queue[head++],a=Math.floor(state/6);if(a!==source.id&&ends.has(a))continue;
-      for(const {id,dir} of directed[a]){
-        const next=id*6+dir,turn=+(state%6!==dir),cost=distance[state]+turn;
-        if(cost>=distance[next])continue;distance[next]=cost;
-        if(turn)queue[tail++]=next;else queue[--head]=next;
-      }
-    }
-    const minimum=Math.min(...tiles.filter(t=>matches(source,t)).flatMap(t=>Array.from(distance.slice(t.id*6,t.id*6+6))));
-    if(minimum>=2)forcedBendy++;
-  }
-  const stats={...pathStats(board,result.paths),forcedBendy,interaction:result.cost-result.lowerBound},n=sources.length;
-  return {...stats,acceptable:stats.fill>={3:.65,4:.7,5:.75}[radius]&&stats.bendy>=Math.ceil(n*.75)&&stats.detour>=n*(radius/2)&&stats.minLength>=4&&forcedBendy>=Math.ceil(n*.5)&&stats.interaction>=radius-2};
+// Rigid symmetries preserve every route and its certified optimum. Tall/wide
+// boards only use half-turns, keeping their aspect ratio suited to the screen.
+function layoutBoard(radius,shape,random=Math.random){
+  const board=makeBoard(radius,shape),mirror=random()<.5,turns=shape==='hex'?Math.floor(random()*6):Math.floor(random()*2)*3;
+  board.cells=board.cells.map(c=>{
+    let {q,r}=c;if(mirror)q=-q-r;
+    for(let i=0;i<turns;i++)[q,r]=[-r,q+r];
+    return {...c,q,r};
+  });
+  return board;
 }
-function blockShortcut(candidate,paths,random){
-  const protectedEdges=new Set(candidate.paths.flatMap(p=>p.slice(1).map((b,i)=>edge(p[i],b))));
-  const choices=shuffle(paths,random).sort((a,b)=>a.length-b.length).map(p=>p.slice(1).map((b,i)=>edge(p[i],b)).filter(e=>!protectedEdges.has(e))).filter(es=>es.length);
-  if(!choices.length)return false;
-  const edges=choices[0];candidate.board.walls.push(edges[Math.floor(random()*edges.length)]);return true;
-}
-// A connected tree preserves winding witness routes and has a unique complete
-// routing (the parity rule above). It is a nontrivial, bounded fallback even
-// for a homework set where every answer is identical.
-function fallback(radius,count,shape='hex',random=Math.random,reserve=null){
-  const seeds={hex:{3:[1,2,3,4],4:[1,2,3,4],5:[1,2,3,4]},tall:{3:[1,2,3,4],4:[1,2,3,4],5:[1,2,6,7]},wide:{3:[1,2,3,4],4:[1,2,3,4],5:[1,3,5,6]}};
-  const choices=seeds[shape][radius];let seed=choices[Math.floor(random()*choices.length)];
-  const seeded=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
-  const candidate=reserve||construct(radius,count,seeded,shape),{board,paths}=candidate;
-  const parent=board.cells.map(c=>c.id),find=a=>{while(parent[a]!==a)a=parent[a];return a;},open=new Set();
-  const join=(a,b)=>{const x=find(a),y=find(b);if(x===y)return;parent[x]=y;open.add(edge(a,b));};
-  for(const p of paths)for(let i=1;i<p.length;i++)join(p[i-1],p[i]);
-  board.walls=[];const edges=graph(board).flatMap((ns,a)=>ns.filter(b=>a<b).map(b=>[a,b]));
-  for(const [a,b] of shuffle(edges,random))join(a,b);
-  board.walls=edges.filter(([a,b])=>!open.has(edge(a,b))).map(([a,b])=>edge(a,b));
-  return candidate;
-}
-SC.TrasselEngine={hex,makeBoard,graph,edge,matches,solve,hint,construct,fallback,pathStats,quality,blockShortcut};
+SC.TrasselEngine={hex,makeBoard,layoutBoard,graph,edge,matches,solve,hint,pathStats};
 })(globalThis);

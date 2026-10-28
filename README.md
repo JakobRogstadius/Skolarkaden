@@ -59,29 +59,38 @@ Upprepade återanslutningar kan inte förbättra svarsprecisionen. Slutdialogen 
 Poängen under spel är en preliminär andel baserad på antalet färdiga par. Tidsreferenserna behöver kalibreras med speldata
 för att bedöma hur nära svårighetsnivåernas medelpoäng ligger varandra.
 
-Bräden byggs genom att växa och flytta ändarna på fullständiga, slingrande vägar. Väggar stänger
-först genvägar mellan olika delar av samma väg. Den exakta lösaren bedömer därefter de verkliga
-uppgifterna och svaren, även när likadana svar är utbytbara. För enkla lösningar försvåras genom
-att stänga fler genvägar, utan att blockera de ursprungliga fullständiga vägarna.
+Brädena är öppna, utan väggar. Svårigheten kommer från placering och konkurrens om utrymme.
+Minst 80 % av alla ändpunkter och minst 75 % av de blå svaren ligger i brädets inre,
+med sex grannrutor. När övningen har tillräckligt många olika svar väljs olika svar:
+varje matchande par har ett avstånd på minst tre hexsteg, och **båda ändarna har ett närmare
+felaktigt alternativ av motsatt textfärg**. Att koppla närmaste grannar löser alltså inte brädet.
 
-En godkänd optimal lösning använder minst 65 / 70 / 75 % av rutorna på lätt / medel / svår nivå.
-Minst tre fjärdedelar av linjerna har två eller fler svängar och inga anslutningar är kortare än fyra rutor.
-Även utan andra linjer behöver minst hälften av uppgifterna två svängar för att nå något matchande svar.
-Dessutom måste linjerna konkurrera om utrymme: det gemensamma optimumet är minst 1 / 2 / 3 rutor
-längre än den bästa parningen av oberoende kortaste vägar. Omvägarna jämfört med fria hexavstånd
-är sammanlagt minst 6 / 12 / 20 steg. Frivilliga sicksackvägar kan alltså inte kvalificera ett enkelt bräde.
+Den bevisat kortaste gemensamma lösningen måste vara minst 4 / 7 / 10 rutor längre än
+den bästa parningen av oberoende kortaste vägar på lätt / medel / svår nivå.
+Minst 2 / 2 / 3 av dess linjer går mer än ett halvt varv (198 grader) runt en annan ändpunkt.
+Kontrollen görs på den optimala lösningen, inte bara på frivilliga slingor i en genererad skiss.
+Det gemensamma längdkravet bevisar att alla parens egna kortaste vägar inte kan användas samtidigt;
+vinkelkravet väljer lösningar med nästlade linjer men hävdar inte att varje alternativ lösning har samma form.
 
-Sökningen delar varje rutkonflikt mellan två vägar i två möjligheter och använder kortaste vägar samt
+Genereringen sker före publicering: disjunkta vägar växer, byter delar och flyttar sina ändar
+inåt, varefter otillräckliga kandidater sorteras bort av den exakta lösaren.
+`resources/trassel-layouts.js` innehåller 12 kontrollerade grundbräden per svårighet och skärmform,
+samt separata lösningar för alla möjliga upprepningsmönster hos svaren.
+Spelet väljer ett bräde, speglar/roterar det och fördelar slumpade uppgifter över paren.
+Förberedelsen är därför omedelbar även på telefon och kan inte falla tillbaka på en vägglabyrint.
+Små läxuppsättningar får fortfarande upprepa utbytbara svar. Deras inre placering och optimum
+kontrolleras separat; det går inte att garantera ett närmare *felaktigt* alternativ om alla svar är likadana.
+
+Lösaren delar varje rutkonflikt mellan två vägar i två möjligheter och använder kortaste vägar samt
 minsta kostnad för tillåtna parningar som undre gräns. Den första konfliktfria lösningen i kostnadsordning
 är optimal; mellan lika kostnader prioriteras färre konflikter. Oförändrade delsökningar återanvänds.
-Sökningarna fördelas över bildrutor; förberedelse och ledtrådskontroll räknas inte som speltid,
-och brädet döljs under kontrollen. Genereringen begränsas till 12 kandidater och 2 000 söknoder.
-Om gränsen nås behålls en slingrande kandidat med minst två svängar på varje linje; om ingen sådan
-finns används ett av flera förkontrollerade reservbräden. Extra väggar gör dess nät till ett träd: varje kant måste användas om och endast om den
-avskiljer ett udda antal ändpunkter. Därmed är hela lösningen och optimumet entydiga även för identiska svar.
-Reservbräden använder minst 85 % av rutorna; de ersätter aldrig en svår sökning med intilliggande par.
+Ledtrådssökningar fördelas över bildrutor; kontrollen räknas inte som speltid och brädet döljs under tiden.
+`node dev/trassel-layouts.cjs --verify` bevisar på nytt samtliga lagrade optimum och kontrollerar
+placering, fria rutor, linjer och alla speglingar/rotationer. Samma kontroll ingår i `npm test`.
+`node dev/trassel-generate.cjs tall4 1 73` provgenererar ett nytt medelbräde för stående skärm;
+lägg till `--write` för att spara efter full kontroll och kör sedan `npm run assets`.
 
-Riktad kontroll: `node tests/trassel.cjs`, `node tests/tile-scores.cjs` och `node tests/homework-ui.cjs`.
+Riktad kontroll: `node tests/trassel.cjs`, `node tests/trassel-layouts.cjs`, `node tests/tile-scores.cjs` och `node tests/homework-ui.cjs`.
 **Driftsättning:** publicera den uppdaterade `cloudflare/worker.mjs` för att API:t ska ta emot Trassels `v1`-poäng och klickläge.
 Ingen databasmigrering eller versionsändring för befintliga spel behövs.
 

@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const context=vm.createContext({console,performance,Event,EventTarget,CustomEvent:class extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}}});
-for(const name of ['data','language-exercises-data','language-exercises','homework','input','klossar','trassel-engine','trassel'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+name+'.js'),'utf8'),context);
+for(const name of ['data','language-exercises-data','language-exercises','homework','input','klossar','trassel-engine','trassel-layouts','trassel'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../resources/'+name+'.js'),'utf8'),context);
 const SC=context.Starlight,E=SC.TrasselEngine,plain=v=>JSON.parse(JSON.stringify(v));
 const rng=seed=>()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
 function done(search){let r;do{r=search.next();}while(!r.done);return r.value;}
@@ -69,6 +69,7 @@ console.log('PASS hint priority, innocent later routes, persistent gray, rerouti
 for(const pace of ['gentle','steady','brave'])for(const mode of ['letters','math-addition','math-diagrams','math-equations','chineseTrad4','bopomofo','swedish-synonyms','translation-sv-en-1','swedishLong','homework']){
   const options={pace,mode,...(mode==='homework'?{items:[{label:'A',answer:'a'}]}:{})}, {g,events}=setup(options);
   assert.equal(g.board.cells.length,{gentle:37,steady:61,brave:91}[pace]);assert(g.maxUnused>0);assert.equal(g.tiles.length,g.total*2);
+  if(mode!=='homework')assert.equal(new Set(g.pairs.map(p=>p.key)).size,g.total,mode+' distinct answers');
   assert.equal(done(E.solve(g.board,g.tiles,g.solution.map(path=>({path})))).status,'solved');
   assert.equal(g.maxUnused,g.board.cells.length-g.solution.reduce((n,p)=>n+p.length,0));
   g.update(20);const elapsed=g.elapsed;g.pause();g.update(300);assert.equal(g.elapsed,elapsed);g.resume();
@@ -98,27 +99,29 @@ for(const pace of ['gentle','steady','brave']){
   assert.equal(SC.trasselScore({...base,mistakes:p.pairs}).accuracy,SC.trasselScore(base).accuracy/2);
   assert.equal(SC.trasselScore({...base,hints:1}).total,p.max*.95);
 }
-for(const shape of ['hex','tall','wide'])for(const pace of ['gentle','steady','brave']){
-  const {g}=setup({shape,pace});assert.equal(g.board.cells.length,{gentle:37,steady:61,brave:91}[pace]);assert.equal(done(E.solve(g.board,g.tiles,g.solution.map(path=>({path})))).status,'solved');
-  for(let variant=0;variant<4;variant++){
-    const fallback=E.fallback(g.profile.radius,g.total,shape,()=>variant/4),tiles=g.tilesFor(fallback.paths).map(t=>({...t,key:0}));
-    const result=done(E.solve(fallback.board,tiles)),cost=fallback.paths.reduce((n,p)=>n+p.length,0),stats=E.pathStats(fallback.board,result.paths);
-    assert.equal(result.status,'solved');assert.equal(result.cost,cost,'tree routes remain optimal with interchangeable answers');
-    assert.equal(stats.bendy,g.total,'fallback never substitutes straight or adjacent pairs');assert(stats.fill>=.85&&stats.fill<1);assert(stats.minLength>=5);
+// Interior placement and matching separation are checked on actual tiles,
+// including all rotations and reflections used at runtime.
+const distance=(a,b)=>Math.max(Math.abs(a.q-b.q),Math.abs(a.r-b.r),Math.abs(a.q+a.r-b.q-b.r));
+for(const shape of ['hex','tall','wide'])for(const pace of ['gentle','steady','brave'])for(const seed of [2,17,39]){
+  const {g}=setup({shape,pace,mode:'letters'},seed),adj=E.graph(g.board),interior=g.tiles.filter(t=>adj[t.id].length===6);
+  assert.equal(g.board.walls.length,0,'difficulty comes from routes, not wall corridors');
+  assert(interior.length>=Math.ceil(g.total*2*.8));
+  assert(interior.filter(t=>t.side==='answer').length>=Math.ceil(g.total*.75));
+  assert.equal(new Set(g.pairs.map(p=>p.key)).size,g.total);
+  for(const tile of g.tiles){
+    const other=g.tiles.find(t=>E.matches(tile,t)),d=distance(g.board.cells[tile.id],g.board.cells[other.id]);
+    assert(d>=3);
+    assert(g.tiles.some(t=>t.side!==tile.side&&t.key!==tile.key&&distance(g.board.cells[tile.id],g.board.cells[t.id])<d),'a correct partner cannot be the nearest opposite-colour item');
   }
+  assert.equal(done(E.solve(g.board,g.tiles,g.solution.map(path=>({path})))).status,'solved');
 }
-// Difficulty is measured on optimal routes with the actual answer keys.
-// Cover all board shapes and both distinct and completely interchangeable answers.
-for(const shape of ['hex','tall','wide'])for(const pace of ['gentle','steady','brave'])for(const duplicate of [false,true])for(const seed of [2,17,39]){
-  const {g}=setup({shape,pace,...(duplicate?{mode:'homework',items:[{label:'A',answer:'a'}]}:{mode:'letters'})},seed),stats=E.pathStats(g.board,g.solution);
-  assert(stats.fill>={gentle:.65,steady:.7,brave:.75}[pace]);assert(stats.fill<1);
-  assert(stats.bendy>=Math.ceil(g.total*.75));assert(stats.detour>=g.total*g.profile.radius/2);assert(stats.minLength>=4);
+// Exercises with very few distinct answers retain valid interchangeable matches
+// and an exact optimum; no hidden pair IDs or fabricated wrong answers are used.
+for(const distinct of [1,2,3,4])for(const pace of ['gentle','steady','brave']){
+  const items=Array.from({length:distinct},(_,i)=>({label:String(i),answer:String(i)})),{g}=setup({pace,mode:'homework',items});
+  assert.equal(g.total,SC.trasselProfiles[pace].pairs);assert.equal(new Set(g.pairs.map(p=>p.key)).size,Math.min(distinct,g.total));
+  assert.equal(done(E.solve(g.board,g.tiles,g.solution.map(path=>({path})))).status,'solved');
+  assert.equal(g.maxUnused,g.board.cells.length-g.solution.reduce((n,p)=>n+p.length,0));
 }
-// Optional bends in a witness must not masquerade as compulsory turns.
-{
-  const board=E.hex(1),path=[0,1,4,6,5,2],tiles=[{id:0,side:'problem',key:0},{id:2,side:'answer',key:0}];
-  const quality=E.quality(board,tiles,{paths:[path],cost:path.length,lowerBound:2},3);
-  assert.equal(quality.forcedBendy,0);assert.equal(quality.acceptable,false);
-}
-console.log('PASS winding optimal layouts, compulsory-turn check and nontrivial fallbacks for every size and shape');
+console.log('PASS open boards, interior endpoints, non-nearest matches, symmetry and repeated-answer exercises');
 console.log('PASS all exercise families, three sizes, release/cut/reroute, walls, wrong answers, pause, completion and scoring');

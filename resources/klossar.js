@@ -219,7 +219,7 @@ function pairFor(item,mode,random,lang){
   const speech=letterSpeech(item.label,lang);
   return {problem:{label:item.label.toLocaleUpperCase('sv-SE'),speech},answer:item.label.toLocaleLowerCase('sv-SE'),answerSpeech:speech,key:'case:'+readingKey(item.label)};
 }
-function makePairs(items,mode,count,random,lang){
+function makePairs(items,mode,count,random,lang,unique=false){
   let pool=items;
   if(SC.isWordPair(mode)){
     // Avoid overlapping synonym/translation answer sets across different keys.
@@ -233,6 +233,13 @@ function makePairs(items,mode,count,random,lang){
   }
   if(!pool.length)throw new Error('Övningen behöver minst ett par.');
   const pairs=[];let bag=[];
+  if(unique){
+    const seen=new Set();
+    for(const item of shuffle(pool,random)){
+      const pair=pairFor(item,mode,random,lang);if(seen.has(pair.key))continue;
+      seen.add(pair.key);pairs.push(pair);if(pairs.length===count)return pairs;
+    }
+  }
   while(pairs.length<count){if(!bag.length)bag=shuffle(pool,random);pairs.push(pairFor(bag.pop(),mode,random,lang));}
   return pairs;
 }

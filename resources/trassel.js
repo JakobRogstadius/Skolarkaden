@@ -20,41 +20,28 @@ class TrasselGame{
     this.menu();this.queue.clear();Object.assign(this,{mode,pace,lang,uppercase:false,hits:0,shots:0,mistakes:0,hints:0,sequence:0,boardRevision:0,lastHintRevision:-1,message:'Förbereder spelplanen…'});
     this.profile=profiles[pace];if(!this.profile)throw new Error('Okänd svårighet.');
     this.total=this.profile.pairs;this.shape=shape;this.board=E.makeBoard(this.profile.radius,shape);this.items=SC.beginPractice(this,items);
-    this.pairs=SC.makeMatchingPairs(this.items,mode,this.total,this.random,lang);
+    // Prefer distinct visible answers, so an otherwise distant pair cannot be
+    // bypassed by a nearby copy. Small homework sets may still need repeats.
+    const pairs=SC.makeMatchingPairs(this.items,mode,this.total,this.random,lang,true),groups=new Map();
+    for(const pair of pairs){if(!groups.has(pair.key))groups.set(pair.key,[]);groups.get(pair.key).push(pair);}
+    const ordered=[...groups.values()].sort((a,b)=>b.length-a.length);
+    this.pairs=ordered.flat();this.pattern=ordered.map(group=>group.length).join('');
     this.timeScale=SC.isMath(mode)?1.3:this.pairs.some(p=>p.answer.length>8||p.problem.label?.length>10)?1.3:1;
     this.state='playing';this.phase='preparing';this.search=this.prepare();this.emit('start');
   }
-  tilesFor(paths){
-    return paths.flatMap((path,i)=>{
-      const pair=this.pairs[i],[a,b]=this.random()<.5?[path[0],path.at(-1)]:[path.at(-1),path[0]];
+  tilesFor(paths,mask,order=paths.map((_,i)=>i)){
+    return order.flatMap(i=>{
+      const path=paths[i],pair=this.pairs[i],[a,b]=mask&(1<<i)?[path[0],path.at(-1)]:[path.at(-1),path[0]];
       return [{id:a,side:'problem',key:pair.key,item:pair.problem},{id:b,side:'answer',key:pair.key,item:{label:pair.answer,speech:pair.answerSpeech}}];
     });
   }
   *prepare(){
-    let chosen,reserve,remaining=2000;
-    search:for(let attempt=0;attempt<12&&remaining>0;attempt++){
-      const candidate=E.construct(this.profile.radius,this.total,this.random,this.shape);
-      if(!candidate){yield;continue;}
-      const witness=E.pathStats(candidate.board,candidate.paths);
-      if(witness.bendy===this.total&&witness.fill>=.85&&witness.detour>=this.total*2.5)reserve=candidate;
-      const tiles=this.tilesFor(candidate.paths);
-      for(let round=0;round<this.total*4+8&&remaining>0;round++){
-        const limit=Math.min(300,remaining),budget={remaining:limit},result=yield* E.solve(candidate.board,tiles,[],{budget});
-        remaining-=limit-budget.remaining;
-        if(result.status!=='solved')break;
-        if(E.quality(candidate.board,tiles,result,this.profile.radius).acceptable){chosen={candidate,tiles,result};break search;}
-        if(!E.blockShortcut(candidate,result.paths,this.random))break;
-        yield;
-      }
-      yield;
-    }
-    if(!chosen){
-      const candidate=E.fallback(this.profile.radius,this.total,this.shape,this.random,reserve),tiles=this.tilesFor(candidate.paths);
-      const result=yield* E.solve(candidate.board,tiles);
-      chosen={candidate,tiles,result};
-    }
-    const {candidate,tiles,result}=chosen;
-    this.board=candidate.board;this.tiles=tiles;this.solution=result.paths;this.maxUnused=this.board.cells.length-result.cost;
+    // These open layouts are generated and exactly solved offline. Every
+    // answer multiplicity has its own certificates; there is no easy fallback.
+    const layouts=SC.trasselLayouts[this.shape+this.profile.radius][this.pattern],layout=layouts[Math.floor(this.random()*layouts.length)];
+    this.board=E.layoutBoard(this.profile.radius,this.shape,this.random);this.tiles=this.tilesFor(layout.ends,layout.mask,layout.order);
+    this.solution=layout.paths.map(path=>path.slice());this.maxUnused=this.board.cells.length-layout.cost;
+    const tiles=this.tiles;
     this.adj=E.graph(this.board);this.tileById=new Map(tiles.map(t=>[t.id,t]));this.phase='ready';this.search=null;
     this.message='Dra mellan uppgifter och svar som hör ihop.';this.revision++;this.refreshScore();this.emit('trassel-ready');
   }
