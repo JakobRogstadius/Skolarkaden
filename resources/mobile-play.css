@@ -75,7 +75,7 @@ body.playing.mobile-play .arena.studio .studio-diagram{width:120px;height:64px}
 body.playing.mobile-play #play:fullscreen{height:var(--play-height,100dvh);padding:6px;align-items:stretch;overflow:hidden}
 body.playing.mobile-play #play:fullscreen .arena{flex:1;max-width:none;min-height:0}
 body.playing.mobile-play #play:fullscreen .studio-work,body.playing.mobile-play #play:fullscreen .studio-toolbar{max-width:none}
-body.playing.mobile-play .klossar-scene{top:74px}
+body.playing.mobile-play :is(.klossar-scene,.trassel-scene){top:74px}
 
 /* Tablets have room for one balanced tray: tools, palette, question, actions.
    Query the usable arena, so opening the keyboard restores the compact tray. */

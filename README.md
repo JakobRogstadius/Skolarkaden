@@ -1,6 +1,6 @@
 # Skolarkaden
 
-Tretton små lärspel för tangentbord, mikrofon eller klick. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
+Fjorton små lärspel för tangentbord, mikrofon eller klick. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
 
 **Öppna `index.html` i Chrome.** Behåll `resources` bredvid HTML-filen. Ingen installation, byggprocess eller webbserver behövs. Om du laddar ned projektet som ZIP: packa upp hela filen först.
 
@@ -8,7 +8,7 @@ All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och
 
 Alla språkövningar finns i [language-exercises.json](language-exercises.json).
 
-Välj först övningsgrupp och sedan övning/nivå i de två kopplade menyerna ovanför spelen. Grupperna kommer i ordningen Matematik, Bokstäver, Svenska, English, Svenska–engelska och Kinesiska. Matematik 1 (addition) är förvald och ett slumpat spel markeras vid varje sidladdning. Spelsvårigheten väljs separat. Spelen delas in i **Svara snabbt** och **Tid att fundera**, där den senare gruppen innehåller Reversi, Schack, Klossar och Målarateljén. Spelkorten visas i fem kolumner på större skärmar, tre på mellanstora och två på smala skärmar, med plats för två rader titeltext. Spelkorten kan väljas med mus, pekskärm eller tangentbord.
+Välj först övningsgrupp och sedan övning/nivå i de två kopplade menyerna ovanför spelen. Grupperna kommer i ordningen Matematik, Bokstäver, Svenska, English, Svenska–engelska och Kinesiska. Matematik 1 (addition) är förvald och ett slumpat spel markeras vid varje sidladdning. Spelsvårigheten väljs separat. Spelen delas in i **Svara snabbt** och **Tid att fundera**, där den senare gruppen innehåller Reversi, Schack, Klossar, Trassel och Målarateljén. Spelkorten visas i fem kolumner på större skärmar, tre på mellanstora och två på smala skärmar, med plats för två rader titeltext. Spelkorten kan väljas med mus, pekskärm eller tangentbord.
 
 Ordövningarna omfattar svenska och engelska synonymer och motsatser i fyra nivåer vardera: 50 ordpar på nivå 1 och 60 på nivåerna 2–4. Översättning svenska–engelska har åtta nivåer: 50 ordpar på nivåerna 1–3 och 80 på nivåerna 4–8. De högsta nivåerna innehåller avancerat vuxenordförråd. Totalt finns 1 470 ordpar. Varje ordpar har två huvudord och separata listor med godkända alternativa svar i båda riktningarna. Uppgiften visar bara huvudordet. Ett svar visas med mindre text efter tio sekunder. För översättning väljer du svarsspråk med **Översätt till**, även med tangentbord. Konstruktion och underhåll beskrivs i [dev/word-pairs.md](dev/word-pairs.md).
 
@@ -26,6 +26,49 @@ API:t använder Cloudflare Worker + D1. Installationssteg och underhåll finns i
 [cloudflare/README.md](cloudflare/README.md). IP-adresser sparas för framtida moderering
 men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 `resources/highscore-policy.js` och tillämpas både i spelet och i API:t.
+
+## Trassel
+
+Koppla ihop röda uppgifter med blå svar genom att dra linjer mellan hexagonernas mittpunkter.
+Linjer får inte dela rutor eller passera väggar. Alla par ska vara anslutna; tomma rutor får vara kvar.
+En spelplan är en omgång. Lätt har 37 rutor och 4 par, Medel 61 rutor och 6 par, Svår 91 rutor och 8 par.
+Uppgifter, svar, typsnitt och färger för texten följer Klossars matchningsregler. Likadana svar är utbytbara.
+
+Släpp före ett svar, eller nå ett felaktigt svar, så dras linjen tillbaka. Dra bakåt för att förkorta
+pågående linje. En färdig linje kan ändras från valfri ände: följ den bakåt och dra sedan en ny väg.
+Den motsatta änden ligger kvar. Släpper du ändringen utan ett matchande svar dras resten av linjen tillbaka.
+Ett tryck på en linje visar saxen; ett tryck på saxen klipper och låter båda delarna dra sig mot ändarna.
+Linjer får färg i ordningen de läggs, ur Målarateljéns palett. Ändringar behåller linjens ursprungliga färg och ordning.
+På telefoner blir brädet högre i stående läge och bredare i liggande läge, med samma antal rutor och par. En påbörjad bana roteras vid behov när skärmen vrids. Zoomknapparna och flyttläget ↔ hjälper på små skärmar. Tangentbord: välj en uppgift med Enter, gå med Q W E A S D,
+avsluta med Enter. Paus döljer spelplanen och stoppar tiden.
+
+**Ledtråd** kontrollerar om färdiga linjer kan ingå tillsammans i någon fullständig lösning.
+Nyare linjer prövas för borttagning först; äldre möjliga linjer har företräde även om fler nya linjer då måste ändras.
+En oberoende nyare linje återtas om det är en äldre konflikt som blockerar brädet.
+Linjer som behöver ändras tonas till grått och förblir grå tills de raderas eller dras bakåt.
+Markeringen gäller situationen vid kontrollen. En ledtråd kostar 5 % av maxpoängen; samma oförändrade läge debiteras inte igen.
+Om en särskilt svår kontroll når sökgränsen lämnas färger och poäng orörda.
+
+Maxpoängen är 10 000 / 15 000 / 20 000. Slutpoängen är maxpoängen gånger
+`0.7*T + (0.3*4/7)*O + (0.3*3/7)*A`, minus ledtrådsavdrag, avrundad och lägst noll.
+`T = tau/(tau + speltid)` minskar från första sekunden utan deadline eller platå.
+`tau` är tills vidare 60 / 40 / 30 sekunder; matte och längre ord får faktorn 1,3.
+`O` är antalet oanvända rutor delat med det bevisade maximala antalet oanvända rutor.
+`A` är antalet par delat med antalet par plus felaktiga matchningar. Att klippa, ändra eller avbryta linjer räknas inte som felsvar.
+Upprepade återanslutningar kan inte förbättra svarsprecisionen. Slutdialogen visar poängens fyra delar.
+Poängen under spel är en preliminär andel baserad på antalet färdiga par. Tidsreferenserna behöver kalibreras med speldata
+för att bedöma hur nära svårighetsnivåernas medelpoäng ligger varandra.
+
+Bräden byggs från fullständiga vägar, med väggar som bevarar dessa. En separat exakt sökning bevisar
+minsta sammanlagda väglängden före start. Sökningen delar varje rutkonflikt mellan två vägar i två möjligheter
+och använder kortaste vägar samt minsta kostnad för tillåtna parningar som undre gräns.
+Den första konfliktfria lösningen i kostnadsordning är optimal. Sökningarna fördelas över bildrutor;
+förberedelse och ledtrådskontroll räknas inte som speltid, och brädet döljs under kontrollen.
+Efter 16 misslyckade genereringsförsök används ett enkelt bräde vars optimum följer direkt av intilliggande par.
+
+Riktad kontroll: `node tests/trassel.cjs`, `node tests/tile-scores.cjs` och `node tests/homework-ui.cjs`.
+**Driftsättning:** publicera den uppdaterade `cloudflare/worker.mjs` för att API:t ska ta emot Trassels `v1`-poäng och klickläge.
+Ingen databasmigrering eller versionsändring för befintliga spel behövs.
 
 ## Målarateljén
 
@@ -123,6 +166,7 @@ Varje slutförd skötselåtgärd ger 10 poäng. Flera åtgärder av samma typ i 
 | Reversi | Välj föreslagna drag med dina svar och vinn flest brickor. |
 | Schack | Välj föreslagna drag med dina svar och sätt datorn schackmatt. |
 | Klossar | Para ihop och ta bort alla klossar i mahjong-patiens. |
+| Trassel | Koppla ihop uppgifter och svar på ett hexagonbräde utan korsande linjer. |
 | Målarateljén | Måla fritt och rama in dina bilder, helt utan poäng. |
 
 Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övning eller valt språk.

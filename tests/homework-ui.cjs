@@ -27,7 +27,7 @@ const windowListeners=new Map(),history={state:null,replaceState(s){this.state=s
     if(file==='resources/app.js'){
       const SC=ctx.Starlight;
       SC.GameSounds=class{unlock(){}play(){}stopCampfire(){}campfire(){}close(){}};
-      for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home','Reversi','Chess','Klossar','Studio']){
+      for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home','Reversi','Chess','Klossar','Trassel','Studio']){
         const Game=SC[name+'Game'];SC[name+'Game']=class extends Game{constructor(options){super(options);currentGame=this;}};
         SC[name+'Renderer']=class{constructor(canvas,game){this.game=game;}resize(){this.game.resize?.(1000,700);}destroy(){}scoreEvent(){}};
       }
@@ -56,6 +56,15 @@ const windowListeners=new Map(),history={state:null,replaceState(s){this.state=s
     assert(hud.requests.at(-1).includes(encodeURIComponent(hud.ctx.SkolarkadenHighscorePolicy.versions[radio.value]+':'+radio.value+':')));
     hud.click('pause');hud.click('pause-menu');top++;
   }
+  const trassel=boot();await settle();trassel.radios.find(r=>r.value==='trassel').dispatchEvent(new Event('change'));trassel.click('start');await settle();
+  while(trassel.game.phase!=='ready')trassel.game.update(.01);
+  assert(trassel.fields.answer.disabled&&trassel.fields['input-dock'].hidden);assert.equal(trassel.selection.input,'click');assert.equal(trassel.captures.at(-1).enabled,false);
+  trassel.game.update(15);
+  for(const path of trassel.game.solution){trassel.game.begin(path[0]);for(const id of path.slice(1))trassel.game.move(id);trassel.game.release();}
+  trassel.game.update(1);await settle();assert.equal(trassel.fields['result-title'].textContent,'Trasslet är löst!');assert.equal(trassel.fields['trassel-result-breakdown'].hidden,false);
+  assert.match(trassel.fields['trassel-result-breakdown'].textContent,/Tid .*Utrymme .*Rätt svar .*Ledtrådar/);
+  const trasselScore=trassel.game.score;trassel.click('again');await settle();await settle();assert.equal(trassel.posts[0].leaderboard_key,'v1:trassel:math-addition:gentle');assert.equal(trassel.posts[0].score,trasselScore);assert.equal(trassel.posts[0].settings.input_mode,'click');
+  console.log('PASS Trassel app: click-only input, complete board, score breakdown, submission and replay');
   const studio=boot();await settle();studio.radios.find(r=>r.value==='studio').dispatchEvent(new Event('change'));studio.click('start');await settle();
   assert.equal(studio.fields['setup-error'].textContent,'');assert.equal(studio.requests.length,0,'studio never reads scores');assert.equal(studio.selection,undefined,'studio never starts score recording');
   assert(studio.fields.answer.disabled);assert(studio.fields['leaderboard-open'].hidden);assert(studio.fields.pace.closest().hidden);
@@ -68,7 +77,7 @@ const windowListeners=new Map(),history={state:null,replaceState(s){this.state=s
   hud.click('pause');hud.click('pause-menu');hud.radios[0].dispatchEvent(new Event('change'));hud.click('start');await settle();
   old(Response.json({scores:[{score:9999}]}));await settle();
   assert.equal(hud.fields.best.textContent,'BÄSTA '+top.toLocaleString('sv-SE'),'late response cannot replace another game record');
-  console.log('PASS online top score for all twelve games, empty/error/loading states and stale response isolation.');
+  console.log('PASS online top score for all scored games, empty/error/loading states and stale response isolation.');
   const reversi=boot();await settle();reversi.radios.find(r=>r.value==='reversi').dispatchEvent(new Event('change'));reversi.click('start');await settle();
   assert.equal(reversi.fields.answer.disabled,true,'thinking disables input');
   const ready=()=>{for(let i=0;i<10000&&reversi.game.phase!=='answer'&&reversi.game.state==='playing';i++)reversi.game.update(.05);};
