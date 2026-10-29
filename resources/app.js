@@ -179,7 +179,7 @@ async function start({glantanSeed=null,fresh=false}={}){
   }catch(error){$('setup-error').textContent=error.message; $('resume-error').textContent=error.message;if($('menu').hidden){$('end-overlay').hidden=false;$('result-title').textContent=error.message;}}
   finally{busy=false;$('start').disabled=false;$('again').disabled=false;}
 }
-function pause(){if(game?.state!=='playing')return;game.pause();input.setEnabled(false);$('pause-overlay').hidden=false;$('resume-error').textContent='';$('resume').focus({preventScroll:true});renderUi();}
+function pause(){if(game?.state!=='playing')return;game.pause();input.setEnabled(false);$('pause-overlay').hidden=false;$('glantan-restart').hidden=kind!=='glantan';$('resume-error').textContent='';$('resume').focus({preventScroll:true});renderUi();}
 async function resume(){
   if(busy||game?.state!=='paused')return;const token=++lifecycle;busy=true;$('resume').disabled=true;
   try{const preparation=!isTileGame()&&input.prepare();if(preparation)await preparation;if(token!==lifecycle)return;$('pause-overlay').hidden=true;game.resume();const canAnswer=isQuestionGame()?game.canAnswer():!isTileGame()&&(kind!=='eggs'||game.player.status!=='dead');input.setEnabled(canAnswer);if(canAnswer&&input.voice.enabled)startListening();if(canAnswer)input.focus();}
@@ -198,6 +198,18 @@ function stayInGame(){ $('leave-game').close();if(resumeAfterBack)resume(); }
 $('leave-game-stay').addEventListener('click',stayInGame);
 $('leave-game').addEventListener('cancel',e=>{e.preventDefault();stayInGame();});
 $('leave-game-confirm').addEventListener('click',()=>{$('leave-game').close();for(const dialog of document.querySelectorAll('dialog[open]'))dialog.close();menu();});
+$('glantan-restart').addEventListener('click',()=>{
+  if(kind!=='glantan'||game?.state!=='paused'||busy)return;
+  (document.fullscreenElement||document.body).append($('glantan-restart-dialog'));
+  $('glantan-restart-dialog').showModal();$('glantan-restart-cancel').focus();
+});
+$('glantan-restart-cancel').addEventListener('click',()=>$('glantan-restart-dialog').close());
+$('glantan-restart-dialog').addEventListener('close',()=>{if(game?.state==='paused')$('glantan-restart').focus({preventScroll:true});});
+for(const choice of ['same','new'])$('glantan-restart-'+choice).addEventListener('click',()=>{
+  if(kind!=='glantan'||game?.state!=='paused'||busy)return;
+  const seed=choice==='same'?game.world.seed:null;
+  $('glantan-restart-dialog').close();start({glantanSeed:seed,fresh:true});
+});
 $('start').addEventListener('click',start);$('again').addEventListener('click',()=>highscores.leave(()=>start({fresh:true}),{allowUnsaved:kind==='glantan'}));$('glantan-same-map').addEventListener('click',()=>highscores.leave(()=>start({glantanSeed:game.world.seed,fresh:true}),{allowUnsaved:true}));$('pause').addEventListener('click',pause);$('resume').addEventListener('click',resume);$('pause-menu').addEventListener('click',()=>kind==='studio'&&renderer?.dirty?renderer.confirmLeave(menu):menu());$('end-menu').addEventListener('click',()=>highscores.leave(menu,{allowUnsaved:kind==='glantan'}));
 root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){

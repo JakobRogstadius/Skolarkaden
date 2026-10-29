@@ -29,7 +29,7 @@
       this.simulation = new G.Simulation({ seed: seed || Date.now().toString(36).slice(-6) + Math.floor(this.random() * 999).toString(36), pace, saved: saved?.world });
       this.world = this.simulation.world;
       this.state = 'playing'; this.targets = []; this.pending = null; this.heldTarget = saved?.heldTarget || null;
-      this.progress = 0; this.streak = 0; this.bestStreak = saved?.bestStreak || 0;
+      this.progress = 0; this.streak = saved?.streak ?? saved?.progress ?? 0; this.bestStreak = saved?.bestStreak || 0;
       this.shots = saved?.shots || 0; this.hits = saved?.hits || 0; this.questionSerial = saved?.questionSerial || 0;
       this.clock = this.elapsed = this.world.time; this.score = this.world.score; this.lastSave = this.clock;
       this.feedback = ''; this.feedbackUntil = 0; this.resumed = !!saved;
@@ -40,7 +40,7 @@
         if (saved.target?.item?.answer !== undefined) this.targets = [saved.target];
         else if (this.progress < G.actionCost(this.world, this.pending)) this.nextQuestion();
       }
-      this.revision++; this.emit('glantan-ready');
+      this.save(); this.revision++; this.emit('glantan-ready');
     }
     getTargets() { return this.targets; }
     getAvailableTargets() { return this.canAnswer() ? this.targets : []; }
@@ -115,7 +115,7 @@
     save() {
       try {
         if (!this.world || this.world.outcome) return;
-        root.localStorage?.setItem(SAVE_KEY, JSON.stringify({ world: this.world, practiceKey: this.practiceKey, uppercase: this.uppercase, mode: this.mode, pace: this.pace, lang: this.lang, items: this.items, shots: this.shots, hits: this.hits, bestStreak: this.bestStreak, pending: this.pending, progress: this.progress, target: this.targets[0] || null, heldTarget: this.heldTarget, questionSerial: this.questionSerial }));
+        root.localStorage?.setItem(SAVE_KEY, JSON.stringify({ world: this.world, practiceKey: this.practiceKey, uppercase: this.uppercase, mode: this.mode, pace: this.pace, lang: this.lang, items: this.items, shots: this.shots, hits: this.hits, streak: this.streak, bestStreak: this.bestStreak, pending: this.pending, progress: this.progress, target: this.targets[0] || null, heldTarget: this.heldTarget, questionSerial: this.questionSerial }));
       } catch (_) { /* Storage may be unavailable; gameplay remains functional. */ }
     }
     clearSave() { try { root.localStorage?.removeItem(SAVE_KEY); } catch (_) {} }

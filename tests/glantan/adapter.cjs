@@ -24,9 +24,20 @@ assert(game.ringBell()); assert.equal(game.progress, progress); assert.equal(gam
 game.pause(); const frozen = game.world.time; advance(game, 3); assert.equal(game.world.time, frozen);
 const resumed = new SC.GlantanGame(); resumed.start({ mode: 'swedish', items: [{ label: 'sol', answer: 'sol' }] });
 assert(resumed.resumed); assert.equal(resumed.world.time, frozen); assert.equal(resumed.progress, progress);
+assert.equal(resumed.streak, game.streak, 'resuming keeps the overall correct-answer streak');
+resumed.answer({ text: 'sol', source: 'typing' });
+assert.equal(resumed.bestStreak, game.streak + 1, 'a resumed answer continues the saved record');
 resumed.resume();
 const changed = new SC.GlantanGame(); changed.start({ mode: 'swedish', items: [{ label: 'moln', answer: 'moln' }] });
 assert(!changed.resumed, 'changing the exercise content must not restore a different lesson');
+{
+  const options = { mode: 'swedish', items: [{ label: 'sol', answer: 'sol' }] };
+  const restarted = new SC.GlantanGame(); restarted.start({ ...options, fresh: true, seed: 'fresh-before-first-answer' });
+  const reloaded = new SC.GlantanGame(); reloaded.start(options);
+  assert(reloaded.resumed, 'a new campaign is saved before its first answer or autosave tick');
+  assert.equal(reloaded.world.seed, 'fresh-before-first-answer');
+  assert.equal(reloaded.world.time, 0); assert.equal(reloaded.streak, 0); assert.equal(reloaded.progress, 0);
+}
 {
   const blocked = new SC.GlantanGame(); blocked.start({ mode: 'swedish', items: [{ label: 'sol', answer: 'sol' }], fresh: true, seed: 'obstruction' });
   const w = blocked.world; w.research.castle2 = true;

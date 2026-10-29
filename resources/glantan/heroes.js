@@ -140,10 +140,17 @@
         }
       }
       const healed = heal(w, hero);
-      const guarding = !hero.expedition && hero.classId !== 'ranger';
-      const emergency = (!hero.expedition || w.bellUntil > w.time) && G.distance(hero, castle) < 14
+      const expedition = w.expeditions.find(e => e.id === hero.expedition);
+      const bounty = expedition && w.bounties.find(b => b.id === expedition.bounty);
+      const guarding = !expedition && hero.classId !== 'ranger';
+      // A paid village guard or an assembling party still hears the castle alarm.
+      const canIntercept = !expedition || expedition.state === 'gather' || bounty?.type === 'defend' || w.bellUntil > w.time;
+      const emergency = canIntercept && G.distance(hero, castle) < 14
         ? enemies.filter(G.alive).filter(m => m.targetId === castle.id || G.distance(m, castle) < 4 || buildings.has(m.targetId) && G.distance(m, castle) < 9).sort((a, b) => (a.targetId === castle.id ? -100 : G.distance(a, castle)) - (b.targetId === castle.id ? -100 : G.distance(b, castle)))[0] : null;
-      let target = emergency || enemies.filter(G.alive).filter(m => G.distance(hero, m) < (hero.classId === 'warrior' ? 5 : 5.5) && (!guarding || G.distance(m, castle) < 8)).sort((a, b) => G.distance(hero, a) - G.distance(hero, b))[0];
+      const nearbyAllies = new Set(w.heroes.filter(h => G.alive(h) && G.distance(hero, h) < 5.5).map(h => h.id));
+      // The home radius limits unsolicited pursuit, never local self-defence or
+      // helping a friend after an expedition's objective has disappeared.
+      let target = emergency || enemies.filter(G.alive).filter(m => G.distance(hero, m) < (hero.classId === 'warrior' ? 5 : 5.5) && (!guarding || G.distance(m, castle) < 8 || nearbyAllies.has(m.targetId))).sort((a, b) => G.distance(hero, a) - G.distance(hero, b))[0];
       if (target) {
         const distance = G.distance(hero, target);
         hero.task = healed ? 'Läker vänner' : 'Försvarar';
@@ -155,8 +162,6 @@
         if (distance <= stats.range + 0.2 && !healed) strike(w, hero, target, stats);
         continue;
       }
-      const expedition = w.expeditions.find(e => e.id === hero.expedition);
-      const bounty = expedition && w.bounties.find(b => b.id === expedition.bounty);
       const destination = bounty && G.bountyTarget(w, bounty);
       if (expedition && destination) {
         if (expedition.state === 'gather') {
