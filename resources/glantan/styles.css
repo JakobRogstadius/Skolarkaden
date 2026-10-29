@@ -99,6 +99,7 @@ body:has(#play[data-game=glantan]:not([hidden])) .masthead{margin-bottom:12px}
 .g-bell.g-ready:hover:enabled{background:#f3d89b}
 .arena.glantan .overlay{z-index:5}
 #glantan-result-breakdown{font-size:13px;line-height:1.7}
+#glantan-restart-dialog{max-width:440px}
 body:has(#play[data-game=glantan]:not([hidden])) #answer{border-color:#7e926c;background:#233e35}
 body:has(#play[data-game=glantan]:not([hidden])) #answer-submit{display:block;min-width:52px;background:#d9c18b;color:#354b36;border-color:#d9c18b}
 /* The existing arcade shell uses a block answer form. This game needs both

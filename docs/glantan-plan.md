@@ -56,3 +56,10 @@ Tests under `tests/glantan/` run independently: world/navigation, purchases/prog
 - Browser verified desktop, phone portrait, constrained keyboard-sized viewport, diagram tasks, victory/defeat and same-map replay. Developer fixtures never submit synthetic scores.
 - Published through PR #10, merged as `74570b0ac492415c528af92ad7b29a55c0cf6d81`. GitHub Pages run `40780621721` completed successfully. The public game was launched and verified with a paid recruit and partial research purchase.
 - Cloudflare leaderboard source is prepared separately; its deployment remains outstanding. The live leaderboard reports that it is not ready for this game; gameplay, local saves and replay work independently.
+
+## Follow-up playability pass — 2026-10-29
+
+1. [complete] Verify current release and deployment access. GitHub is current; Cloudflare remains an account-owner deployment with the existing DB binding.
+2. [complete] Let an unfinished campaign restart from pause, on the same or a new map. Preserve save/resume exercise progress and provide a safe cancellation path. New campaigns save immediately; the overall answer streak survives reload.
+3. [complete] Designer found two reproducible autonomy bugs: assigned village guards ignored castle alarms; released expeditions stopped defending themselves after a lair fell. Both have targeted fixes and regression tests. The reviewer independently reran both reproductions and checked that the changes do not trigger unsolicited distant attacks.
+4. [in progress] Adapter, simulation, shared app, static references and leaderboard navigation checks pass. Seven paid-answer campaign probes finish successfully. Browser verified both restart choices, cancellation preserving a 1/4 payment, and Escape/focus/layout at 390×480. Publication is the remaining step.

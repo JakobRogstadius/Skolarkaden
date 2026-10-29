@@ -46,7 +46,9 @@ bort; förstörs klockborgen är omgången förlorad.
 Mus och pekskärm: välj med klick/tryck, dra kartan, zooma med hjul, nypning eller knappar.
 Upptäckta områden fortsätter vara synliga. Paus stoppar världen. Omgång och aktuell betalning
 sparas i webbläsaren; välj samma övning och svårighet för att fortsätta. Efteråt kan du spela
-samma karta med en ny strategi eller skapa en ny karta. `?game=glantan` förväljer spelet.
+samma karta med en ny strategi eller skapa en ny karta. **Paus → Börja om…** låter dig
+också börja om på samma eller en ny karta mitt i en omgång. Avbryt behåller din betalning.
+`?game=glantan` förväljer spelet.
 Om topplisteservern inte är tillgänglig kan du ändå spela igen eller lämna resultatet.
 
 Moduler och aktuell plan: [docs/glantan-plan.md](docs/glantan-plan.md).

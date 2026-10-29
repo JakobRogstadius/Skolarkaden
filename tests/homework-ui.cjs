@@ -54,7 +54,7 @@ const windowListeners=new Map(),history={state:null,replaceState(s){this.state=s
     assert.equal(hud.fields.best.textContent,'BÄSTA '+(radio.value==='chess'?(1234).toLocaleString('sv-SE'):top.toLocaleString('sv-SE')),radio.value+' shows online record');
     assert.equal(hud.fields.score.textContent,hud.game.score.toLocaleString('sv-SE'));
     assert(hud.requests.at(-1).includes(encodeURIComponent(hud.ctx.SkolarkadenHighscorePolicy.versions[radio.value]+':'+radio.value+':')));
-    hud.click('pause');hud.click('pause-menu');top++;
+    hud.click('pause');assert.equal(hud.fields['glantan-restart'].hidden,radio.value!=='glantan');hud.click('pause-menu');top++;
   }
   const trassel=boot();await settle();trassel.radios.find(r=>r.value==='trassel').dispatchEvent(new Event('change'));trassel.click('start');await settle();
   while(trassel.game.phase!=='ready')trassel.game.update(.01);
@@ -76,7 +76,20 @@ const windowListeners=new Map(),history={state:null,replaceState(s){this.state=s
   assert.equal(glantan.fields['result-title'].textContent,'Gläntan klingar igen!');assert(!glantan.fields['glantan-same-map'].hidden);
   glantan.click('glantan-same-map');await settle();await settle();assert.equal(glantan.game.world.seed,seed);assert.equal(G.population(glantan.game.world),3);assert.equal(glantan.game.world.time,0);
   assert.equal(glantan.posts[0].leaderboard_key,'v1:glantan:math-addition:gentle');
-  console.log('PASS Klockgläntan app: realtime intent input, typed purchases, pause/resume, result and same-map replay');
+  glantan.game.choose({type:'research',id:'castle2'});
+  glantan.game.answer({text:glantan.game.targets[0].item.answer,source:'typing'});
+  const unfinished=glantan.game,questionId=unfinished.targets[0].id,postsBeforeRestart=glantan.posts.length;
+  glantan.click('pause');glantan.click('glantan-restart');
+  assert(glantan.fields['glantan-restart-dialog'].open);assert.equal(glantan.ctx.document.activeElement,glantan.fields['glantan-restart-cancel']);
+  glantan.click('glantan-restart-cancel');
+  assert(!glantan.fields['glantan-restart-dialog'].open);assert.equal(glantan.game,unfinished);assert.equal(unfinished.state,'paused');
+  assert.equal(unfinished.progress,1);assert.equal(unfinished.targets[0].id,questionId);assert.equal(glantan.ctx.document.activeElement,glantan.fields['glantan-restart']);
+  glantan.click('glantan-restart');glantan.click('glantan-restart-same');await settle();await settle();
+  assert.notEqual(glantan.game,unfinished);assert.equal(glantan.game.world.seed,seed);assert.equal(glantan.game.state,'playing');
+  assert.equal(glantan.game.progress,0);assert.equal(G.population(glantan.game.world),3);assert.equal(glantan.game.world.time,0);
+  glantan.click('pause');glantan.click('glantan-restart');glantan.click('glantan-restart-new');await settle();await settle();
+  assert.notEqual(glantan.game.world.seed,seed);assert.equal(glantan.game.world.time,0);assert.equal(glantan.posts.length,postsBeforeRestart,'unfinished restarts do not submit a score');
+  console.log('PASS Klockgläntan app: realtime purchases, pause/resume, result, replay, safe unfinished restart and no abandoned score uploads');
   const studio=boot();await settle();studio.radios.find(r=>r.value==='studio').dispatchEvent(new Event('change'));studio.click('start');await settle();
   assert.equal(studio.fields['setup-error'].textContent,'');assert.equal(studio.requests.length,0,'studio never reads scores');assert.equal(studio.selection,undefined,'studio never starts score recording');
   assert(studio.fields.answer.disabled);assert(studio.fields['leaderboard-open'].hidden);assert(studio.fields.pace.closest().hidden);
