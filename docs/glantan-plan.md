@@ -35,7 +35,7 @@ Klockgläntan is a small moss-and-brass settlement keeping its bell alive agains
 
 ## Verification ownership
 
-Tests under `tests/glantan/` run independently: world/navigation, purchases/progression, simulation/AI and exercise adapter. Run only domains affected by each step. At final integration run shared game-launch, input, viewport and score policy tests affected by registration. Browser verification covers mouse/touch layouts, selecting an intent, correct/incorrect answer streaks, realtime activity, construction, recruitment, research and replay.
+Tests under `tests/games/glantan/` run independently: world/navigation, purchases/progression, simulation/AI and exercise adapter. Run only domains affected by each step. At final integration run shared game-launch, input, viewport and score policy tests affected by registration. Browser verification covers mouse/touch layouts, selecting an intent, correct/incorrect answer streaks, realtime activity, construction, recruitment, research and replay.
 
 ## Progress / review
 
@@ -66,14 +66,14 @@ Tests under `tests/glantan/` run independently: world/navigation, purchases/prog
 
 ## Expanded kingdoms — 2026-10-29
 
-Work remains on `codex/klockglantan-expansion` for playtesting; do not merge or publish without the user's go-ahead. Based on upstream `41a91e3`, including numeric mobile keyboard support.
+Implemented on `codex/klockglantan-expansion` from upstream `41a91e3`, including numeric mobile keyboard support. The user approved merging to `main` on 2026-10-29; the branch is synchronized with the selective-test organization in `0c50da0`.
 
 1. [complete] Start with only castle and house. Grow width and height by 100/150/200%: 72×56, 90×70, 108×84. Add connected regions, water, mountain ridges and dense forest; cache navigation and adapt camera/fog/minimap to the larger maps.
 2. [complete] Two roaming guardians per lair from creation; awakening starts village-bound waves. One boss lair per map, with guardians tuned for approximately 10/20/30 combined hero levels. Retune the opening for a kingdom without heroes.
 3. [complete] Separate heroes physically; make guards patrol, gathering groups keep formation, and stalled travellers recover. Preserve purposeful fighting/healing/resting and risk-aware decisions.
 4. [complete] Move the action panel left; make water, obstacles, monster ranks and boss lairs visually unmistakable. Add dedicated layered sound effects with spatial mixing, voice limits, mute, speech ducking and lifecycle cleanup.
 5. [complete] Integrate and run affected domain and shared app checks, seeded navigation checks and paid-answer balance probes. Inspect desktop and mobile in browser.
-6. [complete] Master game designer, visual designer, sound engineer and software engineer review the integrated game. Resolve material issues and document evidence and remaining limits. Commit only to the playtest branch.
+6. [complete] Master game designer, visual designer, sound engineer and software engineer review the integrated game. Resolve material issues and document evidence and remaining limits. Prepare the reviewed playtest branch and integrate the user-approved release.
 
 The new map/simulation save schema is separate from previous saves; the leaderboard score version is unchanged. User decisions remain fixed during all reviews.
 

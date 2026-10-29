@@ -58,9 +58,9 @@ not a claim that every human strategy or exercise will take the same time.
 
 ## Running only relevant checks
 
-`node tests/glantan/run.cjs world orders adapter simulation` accepts any subset
-of those four domains. `node tests/homework-ui.cjs` checks shared app integration;
-`node tests/highscores.cjs` checks the score service and upload-failure replay.
+`node tests/games/glantan/run.cjs world orders adapter simulation encounters movement sound`
+accepts any subset of those seven domains. `node tests/games/glantan/app.test.cjs` checks shared app integration;
+`node tests/server/highscores.test.cjs` checks the score service and upload-failure replay.
 Run `node dev/glantan-balance.cjs gentle 10 0 1 2` after balance/AI changes.
 Run `node dev/version-assets.cjs` after changing browser assets.
 
@@ -215,3 +215,17 @@ Screenshots: [desktop](klockglantan-expansion-desktop.jpg),
 The desktop review screenshot deliberately reveals the map for inspection.
 
 ---
+
+## Main integration — 2026-10-29
+
+The user approved merging this release. The branch was synchronized with `0c50da0`,
+which reorganized tests by owner and introduced dependency-based selection. The new
+encounter, movement and sound checks now live in `tests/games/glantan/`; the shared
+app test retains the castle-and-house opening and zero-hero restart assertions.
+The balance script uses the relocated helper, and all new domains are registered
+with the selective runner. Production game files remain identical to the reviewed
+playtest build `9516aaa`.
+
+`npm run test:all` passed 92/92 suites in 81.40 seconds. All six controlled boss
+probes passed after integration. The [release changelog](glantan-changelog.md) records
+the player-facing changes.

@@ -121,17 +121,17 @@ IIFE exporting `Starlight.ChessRules`; its source-map comment is removed.
 The full BSD-2-Clause licence is in the file and in `dev/chess-js-LICENSE.txt`.
 The npm tarball SHA-1 is `edc1439492d1a0d7f530ba72b2b5398baece28a1`.
 
-`tests/chess.cjs` covers reference perft positions, move legality, draw rules,
+`tests/games/chess/logic.test.cjs` covers reference perft positions, move legality, draw rules,
 mate search, repetition preservation, difficulty variation, distinct answer
-choices and turn handling. `tests/chess-scoring.cjs` covers score arithmetic,
+choices and turn handling. `tests/games/chess/scoring.test.cjs` covers score arithmetic,
 result bonuses, offered-choice ranks, ties, wrong-answer penalties, time
 independence and actual captures, including en passant and promotion.
-`tests/chess-scores.cjs` exercises the real Worker against SQLite, including version separation and
-score limits. `tests/homework-ui.cjs` covers app input, pause, score display,
-submission and replay. `tests/chess-renderer.cjs` checks that every exercise's
+`tests/server/game-scores.test.cjs` exercises the real Worker against SQLite, including version separation and
+score limits. `tests/games/chess/app.test.cjs` covers app input, pause, score display,
+submission and replay. `tests/games/chess/renderer.test.cjs` checks that every exercise's
 move cards keep hints and answers hidden after waiting, pausing and resuming,
 while prompts, diagrams, previews and answer input still work.
 It also covers dinosaur captures of every piece type on both sides, silent
 captures, the solid final pose, pause/resume, board edges, reduced motion and cleanup.
-`tests/dinosaur-sounds.cjs` covers shared voice synthesis and cancellation.
-Run `npm test` for the complete regression suite.
+`tests/shared/dinosaur-sounds.test.cjs` covers shared voice synthesis and cancellation.
+Run `npm test -- --area=chess` for focused checks or `npm run test:all` for the complete ordinary regression suite.

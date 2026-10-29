@@ -3,7 +3,7 @@
    node dev/glantan-balance.cjs --boss
    Arguments: difficulty, seconds per answer, one or more map seeds. */
 'use strict';
-const { runtime } = require('../tests/glantan/helpers.cjs');
+const { runtime } = require('../tests/games/glantan/helpers.cjs');
 if (process.argv[2] === '--boss') {
   const { G } = runtime();
   // Controlled open arena isolates the permanent guardians from travel, waves
