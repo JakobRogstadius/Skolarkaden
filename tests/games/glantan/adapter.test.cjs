@@ -4,6 +4,7 @@ const { runtime, advance } = require('./helpers.cjs');
 const { SC, G } = runtime(true);
 const game = new SC.GlantanGame({ random: () => 0.2 });
 game.start({ mode: 'swedish', items: [{ label: 'sol', answer: 'sol' }], seed: 'adapter' });
+G.addBuilding(game.world, 'lodge', game.world.home.tx - 4, game.world.home.ty + 3);
 const answer = text => { game.queue.enqueue(text); game.update(0.1); };
 assert(game.choose({ type: 'research', id: 'castle2' }));
 answer('sol'); answer('sol'); assert.equal(game.progress, 2);
@@ -42,7 +43,7 @@ assert(!changed.resumed, 'changing the exercise content must not restore a diffe
   const blocked = new SC.GlantanGame(); blocked.start({ mode: 'swedish', items: [{ label: 'sol', answer: 'sol' }], fresh: true, seed: 'obstruction' });
   const w = blocked.world; w.research.castle2 = true;
   let plot;
-  for (let y = 8; y < 22 && !plot; y++) for (let x = 10; x < 26 && !plot; x++) {
+  for (let y = 1; y < w.height - 1 && !plot; y++) for (let x = 1; x < w.width - 1 && !plot; x++) {
     const a = { type: 'build', id: 'beacon', x, y };
     if (!G.availability(w, a)) plot = a;
   }

@@ -24,11 +24,12 @@
       this.bell = make('button', 'g-bell'); this.bell.type = 'button'; this.bell.innerHTML = G.icon('bell', 25) + '<span>Stormklocka</span><small></small>';
       this.bell.title = 'Samlar mod, läker hjältar och hejdar monster nära borgen. Laddas av 6 rätta svar, även över brutna följder.';
       this.bell.onclick = () => this.game.ringBell(); this.stage.append(this.bell);
-      this.minimap = make('canvas', 'g-minimap'); this.minimap.width = 144; this.minimap.height = 112; this.minimap.setAttribute('aria-label', 'Översiktskarta'); this.stage.append(this.minimap);
-      this.ui = new G.Interface(this); this.node.append(this.stage, this.ui.node); canvas.parentElement.append(this.node);
-      this.terrain = document.createElement('canvas'); A.terrain(this.terrain, game.world);
-      this.fog = document.createElement('canvas'); this.fog.width = this.terrain.width; this.fog.height = this.terrain.height;
-      this.fogScratch = document.createElement('canvas'); this.fogScratch.width = this.fog.width; this.fogScratch.height = this.fog.height;
+      this.minimap = make('canvas', 'g-minimap'); this.minimap.width = 180; this.minimap.height = 140; this.minimap.tabIndex = 0; this.minimap.setAttribute('role', 'button'); this.minimap.setAttribute('aria-label', 'Översiktskarta. Piltangenter flyttar utsnittet, Home återgår till borgen.'); this.stage.append(this.minimap);
+      this.ui = new G.Interface(this); this.node.append(this.ui.node, this.stage); canvas.parentElement.append(this.node);
+      this.terrainChunks = new Map();
+      // Fog only needs a few texels per tile, rather than a second full world image.
+      this.fog = document.createElement('canvas'); this.fog.width = game.world.width * 4; this.fog.height = game.world.height * 4;
+      this.minimapTerrain = document.createElement('canvas'); this.minimapTerrain.width = this.minimap.width; this.minimapTerrain.height = this.minimap.height;
       this.camera = { x: G.castle(game.world).x * T, y: G.castle(game.world).y * T, zoom: 0.8 };
       this.pointers = new Map(); this.listeners = []; this.bind();
       this.resizeObserver = new ResizeObserver(() => this.resize()); this.resizeObserver.observe(this.stage); this.resize();
@@ -83,6 +84,11 @@
         if (e.key === '-') this.zoomBy(0.8);
         if (e.key === 'Home') this.focus(G.castle(this.game.world));
       });
+      this.listen(this.minimap, 'keydown', e => {
+        const delta = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+        if (delta) { e.preventDefault(); this.camera.x += delta[0] * T * 5; this.camera.y += delta[1] * T * 5; this.clampCamera(); }
+        if (e.key === 'Home' || e.key === 'Enter') { e.preventDefault(); this.focus(G.castle(this.game.world)); }
+      });
       this.listen(this.minimap, 'pointerdown', e => {
         const box = this.minimap.getBoundingClientRect();
         this.camera.x = (e.clientX - box.left) / box.width * this.game.world.width * T;
@@ -121,32 +127,55 @@
       }
       const hero = [...w.heroes].filter(G.alive).sort((a, b) => G.distance(a, point) - G.distance(b, point)).find(h => Math.hypot(h.x - point.x, h.y - 0.25 - point.y) < 0.6 / Math.min(1, this.camera.zoom));
       if (hero) { this.ui.inspect({ kind: 'hero', id: hero.id }); return; }
-      if (w.explored[G.index(w, point.x, point.y)]) {
-        const buildings = w.buildings.filter(b => G.footprint(b, point.x, point.y) ||
-          G.alive(b) && Math.abs(point.x - b.x) < b.w * .38 && point.y > b.y - (b.type === 'castle' ? 1.9 : b.type === 'spire' ? 1.8 : 1.4) && point.y < b.y + .4);
-        const building = buildings.find(G.alive) || buildings.at(-1);
-        if (building) { this.ui.inspect({ kind: 'building', id: building.id }); return; }
-        const lair = w.lairs.find(b => G.footprint(b, point.x, point.y));
-        if (lair) { this.ui.inspect({ kind: 'lair', id: lair.id }); return; }
-        const monster = w.monsters.find(m => G.alive(m) && G.distance(m, point) < 0.7);
-        if (monster) { this.ui.inspect({ kind: 'monster', id: monster.id }); return; }
-      }
+      // Visible silhouettes stay clickable even when their upper pixels, or a
+      // discovered lair's centre, extend into an unrevealed tile.
+      const monster = w.monsters.filter(m => G.alive(m) && w.explored[G.index(w, m.x, m.y)]).sort((a, b) => b.y - a.y).find(m => Math.abs(m.x - point.x) < 0.43 * A.monsterScale(m) && point.y > m.y - (m.boss ? 1.1 : 0.65) * A.monsterScale(m) && point.y < m.y + 0.35);
+      if (monster) { this.ui.inspect({ kind: 'monster', id: monster.id }); return; }
+      const buildings = w.buildings.filter(b => G.footprint(b, point.x, point.y) ||
+        G.alive(b) && Math.abs(point.x - b.x) < b.w * .38 && point.y > b.y - (b.type === 'castle' ? 1.9 : b.type === 'spire' ? 1.8 : 1.4) && point.y < b.y + .4);
+      const building = buildings.find(G.alive) || buildings.at(-1);
+      if (building) { this.ui.inspect({ kind: 'building', id: building.id }); return; }
+      const lair = w.lairs.find(b => b.seen && (G.footprint(b, point.x, point.y) || G.alive(b) && Math.abs(point.x - b.x) < 0.85 && point.y > b.y - (b.boss ? 2.15 : 1.6) && point.y < b.y + .4));
+      if (lair) { this.ui.inspect({ kind: 'lair', id: lair.id }); return; }
       this.ui.inspect({ kind: 'ground', x: Math.floor(point.x) + 0.5, y: Math.floor(point.y) + 0.5 });
+    }
+    viewBounds(padding = 0) {
+      const w = this.game.world, a = this.toWorld(0, 0), b = this.toWorld(this.width, this.height);
+      return { x0: G.clamp(Math.floor(a.x / T) - padding, 0, w.width), y0: G.clamp(Math.floor(a.y / T) - padding, 0, w.height), x1: G.clamp(Math.ceil(b.x / T) + padding, 0, w.width), y1: G.clamp(Math.ceil(b.y / T) + padding, 0, w.height) };
+    }
+    drawTerrain() {
+      const w = this.game.world, view = this.viewBounds(), chunkSize = 12;
+      const scale = this.camera.zoom < 0.65 ? 0.5 : 1, used = new Set();
+      for (let cy = Math.floor(view.y0 / chunkSize); cy < Math.ceil(view.y1 / chunkSize); cy++) {
+        for (let cx = Math.floor(view.x0 / chunkSize); cx < Math.ceil(view.x1 / chunkSize); cx++) {
+          const key = cx + ':' + cy + ':' + scale; used.add(key);
+          let chunk = this.terrainChunks.get(key);
+          const x = cx * chunkSize, y = cy * chunkSize, width = Math.min(chunkSize, w.width - x), height = Math.min(chunkSize, w.height - y);
+          if (!chunk) {
+            // Padding allows trees and ridges to cross the cache seam naturally.
+            const region = { x: Math.max(0, x - 2), y: Math.max(0, y - 2), width: width + 4, height: height + 4, scale };
+            region.width = Math.min(w.width, x + width + 2) - region.x; region.height = Math.min(w.height, y + height + 2) - region.y;
+            const canvas = document.createElement('canvas'); A.terrain(canvas, w, region);
+            chunk = { canvas, x: region.x, y: region.y }; this.terrainChunks.set(key, chunk);
+          }
+          this.ctx.drawImage(chunk.canvas, (x - chunk.x) * T * scale, (y - chunk.y) * T * scale, width * T * scale, height * T * scale, x * T, y * T, width * T, height * T);
+        }
+      }
+      // Keep one viewport only: visiting a large map never accumulates giant bitmaps.
+      for (const [key, chunk] of this.terrainChunks) if (!used.has(key)) { chunk.canvas.width = chunk.canvas.height = 0; this.terrainChunks.delete(key); }
     }
     drawFog() {
       const w = this.game.world;
       if (this.fogKey === w.fogRevision) return;
-      this.fogKey = w.fogRevision; const c = this.fogScratch.getContext('2d'); c.clearRect(0, 0, this.fog.width, this.fog.height);
+      this.fogKey = w.fogRevision;
+      const c = this.fog.getContext('2d'); c.clearRect(0, 0, this.fog.width, this.fog.height);
       for (let y = 0; y < w.height; y++) for (let x = 0; x < w.width; x++) if (!w.explored[y * w.width + x]) {
-        c.fillStyle = A.hash(x, y) > 0.5 ? '#2c4c46' : '#2b4b45'; c.fillRect(x * T, y * T, T + 1, T + 1);
-        if (A.hash(x, y, 5) > 0.7) { c.strokeStyle = '#6c8a7138'; c.lineWidth = 1; c.beginPath(); c.arc(x * T + 22, y * T + 25, 9, 3.3, 6); c.stroke(); }
+        c.fillStyle = A.hash(x, y) > 0.5 ? '#29473f' : '#294940'; c.fillRect(x * 4, y * 4, 4, 4);
       }
-      const softened = this.fog.getContext('2d'); softened.clearRect(0, 0, this.fog.width, this.fog.height);
-      softened.filter = 'blur(9px)'; softened.drawImage(this.fogScratch, 0, 0); softened.filter = 'none';
     }
     drawBar(entity, yOffset = 0, color = '#bbdc97') {
       const c = this.ctx, x = entity.x * T, y = entity.y * T + yOffset;
-      const width = entity.w ? 44 : 23;
+      const width = entity.boss ? entity.w ? 62 : 36 : entity.w ? 44 : 23;
       A.round(c, x - width / 2 - 1, y, width + 2, 5, 2, '#24423ed9');
       A.round(c, x - width / 2, y + 1, Math.max(0, width * entity.hp / entity.maxHp), 3, 1, color);
     }
@@ -187,7 +216,8 @@
       if (!action) return;
       const c = this.ctx, spec = G.buildings[action.id], valid = !G.placementReason(w, action.id, action.x, action.y);
       c.save(); c.strokeStyle = '#cfe2b552'; c.lineWidth = 1;
-      for (let y = 1; y < w.height - 1; y++) for (let x = 1; x < w.width - 1; x++) if (w.explored[y * w.width + x]) c.strokeRect(x * T, y * T, T, T);
+      const view = this.viewBounds(1);
+      for (let y = view.y0; y < view.y1; y++) for (let x = view.x0; x < view.x1; x++) if (w.explored[y * w.width + x]) c.strokeRect(x * T, y * T, T, T);
       c.fillStyle = valid ? '#cce9a965' : '#ef998465'; c.strokeStyle = valid ? '#edffbb' : '#ffc4ad'; c.lineWidth = 2;
       c.fillRect(action.x * T, action.y * T, spec.w * T, spec.h * T); c.strokeRect(action.x * T, action.y * T, spec.w * T, spec.h * T);
       c.globalAlpha = 0.5; A.building(c, { type: action.id, id: 0, tx: action.x, ty: action.y, x: action.x + spec.w / 2, y: action.y + spec.h / 2, w: spec.w, h: spec.h, hp: spec.hp }, w, w.time); c.restore();
@@ -207,14 +237,16 @@
       const c = this.ctx, w = this.game.world, time = this.reduced ? 0 : w.time;
       c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); c.fillStyle = '#294a41'; c.fillRect(0, 0, this.width, this.height);
       c.save(); c.translate(this.width / 2, this.height / 2); c.scale(this.camera.zoom, this.camera.zoom); c.translate(-this.camera.x, -this.camera.y);
-      c.drawImage(this.terrain, 0, 0); this.drawFog();
-      c.drawImage(this.fog, 0, 0);
+      this.drawTerrain(); this.drawFog();
+      c.imageSmoothingEnabled = true; c.drawImage(this.fog, 0, 0, w.width * T, w.height * T);
+      const view = this.viewBounds(3);
+      const visible = entity => entity.x >= view.x0 && entity.x <= view.x1 && entity.y >= view.y0 && entity.y <= view.y1;
       const entities = [
         ...w.buildings.map(value => ({ type: 'building', value })),
         ...w.lairs.filter(l => l.seen).map(value => ({ type: 'lair', value })),
         ...w.heroes.map(value => ({ type: 'hero', value })),
         ...w.monsters.filter(m => G.alive(m) && w.explored[G.index(w, m.x, m.y)]).map(value => ({ type: 'monster', value }))
-      ].sort((a, b) => a.value.y - b.value.y);
+      ].filter(e => visible(e.value)).sort((a, b) => a.value.y - b.value.y);
       this.drawSelection();
       for (const { type, value } of entities) {
         A[type](c, value, w, time);
@@ -234,14 +266,27 @@
       this.drawMinimap();
     }
     drawMinimap() {
-      const w = this.game.world, c = this.minimap.getContext('2d'), scale = 4;
-      for (let y = 0; y < w.height; y++) for (let x = 0; x < w.width; x++) { const i = y * w.width + x; c.fillStyle = !w.explored[i] ? '#294a43' : w.terrain[i] === 2 ? '#73a1a3' : '#8da67c'; c.fillRect(x * scale, y * scale, scale, scale); }
-      const mark = (entity, color, radius = 2) => { c.fillStyle = color; c.fillRect(entity.x * scale - radius, entity.y * scale - radius, radius * 2, radius * 2); };
-      for (const l of w.lairs) if (G.alive(l) && l.seen) mark(l, l.awake ? '#d49391' : '#b8a9ce', 2.5);
-      for (const h of w.heroes) if (G.alive(h)) mark(h, '#f6e3b0', 1);
+      const w = this.game.world, c = this.minimap.getContext('2d'), sx = this.minimap.width / w.width, sy = this.minimap.height / w.height;
+      if (this.minimapKey !== w.fogRevision) {
+        this.minimapKey = w.fogRevision; const base = this.minimapTerrain.getContext('2d');
+        const colors = ['#9ab780', '#76965e', '#397daf', '#798485', '#afb3a3', '#315940'];
+        for (let y = 0; y < w.height; y++) for (let x = 0; x < w.width; x++) {
+          const i = y * w.width + x; base.fillStyle = !w.explored[i] ? '#233e36' : colors[w.terrain[i]]; base.fillRect(x * sx, y * sy, Math.ceil(sx), Math.ceil(sy));
+        }
+      }
+      c.drawImage(this.minimapTerrain, 0, 0);
+      const mark = (entity, color, radius = 2) => { c.fillStyle = color; c.fillRect(entity.x * sx - radius, entity.y * sy - radius, radius * 2, radius * 2); };
+      for (const l of w.lairs) if (G.alive(l) && l.seen) {
+        if (l.boss) {
+          A.polygon(c, [[l.x * sx, l.y * sy - 5], [l.x * sx + 5, l.y * sy], [l.x * sx, l.y * sy + 5], [l.x * sx - 5, l.y * sy]], '#ffe0a7');
+          mark(l, '#8b4459', 2.3);
+        } else mark(l, l.awake ? '#f1a591' : '#c3b0d8', 2.5);
+      }
+      for (const m of w.monsters) if (G.alive(m) && w.explored[G.index(w, m.x, m.y)]) mark(m, m.boss ? '#f4a9cb' : '#ef9078', m.boss ? 1.8 : 1);
+      for (const h of w.heroes) if (G.alive(h)) mark(h, '#fff0bf', 1.3);
       mark(G.castle(w), '#fff1bb', 3);
-      c.strokeStyle = '#f5e9c1bb'; c.lineWidth = 1;
-      const topLeft = this.toWorld(0, 0); c.strokeRect(topLeft.x / T * scale, topLeft.y / T * scale, this.width / this.camera.zoom / T * scale, this.height / this.camera.zoom / T * scale);
+      c.strokeStyle = '#fff3c9'; c.lineWidth = 1;
+      const topLeft = this.toWorld(0, 0); c.strokeRect(topLeft.x / T * sx, topLeft.y / T * sy, this.width / this.camera.zoom / T * sx, this.height / this.camera.zoom / T * sy);
     }
     updateOverlay() {
       const w = this.game.world, notice = w.notices.at(-1);
@@ -253,6 +298,9 @@
     }
     scoreEvent(e) { if (e.type.startsWith('glantan') || e.type === 'miss') { this.ui.update(); this.updateOverlay(); } }
     destroy() {
+      this.game.soundscape?.destroy();
+      for (const chunk of this.terrainChunks.values()) chunk.canvas.width = chunk.canvas.height = 0;
+      this.terrainChunks.clear(); this.fog.width = this.fog.height = 0;
       root.cancelAnimationFrame(this.raf); this.resizeObserver.disconnect(); this.listeners.forEach(off => off()); this.game.save(); this.node.remove(); this.original.hidden = false;
     }
   }

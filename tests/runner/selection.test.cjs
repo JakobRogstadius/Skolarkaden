@@ -41,8 +41,11 @@ for(const file of ['tests/app/homework.test.cjs','tests/app/score-hud.test.cjs']
 assert(!names(trassel).some(file=>file.startsWith('tests/games/klossar/')),'Trassel consumes Klossar helpers, not the reverse');
 assert(names(affected(['resources/klossar.js'])).includes('tests/games/trassel/logic.test.cjs'));
 const glantan=affected(['resources/glantan/heroes.js']);
-for(const file of ['world','orders','adapter','simulation','app'])assert(names(glantan).includes('tests/games/glantan/'+file+'.test.cjs'));
+for(const file of ['world','orders','adapter','simulation','encounters','movement','sound','app'])assert(names(glantan).includes('tests/games/glantan/'+file+'.test.cjs'));
 assert(!names(glantan).some(file=>file.startsWith('tests/games/chess/')));
+const glantanSound=names(affected(['resources/glantan/sound.js']));
+assert(glantanSound.includes('tests/games/glantan/sound.test.cjs')&&glantanSound.includes('tests/games/glantan/app.test.cjs'));
+assert(!glantanSound.some(file=>file.startsWith('tests/games/chess/')));
 assert(names(affected(['resources/input.js'])).includes('tests/shared/input-focus.test.cjs'),'numeric keyboard regressions are retained');
 assert(names(affected(['resources/klossar-speech.js'])).includes('tests/app/math-speech.test.cjs'));
 const stamps=affected(['resources/paint.js','index.html'],{assetOnly:new Set(['index.html'])});

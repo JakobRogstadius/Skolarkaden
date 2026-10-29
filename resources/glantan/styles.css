@@ -13,10 +13,10 @@ body:has(#play[data-game=glantan]:not([hidden])) .masthead{margin-bottom:12px}
 .arena.glantan>.hud .hud-objective span{font-size:11px;margin:0;color:#c1d1b6}
 .arena.glantan>.hud progress{margin-top:5px;height:4px}
 .arena.glantan>.hud .icon-button{width:37px;height:37px;padding:9px;border-color:#7e8e6f65}
-.g-scene{position:absolute;inset:66px 0 0;display:grid;grid-template-columns:minmax(0,1fr) 285px;min-height:0;color:#354b3e;font-size:13px}
-.g-stage{position:relative;overflow:hidden;min-height:0;min-width:0;background:#34564a}
+.g-scene{position:absolute;inset:66px 0 0;display:grid;grid-template-columns:285px minmax(0,1fr);min-height:0;color:#354b3e;font-size:13px}
+.g-stage{grid-column:2;grid-row:1;position:relative;overflow:hidden;min-height:0;min-width:0;background:#34564a}
 .g-world{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
-.g-sidebar{display:flex;flex-direction:column;min-width:0;min-height:0;background:linear-gradient(130deg,#f0e8d1,#e8e2cb);border-left:1px solid #bcbfa2;box-shadow:-4px 0 18px #233b3020}
+.g-sidebar{grid-column:1;grid-row:1;display:flex;flex-direction:column;min-width:0;min-height:0;background:linear-gradient(130deg,#f0e8d1,#e8e2cb);border-right:1px solid #bcbfa2;box-shadow:4px 0 18px #233b3020}
 .g-sidebar button{font-family:inherit;color:#354b3e}
 .g-tabs{display:grid;grid-template-columns:repeat(4,1fr);flex:none;border-bottom:1px solid #c6c9ac;padding:7px 7px 0;gap:2px;background:#e2e2c9}
 .g-tabs .g-tab{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;padding:8px 1px 10px;border:0;border-radius:6px 6px 0 0;font-size:10px;font-weight:bold;background:transparent;color:#708170}
@@ -34,7 +34,7 @@ body:has(#play[data-game=glantan]:not([hidden])) .masthead{margin-bottom:12px}
 .g-action-grid .g-action .g-action-text{flex-basis:100%;padding-right:0}
 .g-action-grid .g-cost{position:absolute;right:8px;top:8px}
 .g-action-text{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
-.g-action-name{font-size:12px;line-height:1.2;font-weight:bold}
+.g-action-name{font-size:13px;line-height:1.2;font-weight:bold}
 .g-action-detail{font-size:10px;line-height:1.35;font-weight:normal;color:#77816c}
 .g-cost{display:inline-flex;align-items:center;justify-content:center;flex:none;width:24px;height:24px;border-radius:50%;border:1px solid #c5b17d;background:#f3e4b7;font:600 12px/1 Georgia,serif;color:#7f6337}
 .g-action.g-unavailable{opacity:.53;background:#e4e4ce;box-shadow:none}
@@ -57,6 +57,8 @@ body:has(#play[data-game=glantan]:not([hidden])) .masthead{margin-bottom:12px}
 .g-detail-meter progress::-webkit-progress-bar{background:#d2d7ba}
 .g-detail-meter progress::-webkit-progress-value{background:#8ba976}
 .g-contributions{font-size:10px;line-height:1.7;color:#7d866f}
+.g-boss-warning{display:flex;align-items:center;gap:8px;margin:10px 0;color:#784b58;background:#ead9c8;border:1px solid #c4a18e;border-radius:6px;padding:9px;font-size:11px;line-height:1.45}
+.g-boss-warning>.g-icon{color:#957043}
 .g-lair-timer{font-size:13px;color:#987247;border:1px solid #d9c59f;border-radius:6px;padding:9px;background:#f3e9cc}
 .g-empty{font:italic 16px/1.5 Georgia,serif;color:#8c957e;padding:12px 4px}
 .g-bounty-row{display:flex;gap:4px;border-bottom:1px solid #ccd0b4;padding:9px 0}
@@ -115,14 +117,15 @@ body.playing:has(#play[data-game=glantan]) #answer{flex:1;width:0;min-width:0;mi
 @media(max-width:600px){body.playing:has(#play[data-game=glantan]) .shell{padding:5px}body.playing:has(#play[data-game=glantan]) .masthead{margin-bottom:5px}}
 @container glantan (max-width:760px){
   .g-scene{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(160px,1fr) 230px}
-  .g-sidebar{display:grid;grid-template-columns:minmax(0,1fr) minmax(140px,34%);grid-template-rows:45px minmax(0,1fr);border-left:0;border-top:1px solid #abb998}
-  .g-tabs{grid-column:1;grid-row:1;padding:4px 5px 0}
+  .g-stage{grid-column:1;grid-row:1}
+  .g-sidebar{grid-column:1;grid-row:2;display:grid;grid-template-columns:minmax(140px,34%) minmax(0,1fr);grid-template-rows:45px minmax(0,1fr);border-right:0;border-top:1px solid #abb998}
+  .g-tabs{grid-column:2;grid-row:1;padding:4px 5px 0}
   .g-tabs .g-tab{flex-direction:row;gap:4px;font-size:10px;padding:6px 2px}
   .g-tab svg{width:16px;height:16px}
-  .g-panel{grid-row:2;grid-column:1;padding:9px}
+  .g-panel{grid-row:2;grid-column:2;padding:9px}
   .g-panel-title{font-size:17px;margin-bottom:5px}
   .g-subtitle{font-size:10px;margin-bottom:8px}
-  .g-question-panel{grid-row:1/3;grid-column:2;border-top:0;border-left:1px solid #c5c9a9;padding:10px 11px;display:flex;flex-direction:column;justify-content:center;min-height:0}
+  .g-question-panel{grid-row:1/3;grid-column:1;border-top:0;border-right:1px solid #c5c9a9;padding:10px 11px;display:flex;flex-direction:column;justify-content:center;min-height:0}
   .g-question{font-size:27px;min-height:42px}
   .g-action-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:6px 0}
   .g-action-grid .g-action{min-height:60px;padding:6px;gap:2px}
@@ -170,11 +173,12 @@ body.playing.mobile-play .g-scene{top:56px}
   .g-map-controls button{width:28px;height:28px}
 }
 @container glantan (max-height:350px) and (min-width:600px){
-  .g-scene{grid-template-columns:minmax(0,1fr) 250px;grid-template-rows:1fr}
-  .g-sidebar{display:flex;flex-direction:column}
+  .g-scene{grid-template-columns:250px minmax(0,1fr);grid-template-rows:1fr}
+  .g-stage{grid-column:2;grid-row:1}
+  .g-sidebar{grid-column:1;grid-row:1;display:flex;flex-direction:column}
   .g-tabs{min-height:30px;padding:2px}
   .g-panel{flex:1;padding:6px}
-  .g-question-panel{border-left:0;border-top:1px solid #c5c9a9;min-height:82px;padding:5px 9px}
+  .g-question-panel{border-right:0;border-top:1px solid #c5c9a9;min-height:82px;padding:5px 9px}
   .g-question{font-size:22px;min-height:26px}
   .g-question-hint,.g-feedback{min-height:0;margin:0}
   .g-map-badge{display:none}
@@ -188,4 +192,5 @@ body.playing.mobile-play .g-scene{top:56px}
   .g-map-controls button{width:28px;height:28px}
   .g-toast{top:45px;padding:4px 7px}
 }
+@media(pointer:coarse){.g-map-controls button{width:40px;height:40px}.g-cancel{min-width:36px;min-height:36px}}
 @media(prefers-reduced-motion:reduce){.g-scene *{transition:none!important}}

@@ -2,14 +2,15 @@
 (function(root) {
   'use strict';
   const G = root.Starlight.Glantan = {};
-  G.VERSION = 1;
+  G.VERSION = 2;
   G.STEP = 0.1;
   G.POPULATION_LIMIT = 24;
-  G.MAX_MONSTERS = 64;
+  G.MAX_MONSTERS = 84;
+  G.MAX_RAIDERS = 64;
   G.profiles = {
-    gentle: { lairs: 6, wake: 105, spawn: 1.32, damage: 0.72, growth: 1.3 },
-    steady: { lairs: 7, wake: 78, spawn: 1, damage: 1, growth: 1 },
-    brave: { lairs: 8, wake: 58, spawn: 0.84, damage: 1.22, growth: 0.85 }
+    gentle: { lairs: 6, mapScale: 2, firstWake: 120, wake: 105, spawn: 1.32, damage: 0.72, growth: 1.3, bossLevels: 10 },
+    steady: { lairs: 7, mapScale: 2.5, firstWake: 105, wake: 88, spawn: 1, damage: 1, growth: 1, bossLevels: 20 },
+    brave: { lairs: 8, mapScale: 3, firstWake: 90, wake: 78, spawn: 0.84, damage: 1.22, growth: 0.9, bossLevels: 30 }
   };
   G.classes = {
     warrior: { name: 'Väktare', role: 'Skyddar andra i närstrid.', color: '#ecb85a', icon: 'shield', guild: 'hall', cost: 2, hp: 125, damage: 14, range: 1.1, speed: 1.5, cooldown: 1.05, courage: 1.2 },
@@ -50,10 +51,15 @@
   G.monsterTypes = {
     rattler: { name: 'Skramlare', hp: 39, damage: 7, speed: 1.05, range: 0.9, cooldown: 1.4, color: '#c98150', xp: 10 },
     sporeling: { name: 'Fnysling', hp: 28, damage: 5, speed: 1.25, range: 1, cooldown: 1.5, color: '#cc88b1', xp: 8 },
-    husher: { name: 'Tystätare', hp: 82, damage: 14, speed: 0.78, range: 1.2, cooldown: 1.8, color: '#929cbb', xp: 18 }
+    husher: { name: 'Tystätare', hp: 82, damage: 14, speed: 0.78, range: 1.2, cooldown: 1.8, color: '#929cbb', xp: 18 },
+    guardian: { name: 'Klockväktare', hp: 230, damage: 35, speed: 1.12, range: 1.35, cooldown: 1.55, color: '#9b647e', xp: 55 }
   };
-  // Outer nests defend themselves when disturbed, even before their first raid.
-  G.lairGuards = lair => Array(lair.tier).fill(G.lairTypes[lair.type].monster).concat(Array(lair.tier - 1).fill('husher'));
+  // Guardians are present from birth. Awakening releases separate raiding parties.
+  G.lairGuards = lair => lair.boss ? ['guardian', 'guardian'] : [G.lairTypes[lair.type].monster, lair.tier >= 3 ? 'husher' : G.lairTypes[lair.type].monster];
+  // Balanced parties at 10/20/30 total levels can clear these fixed guardians.
+  // Use dev/glantan-balance.cjs --boss when changing combat or retreat rules.
+  G.bossGuards = { gentle: { hp: 230, damage: 35 }, steady: { hp: 360, damage: 43 }, brave: { hp: 500, damage: 50 } };
+  G.lairHitPoints = (site, pace) => site.boss ? { gentle: 550, steady: 850, brave: 1150 }[pace] : 100 + (site.tier || 1) ** 2 * 70;
   G.monsterStrength = lair => 1 + (lair.tier - 1) * 0.22 + (lair.level - 1) * 0.2;
   G.names = ['Alva', 'Bosse', 'Cilla', 'Dag', 'Edda', 'Folke', 'Gry', 'Hjalmar', 'Iris', 'Juni', 'Knut', 'Lo', 'Mio', 'Nora', 'Otto', 'Pim', 'Rut', 'Siv', 'Tage', 'Una', 'Vega', 'Vide', 'Ylva', 'Östen'];
   G.traits = [

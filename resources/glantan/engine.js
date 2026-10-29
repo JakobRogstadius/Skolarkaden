@@ -2,6 +2,12 @@
 (function(root) {
   'use strict';
   const G = root.Starlight.Glantan;
+  // Presentation events are transient: never replay old sounds after loading a save.
+  G.soundEvent = function(world, kind, entity, important = false) {
+    if (!world.sounds) Object.defineProperty(world, 'sounds', { value: [], writable: true, configurable: true });
+    if (world.sounds.length >= 64) world.sounds.shift();
+    world.sounds.push({ kind, x: entity?.x, y: entity?.y, important });
+  };
   G.notify = function(world, text, kind = 'info') {
     world.notices.push({ text, kind, until: world.time + 6, id: world.nextId++ });
     world.notices = world.notices.slice(-4);
@@ -19,9 +25,10 @@
     return building;
   };
   G.addLair = function(world, site, wakeAt) {
-    const tier = site.tier || 1, hp = 100 + tier * tier * 70;
+    const tier = site.tier || 1, hp = G.lairHitPoints ? G.lairHitPoints(site, world.pace) : 100 + tier * tier * 70;
     const lair = { id: world.nextId++, ...site, w: 2, h: 2, x: site.tx + 1, y: site.ty + 1, hp, maxHp: hp, tier, level: 1, wakeAt, awake: wakeAt <= world.time, seen: false, nextSpawn: wakeAt + 32, nextGrowth: wakeAt + G.lairTypes[site.type].interval * G.profiles[world.pace].growth, warned: false, spread: false, born: world.time };
     world.lairs.push(lair); world.navRevision++; world.revision++;
+    G.seedLairGuards(world, lair);
     return lair;
   };
   G.heroStats = function(world, hero) {
@@ -55,6 +62,7 @@
       const previous = hero.maxHp; hero.maxHp = G.heroStats(world, hero).hp;
       hero.hp = Math.min(hero.maxHp, hero.hp + hero.maxHp - previous + 12);
       G.effect(world, 'level', hero.x, hero.y, { duration: 1.6, text: 'Nivå ' + hero.level, color: '#ffe7a0' });
+      G.soundEvent(world, 'level', hero);
       world.revision++;
     }
   };
@@ -70,6 +78,7 @@
     if (target.classId) {
       world.fallen++; target.task = 'Vilar'; target.expedition = null; target.route = []; target.diedAt = world.time;
       G.notify(world, target.name + ' föll. Kan återkallas.', 'warn');
+      G.soundEvent(world, 'hero-down', target, true);
     } else if (target.monster) {
       world.kills++;
       // Nearby support shares XP, with diminishing returns against weak enemies.
@@ -83,6 +92,7 @@
     } else if (target.wakeAt !== undefined) {
       world.destroyed++; world.navRevision++;
       G.notify(world, G.lairTypes[target.type].name + ' tystnade. Gläntan växer.', 'good');
+      G.soundEvent(world, 'lair-down', target, true);
       for (const hero of world.heroes) if (G.alive(hero) && G.distance(hero, target) < 9) G.gainXp(world, hero, 25 + target.tier * 10);
       G.reveal(world, target.x, target.y, 5);
       if (!world.lairs.some(G.alive)) { world.explored.fill(1); world.fogRevision++; G.notify(world, 'Bona är borta. Jaga de sista skramlarna!', 'good'); }
@@ -100,6 +110,7 @@
     for (const monster of world.monsters) if (G.alive(monster) && G.distance(monster, castle) < 8) monster.stunnedUntil = world.time + 2.5;
     for (const hero of world.heroes) if (G.alive(hero)) hero.hp = Math.min(hero.maxHp, hero.hp + hero.maxHp * 0.12);
     G.effect(world, 'bell', castle.x, castle.y, { duration: 2.5, color: '#ffda82' });
+    G.soundEvent(world, 'bell', castle, true);
     G.notify(world, 'Stormklockan samlar mod.', 'good');
     return true;
   };
@@ -116,11 +127,12 @@
       }
       const range = building.type === 'beacon' ? 8.5 : building.type === 'tower' ? 6 : building.type === 'castle' ? 5 : 0;
       if (!range || building.shotAt > world.time) continue;
-      const target = world.monsters.filter(G.alive).filter(m => G.distance(building, m) < range).sort((a, b) => G.distance(a, building) - G.distance(b, building))[0];
+      const target = world.monsters.filter(G.alive).filter(m => G.distance(building, m) < range && G.clearLine(world, building, m)).sort((a, b) => G.distance(a, building) - G.distance(b, building))[0];
       if (!target) continue;
       building.shotAt = world.time + (building.type === 'beacon' ? 1.4 : 1.5);
       const damage = building.type === 'beacon' ? 28 : building.type === 'tower' ? 13 : 8;
       G.effect(world, 'bolt', building.x, building.y - 0.6, { toX: target.x, toY: target.y, color: '#ffe0a0', duration: 0.3 });
+      G.soundEvent(world, building.type === 'beacon' ? 'mage' : 'ranger', building);
       G.damage(world, target, damage, building);
       if (building.type === 'beacon') for (const m of world.monsters) if (m !== target && G.alive(m) && G.distance(m, target) < 2) G.damage(world, m, damage * 0.6, building);
     }
@@ -132,15 +144,12 @@
       this.world = saved || G.createMap(seed, pace); this.accumulator = 0;
       if (saved) return;
       const w = this.world;
-      G.addBuilding(w, 'castle', 17, 12);
-      G.addBuilding(w, 'house', 19, 16);
-      G.addBuilding(w, 'hall', 13, 15);
-      G.addBuilding(w, 'lodge', 21, 11);
-      w.lairSites.forEach((site, i) => G.addLair(w, site, i === 0 ? 40 : (i + 1) * G.profiles[pace].wake));
+      G.addBuilding(w, 'castle', w.home.tx, w.home.ty);
+      G.addBuilding(w, 'house', w.home.tx + 3, w.home.ty + 3);
+      w.lairSites.forEach((site, i) => G.addLair(w, site, G.profiles[pace].firstWake + i * G.profiles[pace].wake));
       delete w.lairSites;
-      G.reveal(w, 18, 13, 8);
-      G.addHero(w, 'warrior'); G.addHero(w, 'ranger'); G.addHero(w, 'healer');
-      G.notify(w, 'Välj en byggnad, hjälte eller ett bo. Svara för att betala.');
+      G.reveal(w, w.home.x, w.home.y, 8);
+      G.notify(w, 'Bygg ett hjältehus och värva dina första hjältar.');
     }
     update(dt) {
       if (!Number.isFinite(dt) || dt <= 0 || this.world.outcome) return;
@@ -153,6 +162,7 @@
       G.updateLairs(w, dt);
       if (w.tick % 10 === 0) G.planExpeditions(w);
       G.updateHeroes(w, dt); G.updateMonsters(w, dt); G.updateBuildings(w, dt);
+      G.separateHeroes(w, dt);
       w.effects.forEach(e => { e.age += dt; }); w.effects = w.effects.filter(e => e.age < e.duration);
       w.notices = w.notices.filter(n => n.until > w.time);
       w.monsters = w.monsters.filter(m => m.hp > 0 || w.time - m.hurtAt < 0.4);

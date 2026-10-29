@@ -1,7 +1,7 @@
 /* Run a domain: node tests/games/glantan/run.cjs world orders adapter simulation */
 'use strict';
 const path = require('node:path'), { spawnSync } = require('node:child_process');
-const domains = ['world', 'orders', 'adapter', 'simulation'];
+const domains = ['world', 'orders', 'adapter', 'simulation', 'encounters', 'movement', 'sound'];
 const requested = process.argv.slice(2);
 const selected = requested.length ? requested : domains;
 let failed = 0;

@@ -63,3 +63,18 @@ Tests under `tests/games/glantan/` run independently: world/navigation, purchase
 2. [complete] Let an unfinished campaign restart from pause, on the same or a new map. Preserve save/resume exercise progress and provide a safe cancellation path. New campaigns save immediately; the overall answer streak survives reload.
 3. [complete] Designer found two reproducible autonomy bugs: assigned village guards ignored castle alarms; released expeditions stopped defending themselves after a lair fell. Both have targeted fixes and regression tests. The reviewer independently reran both reproductions and checked that the changes do not trigger unsolicited distant attacks.
 4. [complete] Adapter, simulation, shared app, static references and leaderboard navigation checks pass. Seven paid-answer campaign probes finish successfully. Browser verified both restart choices, cancellation preserving a 1/4 payment, and Escape/focus/layout at 390×480. Published through PR #11 (`f391ce07e43c2f25fc16dbdc919eb0b801bc3cc3`), with successful Pages run `40821829159`; the public site's new pause controls and same-seed restart were verified. Cloudflare leaderboard deployment remains an account-owner step.
+
+## Expanded kingdoms — 2026-10-29
+
+Implemented on `codex/klockglantan-expansion` from upstream `41a91e3`, including numeric mobile keyboard support. The user approved merging to `main` on 2026-10-29; the branch is synchronized with the selective-test organization in `0c50da0`.
+
+1. [complete] Start with only castle and house. Grow width and height by 100/150/200%: 72×56, 90×70, 108×84. Add connected regions, water, mountain ridges and dense forest; cache navigation and adapt camera/fog/minimap to the larger maps.
+2. [complete] Two roaming guardians per lair from creation; awakening starts village-bound waves. One boss lair per map, with guardians tuned for approximately 10/20/30 combined hero levels. Retune the opening for a kingdom without heroes.
+3. [complete] Separate heroes physically; make guards patrol, gathering groups keep formation, and stalled travellers recover. Preserve purposeful fighting/healing/resting and risk-aware decisions.
+4. [complete] Move the action panel left; make water, obstacles, monster ranks and boss lairs visually unmistakable. Add dedicated layered sound effects with spatial mixing, voice limits, mute, speech ducking and lifecycle cleanup.
+5. [complete] Integrate and run affected domain and shared app checks, seeded navigation checks and paid-answer balance probes. Inspect desktop and mobile in browser.
+6. [complete] Master game designer, visual designer, sound engineer and software engineer review the integrated game. Resolve material issues and document evidence and remaining limits. Prepare the reviewed playtest branch and integrate the user-approved release.
+
+The new map/simulation save schema is separate from previous saves; the leaderboard score version is unchanged. User decisions remain fixed during all reviews.
+
+Final validation: all seven game domains, shared app input/lifecycle and leaderboard navigation checks passed. All three final-build paid-answer campaigns won; controlled boss parties cleared at the requested combined levels without casualties. Four specialist reviews and desktop/mobile browser checks are documented in [the review](glantan-review.md).
