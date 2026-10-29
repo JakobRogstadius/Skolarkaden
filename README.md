@@ -53,7 +53,7 @@ Om topplisteservern inte är tillgänglig kan du ändå spela igen eller lämna 
 
 Moduler och aktuell plan: [docs/glantan-plan.md](docs/glantan-plan.md).
 Designgranskning och mätningar: [docs/glantan-review.md](docs/glantan-review.md).
-Kör bara berörda tester med `node tests/glantan/run.cjs world orders adapter simulation`
+Kör bara berörda tester med `node tests/games/glantan/run.cjs world orders adapter simulation`
 (utelämna domäner som inte berörs). `npm test` inkluderar hela spelets svit.
 Lokala webbläsarprov finns i `/audit-glantan.html` och `/audit-glantan-viewport.html` via
 utvecklingsservern; syntetiska resultat skickas aldrig till den riktiga topplistan.
@@ -126,7 +126,7 @@ placering, fria rutor, linjer och alla speglingar/rotationer. Samma kontroll ing
 `node dev/trassel-generate.cjs tall4 1 73` provgenererar ett nytt medelbräde för stående skärm;
 lägg till `--write` för att spara efter full kontroll och kör sedan `npm run assets`.
 
-Riktad kontroll: `node tests/trassel.cjs`, `node tests/trassel-layouts.cjs`, `node tests/tile-scores.cjs` och `node tests/homework-ui.cjs`.
+Riktad kontroll: `npm test -- --area=trassel` och `node tests/server/game-scores.test.cjs`.
 **Driftsättning:** publicera den uppdaterade `cloudflare/worker.mjs` för att API:t ska ta emot Trassels `v1`-poäng och klickläge.
 Ingen databasmigrering eller versionsändring för befintliga spel behövs.
 
@@ -415,13 +415,20 @@ Klassiska skript används så att `file://` fungerar utan modulladdare, externa 
 
 `AnswerQueue` innehåller `{id, text, source}`. Spelen tar emot kön via konstruktorn och hämtar svar med `take()`. En policy anger aktuella mål, redan påbörjade svar och matchningsregler. `AnswerInput` behöver ett textfält, ett formulär, en mikrofon och en kö; knappar är valfria. Värden kan aktivera fokusbevakning med `retainFocus`, som ska vara sann endast under aktivt spel utan öppna dialoger.
 
-Testerna använder endast Node.js standardbibliotek (Node 22.13+ för SQLite-testet):
+Testerna använder endast Node.js standardbibliotek (Node 22.13+ för SQLite-testet). Standardkommandot väljer berörda tester utifrån grenens ändringar samt staged, unstaged och nya filer:
 
 ```sh
 npm test
+npm test -- --list             # Visa valda tester och varför de behövs
+npm test -- --area=paint       # Fokuserat arbete med ett spel
+npm run test:all               # Alla ordinarie tester före sammanslagning
+npm test -- --area=paint --extended  # Även spelets större simuleringar
+npm run test:extended          # Alla ordinarie och utökade tester
 ```
 
-Efter ändringar i `resources`: kör `npm run assets` och checka in den uppdaterade `index.html` tillsammans med filerna. Skript och stilmallar får innehållsbaserade versionsnycklar så att webbläsaren hämtar rätt version efter en uppdatering. `npm test` kontrollerar att nycklarna är aktuella. Spelens poängversioner påverkas inte.
+Jämförelsen utgår från gemensam förfader med `origin/main` (annars lokal `main`); använd `npm test -- --base=REF` för en annan bas. Ändringar i gemensamma moduler kan behöva flera spels tester. Okända kodfiler väljer konservativt alla ordinarie tester. Se [tests/README.md](tests/README.md) för beroendekarta, placering och utökade tester.
+
+Efter ändringar i `resources`: kör `npm run assets` och checka in uppdaterade HTML-filer tillsammans med resurserna. Skript och stilmallar får innehållsbaserade versionsnycklar så att webbläsaren hämtar rätt version efter en uppdatering. Resursändringar väljer automatiskt versionskontrollen. Enbart genererade versionsnycklar i HTML utökar inte urvalet till alla apptester. Spelens poängversioner påverkas inte.
 
 `npm run dev` startar en valfri lokal granskningsserver med testfixturer. Den behövs inte för att spela. Se `AUDIT.md` för kontroller och kända verifieringsbegränsningar.
 

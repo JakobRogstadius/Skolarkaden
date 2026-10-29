@@ -35,7 +35,7 @@ Klockgläntan is a small moss-and-brass settlement keeping its bell alive agains
 
 ## Verification ownership
 
-Tests under `tests/glantan/` run independently: world/navigation, purchases/progression, simulation/AI and exercise adapter. Run only domains affected by each step. At final integration run shared game-launch, input, viewport and score policy tests affected by registration. Browser verification covers mouse/touch layouts, selecting an intent, correct/incorrect answer streaks, realtime activity, construction, recruitment, research and replay.
+Tests under `tests/games/glantan/` run independently: world/navigation, purchases/progression, simulation/AI and exercise adapter. Run only domains affected by each step. At final integration run shared game-launch, input, viewport and score policy tests affected by registration. Browser verification covers mouse/touch layouts, selecting an intent, correct/incorrect answer streaks, realtime activity, construction, recruitment, research and replay.
 
 ## Progress / review
 

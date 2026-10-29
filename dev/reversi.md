@@ -38,9 +38,10 @@ recognition result, prioritizes complete answers, and treats multiple matched
 choices as a retry. A final unmatched answer triggers the poor-move rule,
 including Chinese; it is not filtered out by the shared real-time-game policy.
 
-`node tests/reversi.cjs` checks rules, search, difficulty variation, accepted
+`npm test -- --area=reversi` checks rules, search, difficulty variation, accepted
 answer separation, game completion and turn handling. The app and renderer
-tests cover menu/result/highscore integration and DOM presentation.
+tests cover menu/result/highscore integration and DOM presentation. Add
+`--extended` to include complete AI matches.
 
 Reversi uses score version `v1`. Deploy the regenerated `cloudflare/worker.mjs`
 to enable its online scoreboards and submissions. No SQL migration is needed;

@@ -58,8 +58,8 @@ not a claim that every human strategy or exercise will take the same time.
 
 ## Running only relevant checks
 
-`node tests/glantan/run.cjs world orders adapter simulation` accepts any subset
-of those four domains. `node tests/homework-ui.cjs` checks shared app integration;
+`node tests/games/glantan/run.cjs world orders adapter simulation` accepts any subset
+of those four domains. `node tests/games/glantan/app.test.cjs` checks shared app integration;
 `node tests/highscores.cjs` checks the score service and upload-failure replay.
 Run `node dev/glantan-balance.cjs gentle 10 0 1 2` after balance/AI changes.
 Run `node dev/version-assets.cjs` after changing browser assets.
