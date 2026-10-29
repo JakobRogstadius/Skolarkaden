@@ -10,21 +10,22 @@
   };
   SC.modes={};
   const lesson=(name,lang,items,description,icon='Aa')=>({name,lang,items,description,icon,color:'#c4afff',placeholder:'Skriv svaret…'});
-  // Generator levels are stable; menu numbers can change without moving scores.
+  // Keep IDs and generator levels stable when inserting or renaming exercises.
   const mathLessons=[
-    ['addition',0,'+','Addition med talen 0–10','math'],
-    ['addition-subtraction',1,'+ och −','Addition och subtraktion inom 0–20','math2'],
-    ['diagrams',6,'enkla diagram','Räkna prickar och läs diagram och tallinjer · svar 1–10'],
-    ['simple-equations',7,'enkla ekvationer','Vilket tal gör båda sidor lika? Till exempel 7 + 5 = 10 + ?'],
-    ['large-numbers',2,'10–100','Addition och subtraktion med talen 10–100','math3'],
-    ['multiplication',3,'×','Multiplikationstabellerna 1–10','math4'],
-    ['multiplication-division',4,'× och ÷','Multiplikation och division i tabellerna 1–10','math5'],
-    ['equations',5,'ekvationer','Skriv det positiva heltal som x står för','math6']
+    {id:'addition',mathLevel:0,name:'Addition',menuLabel:'Addition',description:'Addition med talen 0–10',legacyId:'math'},
+    {id:'addition-subtraction',mathLevel:1,name:'Addition och subtraktion',menuLabel:'Addition och subtraktion',description:'Addition och subtraktion inom 0–20',legacyId:'math2'},
+    {id:'diagrams',mathLevel:6,name:'Enkla diagram',menuLabel:'Enkla diagram',description:'Räkna prickar och läs diagram och tallinjer · svar 1–10'},
+    {id:'simple-equations',mathLevel:7,name:'Enkla ekvationer',menuLabel:'Enkla ekvationer',description:'Vilket tal gör båda sidor lika? Till exempel 7 + 5 = 10 + ?'},
+    {id:'large-numbers',mathLevel:2,name:'Större tal',menuLabel:'Större tal',description:'Addition och subtraktion med talen 10–100',legacyId:'math3'},
+    {id:'simple-multiplication',mathLevel:8,name:'Enkel multiplikation',menuLabel:'Enkel multiplikation',description:'Hur många rutor? Ett rutnät med 2–6 rader och 2–6 kolumner'},
+    {id:'multiplication',mathLevel:3,name:'Multiplikation',menuLabel:'Multiplikation',description:'Multiplikationstabellerna 1–10',legacyId:'math4'},
+    {id:'multiplication-division',mathLevel:4,name:'Multiplikation och division',menuLabel:'Multiplikation och division',description:'Multiplikation och division i tabellerna 1–10',legacyId:'math5'},
+    {id:'equations',mathLevel:5,name:'Ekvationer',menuLabel:'Ekvationer',description:'Skriv det positiva heltal som x står för',legacyId:'math6'}
   ];
-  SC.legacyMathIds=Object.freeze(Object.fromEntries(mathLessons.filter(m=>m[4]).map(m=>[m[4],'math-'+m[0]])));
+  SC.legacyMathIds=Object.freeze(Object.fromEntries(mathLessons.filter(m=>m.legacyId).map(m=>[m.legacyId,'math-'+m.id])));
   SC.canonicalLesson=mode=>Object.hasOwn(SC.legacyMathIds,mode)?SC.legacyMathIds[mode]:mode;
   SC.legacyLesson=mode=>Object.keys(SC.legacyMathIds).find(key=>SC.legacyMathIds[key]===mode)||mode;
-  mathLessons.forEach(([id,mathLevel,label,description],i)=>{SC.modes['math-'+id]={...lesson(`Matematik ${i+1} (${label})`,'sv-SE',[],description,'±'),menuLabel:`${i+1} · ${['Addition','Addition och subtraktion','Enkla diagram','Enkla ekvationer','Större tal','Multiplikation','Multiplikation och division','Ekvationer'][i]}`,type:'math',mathLevel};});
+  mathLessons.forEach(({id,mathLevel,name,menuLabel,description})=>{SC.modes['math-'+id]={...lesson(name,'sv-SE',[],description,'±'),menuLabel,type:'math',mathLevel};});
   // The menu and exercise popularity boards share this order and membership.
   SC.exerciseGroups=Object.freeze([
     {id:'math',name:'Matematik'},{id:'letters',name:'Bokstäver'},
@@ -233,6 +234,8 @@
       for(let n=1;n<=10;n++)add(n,'?');
     }else if(level===7){
       for(let a=0;a<=9;a++)for(let b=0;b<=9;b++)add(Math.abs(a+b-10),`${a} + ${b} = 10 ${a+b<10?'−':'+'} ?`);
+    }else if(level===8){
+      for(let rows=2;rows<=6;rows++)for(let columns=2;columns<=6;columns++)add(rows*columns,{kind:'multiplication-grid',rows,columns,answer:rows*columns});
     }else throw new RangeError('Unknown mathematics lesson');
     // Keep one-operator equations as common as two-operator equations.
     if(level===5)for(const [n,labels] of pool){const simple=labels.filter(label=>label.split(' = ')[0].split(' ').length===3),complex=labels.filter(label=>label.split(' = ')[0].split(' ').length===5);pool.set(n,[simple,complex]);}
@@ -243,6 +246,10 @@
     if(!choices)throw new RangeError('Answer outside selected mathematics lesson');
     if(level===5)choices=choices[rng()<.5?0:1];
     if(level===6)return {...word(String(answer)),label:'?',diagram:SC.makeDiagram(Number(answer),rng),mathLevel:level};
+    if(level===8){
+      const diagram={...choices[Math.floor(rng()*choices.length)]};
+      return {...word(String(answer)),label:`${diagram.rows} rader och ${diagram.columns} kolumner`,diagram,mathLevel:level};
+    }
     return {...word(String(answer)),label:choices[Math.floor(rng()*choices.length)],mathLevel:level};
   };
   SC.makeDiagram=function(answer,rng=Math.random){

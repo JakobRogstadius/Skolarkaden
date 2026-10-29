@@ -10,6 +10,8 @@ there is no installation step or external test framework.
 | `npm test` | Tests affected by committed branch changes, staged edits, unstaged edits and untracked files |
 | `npm test -- --list` | Explain that selection without running anything |
 | `npm test -- --base=REF` | Use the merge base with a different branch or commit |
+| `npm test -- --area=glantan` | Klockgläntan domains and its app/homework/score integration |
+| `npm run test:glantan -- orders adapter` | Only the named Klockgläntan domains |
 | `npm test -- --area=paint` | Paint tests and Paint's cases in shared game integration suites |
 | `node tests/games/paint/logic.test.cjs` | One specific test file |
 | `npm run test:all` | Every ordinary test, regardless of the current diff |
@@ -50,14 +52,14 @@ Dependencies describe the behavior under test, not every script a VM happens
 to load. For example, app fixtures load the real HTML script order, but a change
 to Paint does not rerun Chess rules. Conversely, `game.js` supplies shared
 behavior as well as City, and Chess consumes answer-selection helpers from
-`reversi.js`; those changes correctly select more than one game.
+`reversi.js`; Trassel similarly consumes matching-pair helpers from `klossar.js`. Those changes correctly select more than one game.
 
 Parameterized game integration suites receive only the affected game IDs from
 the runner. With `--all` or direct invocation they check all their games.
 
 | Changed file | Ordinary selection |
 | --- | --- |
-| `resources/klossar-speech.js` | Klossar pronunciation, Klossar app integration and asset validation (3 suites) |
+| `resources/klossar-speech.js` | Klossar pronunciation, Klossar/Trassel app integration, multiplication-image speech and asset validation (5 suites) |
 | `resources/paint.js` | Paint logic, Paint cases in game contracts/launch/homework/score HUD, and asset validation (6 suites) |
 | `resources/sounds.js` | Three sound suites and asset validation (4 suites) |
 | `tests/games/paint/logic.test.cjs` | That test alone |
@@ -94,11 +96,14 @@ costs were repeated app simulations and broad seed/viewport matrices.
 - Historical source-text checks were removed where current behavior is covered;
   translation language selection is checked through the actual app.
 
-The ordinary set has 78 smaller suites and took about 49–53 seconds in the same
-environment. More files make ownership and selection narrower; they do not
-mean every edit runs more tests. The focused Paint command passed in about
-3.4 seconds; the seven extended suites together took about 47 seconds.
-These timings are indicative, not budgets.
+The initial reorganization had 78 smaller ordinary suites and took about
+49–53 seconds in the same environment. Synchronization with later main changes
+adds Trassel, Klockgläntan and multiplication checks, bringing the ordinary set
+to 89 suites. Numeric mobile keyboard coverage remains in `shared/input-focus.test.cjs`.
+More files make ownership and selection narrower; they do not mean every edit
+runs more tests. The initial focused Paint run took about 3.4 seconds and the
+seven extended suites about 47 seconds. These historical timings are indicative,
+not budgets; the runner reports current timings.
 
 | Extended sweep | Ordinary coverage retained |
 | --- | --- |

@@ -41,7 +41,7 @@ class KlossarRenderer{
       if(tile.item.diagram){
         const diagram=document.createElement('canvas');diagram.width=224;diagram.height=160;diagram.setAttribute('aria-hidden','true');
         const ctx=diagram.getContext('2d');ctx.scale(2,2);SC.drawMathDiagram(ctx,tile.item.diagram,{x:0,y:0,w:112,h:80},{textColor});face.append(diagram);
-        button.setAttribute('aria-label',tile.item.diagram.kind==='dots'?'Räkna prickarna':tile.item.diagram.kind==='number-line'?'Vilket tal saknas på tallinjen?':'Vilket tal ersätter frågetecknet i diagrammet?');
+        button.setAttribute('aria-label',tile.item.diagram.kind==='multiplication-grid'?tile.item.label:tile.item.diagram.kind==='dots'?'Räkna prickarna':tile.item.diagram.kind==='number-line'?'Vilket tal saknas på tallinjen?':'Vilket tal ersätter frågetecknet i diagrammet?');
       }else{face.textContent=tile.item.label;button.setAttribute('aria-label',tile.item.label);}
       button.append(face);this.board.append(button);this.buttons.set(tile.id,button);
     }

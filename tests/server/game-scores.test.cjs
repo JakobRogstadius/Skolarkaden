@@ -8,7 +8,8 @@ const {read} = require('../helpers/runtime.cjs');
   const policy = globalThis.SkolarkadenHighscorePolicy;
   for (const {game, version, input, values} of [
     {game:'chess', version:'v2', input:'keyboard', values:[0,490,3240]},
-    {game:'klossar', version:'v1', input:'click', values:[5000,5000,5000]}
+    {game:'klossar', version:'v1', input:'click', values:[5000,5000,5000]},
+    {game:'trassel', version:'v1', input:'click', values:[5000,5000,5000]}
   ]) {
     const db = new DatabaseSync(':memory:'); db.exec(read('cloudflare/schema.sql'));
     const DB = {prepare(sql) {
@@ -30,7 +31,7 @@ const {read} = require('../helpers/runtime.cjs');
     for(const [i,pace] of ['gentle','steady','brave'].entries()) {
       const body=payload(values[i],pace);
       assert.equal((await call('POST','',body)).status,201);
-      if(i===0) assert.equal((await call('POST','',body)).status,200,'retry does not duplicate a score');
+      assert.equal((await call('POST','',body)).status,200,'retry does not duplicate a score');
     }
     const board=await (await call('GET',`?leaderboard=${version}:${game}:swedish:gentle`)).json();
     assert.equal(board.leaderboard,`${version}:${game}`);
@@ -48,7 +49,7 @@ const {read} = require('../helpers/runtime.cjs');
       assert.equal(current.scores.length,5);assert(!current.scores.some(row=>row.player_name==='OLD'));
       assert(current.scores.some(row=>row.player_name==='PREVIOUS'&&row.score===1234));
     } else {
-      assert.equal((await call('POST','',{...payload(50),leaderboard_key:'v2:city:swedish:gentle'})).status,400,'click input stays exclusive to click games');
+      assert.equal((await call('POST','',{...payload(50),leaderboard_key:'v2:city:swedish:gentle',settings:{input_mode:'click'}})).status,400,'click input stays exclusive to click games');
     }
     db.close();
   }

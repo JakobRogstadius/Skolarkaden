@@ -29,10 +29,27 @@ const settle=()=>new Promise(resolve=>setImmediate(resolve));
  other.focus();await settle();assert.equal(document.activeElement,field,'recover stray element focus');
  document.activeElement=null;field.dispatchEvent(new Event('blur'));await settle();assert.equal(document.activeElement,field,'recover focus lost to the body');
  field.value='räka';form.dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(queue.items.at(-1).text,'räka');assert.equal(field.value,'');
- input.configure({enabled:false,lesson:'math-addition'});assert.equal(field.inputmode,'numeric');assert.equal(field.enterkeyhint,'send');
+ for(const [lesson,mode] of Object.entries(SC.modes)){
+  input.configure({enabled:false,lesson});
+  assert.equal(field.inputmode,mode.type==='math'?'numeric':'text',lesson);
+  assert.equal(field.pattern,mode.type==='math'?'[0-9]*':'.*',lesson);
+ }
+ for(const [items,type,expected] of [
+  [[{answer:'12'},{answer:'36'}],'words','numeric'],
+  [[{answer:'12'},{answer:'twelve'}],'words','text'],
+  [[{answer:'12',aliases:['twelve']}],'word-pairs','text'],
+  [[{answer:'12',hint:'shi er',translation:'tolv'}],'chinese','text'],
+  [[], 'words','text']
+ ]){
+  SC.modes.homework={items,type};input.configure({enabled:false,lesson:'homework'});
+  assert.equal(field.inputmode,expected);assert.equal(field.pattern,expected==='numeric'?'[0-9]*':'.*');
+ }
+ delete SC.modes.homework;
+ input.configure({enabled:false,lesson:'math'});assert.equal(field.inputmode,'numeric','legacy math IDs');
+ input.configure({enabled:false,lesson:'math-addition'});assert.equal(field.inputmode,'numeric');assert.equal(field.enterkeyhint,'send');assert.equal(form.noValidate,true,'game handles wrong answers');
  const numberBefore=queue.length;field.value='12';const enter=Object.assign(new Event('keydown',{cancelable:true}),{key:'Enter'});field.dispatchEvent(enter);
  assert(enter.defaultPrevented);assert.equal(queue.length,numberBefore+1);assert.equal(queue.items.at(-1).text,'12');assert.equal(field.value,'');assert.equal(document.activeElement,field);assert.equal(field.inputmode,'numeric');
- input.configure({enabled:false,lesson:'swedish'});assert.equal(field.inputmode,'text');queue.items.pop();
+ input.configure({enabled:false,lesson:'swedish'});assert.equal(field.inputmode,'text');assert.equal(field.pattern,'.*');queue.items.pop();
  input.configure({enabled:false,lesson:'bopomofo'});field.dispatchEvent(new Event('compositionstart'));field.value='ㄆ';field.dispatchEvent(new Event('input'));assert.equal(queue.length,1);field.dispatchEvent(new Event('compositionend'));field.dispatchEvent(new Event('input'));assert.equal(queue.length,2);assert.equal(queue.items.at(-1).text,'ㄆ');
  for(const state of ['pause','dialog','hidden','other-window']){
   playing=state!=='pause';dialog=state==='dialog';document.hidden=state==='hidden';windowFocused=state!=='other-window';

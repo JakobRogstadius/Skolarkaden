@@ -1,0 +1,191 @@
+/* Klockgläntan: warm paper controls around an uninterrupted, living map. */
+.glantan-card{background:linear-gradient(145deg,#345b50,#263f3e)}
+.glantan-card .card-art{color:#f1d18d}
+body:has(#play[data-game=glantan]:not([hidden])) .shell{max-width:1560px;padding-top:14px}
+body:has(#play[data-game=glantan]:not([hidden])) .masthead{margin-bottom:12px}
+.arena.glantan{height:clamp(580px,77vh,960px);background:#304c41;border-color:#7b8d70;container-type:size;container-name:glantan;border-radius:14px}
+.arena.glantan>.hud{height:66px;min-height:66px;padding:10px 18px;background:#233e37;border-bottom:1px solid #6b7c5e55;align-items:center}
+.arena.glantan>.hud .score-value{font-size:18px;display:inline-flex;gap:7px;color:#eed49d}
+.arena.glantan>.hud .eyebrow{font-family:Georgia,serif;letter-spacing:.3px;font-size:16px;margin:0;color:#e8dcb9}
+.arena.glantan>.hud small{display:none}
+.arena.glantan>.hud .hud-objective{min-width:170px;text-align:left;display:grid;grid-template-columns:auto 1fr;column-gap:18px;align-items:center}
+.arena.glantan>.hud .hud-objective strong{font-size:16px;grid-row:1/3}
+.arena.glantan>.hud .hud-objective span{font-size:11px;margin:0;color:#c1d1b6}
+.arena.glantan>.hud progress{margin-top:5px;height:4px}
+.arena.glantan>.hud .icon-button{width:37px;height:37px;padding:9px;border-color:#7e8e6f65}
+.g-scene{position:absolute;inset:66px 0 0;display:grid;grid-template-columns:minmax(0,1fr) 285px;min-height:0;color:#354b3e;font-size:13px}
+.g-stage{position:relative;overflow:hidden;min-height:0;min-width:0;background:#34564a}
+.g-world{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.g-sidebar{display:flex;flex-direction:column;min-width:0;min-height:0;background:linear-gradient(130deg,#f0e8d1,#e8e2cb);border-left:1px solid #bcbfa2;box-shadow:-4px 0 18px #233b3020}
+.g-sidebar button{font-family:inherit;color:#354b3e}
+.g-tabs{display:grid;grid-template-columns:repeat(4,1fr);flex:none;border-bottom:1px solid #c6c9ac;padding:7px 7px 0;gap:2px;background:#e2e2c9}
+.g-tabs .g-tab{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;padding:8px 1px 10px;border:0;border-radius:6px 6px 0 0;font-size:10px;font-weight:bold;background:transparent;color:#708170}
+.g-tabs .g-tab:hover{background:#d4dcc3}
+.g-tabs .g-tab[aria-selected=true]{color:#334e3d;background:#f0e8d1;box-shadow:inset 0 3px #ae9057}
+.g-icon{display:inline-flex;flex:none;align-items:center;justify-content:center}
+.g-panel{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:14px 13px 18px;scrollbar-width:thin;scrollbar-color:#a6b294 transparent}
+.g-panel-title{font:normal 21px/1.2 Georgia,serif;letter-spacing:-.3px;margin:0 0 8px;color:#344d3d}
+.g-subtitle{font-size:11px;line-height:1.5;color:#72806b;margin:0 0 12px}
+.g-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}
+.g-action{position:relative;display:flex;align-items:center;gap:9px;width:100%;padding:10px;margin:0 0 7px;min-height:56px;text-align:left;border:1px solid #bdc2a2;border-radius:7px;background:#faf6e5;box-shadow:0 2px 0 #b6b89925;transition:background .15s,box-shadow .15s}
+.g-action:hover:enabled{background:#fffbee;box-shadow:0 2px 0 #a4a88c55;border-color:#8d9f79}
+.g-action .g-icon{width:23px;color:#64816a}
+.g-action-grid .g-action{margin:0;min-height:83px;align-items:flex-start;flex-wrap:wrap;padding:9px;gap:5px}
+.g-action-grid .g-action .g-action-text{flex-basis:100%;padding-right:0}
+.g-action-grid .g-cost{position:absolute;right:8px;top:8px}
+.g-action-text{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+.g-action-name{font-size:12px;line-height:1.2;font-weight:bold}
+.g-action-detail{font-size:10px;line-height:1.35;font-weight:normal;color:#77816c}
+.g-cost{display:inline-flex;align-items:center;justify-content:center;flex:none;width:24px;height:24px;border-radius:50%;border:1px solid #c5b17d;background:#f3e4b7;font:600 12px/1 Georgia,serif;color:#7f6337}
+.g-action.g-unavailable{opacity:.53;background:#e4e4ce;box-shadow:none}
+.g-action.g-selected{border-color:#a6874a;background:#fff4d4;box-shadow:0 0 0 1px #a6874a}
+.g-section-title{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:#7c8a73;font-weight:bold;margin:19px 0 10px}
+.g-tech-branch{border-left:2px solid #a2b38e;padding-left:9px;margin:0 0 14px}
+.g-branch-name{display:block;margin:0 0 7px;font-size:10px;letter-spacing:.4px;color:#6e806a}
+.g-tech-branch .g-action{padding:8px;min-height:60px}
+.g-tech-branch .g-action-detail{font-size:10px}
+.g-hero-row{display:grid;grid-template-columns:23px 1fr auto;gap:4px 8px;align-items:center;width:100%;margin:0 0 5px;padding:8px 9px;border:1px solid #c4c8ab;background:#f7f2de;border-radius:6px;text-align:left}
+.g-hero-row:hover:enabled{background:#fff9e9}
+.g-hero-row>.g-icon{grid-row:1/3;color:var(--hero-color);filter:brightness(.75)}
+.g-hero-row strong{font-size:12px}
+.g-level{font-size:9px;color:#81866d;font-weight:normal}
+.g-hero-task{grid-column:2/4;font-size:10px;color:#7b856f;font-weight:normal}
+.g-hero-intent{font:italic 17px/1.4 Georgia,serif;color:#71845f;margin:10px 0 16px}
+.g-detail-meter{display:grid;grid-template-columns:1fr auto;font-size:10px;margin:14px 0;color:#7e876f}
+.g-detail-meter strong{font-size:10px;color:#52694f}
+.g-detail-meter progress{grid-column:1/-1;height:5px;margin:6px 0 0;accent-color:#7c9964;background:#d2d7ba}
+.g-detail-meter progress::-webkit-progress-bar{background:#d2d7ba}
+.g-detail-meter progress::-webkit-progress-value{background:#8ba976}
+.g-contributions{font-size:10px;line-height:1.7;color:#7d866f}
+.g-lair-timer{font-size:13px;color:#987247;border:1px solid #d9c59f;border-radius:6px;padding:9px;background:#f3e9cc}
+.g-empty{font:italic 16px/1.5 Georgia,serif;color:#8c957e;padding:12px 4px}
+.g-bounty-row{display:flex;gap:4px;border-bottom:1px solid #ccd0b4;padding:9px 0}
+.g-bounty-view{border:0;background:transparent;padding:0;display:grid;grid-template-columns:24px 1fr;gap:6px 8px;flex:1;text-align:left}
+.g-bounty-view:hover:enabled{background:transparent;color:#927138}
+.g-bounty-view>.g-icon{grid-row:1/3;color:#9c8553}
+.g-bounty-view strong{font-size:12px}
+.g-bounty-view small{font-size:10px;font-weight:normal;color:#788470}
+.g-question-panel{flex:none;background:#fcf7e7;border-top:1px solid #c5c9a9;padding:13px 16px 9px;min-height:136px;box-shadow:0 -3px 16px #7f8d6510}
+.g-intent{display:flex;align-items:center;justify-content:space-between;gap:5px;min-height:25px}
+.g-intent-name{font-size:11px;color:#8b7954}
+.g-cancel{border:0;background:transparent;border-radius:4px;flex:none;padding:4px;min-width:27px;min-height:27px;color:#8f967d}
+.g-cancel:hover:enabled{background:#dce0c7;color:#516c4e}
+.g-streak{display:flex;align-items:center;gap:5px;margin:7px 0 10px}
+.g-pip{display:block;width:15px;height:6px;background:#dadcc4;border-radius:4px;transition:background .2s}
+.g-pip.filled{background:#8fa76a;box-shadow:0 0 7px #c6ce8c55}
+.g-streak-count{font:11px/1 sans-serif;color:#94a17d;margin-left:auto}
+.g-question{text-align:center;display:flex;align-items:center;justify-content:center;min-height:43px;color:#344b3b;font-size:clamp(24px,2.3vw,35px);font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.g-question:has(.g-diagram){min-height:98px}
+.g-idle-icon{color:#b6ba98;opacity:.7;padding:7px}
+.g-idle-icon svg{width:30px;height:30px}
+.g-question-hint{font-size:12px;text-align:center;color:#718566;margin:4px 0;min-height:0}
+.g-feedback{min-height:14px;text-align:center;color:#7d965b;font-size:10px;margin-top:4px}
+.g-feedback.g-wrong{color:#aa654d}
+.g-scene .g-diagram{width:min(100%,168px);max-height:120px;height:auto;object-fit:contain}
+.g-map-badge{position:absolute;left:16px;top:15px;display:flex;align-items:center;gap:7px;pointer-events:none;color:#ece5c9;font:italic 14px Georgia,serif;text-shadow:0 1px 3px #2d4b3c}
+.g-toast{position:absolute;left:50%;top:14px;transform:translateX(-50%);max-width:85%;width:max-content;padding:9px 15px;border:1px solid #b9c3a061;border-radius:6px;background:#294b40e8;color:#f2e5bf;font-size:11px;line-height:1.4;box-shadow:0 3px 15px #1d352a20;pointer-events:none;z-index:2}
+.g-toast[data-kind=warn]{background:#664a3beb;border-color:#dab68c66;color:#ffe6c4}
+.g-toast[data-kind=good]{background:#4f6f4be8;color:#f7e9b6}
+.g-map-controls{position:absolute;bottom:17px;right:16px;display:flex;gap:2px;background:#26483de0;border:1px solid #afbb8c66;padding:3px;border-radius:7px;box-shadow:0 2px 8px #203b3230}
+.g-map-controls button{display:flex;align-items:center;justify-content:center;width:32px;height:32px;padding:4px;border:0;color:#e7dfb9;background:transparent;border-radius:4px}
+.g-map-controls button:hover:enabled{background:#6e8c5c88}
+.g-minimap{position:absolute;left:14px;bottom:14px!important;width:126px!important;height:98px!important;box-sizing:content-box;border:3px solid #cfcc9b99;border-radius:4px;box-shadow:0 3px 15px #23413455;cursor:crosshair;opacity:.92}
+.g-bell{position:absolute;right:15px;top:14px;display:grid;grid-template-columns:27px auto;gap:0 8px;align-items:center;background:#2f4a3fe8;border:1px solid #9f9f7588;color:#d2d6ad;padding:8px 12px;box-shadow:0 3px 12px #23413444;border-radius:7px;min-height:48px}
+.g-bell>svg{grid-row:1/3}
+.g-bell>span{font-size:11px;font-weight:bold}
+.g-bell>small{font-size:10px;font-weight:normal;text-align:left;opacity:.8}
+.g-bell:disabled{opacity:.75}
+.g-bell.g-ready{background:linear-gradient(#e3c88c,#cfaf6b);border-color:#f1da9f;color:#4b5137;box-shadow:0 2px 0 #8e814e,0 0 17px #e9d99325}
+.g-bell.g-ready:hover:enabled{background:#f3d89b}
+.arena.glantan .overlay{z-index:5}
+#glantan-result-breakdown{font-size:13px;line-height:1.7}
+#glantan-restart-dialog{max-width:440px}
+body:has(#play[data-game=glantan]:not([hidden])) #answer{border-color:#7e926c;background:#233e35}
+body:has(#play[data-game=glantan]:not([hidden])) #answer-submit{display:block;min-width:52px;background:#d9c18b;color:#354b36;border-color:#d9c18b}
+/* The existing arcade shell uses a block answer form. This game needs both
+   intent and input continuously visible, also before a mobile keyboard opens. */
+body.playing:has(#play[data-game=glantan]){overflow:hidden}
+body.playing:has(#play[data-game=glantan]) .shell{position:fixed;top:var(--play-top,0px);left:0;right:0;height:var(--play-height,100dvh);display:flex;flex-direction:column;padding:10px 18px;min-height:0}
+body.playing:has(#play[data-game=glantan]) .masthead{flex:none;min-height:34px;margin:0 0 8px}
+body.playing:has(#play[data-game=glantan]) #play{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}
+body.playing:has(#play[data-game=glantan]) #play .arena.glantan{flex:1;height:auto;min-height:0}
+body.playing:has(#play[data-game=glantan]) #input-dock{flex:none;margin:0}
+body.playing:has(#play[data-game=glantan]) #answer-form{display:flex;flex-wrap:nowrap;gap:7px}
+body.playing:has(#play[data-game=glantan]) #answer{flex:1;width:0;min-width:0;min-height:46px;padding:9px 13px;font-size:20px}
+@media(max-width:600px){body.playing:has(#play[data-game=glantan]) .shell{padding:5px}body.playing:has(#play[data-game=glantan]) .masthead{margin-bottom:5px}}
+@container glantan (max-width:760px){
+  .g-scene{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(160px,1fr) 230px}
+  .g-sidebar{display:grid;grid-template-columns:minmax(0,1fr) minmax(140px,34%);grid-template-rows:45px minmax(0,1fr);border-left:0;border-top:1px solid #abb998}
+  .g-tabs{grid-column:1;grid-row:1;padding:4px 5px 0}
+  .g-tabs .g-tab{flex-direction:row;gap:4px;font-size:10px;padding:6px 2px}
+  .g-tab svg{width:16px;height:16px}
+  .g-panel{grid-row:2;grid-column:1;padding:9px}
+  .g-panel-title{font-size:17px;margin-bottom:5px}
+  .g-subtitle{font-size:10px;margin-bottom:8px}
+  .g-question-panel{grid-row:1/3;grid-column:2;border-top:0;border-left:1px solid #c5c9a9;padding:10px 11px;display:flex;flex-direction:column;justify-content:center;min-height:0}
+  .g-question{font-size:27px;min-height:42px}
+  .g-action-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin:6px 0}
+  .g-action-grid .g-action{min-height:60px;padding:6px;gap:2px}
+  .g-action-name{font-size:10px}
+  .g-action-detail{font-size:9px}
+  .g-action-grid .g-action .g-action-detail{display:none}
+  .g-action .g-icon{width:20px}
+  .g-action .g-icon svg{width:18px;height:18px}
+  .g-cost{width:21px;height:21px;font-size:11px}
+  .g-action{min-height:48px;padding:8px}
+  .g-intent-name{font-size:10px}
+  .g-streak{gap:3px;flex-wrap:wrap}
+  .g-pip{width:10px;height:5px}
+  .g-streak-count{font-size:10px}
+  .g-map-badge{font-size:12px;left:11px;top:12px}
+  .g-bell{padding:6px 9px;right:10px;top:10px;gap:0 6px}
+  .g-bell>span{font-size:10px}
+  .g-minimap{width:100px!important;height:78px!important;left:10px;bottom:10px!important;border-width:2px}
+  .g-map-controls{bottom:10px;right:10px}
+  .g-toast{top:65px;font-size:10px;padding:7px 10px}
+}
+body.playing.mobile-play #play .arena.glantan>.hud{min-height:56px;height:56px;padding:6px 10px}
+body.playing.mobile-play .arena.glantan>.hud .eyebrow{font-size:14px}
+body.playing.mobile-play .arena.glantan>.hud .score-value{font-size:15px}
+body.playing.mobile-play .arena.glantan>.hud .hud-objective{min-width:140px;column-gap:8px}
+body.playing.mobile-play .arena.glantan>.hud .hud-objective strong{font-size:14px}
+body.playing.mobile-play .g-scene{top:56px}
+@container glantan (max-width:480px){
+  .g-tabs .g-tab{min-width:0;flex-direction:column;gap:2px;padding:3px 0;font-size:9px}
+  .g-tabs .g-tab svg{width:15px;height:15px}
+}
+@container glantan (max-height:520px) and (max-width:760px){
+  .g-scene{grid-template-rows:minmax(115px,1fr) 175px}
+  .g-sidebar{grid-template-rows:36px minmax(0,1fr)}
+  .g-panel-title{font-size:15px}
+  .g-action-grid .g-action{min-height:51px}
+  .g-panel .g-subtitle{display:none}
+  .g-question-panel{padding:6px 9px}
+  .g-intent{min-height:20px}
+  .g-question{font-size:23px;min-height:34px}
+  .g-streak{margin:4px 0}
+  .g-scene .g-diagram{max-height:80px}
+  .g-question:has(.g-diagram){min-height:60px}
+  .g-minimap{width:72px!important;height:56px!important}
+  .g-map-controls button{width:28px;height:28px}
+}
+@container glantan (max-height:350px) and (min-width:600px){
+  .g-scene{grid-template-columns:minmax(0,1fr) 250px;grid-template-rows:1fr}
+  .g-sidebar{display:flex;flex-direction:column}
+  .g-tabs{min-height:30px;padding:2px}
+  .g-panel{flex:1;padding:6px}
+  .g-question-panel{border-left:0;border-top:1px solid #c5c9a9;min-height:82px;padding:5px 9px}
+  .g-question{font-size:22px;min-height:26px}
+  .g-question-hint,.g-feedback{min-height:0;margin:0}
+  .g-map-badge{display:none}
+}
+@container glantan (max-height:400px) and (max-width:599px){
+  .g-scene{grid-template-rows:minmax(0,1fr) minmax(130px,55%)}
+  .g-sidebar{grid-template-rows:36px minmax(0,1fr)}
+  .g-map-badge,.g-scene .g-minimap{display:none}
+  .g-bell{top:5px;right:5px;min-height:34px;padding:4px 7px}
+  .g-map-controls{bottom:5px;left:5px;right:auto}
+  .g-map-controls button{width:28px;height:28px}
+  .g-toast{top:45px;padding:4px 7px}
+}
+@media(prefers-reduced-motion:reduce){.g-scene *{transition:none!important}}

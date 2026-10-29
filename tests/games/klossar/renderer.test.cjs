@@ -22,7 +22,7 @@ class Element extends EventTarget{
 const context=vm.createContext({console,Event,EventTarget,CustomEvent:class extends Event{constructor(type,{detail}={}){super(type);this.detail=detail;}},document:{createElement:tag=>new Element(tag)},performance:{now:()=>now},matchMedia:()=>({matches:false}),ResizeObserver:class{observe(){observed++;}disconnect(){observed--;}},requestAnimationFrame:()=>1,cancelAnimationFrame(){cancelled++;}});
 for(const name of ['data','language-exercises-data','language-exercises','input','game','klossar','klossar-creatures','klossar-renderer'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../../../resources/'+name+'.js'),'utf8'),context);
 const SC=context.Starlight;
-for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'])for(const layout of SC.klossarLayouts)for(const pace of ['gentle','steady','brave']){
+for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams','math-simple-multiplication'])for(const layout of SC.klossarLayouts)for(const pace of ['gentle','steady','brave']){
   let renderer;const g=new SC.KlossarGame({random:()=>.31,onEvent:e=>renderer?.scoreEvent(e)});g.start({mode,layout:layout.id,pace});
   const arena=new Element(),canvas=new Element('canvas');arena.append(canvas);renderer=new SC.KlossarRenderer(canvas,g,{creatureRandom:()=>1});
   assert.equal(renderer.buttons.size,g.total*2);assert.equal(arena.children.length,3);
@@ -74,7 +74,7 @@ for(const mode of ['swedishLong','chineseTrad4','math-equations','math-diagrams'
   g.resume();now+=2000;renderer.advance(now);renderer.draw();assert.equal(g.elapsed,elapsed+2);assert.equal(renderer.puffs.size,0);
   renderer.destroy();assert.equal(arena.children.length,1);assert.equal(observed,0);
 }
-assert.equal(cancelled,4*SC.klossarLayouts.length*3);console.log('PASS DOM rendering for all layouts and three difficulties: landscape tiles fit wide, short and narrow viewports; long words, Chinese, equations, diagrams, selection, smoke, wiggles, pause timing and cleanup');
+assert.equal(cancelled,5*SC.klossarLayouts.length*3);console.log('PASS DOM rendering for all layouts and three difficulties: landscape tiles fit wide, short and narrow viewports; long words, Chinese, equations, diagrams, selection, smoke, wiggles, pause timing and cleanup');
 
 // Force the rare effect through the actual removal/rendering path. All draws
 // belong to the visual RNG, so even a busy scene cannot alter the next deal.

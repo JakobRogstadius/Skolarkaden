@@ -17,7 +17,7 @@ const {games}=require('../helpers/runtime.cjs');
     assert.equal(hud.fields.best.textContent,'BÄSTA '+(radio.value==='chess'?(1234).toLocaleString('sv-SE'):top.toLocaleString('sv-SE')),radio.value+' shows online record');
     assert.equal(hud.fields.score.textContent,hud.game.score.toLocaleString('sv-SE'));
     assert(hud.requests.at(-1).includes(encodeURIComponent(hud.ctx.SkolarkadenHighscorePolicy.versions[radio.value]+':'+radio.value+':')));
-    hud.click('pause');hud.click('pause-menu');top++;
+    hud.click('pause');assert.equal(hud.fields['glantan-restart'].hidden,radio.value!=='glantan');hud.click('pause-menu');top++;
   }
   hud.radios[0].dispatchEvent(new Event('change'));
   top=null;hud.click('start');await settle();assert.equal(hud.fields.best.textContent,'BÄSTA 0','empty board');
@@ -27,6 +27,6 @@ const {games}=require('../helpers/runtime.cjs');
   hud.click('pause');hud.click('pause-menu');hud.radios[0].dispatchEvent(new Event('change'));hud.click('start');await settle();
   old(Response.json({scores:[{score:9999}]}));await settle();
   assert.equal(hud.fields.best.textContent,'BÄSTA '+top.toLocaleString('sv-SE'),'late response cannot replace another game record');
-  console.log('PASS online top score for all twelve games, empty/error/loading states and stale response isolation.');
+  console.log('PASS online top score for all scored games, empty/error/loading states and stale response isolation.');
 
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -39,7 +39,7 @@ const deletePainting=async(button=get('gallery').querySelectorAll('button')[0])=
   await login();assert.equal(get('login').hidden,true);assert.equal(get('dashboard').hidden,false);assert.equal(get('admin-key').value,'');
   const sent=requests.at(-1);assert.equal(sent.options.headers.Authorization,'Bearer test-key-not-a-real-credential');assert.equal(sent.options.cache,'no-store');assert.equal(sent.options.credentials,'omit');assert(!sent.url.includes('test-key'));
   assert.equal(get('ips-ever').textContent,'32');assert.equal(get('ips-week').textContent,'12');assert.equal(get('scores-week').textContent,'12');
-  const cells=get('latest').children[0].children;assert.equal(cells[0].textContent,'2026-09-13 00:00:00');assert.equal(cells[3].textContent,'Meteorregn');assert.equal(cells[4].textContent,'Matematik 1 (+)');assert.equal(cells[5].textContent,'Lätt');
+  const cells=get('latest').children[0].children;assert.equal(cells[0].textContent,'2026-09-13 00:00:00');assert.equal(cells[3].textContent,'Meteorregn');assert.equal(cells[4].textContent,'Addition');assert.equal(cells[5].textContent,'Lätt');
   assert.equal(cells[1].textContent,'<svg onload=alert(1)>');assert.equal(cells[1].children.length,0,'names are text, never executable markup');
   assert(!descendants(get('top-ips')).some(node=>node.tagName==='svg'),'username grouping also renders text safely');
   for(const dimension of ['ip','game','exercise']){

@@ -1,6 +1,6 @@
 # Skolarkaden
 
-Tretton små lärspel för tangentbord, mikrofon eller klick. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
+Femton lärspel för tangentbord, mikrofon eller klick. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
 
 **Öppna `index.html` i Chrome.** Behåll `resources` bredvid HTML-filen. Ingen installation, byggprocess eller webbserver behövs. Om du laddar ned projektet som ZIP: packa upp hela filen först.
 
@@ -8,7 +8,7 @@ All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och
 
 Alla språkövningar finns i [language-exercises.json](language-exercises.json).
 
-Välj först övningsgrupp och sedan övning/nivå i de två kopplade menyerna ovanför spelen. Grupperna kommer i ordningen Matematik, Bokstäver, Svenska, English, Svenska–engelska och Kinesiska. Matematik 1 (addition) är förvald och ett slumpat spel markeras vid varje sidladdning. Spelsvårigheten väljs separat. Spelen delas in i **Svara snabbt** och **Tid att fundera**, där den senare gruppen innehåller Reversi, Schack, Klossar och Målarateljén. Spelkorten visas i fem kolumner på större skärmar, tre på mellanstora och två på smala skärmar, med plats för två rader titeltext. Spelkorten kan väljas med mus, pekskärm eller tangentbord.
+Välj först övningsgrupp och sedan övning/nivå i de två kopplade menyerna ovanför spelen. Grupperna kommer i ordningen Matematik, Bokstäver, Svenska, English, Svenska–engelska och Kinesiska. Addition är förvald och ett slumpat spel markeras vid varje sidladdning. Spelsvårigheten väljs separat. Spelen delas in i **Svara snabbt** och **Tid att fundera**, där den senare gruppen innehåller Reversi, Schack, Klossar, Trassel och Målarateljén. Spelkorten visas i fem kolumner på större skärmar, tre på mellanstora och två på smala skärmar, med plats för två rader titeltext. Spelkorten kan väljas med mus, pekskärm eller tangentbord.
 
 Ordövningarna omfattar svenska och engelska synonymer och motsatser i fyra nivåer vardera: 50 ordpar på nivå 1 och 60 på nivåerna 2–4. Översättning svenska–engelska har åtta nivåer: 50 ordpar på nivåerna 1–3 och 80 på nivåerna 4–8. De högsta nivåerna innehåller avancerat vuxenordförråd. Totalt finns 1 470 ordpar. Varje ordpar har två huvudord och separata listor med godkända alternativa svar i båda riktningarna. Uppgiften visar bara huvudordet. Ett svar visas med mindre text efter tio sekunder. För översättning väljer du svarsspråk med **Översätt till**, även med tangentbord. Konstruktion och underhåll beskrivs i [dev/word-pairs.md](dev/word-pairs.md).
 
@@ -26,6 +26,109 @@ API:t använder Cloudflare Worker + D1. Installationssteg och underhåll finns i
 [cloudflare/README.md](cloudflare/README.md). IP-adresser sparas för framtida moderering
 men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 `resources/highscore-policy.js` och tillämpas både i spelet och i API:t.
+
+## Klockgläntan
+
+Ett strategispel i realtid med en liten glänta av mossa, koppar och klingande toner.
+Bygg på kartans rutnät, rekrytera självständiga väktare, spejare, örtvårdare och klangvävare,
+och sätt belöningar som lockar till tillfälliga expeditioner. Valda handlingar betalas med
+1–4 rätta svar i rad. Fel svar eller byte av handling nollställer betalningen, men byten
+ger inte en ny uppgift. En blockerad tomt behåller betalningen tills monstren är borta.
+
+Bostäder ger fyra platser vardera, högst 24 hjältar. Hjältar får erfarenhet från strid,
+läkning och upptäckter; fallna veteraner kan återkallas. Kunskapsträdet har permanenta vägval.
+Ett valfritt underverk eller en mästarförmåga kostar åtta svar och kan bara köpas en gång.
+Stormklockan läker, stärker modet och hejdar angripare; sex rätta svar laddar den, även
+över brutna följder. Monsterbon vaknar vid olika tider, förstärks och kan sprida högst två
+nya bon. Yttre bon har egna försvarare som vaknar vid anfall. Alla bon och monster måste
+bort; förstörs klockborgen är omgången förlorad.
+
+Mus och pekskärm: välj med klick/tryck, dra kartan, zooma med hjul, nypning eller knappar.
+Upptäckta områden fortsätter vara synliga. Paus stoppar världen. Omgång och aktuell betalning
+sparas i webbläsaren; välj samma övning och svårighet för att fortsätta. Efteråt kan du spela
+samma karta med en ny strategi eller skapa en ny karta. **Paus → Börja om…** låter dig
+också börja om på samma eller en ny karta mitt i en omgång. Avbryt behåller din betalning.
+`?game=glantan` förväljer spelet.
+Om topplisteservern inte är tillgänglig kan du ändå spela igen eller lämna resultatet.
+
+Moduler och aktuell plan: [docs/glantan-plan.md](docs/glantan-plan.md).
+Designgranskning och mätningar: [docs/glantan-review.md](docs/glantan-review.md).
+Kör bara berörda tester med `node tests/games/glantan/run.cjs world orders adapter simulation`
+(utelämna domäner som inte berörs). `npm test` inkluderar hela spelets svit.
+Lokala webbläsarprov finns i `/audit-glantan.html` och `/audit-glantan-viewport.html` via
+utvecklingsservern; syntetiska resultat skickas aldrig till den riktiga topplistan.
+
+## Trassel
+
+Koppla ihop röda uppgifter med blå svar genom att dra linjer mellan hexagonernas mittpunkter.
+Linjer får inte dela rutor eller passera väggar. Alla par ska vara anslutna; tomma rutor får vara kvar.
+En spelplan är en omgång. Lätt har 37 rutor och 4 par, Medel 61 rutor och 6 par, Svår 91 rutor och 8 par.
+Uppgifter, svar, typsnitt och färger för texten följer Klossars matchningsregler. Likadana svar är utbytbara.
+Vid kinesiska övningar väljer du Pinyin eller Översättningar ovanför brädet, som i Klossar.
+Den kinesiska rutans pekhjälp visar det andra alternativet. Saknas översättning är det valet avstängt.
+Urvalet behåller så många olika svar som möjligt med entydig koppling mellan pinyin och översättning,
+så att ett byte bevarar matchningar, linjer, grå markeringar och det bevisade optimumet.
+Avsluta en pågående dragning innan du byter. Även kinesiska läxor stöds.
+
+Släpp före ett svar, eller nå ett felaktigt svar, så dras linjen tillbaka. Dra bakåt för att förkorta
+pågående linje. En färdig linje kan ändras från valfri ände: följ den bakåt och dra sedan en ny väg.
+Den motsatta änden ligger kvar. Släpper du ändringen utan ett matchande svar dras resten av linjen tillbaka.
+Ett tryck på en linje visar saxen; ett tryck på saxen klipper och låter båda delarna dra sig mot ändarna.
+Linjer får färg i ordningen de läggs, ur Målarateljéns palett. Ändringar behåller linjens ursprungliga färg och ordning.
+På telefoner blir brädet högre i stående läge och bredare i liggande läge, med samma antal rutor och par. En påbörjad bana roteras vid behov när skärmen vrids. Hela brädet anpassas automatiskt till skärmen. Tryck på en uppgift för att se den större. Tangentbord: välj en uppgift med Enter, gå med Q W E A S D,
+avsluta med Enter. Paus döljer spelplanen och stoppar tiden.
+
+**Ledtråd** kontrollerar om färdiga linjer kan ingå tillsammans i någon fullständig lösning.
+Nyare linjer prövas för borttagning först; äldre möjliga linjer har företräde även om fler nya linjer då måste ändras.
+En oberoende nyare linje återtas om det är en äldre konflikt som blockerar brädet.
+Linjer som behöver ändras tonas till grått och förblir grå tills de raderas eller dras bakåt.
+Markeringen gäller situationen vid kontrollen. En ledtråd kostar 5 % av maxpoängen; samma oförändrade läge debiteras inte igen.
+Om en särskilt svår kontroll når sökgränsen lämnas färger och poäng orörda.
+
+Maxpoängen är 10 000 / 15 000 / 20 000. Slutpoängen är maxpoängen gånger
+`0.7*T + (0.3*4/7)*O + (0.3*3/7)*A`, minus ledtrådsavdrag, avrundad och lägst noll.
+`T = tau/(tau + speltid)` minskar från första sekunden utan deadline eller platå.
+`tau` är tills vidare 60 / 40 / 30 sekunder; matte och längre ord får faktorn 1,3.
+`O` är antalet oanvända rutor delat med det bevisade maximala antalet oanvända rutor.
+`A` är antalet par delat med antalet par plus felaktiga matchningar. Att klippa, ändra eller avbryta linjer räknas inte som felsvar.
+Upprepade återanslutningar kan inte förbättra svarsprecisionen. Slutdialogen visar poängens fyra delar.
+Poängen under spel är en preliminär andel baserad på antalet färdiga par. Tidsreferenserna behöver kalibreras med speldata
+för att bedöma hur nära svårighetsnivåernas medelpoäng ligger varandra.
+
+Brädena är öppna, utan väggar. Svårigheten kommer från placering och konkurrens om utrymme.
+Minst 80 % av alla ändpunkter och minst 75 % av de blå svaren ligger i brädets inre,
+med sex grannrutor. När övningen har tillräckligt många olika svar väljs olika svar:
+varje matchande par har ett avstånd på minst tre hexsteg, och **båda ändarna har ett närmare
+felaktigt alternativ av motsatt textfärg**. Att koppla närmaste grannar löser alltså inte brädet.
+
+Den bevisat kortaste gemensamma lösningen måste vara minst 4 / 7 / 10 rutor längre än
+den bästa parningen av oberoende kortaste vägar på lätt / medel / svår nivå.
+Minst 2 / 2 / 3 av dess linjer går mer än ett halvt varv (198 grader) runt en annan ändpunkt.
+Kontrollen görs på den optimala lösningen, inte bara på frivilliga slingor i en genererad skiss.
+Det gemensamma längdkravet bevisar att alla parens egna kortaste vägar inte kan användas samtidigt;
+vinkelkravet väljer lösningar med nästlade linjer men hävdar inte att varje alternativ lösning har samma form.
+
+Genereringen sker före publicering: disjunkta vägar växer, byter delar och flyttar sina ändar
+inåt, varefter otillräckliga kandidater sorteras bort av den exakta lösaren.
+`resources/trassel-layouts.js` innehåller 12 kontrollerade grundbräden per svårighet och skärmform,
+samt separata lösningar för alla möjliga upprepningsmönster hos svaren.
+Spelet väljer ett bräde, speglar/roterar det och fördelar slumpade uppgifter över paren.
+Förberedelsen är därför omedelbar även på telefon och kan inte falla tillbaka på en vägglabyrint.
+Små läxuppsättningar får fortfarande upprepa utbytbara svar. Deras inre placering och optimum
+kontrolleras separat; det går inte att garantera ett närmare *felaktigt* alternativ om alla svar är likadana.
+
+Lösaren delar varje rutkonflikt mellan två vägar i två möjligheter och använder kortaste vägar samt
+minsta kostnad för tillåtna parningar som undre gräns. Den första konfliktfria lösningen i kostnadsordning
+är optimal; mellan lika kostnader prioriteras färre konflikter. Oförändrade delsökningar återanvänds.
+Ledtrådssökningar fördelas över bildrutor; kontrollen räknas inte som speltid och brädet döljs under tiden.
+`node dev/trassel-layouts.cjs --verify` bevisar på nytt samtliga lagrade optimum och kontrollerar
+placering, fria rutor, linjer och alla speglingar/rotationer. Samma kontroll ingår i `npm test`.
+`node dev/trassel-generate.cjs tall4 1 73` provgenererar ett nytt medelbräde för stående skärm;
+lägg till `--write` för att spara efter full kontroll och kör sedan `npm run assets`.
+
+Riktad kontroll: `npm test -- --area=trassel` och `node tests/server/game-scores.test.cjs`.
+**Driftsättning:** publicera den uppdaterade `cloudflare/worker.mjs` för att API:t ska ta emot Trassels `v1`-poäng och klickläge.
+Ingen databasmigrering eller versionsändring för befintliga spel behövs.
 
 ## Målarateljén
 
@@ -123,6 +226,7 @@ Varje slutförd skötselåtgärd ger 10 poäng. Flera åtgärder av samma typ i 
 | Reversi | Välj föreslagna drag med dina svar och vinn flest brickor. |
 | Schack | Välj föreslagna drag med dina svar och sätt datorn schackmatt. |
 | Klossar | Para ihop och ta bort alla klossar i mahjong-patiens. |
+| Trassel | Koppla ihop uppgifter och svar på ett hexagonbräde utan korsande linjer. |
 | Målarateljén | Måla fritt och rama in dina bilder, helt utan poäng. |
 
 Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övning eller valt språk.
@@ -153,22 +257,25 @@ Svenska och engelska har korta och längre ord. Bokstavsövningen väljer ett sl
 
 Varje svensk och engelsk ordlista innehåller 100 olika ord. Korta ord har högst fem bokstäver och långa ord har 6–12. Kinesiska har fyra kumulativa nivåer i traditionell respektive förenklad skrift. Nivå 1 innehåller 30 enkla tecken och nivå 2 lägger till 50 tecken. Nivå 3 och 4 lägger sedan till 75 respektive 100 tvåteckensord, där minst ett tecken redan förekommer på en lägre nivå. Tidigare uppgifter finns kvar: totalt 30, 80, 155 och 255 uppgifter, varav de två högsta nivåerna blandar tecken och ord. Exempel är 牛奶 och 朋友 i nivå 3, 老師 och 書包 i nivå 4. Tangentbord och tal kan ange hela orden som kinesiska tecken, pinyin eller svenska översättningar. Det gäller även kinesiska läxor. Angivna betydelser separerade med / eller ; godkänns var för sig, och parentesförklaringar är valfria. [Alla uppgifter och urvalsprinciper](dev/mandarin-levels.md). De båda skrifterna har motsvarande tecken och samma pinyin. Val av talspråk ändrar inte tecknens skrift.
 
-Matematiken har åtta fasta nivåer. Nivån ändras aldrig under en omgång och ger inte högre poäng för svårare uppgifter.
+Matematiken har nio fasta övningar. Övningen ändras aldrig under en omgång och ger inte högre poäng för svårare uppgifter.
 
 | Övning | Uppgifter |
 | --- | --- |
-| Matematik 1 (+) | Addition med två tal 0–10; svar 0–20. |
-| Matematik 2 (+ och −) | Addition och subtraktion inom 0–20; inga negativa svar. |
-| Matematik 3 (enkla diagram) | Tvådelade cirkeldiagram med summa 4, eller lika stora delar med jämn summa 2–10. Lodräta/vågräta staplar med storleksförhållande 1, 1,5, 2, 3 eller 4. Prickar och tallinjer med steg 1, 3–4 inre markeringar och ändpunkter inom 0–10. Svar 1–10; diagramtypen väljs bland dem som kan visa det aktuella svaret. |
-| Matematik 4 (enkla ekvationer) | Två tal 0–9 till vänster: a + b = 10 + ? eller a + b = 10 − ?. Svar 0–10. |
-| Matematik 5 (10–100) | Två tal 10–100 med addition eller subtraktion; svar 0–200. |
-| Matematik 6 (×) | Multiplikationstabellerna 1–10. |
-| Matematik 7 (× och ÷) | Multiplikation och exakt division i tabellerna 1–10. |
-| Matematik 8 (ekvationer) | Lös x med en eller två av +, −, × och ÷, utan parenteser. Vanlig prioriteringsordning gäller. x är ett entydigt positivt heltal 1–20. |
+| Addition | Addition med två tal 0–10; svar 0–20. |
+| Addition och subtraktion | Addition och subtraktion inom 0–20; inga negativa svar. |
+| Enkla diagram | Tvådelade cirkeldiagram med summa 4, eller lika stora delar med jämn summa 2–10. Lodräta/vågräta staplar med storleksförhållande 1, 1,5, 2, 3 eller 4. Prickar och tallinjer med steg 1, 3–4 inre markeringar och ändpunkter inom 0–10. Svar 1–10; diagramtypen väljs bland dem som kan visa det aktuella svaret. |
+| Enkla ekvationer | Två tal 0–9 till vänster: a + b = 10 + ? eller a + b = 10 − ?. Svar 0–10. |
+| Större tal | Två tal 10–100 med addition eller subtraktion; svar 0–200. |
+| Enkel multiplikation | En bild med 2–6 rader och 2–6 kolumner. Rutnätet fyller hela bildytan (112 × 80), utan marginaler eller siffror. Klicka på bilden för att höra ”N gånger M” på svenska. Svara med produkten (4–36), eller matcha bilden med talet i Klossar och Trassel. Talade svar som ”trettiosex” och ”trettio sex” godkänns som 36. |
+| Multiplikation | Multiplikationstabellerna 1–10. |
+| Multiplikation och division | Multiplikation och exakt division i tabellerna 1–10. |
+| Ekvationer | Lös x med en eller två av +, −, × och ÷, utan parenteser. Vanlig prioriteringsordning gäller. x är ett entydigt positivt heltal 1–20. |
 
-Menyn visar övning, tangentbord/röst, talspråk och svårighet i den ordningen. Talspråk är avstängt vid tangentbordsinmatning. Lätt, Medel och Svår styr spelets utmaning. Matematikens befintliga extra speltid gäller på alla åtta nivåer.
+Menyn visar övning, tangentbord/röst, talspråk och svårighet i den ordningen. Talspråk är avstängt vid tangentbordsinmatning. Lätt, Medel och Svår styr spelets utmaning. Matematikens befintliga extra speltid gäller på alla nio övningar.
 
-Talade heltal upp till 200 stöds på svenska, engelska och mandarin. Uttryck som ”one hundred twenty three” och ”ett hundra tjugo tre” hålls ihop. I Matematik 5–7 väntar det sista preliminära talet på nästa svar eller slutlig transkription, så att ”one” inte skickas innan det hinner bli ”one hundred”.
+Enkel multiplikation använder övnings-ID `math-simple-multiplication`. Publicera den uppdaterade `cloudflare/worker.mjs` för att ta emot dess topplistepoäng; ingen databasmigrering behövs.
+
+Talade heltal upp till 200 stöds på svenska, engelska och mandarin. Uttryck som ”one hundred twenty three” och ”ett hundra tjugo tre” hålls ihop. I övningarna **Större tal**, **Enkel multiplikation**, **Multiplikation** och **Multiplikation och division** väntar det sista preliminära talet på nästa svar eller slutlig transkription, så att ”one” inte skickas innan det hinner bli ”one hundred”.
 
 I mandarinövningarna visas pinyin ovanför svaret och en svensk betydelse under det efter tio sekunder om uppgiften ännu inte har besvarats. Tecknet eller ordet ligger centrerat mellan ledtrådarna. Rutan växer runt sin tidigare mittpunkt där det finns plats; vid skärmkanter eller trängsel flyttas den för att undvika överlappning. Tiden räknas från att uppgiften syns, och paus räknas inte. Köade och pågående korrekta svar behöver ingen ny ledtråd; en redan visad ledtråd ligger kvar tills uppgiften försvinner. Tal jämförs som pinyin utan toner; till exempel kan 是 eller 事 matcha 十. Olika stavelser som `si` och `shi` skiljs åt. I kinesiska teckenövningar kan en transkription som `38` bli två svar, medan `10` hålls ihop. Mattesvar delas inte på det sättet. Bopomofo har tangentkonvertering och en tangenthjälp under **Så spelar du**. I röstläge jämförs symbolernas uttal med transkriberade kinesiska tecken eller pinyin, till exempel 波 / bo → ㄅ, 佛 / fo → ㄈ och 是 / shi → ㄕ. Toner ignoreras, men olika ljud som si / shi och en / eng hålls isär. För ㄝ accepteras även ye (也 / 耶), eftersom ljudet ê saknar ett vanligt fristående ord för taltjänsten. En följd som 波坡摸佛 blir fyra svar; rättningar till pinyin eller symboler skapar inga extra handlingar. Tangentbordets teckenkonvertering påverkas inte.
 
@@ -279,7 +386,7 @@ På telefon och surfplatta: öppna webbplatsen via HTTPS, välj **Röst** och ti
 
 Enhetsval, ljudbehandling och rullande testinspelning styr talinmatningen endast när `start(audioTrack)` används. Med vanliga `start()` bestämmer taltjänsten mikrofon och ljudbehandling; inställningsdialogens nivåmätare och inspelningstest är då ett separat mikrofontest som stängs före spelstart.
 
-För bokstäver, korta svenska/engelska ord, bopomofo och mandarinövningar där flertalet svar är enstaka tecken begär appen `noiseSuppression: false`. Samma inställning används för de korta talsvaren (0–20) i Matematik 1–4 och 8. Ekodämpning och automatisk nivå behålls om ljudbehandling är påslagen. Övriga övningar återgår till normal brusreducering. Inställningen tillämpas före taligenkänning, även när mikrofonen återanvänds; enhetsvalet och användarens avstängning av all ljudbehandling bevaras. Sessionsloggen visar ljudspårets faktiska inställningar, eftersom enheter kan ignorera önskemålet.
+För bokstäver, korta svenska/engelska ord, bopomofo och mandarinövningar där flertalet svar är enstaka tecken begär appen `noiseSuppression: false`. Samma inställning används för de korta talsvaren (0–20) i Addition, Addition och subtraktion, Enkla diagram, Enkla ekvationer och Ekvationer. Ekodämpning och automatisk nivå behålls om ljudbehandling är påslagen. Övriga övningar återgår till normal brusreducering. Inställningen tillämpas före taligenkänning, även när mikrofonen återanvänds; enhetsvalet och användarens avstängning av all ljudbehandling bevaras. Sessionsloggen visar ljudspårets faktiska inställningar, eftersom enheter kan ignorera önskemålet.
 
 Detta är en möjlig förbättring för korta, svaga ljud, inte en verifierad lösning på igenkänningsproblemen. [Media Capture API](https://w3c.github.io/mediacapture-main/#dom-mediatrackconstraintset-noisesuppression) styr mikrofonens brusreducering; [Web Speech API](https://webaudio.github.io/web-speech-api/#speechreco-attributes) har ingen inställning för taldetekteringens känslighet eller minsta yttrandelängd. Kontinuerlig lyssning och preliminära resultat är redan aktiverade.
 

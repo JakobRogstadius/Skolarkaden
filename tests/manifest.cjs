@@ -6,6 +6,7 @@ const data=[...resource('data.js','pinyin.js','language-exercises.js','language-
 const input=[...data,...resource('input.js','speech.js')];
 const canvas=[...input,'resources/game.js'];
 const board=[...input,'resources/homework.js','resources/game.js'];
+const glantanCore=resource(...['content','world','engine','orders','heroes','monsters'].map(name=>'glantan/'+name+'.js'));
 const gameSources={
  city:[...canvas,...resource('people.js')],
  food:[...canvas,...resource('people.js','foodtruck.js')],
@@ -19,6 +20,8 @@ const gameSources={
  reversi:[...board,...resource('reversi-engine.js','reversi.js')],
  chess:[...board,...resource('reversi.js','chess-rules.js','chess-engine.js','chess-scoring.js','chess.js')],
  klossar:[...board,...resource('klossar.js')],
+ trassel:[...board,...resource('klossar.js','trassel-engine.js','trassel-layouts.js','trassel.js')],
+ glantan:[...input,'resources/glantan/'],
  studio:[...board,...resource('voice.js','studio.js','studio-renderer.js')]
 };
 const arcadeGames=['city','food','garden','hive','paint','dinosaur','marshmallows','eggs','home'];
@@ -29,7 +32,7 @@ const server=['cloudflare/worker-source.mjs','cloudflare/worker.mjs','cloudflare
 const suites=[];
 function add(file,areas,sources,extra={}){suites.push({file:'tests/'+file,areas,sources:[...new Set(sources)],...extra});}
 function game(area,file,sources=gameSources[area],extra={}){add(`games/${area}/${file}.test.cjs`,[area],sources,extra);}
-for(const area of ['city','food','garden','hive','paint','dinosaur','marshmallows','eggs','home','reversi','chess','klossar']){
+for(const area of ['city','food','garden','hive','paint','dinosaur','marshmallows','eggs','home','reversi','chess','klossar','trassel']){
  const sweep={paint:'paint-labels',dinosaur:'dinosaur-labels',home:'home-rounds',hive:'beehive-rounds',reversi:'reversi-matches',klossar:'klossar'}[area];
  game(area,'logic',[...gameSources[area],...(sweep?['tests/helpers/sweeps/'+sweep+'.cjs']:[])]);
 }
@@ -38,8 +41,11 @@ for(const area of ['chess','reversi','klossar'])game(area,'renderer',[...gameSou
 game('chess','scoring',[...gameSources.chess,'resources/highscore-policy.js']);game('klossar','layouts',['resources/klossar.js']);game('klossar','chinese');
 game('klossar','creatures',['resources/klossar-creatures.js']);
 game('klossar','pronunciation',[...gameSources.klossar,...resource('klossar-speech.js','audio/bopomofo/')]);
+game('trassel','chinese');
+game('trassel','layouts',resource('trassel-engine.js','trassel-layouts.js').concat('dev/trassel-layouts.cjs','dev/trassel-generate.cjs'));
+for(const domain of ['world','orders','simulation','adapter'])game('glantan',domain,[...glantanCore,'tests/games/glantan/helpers.cjs','tests/games/glantan/run.cjs',...(domain==='adapter'?[...input,'resources/glantan/game.js']:[])]);
 for(const area of ['dinosaur','home','eggs','marshmallows'])game(area,'app',[...app,...gameSources[area]]);
-for(const area of ['reversi','chess','klossar','studio'])game(area,'app',[...homeworkApp,...gameSources[area],...(area==='klossar'?resource('klossar-speech.js'):[])]);
+for(const area of ['reversi','chess','klossar','trassel','glantan','studio'])game(area,'app',[...homeworkApp,...gameSources[area],...(['klossar','trassel'].includes(area)?resource('klossar-speech.js'):[]),...(area==='trassel'?resource('trassel-renderer.js','trassel.css'):[])]);
 for(const [name,area,helper]of[
  ['paint-labels','paint','paint-labels'],['dinosaur-labels','dinosaur','dinosaur-labels'],['home-rounds','home','home-rounds'],
  ['beehive-rounds','hive','beehive-rounds'],['reversi-matches','reversi','reversi-matches'],['klossar','klossar','klossar'],['garden-balance','garden',null]
@@ -54,6 +60,7 @@ for(const [file,areas,sources]of[
  ['speech-stream',['speech'],[...data,'resources/speech.js']],['chinese-pinyin',['speech','exercises'],input],
  ['chinese-compounds',['speech','exercises'],input],['chinese-translations',['speech','exercises'],[...input,'resources/reversi.js','resources/homework.js','homework.json']],
  ['bopomofo',['speech','exercises'],input],['exercises',['exercises'],input],['math-diagrams',['exercises'],[...data,'resources/game.js']],
+ ['math-simple-multiplication',['exercises','speech'],[...data,'resources/speech.js','resources/game.js']],
  ['language-data',['exercises'],[...data,'resources/speech.js']],['word-pairs',['exercises'],[...input,'resources/game.js',...server]],
  ['homework',['homework'],[...input,'resources/homework.js','homework.json']],
  ['camp-sounds',['sounds'],resource('sounds.js')],['dinosaur-sounds',['sounds'],resource('sounds.js')],['home-sounds',['sounds'],resource('sounds.js')]
@@ -62,6 +69,7 @@ add('app/assets.test.cjs',['assets'],['resources/','index.html','statistics.html
 add('app/startup.test.cjs',['app','exercises'],app);
 add('app/menu.test.cjs',['app'],[...app,'resources/styles.css']);
 add('app/answer-input.test.cjs',['app','input','speech'],[...app,...gameSources.dinosaur,...gameSources.city]);
+add('app/math-speech.test.cjs',['app','exercises','speech'],[...app,...gameSources.dinosaur,'resources/klossar-speech.js']);
 add('app/game-launch.test.cjs',['app'],[...app,...arcadeGames.flatMap(game=>gameSources[game])],{games:arcadeGames});
 add('app/game-contracts.test.cjs',['input','exercises','labels','homework'],[...arcadeGames.flatMap(game=>gameSources[game]),'resources/homework.js','tests/app/contracts/'],{games:arcadeGames});
 add('app/navigation.test.cjs',['app'],resource('play-shell.js'));

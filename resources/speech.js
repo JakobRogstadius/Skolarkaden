@@ -216,9 +216,9 @@ class SpeechStream{
     }
     let frontier=-1;
     for(let k=0;k<merged.length;k++){
-      // In lessons reaching 100 or more, the trailing interim "one" may still become "one
-      // hundred". Wait for its boundary; earlier complete answers still flow.
-      const t=merged[k],last=k===merged.length-1,boundary=(!['math-large-numbers','math-multiplication','math-multiplication-division'].includes(context.lesson)||!last);
+      // A trailing interim number can still grow: "one hundred" or "trettiosex".
+      // Wait for its boundary in these lessons; earlier complete answers still flow.
+      const t=merged[k],last=k===merged.length-1,boundary=(!['math-large-numbers','math-simple-multiplication','math-multiplication','math-multiplication-division'].includes(context.lesson)||!last);
       const phraseBoundary=!SC.hasSpeechPhrases(context.lesson)||!last||!SC.pairSpeechPrefix(t.text,context);
       const matches=context.candidates.some(item=>SC.matches(t.text,item,context.lesson,context.language,'speech'));
       // ASR can finalize "ice" before a later result supplies "cream". Keep

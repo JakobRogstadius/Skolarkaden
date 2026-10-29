@@ -24,8 +24,40 @@
   SC.drawFittedText=function(c,text,x,y,max){
     const font=c.font;c.font=SC.fittedFont(c,text,font,max);c.fillText(text,x,y);c.font=font;
   };
+  const diagramHits=new WeakMap();
+  SC.clearMathDiagramHits=canvas=>diagramHits.delete(canvas);
+  SC.mathDiagramSpeechAt=function(canvas,clientX,clientY){
+    const hits=diagramHits.get(canvas);if(!hits?.length)return null;
+    const rect=canvas.getBoundingClientRect(),scale=Math.min(rect.width/canvas.width,rect.height/canvas.height);
+    if(!(scale>0))return null;
+    const x=(clientX-rect.left-(rect.width-canvas.width*scale)/2)/scale,y=(clientY-rect.top-(rect.height-canvas.height*scale)/2)/scale;
+    for(let i=hits.length-1;i>=0;i--){
+      const {box,m,diagram}=hits[i],det=m.a*m.d-m.b*m.c;
+      if(!det)continue;
+      const px=(m.d*(x-m.e)-m.c*(y-m.f))/det,py=(-m.b*(x-m.e)+m.a*(y-m.f))/det;
+      if(px>=box.x&&px<=box.x+box.w&&py>=box.y&&py<=box.y+box.h)return {text:SC.numberName(diagram.rows,'sv-SE')+' gånger '+SC.numberName(diagram.columns,'sv-SE'),lang:'sv-SE'};
+    }
+    return null;
+  };
   SC.drawMathDiagram=function(c,diagram,box,{textColor='#000'}={}){
     c.save();
+    if(diagram.kind==='multiplication-grid'){
+      // Use the entire diagram area, with no label space or outer padding.
+      const scale=Math.min(box.w/112,box.h/80,1),w=112*scale,h=80*scale,x=box.x+(box.w-w)/2,y=box.y+(box.h-h)/2;
+      const cellW=w/diagram.columns,cellH=h/diagram.rows;
+      c.fillStyle='#c6d6bd';c.strokeStyle='#000';c.lineWidth=scale;c.lineCap='butt';c.setLineDash([]);
+      for(let row=0;row<diagram.rows;row++)for(let column=0;column<diagram.columns;column++)c.fillRect(x+column*cellW,y+row*cellH,cellW,cellH);
+      const inset=scale/2;c.strokeRect(x+inset,y+inset,w-scale,h-scale);c.beginPath();
+      for(let column=1;column<diagram.columns;column++){const xx=x+column*cellW;c.moveTo(xx,y);c.lineTo(xx,y+h);}
+      for(let row=1;row<diagram.rows;row++){const yy=y+row*cellH;c.moveTo(x,yy);c.lineTo(x+w,yy);}c.stroke();
+      if(c.canvas&&c.getTransform){
+        const m=c.getTransform();
+        if(m&&[m.a,m.b,m.c,m.d,m.e,m.f].every(Number.isFinite)){
+          const hits=diagramHits.get(c.canvas)||[];hits.push({diagram,box:{x,y,w,h},m});diagramHits.set(c.canvas,hits);
+        }
+      }
+      c.restore();return;
+    }
     // A pale panel keeps black chart ink legible in every game's task bubble.
     c.fillStyle='#faf9f5';c.beginPath();c.roundRect(box.x+2,box.y+2,box.w-4,box.h-4,5);c.fill();
     const scale=Math.min((box.w-8)/104,(box.h-8)/72,1);
@@ -265,7 +297,7 @@
     constructor(canvas,game){
       this.canvas=canvas;this.game=game;this.ctx=canvas.getContext('2d');
       this.scoreNotices=[];this.scoreAnchors=new WeakMap();this.liveScoreBoxes=[];
-      const draw=this.draw.bind(this);this.draw=()=>{this.liveScoreBoxes=[];draw();this.drawScores();};
+      const draw=this.draw.bind(this);this.draw=()=>{SC.clearMathDiagramHits(canvas);this.liveScoreBoxes=[];draw();this.drawScores();};
       this.reduced=root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
       this.stars=Array.from({length:95},(_,i)=>({x:((i*137.5)%997)/997,y:((i*73.7)%613)/613,r:i%7===0?1.6:.8,phase:i*.7}));
       this.resize=()=>{
@@ -354,7 +386,7 @@
       const c=this.ctx;c.beginPath();c.roundRect(x,y,w,h,r);if(fill){c.fillStyle=fill;c.fill();}if(stroke){c.strokeStyle=stroke;c.stroke();}
     }
     circle(x,y,r,fill){const c=this.ctx;c.fillStyle=fill;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.fill();}
-    destroy(){cancelAnimationFrame(this.raf);this.observer.disconnect();}
+    destroy(){cancelAnimationFrame(this.raf);this.observer.disconnect();SC.clearMathDiagramHits(this.canvas);}
   }
   class CityRenderer extends SceneRenderer{
     draw(){

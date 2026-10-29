@@ -82,7 +82,7 @@ class Highscores{
     $('score-form').addEventListener('submit',e=>{e.preventDefault();if(composing)return;this.pendingSave=this.submit().finally(()=>{this.pendingSave=null;});});
     $('leaderboard').addEventListener('close',()=>this.dismiss());
     $('end-overlay').addEventListener('keydown',e=>{
-      if(e.key!=='Tab')return;const controls=[$('score-name'),$('again'),$('end-menu')].filter(el=>!el.disabled&&el.offsetParent!==null);
+      if(e.key!=='Tab')return;const controls=[$('score-name'),$('glantan-same-map'),$('again'),$('end-menu')].filter(el=>el&&!el.hidden&&!el.disabled&&el.offsetParent!==null);
       const index=controls.indexOf(document.activeElement);if(controls.length&&(e.shiftKey?index<=0:index===controls.length-1)){e.preventDefault();controls[e.shiftKey?controls.length-1:0].focus();}
     });
   }
@@ -196,10 +196,10 @@ class Highscores{
     }catch(error){if(current())status.textContent=popularity&&error.status===404?'Statistiken kräver en uppdatering av topplistans server.':error.code==='invalid_leaderboard'?error.message:'Topplistan kunde inte hämtas. Försök igen om en stund.';}
     finally{if(current())$('scores-refresh').disabled=false;}
   }
-  async leave(action){
+  async leave(action,{allowUnsaved=false}={}){
     if(!this.shownResult){action();return;}
     if(this.leaving)return;this.leaving=true;$('again').disabled=true;$('end-menu').disabled=true;
-    try{if(!this.shownResult?.saved)await (this.pendingSave||this.submit());if(this.shownResult?.saved)action();}
+    try{if(!this.shownResult?.saved)await (this.pendingSave||this.submit());if(this.shownResult?.saved||allowUnsaved)action();}
     finally{this.leaving=false;$('again').disabled=false;$('end-menu').disabled=false;}
   }
   async submit(){
