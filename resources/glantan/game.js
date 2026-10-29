@@ -2,20 +2,22 @@
 (function(root) {
   'use strict';
   const SC = root.Starlight, G = SC.Glantan;
-  const SAVE_KEY = 'skolarkaden-klockglantan-v1';
+  const SAVE_KEY = 'skolarkaden-klockglantan-v2';
   function readSave(options) {
     try {
       const saved = JSON.parse(root.localStorage?.getItem(SAVE_KEY) || 'null');
       if (!saved || saved.world?.version !== G.VERSION || saved.world.outcome || saved.mode !== options.mode || saved.pace !== options.pace || saved.lang !== options.lang || saved.practiceKey !== options.practiceKey) return null;
       const w = saved.world;
-      if (w.width !== 36 || w.height !== 28 || !Array.isArray(w.terrain) || w.terrain.length !== 1008 || !Array.isArray(w.explored) || !Array.isArray(w.heroes) || !Array.isArray(w.buildings) || !Array.isArray(w.lairs) || !w.buildings.some(b => b.type === 'castle' && b.hp > 0)) return null;
+      const scale = G.profiles[options.pace]?.mapScale;
+      if (w.width !== 36 * scale || w.height !== 28 * scale || !Array.isArray(w.terrain) || w.terrain.length !== w.width * w.height || !Array.isArray(w.explored) || w.explored.length !== w.terrain.length || !Array.isArray(w.heroes) || !Array.isArray(w.buildings) || !Array.isArray(w.lairs) || !w.buildings.some(b => b.type === 'castle' && b.hp > 0)) return null;
       if (w.heroes.some(h => !G.classes[h.classId]) || w.lairs.some(l => !G.lairTypes[l.type])) return null;
       return saved;
     } catch (_) { return null; }
   }
   class GlantanGame {
-    constructor({ queue = new SC.AnswerQueue(), onEvent = () => {}, random = Math.random } = {}) {
+    constructor({ queue = new SC.AnswerQueue(), onEvent = () => {}, random = Math.random, sounds = null } = {}) {
       Object.assign(this, { queue, onEvent, random, state: 'menu', revision: 0, targets: [], pending: null });
+      this.soundscape = sounds ? new G.Soundscape(sounds) : null;
     }
     emit(type, detail = {}) { this.onEvent({ type, ...detail }); }
     start({ mode = 'letters', pace = 'gentle', lang = 'sv-SE', items = null, uppercase = false, seed = null, fresh = false, homeworkId = null } = {}) {
@@ -49,6 +51,7 @@
     canAnswer() { return this.state === 'playing' && !!this.pending && this.progress < G.actionCost(this.world, this.pending) && this.targets.length > 0; }
     choose(action) {
       if (this.state !== 'playing') return false;
+      action = G.normalizeAction(this.world, action);
       if (G.actionKey(action) === G.actionKey(this.pending)) return true;
       if (action) {
         const reason = G.availability(this.world, action);
@@ -80,14 +83,17 @@
       this.shots++;
       const correct = SC.matches(entry.text, this.targets[0].item, this.mode, this.lang, entry.source);
       if (!correct) {
+        G.soundEvent(this.world, 'wrong', null, true);
         this.progress = 0; this.streak = 0; this.feedback = 'Försök igen'; this.feedbackUntil = this.clock + 2;
         this.queue.clear(); this.revision++; this.emit('miss', { entry, points: 0 }); this.save(); return;
       }
       this.hits++; this.progress++; this.streak++; this.bestStreak = Math.max(this.bestStreak, this.streak);
       this.feedback = ''; this.heldTarget = null; G.answerCharge(this.world);
       const cost = G.actionCost(this.world, this.pending);
+      if (this.progress < cost) G.soundEvent(this.world, 'correct', null, true);
       if (this.progress >= cost) {
         this.targets = []; this.queue.clear(); this.completePurchase();
+        if (this.pending) G.soundEvent(this.world, 'correct', null, true);
       } else this.nextQuestion();
       this.revision++; this.emit('hit', { entry, points: 0 }); this.emit('glantan-ready'); this.save();
     }
@@ -109,9 +115,9 @@
       if (this.state !== 'playing') return;
       this.world.bounties = this.world.bounties.filter(b => b.id !== id); this.world.revision++; this.save();
     }
-    pause() { if (this.state === 'playing') { this.state = 'paused'; this.queue.clear(); this.save(); this.emit('pause'); } }
+    pause() { if (this.state === 'playing') { this.state = 'paused'; this.soundscape?.stop(); if (this.world.sounds) this.world.sounds.length = 0; this.queue.clear(); this.save(); this.emit('pause'); } }
     resume() { if (this.state === 'paused') { this.state = 'playing'; this.emit('glantan-ready'); this.emit('resume'); } }
-    menu() { this.save(); this.state = 'menu'; this.queue.clear(); }
+    menu() { this.save(); this.state = 'menu'; this.soundscape?.stop(); this.queue.clear(); }
     save() {
       try {
         if (!this.world || this.world.outcome) return;
@@ -124,6 +130,8 @@
       this.simulation.update(dt); this.clock = this.elapsed = this.world.time; this.score = this.world.score;
       if (this.world.outcome) {
         this.state = this.world.outcome; this.targets = []; this.pending = null; this.queue.clear(); this.clearSave();
+        if (this.world.sounds) this.world.sounds.length = 0;
+        G.soundEvent(this.world, this.state === 'won' ? 'victory' : 'defeat', null, true);
         this.emit('end', { won: this.state === 'won', score: this.score, hits: this.hits, shots: this.shots, bestStreak: this.bestStreak }); return;
       }
       if (this.pending) {

@@ -2,6 +2,43 @@
 (function(root) {
   'use strict';
   const G = root.Starlight.Glantan;
+  const placementCache = new WeakMap();
+  function preservesPassage(world, tx, ty, width, height) {
+    let cached = placementCache.get(world);
+    if (!cached || cached.revision !== world.navRevision) {
+      cached = { revision: world.navRevision, plots: new Map() }; placementCache.set(world, cached);
+    }
+    const key = [tx, ty, width, height].join(':');
+    if (cached.plots.has(key)) return cached.plots.get(key);
+    // Removing a rectangle can split the walkable region only when its free
+    // perimeter cells cease to connect. Usually this flood ends within a few
+    // dozen cells; a sealed terrain neck is the uncommon full-region case.
+    const border = new Set();
+    for (let x = tx; x < tx + width; x++) for (const y of [ty - 1, ty + height]) if (G.open(world, x, y)) border.add(y * world.width + x);
+    for (let y = ty; y < ty + height; y++) for (const x of [tx - 1, tx + width]) if (G.open(world, x, y)) border.add(y * world.width + x);
+    const queue = [...border].slice(0, 1), seen = new Uint8Array(world.terrain.length);
+    if (queue.length) seen[queue[0]] = 1;
+    let remaining = border.size;
+    for (let head = 0; head < queue.length && remaining; head++) {
+      const at = queue[head], x = at % world.width, y = Math.floor(at / world.width);
+      if (border.has(at)) remaining--;
+      for (const [dx, dy] of [[1, 0], [0, 1], [-1, 0], [0, -1]]) {
+        const xx = x + dx, yy = y + dy, next = yy * world.width + xx;
+        if (xx >= tx && xx < tx + width && yy >= ty && yy < ty + height || !G.open(world, xx, yy) || seen[next]) continue;
+        seen[next] = 1; queue.push(next);
+      }
+    }
+    const valid = border.size > 0 && remaining === 0;
+    if (cached.plots.size >= 128) cached.plots.delete(cached.plots.keys().next().value);
+    cached.plots.set(key, valid); return valid;
+  }
+  // Hidden terrain can be clicked without knowing whether it is passable.
+  // Put the paid flag at its nearest reachable shore/clearing before payment.
+  G.normalizeAction = function(world, action) {
+    if (action?.type !== 'bounty' || !['explore', 'defend'].includes(action.id)) return action;
+    const point = G.nearestOpen(world, action);
+    return point ? { ...action, ...point } : action;
+  };
   G.hasBuilding = (w, type) => w.buildings.some(b => b.type === type && G.alive(b));
   G.actionKey = action => action ? [action.type, action.id, action.x, action.y, action.target, action.level].join(':') : '';
   G.temporaryObstruction = (action, reason) => action?.type === 'build' && reason === 'Monster står i vägen.';
@@ -41,6 +78,7 @@
       if (!G.alive(other)) continue;
       if (tx < other.tx + other.w + 1 && tx + b.w > other.tx - 1 && ty < other.ty + other.h + 1 && ty + b.h > other.ty - 1) return 'Lämna en ruta fri mellan byggnader.';
     }
+    if (!preservesPassage(world, tx, ty, b.w, b.h)) return 'Lämna en passage förbi byggnaden.';
     return '';
   };
   G.availability = function(world, action, { placement = true } = {}) {
@@ -83,8 +121,9 @@
       if (!['attack', 'defend', 'explore'].includes(action.id)) return 'Okänt uppdrag.';
       if (action.id === 'attack') {
         const target = [...world.lairs, ...world.monsters].find(t => t.id === action.target && G.alive(t));
-        if (!target || !world.explored[G.index(world, target.x, target.y)]) return 'Målet är borta.';
+        if (!target || !target.seen && !world.explored[G.index(world, target.x, target.y)]) return 'Målet är borta.';
       } else if (!G.inside(world, action.x, action.y)) return 'Välj en plats på kartan.';
+      else if (!G.open(world, action.x, action.y)) return 'Välj en fri plats.';
       if (action.id === 'explore' && world.explored[G.index(world, action.x, action.y)]) return 'Redan utforskat.';
       const existing = world.bounties.find(b => b.type === action.id && (action.id === 'attack' ? b.target === action.target : Math.hypot(b.x - action.x, b.y - action.y) < 1));
       if (existing && existing.level >= (action.level || 1)) return 'Belöningen finns redan.';
@@ -132,6 +171,7 @@
         world.bounties.push(entity);
       }
     }
+    G.soundEvent(world, action.type === 'repair' ? 'build' : action.type, entity || G.castle(world), true);
     world.purchases++; world.revision++;
     return { ok: true, entity };
   };

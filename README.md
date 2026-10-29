@@ -30,6 +30,7 @@ men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 ## Klockgläntan
 
 Ett strategispel i realtid med en liten glänta av mossa, koppar och klingande toner.
+Du börjar med bara klockborgen och en bostad. Bygg ett hjältehus för att värva de första hjältarna.
 Bygg på kartans rutnät, rekrytera självständiga väktare, spejare, örtvårdare och klangvävare,
 och sätt belöningar som lockar till tillfälliga expeditioner. Valda handlingar betalas med
 1–4 rätta svar i rad. Fel svar eller byte av handling nollställer betalningen, men byten
@@ -39,9 +40,18 @@ Bostäder ger fyra platser vardera, högst 24 hjältar. Hjältar får erfarenhet
 läkning och upptäckter; fallna veteraner kan återkallas. Kunskapsträdet har permanenta vägval.
 Ett valfritt underverk eller en mästarförmåga kostar åtta svar och kan bara köpas en gång.
 Stormklockan läker, stärker modet och hejdar angripare; sex rätta svar laddar den, även
-över brutna följder. Monsterbon vaknar vid olika tider, förstärks och kan sprida högst två
-nya bon. Yttre bon har egna försvarare som vaknar vid anfall. Alla bon och monster måste
+över brutna följder. Alla monsterbon börjar med två patrullerande försvarare. När ett bo
+vaknar börjar det skicka anfallsvågor mot byn. Bon förstärks och kan sprida högst två
+nya bon. Varje karta har ett bossbo: sikta på cirka 10/20/30 sammanlagda hjältenivåer
+på lätt/medel/svår, med både frontlinje och läkekraft. Alla bon och monster måste
 bort; förstörs klockborgen är omgången förlorad.
+
+Kartorna är 72×56, 90×70 respektive 108×84 rutor. Floder, sjöar, berg och tät skog
+blockerar vägen; passager och broar binder samman områdena. Hjältar håller avstånd
+från varandra och patrullerar när de är lediga. Monsterstorlek, rustning, rangmärken
+och bosskronor visar faran. Handlingspanelen ligger till vänster på större skärmar.
+Ljud för byggande, strid, läkande, varningar och klockor använder den vanliga ljudknappen
+och dämpas vid röstinmatning.
 
 Mus och pekskärm: välj med klick/tryck, dra kartan, zooma med hjul, nypning eller knappar.
 Upptäckta områden fortsätter vara synliga. Paus stoppar världen. Omgång och aktuell betalning
@@ -53,8 +63,10 @@ Om topplisteservern inte är tillgänglig kan du ändå spela igen eller lämna 
 
 Moduler och aktuell plan: [docs/glantan-plan.md](docs/glantan-plan.md).
 Designgranskning och mätningar: [docs/glantan-review.md](docs/glantan-review.md).
-Kör bara berörda tester med `node tests/glantan/run.cjs world orders adapter simulation`
+Kör bara berörda tester med `node tests/glantan/run.cjs world orders adapter simulation encounters movement sound`
 (utelämna domäner som inte berörs). `npm test` inkluderar hela spelets svit.
+Bossbalansen kan kontrolleras separat med `node dev/glantan-balance.cjs --boss`.
+Den nya kartversionen sparas separat från tidigare omgångar; gamla sparningar skrivs inte över.
 Lokala webbläsarprov finns i `/audit-glantan.html` och `/audit-glantan-viewport.html` via
 utvecklingsservern; syntetiska resultat skickas aldrig till den riktiga topplistan.
 

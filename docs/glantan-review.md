@@ -133,3 +133,85 @@ merged as `f391ce07e43c2f25fc16dbdc919eb0b801bc3cc3`. Pages run `40821829159`
 completed successfully. The public site's new pause controls and same-seed
 restart were exercised after deployment. Its leaderboard still reports that
 it is not ready for this game; the separate Cloudflare deployment remains pending.
+
+# Expanded kingdoms review — 2026-10-29
+
+The expansion was reviewed by agents acting as master game designer, visual designer,
+sound engineer and software engineer. The user's mechanics and requested changes were
+fixed constraints; other implementation and presentation choices were open to criticism.
+
+## Findings addressed
+
+- **Game design:** a castle-and-house opening needs time to establish its first guild.
+  First awakening is now 120/105/90 seconds on easy/medium/hard. Every lair has two
+  persistent roaming guardians, and awakening launches distinct village-bound waves.
+  Boss readiness is based on the party's effective combined levels and remaining guards,
+  so a recovered party can finish a partially defeated encounter. Scouts can choose an
+  already explored viewpoint to reveal a remaining fog pocket around a lair. Spotting a
+  home guardian identifies its lair; scouts replan after arrival instead of waiting
+  out a nine-second timer.
+- **Autonomy:** a distant monster merely travelling toward the castle previously raised
+  a village alarm. The alarm now requires a threat near the village. A marching leader
+  previously stopped for faster companions ahead of it; now the leader waits for lagging
+  companions and faster companions wait for the front line. Body separation, patrols,
+  safe retreat and these group failures have focused regression scenarios.
+  Shared tile-centre waypoints also caused separated companions to block each other;
+  intermediate waypoints now advance on tile entry when the onward route is clear.
+- **Visual design:** blue recessed water, mountain ridges and dense forest have distinct
+  boundaries. Monster size, armour and rank marks communicate increasing danger;
+  boss guardians and their stolen-bell lair have separate silhouettes. Partially revealed
+  lairs and monsters remain selectable. Starting guilds precede extra housing.
+  The left action/question panel was inspected in actual desktop and phone screenshots.
+- **Sound engineering:** 21 original layered effects use the existing AudioContext.
+  Combat has spatial attenuation, variation and bounded voices; exercise feedback and
+  warnings have priority. Mute, pause, backgrounding, context replacement, replay and
+  speech ducking were checked. Pending sounds are not serialized into saved campaigns.
+- **Software engineering:** reverse distance fields are cached outside saved state;
+  fog and terrain no longer require multiple full-resolution map canvases.
+  Scouting uses cached fog row counts and bounded candidate searches: the same destinations
+  in 96 comparison states took 1.05 s instead of 10.96 s (10.4× faster). Buildings
+  cannot seal the last passage through terrain. Ground bounties snap to open ground
+  before payment. Combat rays respect obstacles and movement cannot cut blocked corners.
+
+## Evidence
+
+- 90 seeded maps across all difficulties: requested dimensions (72×56 / 90×70 / 108×84),
+  one boss each, connected lair approaches, blocked terrain and meaningful detours.
+- Separate world, orders, exercise adapter, simulation, encounters, movement and sound
+  checks; shared app purchase/pause/replay/input checks and leaderboard navigation.
+- Controlled boss encounters use the real simulation with mixed, healthy parties and
+  no research or concurrent waves. `node dev/glantan-balance.cjs --boss` reproduces them:
+
+| Difficulty | Combined levels | Boss cleared | Casualties | Fight time |
+| --- | ---: | --- | ---: | ---: |
+| Easy | 10 | Yes | 0 | 63 s |
+| Medium | 20 | Yes | 0 | 82 s |
+| Hard | 30 | Yes | 0 | 69 s |
+
+Half-sized parties (5/10/15 combined levels) withdrew and did not clear the encounter.
+These are tuning examples, not guarantees for arbitrary class composition, injury,
+research or simultaneous raids.
+
+- Final-build paid-answer campaigns completed on easy (seed 0, 6 seconds/answer,
+  12:07, 68 answers), medium (seed 0, 6 seconds/answer, 15:09, 71 answers), and hard
+  (seed 0, 3 seconds/answer, 10:47, 101 answers), all with full castle health and no
+  casualties. Easy/medium needed at most a four-answer purchase; the hard strategy
+  used an eight-answer beacon. These scripted strategies are examples of viable
+  play, not exhaustive balance coverage.
+- The exact hard-game waypoint deadlock save also completed 114 simulated seconds
+  after the fix, with all four previously stuck companions surviving.
+- Sound stress: 9,000 combat requests over six simulated seconds produced 40 audible
+  cues, at most four routine voices, within an eight-voice total budget. Waveforms were
+  checked for finite values, headroom, smooth endpoints and low DC offset.
+- Browser: a guild was constructed with three real answers and a warrior recruited
+  with two; the boss inspection and left panel were checked. Phone layouts at 390×844
+  and a keyboard-sized 390×480 retained both question and input without overlap.
+- Physical speaker/headphone audition and physical touch-keyboard testing were not part
+  of these checks. Browser verification used the isolated development fixture, which
+  prevents synthetic leaderboard submissions.
+
+Screenshots: [desktop](klockglantan-expansion-desktop.jpg),
+[phone](klockglantan-expansion-mobile.jpg), [keyboard space](klockglantan-expansion-keyboard.jpg).
+The desktop review screenshot deliberately reveals the map for inspection.
+
+---

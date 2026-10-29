@@ -123,7 +123,17 @@ async function loadBest(){
   }catch(_){/* An unavailable leaderboard is not a zero record. */}
   finally{if(game===currentGame){bestLoading=false;renderUi();}}
 }
+function renderGlantanAudio(){
+  if(kind!=='glantan'||!game?.soundscape)return;
+  const camera=renderer?.game===game?renderer.camera:null,T=SC.Glantan.Art?.tile||48;
+  const listener=camera?{x:camera.x/T,y:camera.y/T}:SC.Glantan.castle(game.world);
+  game.soundscape.setMix({enabled:soundOn,playing:['playing','won','lost'].includes(game.state)&&!document.hidden,duck:input.listening?.23:1,listener,radius:camera?Math.max(7,Math.hypot(renderer.width,renderer.height)/(2*camera.zoom*T)):12});
+  const events=game.world.sounds?.splice(0)||[];
+  events.sort((a,b)=>(SC.Glantan.soundSpecs[b.kind]?.priority||0)-(SC.Glantan.soundSpecs[a.kind]?.priority||0));
+  for(const event of events)game.soundscape.play(event.kind,event);
+}
 function onGameEvent(e){
+  renderGlantanAudio();
   if(kind==='glantan'&&e.type==='glantan-ready'){
     const enabled=game.canAnswer();input.setEnabled(enabled);$('answer').value='';
     if(enabled&&input.voice.enabled)startListening();
@@ -141,7 +151,7 @@ function onGameEvent(e){
   }
   const mapped={'glantan-purchase':'honey','glantan-bell':'glantan-bell','glantan-ready':null,early:'camp-check',think:kind==='marshmallows'?'camp-check':'think',fire:'laser',impact:'crash',hit:kind==='city'?'explosion':kind==='food'?'serve':kind==='hive'?'honey':kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-gulp':kind==='marshmallows'?'camp-good':kind==='home'?'home-clean':kind==='glantan'?'tick':isTileGame()?'honey':null,miss:kind==='paint'?'paint-splash':kind==='dinosaur'?'dino-air':'miss','customer-left':'miss','plant-dead':'crash',need:null,impatient:'tick','klossar-display':null};
   const sound=Object.hasOwn(mapped,e.type)?mapped[e.type]:e.type;
-  if(soundOn&&sound&&!(e.type==='end'))sounds.play(sound,input.listening?.23:1);
+  if(soundOn&&sound&&!(e.type==='end')&&!(kind==='glantan'&&game.soundscape))sounds.play(sound,input.listening?.23:1);
   if(e.type==='rare-arrival')notice('✦ '+SC.rarePeople.find(r=>r.id===e.look.exotic).name);
   if(e.type==='rare-earned')notice('✦ '+SC.rarePeople.find(r=>r.id===e.look.exotic).name+(e.bonus?' · +'+e.bonus+' poäng':' ✦'));
   if(e.type==='hive-full')notice('🍯 Fullt!');
@@ -162,17 +172,17 @@ function onGameEvent(e){
     $('glantan-result-breakdown').hidden=kind!=='glantan';$('glantan-same-map').hidden=kind!=='glantan';
     if(kind==='glantan')$('glantan-result-breakdown').textContent=game.world.destroyed+' bon röjda · '+game.world.kills+' monster besegrade · '+(game.shots?Math.round(game.hits/game.shots*100):0)+' % rätt · '+SC.Glantan.clockText(game.clock);
     highscores.showEnd();
-    if(soundOn&&!(kind!=='city'&&e.won))sounds.play(e.won?'win':'miss');
+    if(soundOn&&!(kind!=='city'&&e.won)&&!(kind==='glantan'&&game.soundscape))sounds.play(e.won?'win':'miss');
   }
   lastTargetKey=null;
 }
 async function start({glantanSeed=null,fresh=false}={}){
   if(busy||!homeworkReady)return;const token=++lifecycle;busy=true;$('start').disabled=true;$('again').disabled=true;$('setup-error').textContent='';
-  tileSpeech.stop();
+  tileSpeech.stop();sounds.unlock();
   try{
     input.setEnabled(false);input.configure({...speechOptions(),...(isQuestionGame()?{turnBased:true}:{})});const preparation=!isTileGame()&&input.prepare();if(preparation)await preparation;if(token!==lifecycle)return;
     sounds.stopCampfire();sounds.stopDinosaurVoices?.();sounds.unlock();renderer?.destroy();queue.clear();$('answer').value='';$('menu').hidden=true;$('play').hidden=false;$('end-overlay').hidden=true;$('pause-overlay').hidden=true;$('pause').disabled=false;$('discovery-notice').hidden=true;noticeUntil=0;
-    const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent});game.viewportKind=kind;lastOptions=options();$('arena').className='arena '+kind;$('arena').dataset.exercise=lastOptions.mode;$('play').dataset.game=kind;game.start({...lastOptions,...(kind==='glantan'?{seed:glantanSeed,fresh}:{}),...(kind==='trassel'?{shape:root.innerWidth<600&&root.innerHeight>root.innerWidth?'tall':root.innerHeight<550&&root.innerWidth>root.innerHeight?'wide':'hex'}:{})});if(kind!=='studio')highscores.begin({...scoreSelection(lastOptions),letterKeys:game.mode==='letters'?game.items.map(i=>i.answer):null});queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),discardUnmatched:entry=>!isQuestionGame()&&entry.source==='speech'&&SC.isChinese(game.mode),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
+    const [Game,Renderer]=classes[kind];game=new Game({queue,onEvent:onGameEvent,...(kind==='glantan'?{sounds}:{})});game.viewportKind=kind;lastOptions=options();$('arena').className='arena '+kind;$('arena').dataset.exercise=lastOptions.mode;$('play').dataset.game=kind;game.start({...lastOptions,...(kind==='glantan'?{seed:glantanSeed,fresh}:{}),...(kind==='trassel'?{shape:root.innerWidth<600&&root.innerHeight>root.innerWidth?'tall':root.innerHeight<550&&root.innerWidth>root.innerHeight?'wide':'hex'}:{})});if(kind!=='studio')highscores.begin({...scoreSelection(lastOptions),letterKeys:game.mode==='letters'?game.items.map(i=>i.answer):null});queue.setPolicy({getCandidates:()=>game.getAvailableTargets().map(t=>t.item),getActiveEntries:()=>game.getActiveEntries(),discardUnmatched:entry=>!isQuestionGame()&&entry.source==='speech'&&SC.isChinese(game.mode),matches:(entry,item)=>SC.matches(entry.text,item,game.mode,game.lang,entry.source),sameInput:(a,b)=>SC.sameInput(a,b,game.mode,game.lang)});renderer=new Renderer($('canvas'),game);renderer.resize();
     if(kind!=='studio')loadBest();$('game-title').textContent=names[kind];$('objective').closest('.hud-objective').hidden=['marshmallows','eggs','studio'].includes(kind);$('answer').placeholder=input.singleLetter()?'…':SC.modes[game.mode].placeholder.replace('…',' ↵');$('answer-hint').textContent=typingHint();$('keyboard').hidden=isTileGame()||game.mode!=='bopomofo';$('input-dock').hidden=isTileGame()||input.voice.enabled;document.body.classList.add('playing');document.body.classList.toggle('voice-play',input.voice.enabled);
     input.setEnabled(!isTileGame()&&(!isQuestionGame()||game.canAnswer()));if(input.enabled&&input.voice.enabled)startListening();
     playViewport.update();renderer.resize();navigation.enter();if(!isTileGame())input.focus();lastTargetKey=null;renderUi();
@@ -181,7 +191,7 @@ async function start({glantanSeed=null,fresh=false}={}){
 }
 function pause(){if(game?.state!=='playing')return;game.pause();input.setEnabled(false);$('pause-overlay').hidden=false;$('glantan-restart').hidden=kind!=='glantan';$('resume-error').textContent='';$('resume').focus({preventScroll:true});renderUi();}
 async function resume(){
-  if(busy||game?.state!=='paused')return;const token=++lifecycle;busy=true;$('resume').disabled=true;
+  if(busy||game?.state!=='paused')return;sounds.unlock();const token=++lifecycle;busy=true;$('resume').disabled=true;
   try{const preparation=!isTileGame()&&input.prepare();if(preparation)await preparation;if(token!==lifecycle)return;$('pause-overlay').hidden=true;game.resume();const canAnswer=isQuestionGame()?game.canAnswer():!isTileGame()&&(kind!=='eggs'||game.player.status!=='dead');input.setEnabled(canAnswer);if(canAnswer&&input.voice.enabled)startListening();if(canAnswer)input.focus();}
   catch(error){$('resume-error').textContent=error.message;}finally{busy=false;$('resume').disabled=false;}
 }
@@ -211,7 +221,7 @@ for(const choice of ['same','new'])$('glantan-restart-'+choice).addEventListener
   $('glantan-restart-dialog').close();start({glantanSeed:seed,fresh:true});
 });
 $('start').addEventListener('click',start);$('again').addEventListener('click',()=>highscores.leave(()=>start({fresh:true}),{allowUnsaved:kind==='glantan'}));$('glantan-same-map').addEventListener('click',()=>highscores.leave(()=>start({glantanSeed:game.world.seed,fresh:true}),{allowUnsaved:true}));$('pause').addEventListener('click',pause);$('resume').addEventListener('click',resume);$('pause-menu').addEventListener('click',()=>kind==='studio'&&renderer?.dirty?renderer.confirmLeave(menu):menu());$('end-menu').addEventListener('click',()=>highscores.leave(menu,{allowUnsaved:kind==='glantan'}));
-root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
+root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();renderGlantanAudio();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){
   // Canvas labels are primary. Keep a compact alternative for assistive technology.
   const hints=['klossar','trassel','chess'].includes(kind)?new Set():SC.pinyinHints(game),text=game.getTargets().map(t=>(kind==='home'?SC.homeTaskTypes[t.type].name+': ':'')+(hints.has(t)?[t.item.hint,t.item.label,t.item.translation].filter(Boolean).join(' · '):t.item.label)).join(', ');
@@ -219,6 +229,7 @@ function renderTargets(){
 }
 function renderUi(){
   if(!game||$('play').hidden)return;
+  renderGlantanAudio();
   sounds.campfire(soundOn&&kind==='marshmallows'&&['playing','celebrating'].includes(game.state)?game.fireStrength():0,input.listening?.23:1);
   if(game.state==='playing')queue.reconcile();
   if(kind==='studio'){renderTargets();return;}
@@ -243,7 +254,7 @@ function renderUi(){
   $('objective').textContent=objective;$('secondary').textContent=secondary;$('progress').value=value;renderTargets();
 }
 function frame(now){if(noticeUntil&&now>=noticeUntil){$('discovery-notice').hidden=true;noticeUntil=0;}if(now-lastUi>100){lastUi=now;renderUi();if($('settings').open)$('mic-level').value=Math.min(1,microphone.level*6);}uiFrame=requestAnimationFrame(frame);}uiFrame=requestAnimationFrame(frame);
-$('sound').addEventListener('click',()=>{soundOn=!soundOn;if(!soundOn){sounds.stopCampfire();sounds.stopDinosaurVoices?.();tileSpeech.stop();}$('sound').querySelector('span').textContent=soundOn?'♫':'♪̸';$('sound').title=soundOn?'Ljud på':'Ljud av';$('sound').setAttribute('aria-pressed',String(soundOn));if(soundOn){sounds.unlock();sounds.play('lock');}});
+$('sound').addEventListener('click',()=>{soundOn=!soundOn;renderGlantanAudio();if(!soundOn){sounds.stopCampfire();sounds.stopDinosaurVoices?.();tileSpeech.stop();}$('sound').querySelector('span').textContent=soundOn?'♫':'♪̸';$('sound').title=soundOn?'Ljud på':'Ljud av';$('sound').setAttribute('aria-pressed',String(soundOn));if(soundOn){sounds.unlock();sounds.play('lock');}});
 for(const el of document.querySelectorAll('[data-close]'))el.addEventListener('click',()=>$(el.dataset.close).close());
 $('help-open').addEventListener('click',()=>{pause();$('help').showModal();});
 $('settings-open').addEventListener('click',()=>{pause();$('settings').showModal();if(microphone.ready){microphone.begin(true);$('mic-status').textContent='Mikrofonen är aktiv. Prata för att se ljudnivån.';}refreshDevices();});

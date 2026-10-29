@@ -36,7 +36,9 @@
       if (subtitle) this.panel.append(el('p', 'g-subtitle', subtitle));
     }
     action(action, options = {}) {
-      const w = this.game.world, name = options.name || G.actionName(w, action), spec = options.spec;
+      const w = this.game.world;
+      action = G.normalizeAction(w, action);
+      const name = options.name || G.actionName(w, action), spec = options.spec;
       const availability = () => G.availability(w, action, { placement: action.type !== 'build' });
       const reason = availability();
       const button = el('button', 'g-action' + (options.small ? ' g-action-small' : ''));
@@ -66,15 +68,27 @@
         if (action.type === 'build') {
           this.game.choose(null); this.renderer.blueprint = action.id; this.renderer.hover = null;
           G.notify(w, 'Välj tomt för ' + G.buildings[action.id].name.toLowerCase() + '.');
-        } else { this.renderer.blueprint = null; this.game.choose(action); }
+        } else {
+          this.renderer.blueprint = null;
+          if (this.game.choose(action) && action.type === 'bounty' && action.id !== 'attack') {
+            const point = this.game.pending;
+            this.selection = this.renderer.selection = { kind: 'ground', x: point.x, y: point.y };
+          }
+        }
         this.panelKey = ''; this.update();
       };
       return button;
     }
     buildPanel() {
       this.heading('Ge gläntan rum', G.population(this.game.world) + ' / ' + G.capacity(this.game.world) + ' invånare');
-      const grid = el('div', 'g-action-grid');
-      for (const [id, spec] of Object.entries(G.buildings)) {
+      const grid = el('div', 'g-action-grid'), entries = Object.entries(G.buildings);
+      // The first purchase must unlock recruitment; extra housing can wait.
+      const guilds = new Set(Object.values(G.classes).map(role => role.guild));
+      if (!this.game.world.buildings.some(b => G.alive(b) && guilds.has(b.type))) {
+        const order = id => id === 'hall' ? -2 : id === 'lodge' ? -1 : 0;
+        entries.sort((a, b) => order(a[0]) - order(b[0]));
+      }
+      for (const [id, spec] of entries) {
         if (!spec.cost || spec.group) continue;
         const count = this.game.world.buildings.filter(b => b.type === id && G.alive(b)).length;
         grid.append(this.action({ type: 'build', id }, { spec, detail: id === 'house' ? '+4 platser' : count ? 'Byggt' : { hall: 'Väktare', lodge: 'Spejare', garden: 'Örtvårdare · läker grannar', spire: 'Klangvävare', tower: 'Skjuter på inkräktare' }[id], done: count >= spec.limit }));
@@ -127,7 +141,7 @@
         const target = G.bountyTarget(w, bounty), expedition = w.expeditions.find(e => e.bounty === bounty.id);
         const row = el('div', 'g-bounty-row');
         const view = el('button', 'g-bounty-view'); view.type = 'button';
-        const title = target?.type && G.lairTypes[target.type] ? G.lairTypes[target.type].name : { attack: 'Anfall', defend: 'Vaktplats', explore: 'Okänd mark' }[bounty.type];
+        const title = target?.boss ? 'Tystnadens hjärta' : target?.type && G.lairTypes[target.type] ? G.lairTypes[target.type].name : { attack: 'Anfall', defend: 'Vaktplats', explore: 'Okänd mark' }[bounty.type];
         view.append(icon(bounty.type === 'attack' ? 'sword' : bounty.type === 'defend' ? 'shield' : 'compass'), el('strong', '', title), el('small', '', (expedition ? expedition.members.length + ' vänner · ' + expedition.reason : 'Söker frivilliga') + ' · ' + '◆'.repeat(bounty.level)));
         this.live.push(() => {
           const group = w.expeditions.find(e => e.bounty === bounty.id);
@@ -168,13 +182,18 @@
       } else if (selected.kind === 'lair' || selected.kind === 'monster') {
         const target = (selected.kind === 'lair' ? w.lairs : w.monsters).find(b => b.id === selected.id); if (!target) { this.heading('Tyst och stilla'); return; }
         const spec = selected.kind === 'lair' ? G.lairTypes[target.type] : G.monsterTypes[target.type];
-        this.heading(spec.name, spec.description || 'På väg mot gläntan.'); this.meter(target.hp, target.maxHp, 'Liv', () => [target.hp, target.maxHp]);
+        const isLair = selected.kind === 'lair';
+        this.heading(isLair && target.boss ? 'Tystnadens hjärta' : spec.name, isLair ? target.boss ? 'Bossbo · ' + spec.name : spec.description : (target.boss ? 'Bossvakt' : target.guard ? 'Boförsvarare' : 'Anfallare') + ' · nivå ' + (target.rank || 1));
+        this.meter(target.hp, target.maxHp, 'Liv', () => [target.hp, target.maxHp]);
         if (!G.alive(target)) { this.panel.append(el('p', 'g-hero-intent', 'Här klingar det igen.')); return; }
         if (selected.kind === 'lair') {
+          if (target.boss) {
+            const warning = el('p', 'g-boss-warning'); warning.append(icon('crown'), el('span', '', 'Farliga väktare. Samla cirka ' + target.suggestedLevels + ' hjältenivåer.')); this.panel.append(warning);
+          }
           const timer = el('p', 'g-lair-timer'); this.panel.append(timer);
-          this.live.push(() => { timer.textContent = !target.awake ? 'Vaknar om ' + G.clockText(Math.max(0, target.wakeAt - w.time)) : target.level >= 4 ? 'Fullvuxet bo' : (target.type === 'spore' && !target.spread ? 'Sprider sig om ' : 'Växer om ') + G.clockText(Math.max(0, target.nextGrowth - w.time)); });
+          this.live.push(() => { timer.textContent = !target.awake ? 'Vaknar om ' + G.clockText(Math.max(0, target.wakeAt - w.time)) : 'Nästa anfall om ' + G.clockText(Math.max(0, target.nextSpawn - w.time)); });
           const guards = el('p', 'g-subtitle'); this.panel.append(guards);
-          this.live.push(() => { guards.textContent = target.defendersRaised ? w.monsters.filter(m => m.guard && m.lair === target.id && G.alive(m)).length + ' boförsvarare kvar' : G.lairGuards(target).length + ' försvarare vaknar vid anfall'; });
+          this.live.push(() => { guards.textContent = w.monsters.filter(m => m.guard && m.lair === target.id && G.alive(m)).length + ' boförsvarare kvar' + (target.awake && target.level < 4 ? ' · ' + (target.type === 'spore' && !target.spread ? 'sprider sig om ' : 'växer om ') + G.clockText(Math.max(0, target.nextGrowth - w.time)) : ''); });
         }
         const bounty = w.bounties.find(b => b.type === 'attack' && b.target === target.id);
         if (bounty) {
@@ -185,6 +204,9 @@
         else this.panel.append(el('p', 'g-subtitle', 'Högsta belöning · ◆◆◆'));
       } else {
         const known = !!w.explored[G.index(w, selected.x, selected.y)];
+        if (known && !G.walkable(w, selected.x, selected.y)) {
+          this.heading({ 2: 'Vatten', 3: 'Klippblock', 4: 'Berg', 5: 'Tät skog' }[G.tile(w, selected.x, selected.y)] || 'Hinder', 'Hitta en väg runt.'); return;
+        }
         this.heading(known ? 'En plats i gläntan' : 'Bortom stigen');
         this.panel.append(this.action({ type: 'bounty', id: known ? 'defend' : 'explore', x: selected.x, y: selected.y, level: 1 }, { name: known ? 'Be om vakt' : 'Be om utforskning', icon: known ? 'shield' : 'compass', detail: known ? 'Frivilliga håller ett öga på platsen.' : 'Spejare hittar vägen.' }));
       }

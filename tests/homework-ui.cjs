@@ -68,13 +68,13 @@ const windowListeners=new Map(),history={state:null,replaceState(s){this.state=s
   const glantan=boot('?game=glantan');await settle();glantan.click('start');await settle();
   assert.equal(glantan.fields['setup-error'].textContent,'');assert(glantan.fields.answer.disabled);
   assert.equal(glantan.captures.at(-1).turnBased,true,'speech waits for a complete answer while simulation stays realtime');
-  const G=glantan.ctx.Starlight.Glantan;glantan.game.choose({type:'recruit',id:'warrior'});assert(!glantan.fields.answer.disabled);
+  const G=glantan.ctx.Starlight.Glantan;assert.equal(G.population(glantan.game.world),0);G.addBuilding(glantan.game.world,'hall',glantan.game.world.home.tx-4,glantan.game.world.home.ty+3);glantan.game.choose({type:'recruit',id:'warrior'});assert(!glantan.fields.answer.disabled);
   for(let i=0;i<2;i++){glantan.fields.answer.value=glantan.game.targets[0].item.answer;glantan.fields['answer-form'].dispatchEvent(new Event('submit',{cancelable:true}));glantan.game.update(.1);}
-  assert.equal(G.population(glantan.game.world),4);assert(glantan.fields.answer.disabled);
+  assert.equal(G.population(glantan.game.world),1);assert(glantan.fields.answer.disabled);
   glantan.game.choose({type:'research',id:'castle2'});glantan.click('pause');assert(glantan.fields.answer.disabled);glantan.click('resume');await settle();assert(!glantan.fields.answer.disabled);
   const seed=glantan.game.world.seed;glantan.game.world.lairs.forEach(l=>{l.hp=0;});glantan.game.world.monsters=[];glantan.game.update(.1);await settle();
   assert.equal(glantan.fields['result-title'].textContent,'Gläntan klingar igen!');assert(!glantan.fields['glantan-same-map'].hidden);
-  glantan.click('glantan-same-map');await settle();await settle();assert.equal(glantan.game.world.seed,seed);assert.equal(G.population(glantan.game.world),3);assert.equal(glantan.game.world.time,0);
+  glantan.click('glantan-same-map');await settle();await settle();assert.equal(glantan.game.world.seed,seed);assert.equal(G.population(glantan.game.world),0);assert.equal(glantan.game.world.time,0);
   assert.equal(glantan.posts[0].leaderboard_key,'v1:glantan:math-addition:gentle');
   glantan.game.choose({type:'research',id:'castle2'});
   glantan.game.answer({text:glantan.game.targets[0].item.answer,source:'typing'});
@@ -86,7 +86,7 @@ const windowListeners=new Map(),history={state:null,replaceState(s){this.state=s
   assert.equal(unfinished.progress,1);assert.equal(unfinished.targets[0].id,questionId);assert.equal(glantan.ctx.document.activeElement,glantan.fields['glantan-restart']);
   glantan.click('glantan-restart');glantan.click('glantan-restart-same');await settle();await settle();
   assert.notEqual(glantan.game,unfinished);assert.equal(glantan.game.world.seed,seed);assert.equal(glantan.game.state,'playing');
-  assert.equal(glantan.game.progress,0);assert.equal(G.population(glantan.game.world),3);assert.equal(glantan.game.world.time,0);
+  assert.equal(glantan.game.progress,0);assert.equal(G.population(glantan.game.world),0);assert.equal(glantan.game.world.time,0);
   glantan.click('pause');glantan.click('glantan-restart');glantan.click('glantan-restart-new');await settle();await settle();
   assert.notEqual(glantan.game.world.seed,seed);assert.equal(glantan.game.world.time,0);assert.equal(glantan.posts.length,postsBeforeRestart,'unfinished restarts do not submit a score');
   console.log('PASS Klockgläntan app: realtime purchases, pause/resume, result, replay, safe unfinished restart and no abandoned score uploads');
