@@ -70,7 +70,17 @@ class AnswerInput extends EventTarget{
   submit(){if(!this.enabled||this.voice.enabled||this.composing)return;this.queue.enqueue(this.field.value);this.field.value='';this.field.focus({preventScroll:true});}
   singleLetter(){return ['letters','bopomofo'].includes(this.voice.lesson);}
   autoSubmit(){if(!this.enabled||this.voice.enabled||this.composing||!this.singleLetter())return;const text=this.field.value.normalize('NFC');this.field.value='';for(const letter of text)if(letter.trim())this.queue.enqueue(letter);}
-  configure(voice){this.cancel();this.voice={...voice,kind:voice.enabled?'browser':'typing'};this.field.setAttribute('inputmode',SC.isMath(voice.lesson)?'numeric':'text');this.field.setAttribute('enterkeyhint','send');if(this.voiceButton)this.voiceButton.hidden=!voice.enabled;const submit=this.form.querySelector('[type=submit]');if(submit)submit.hidden=this.singleLetter();}
+  configure(voice){
+    this.cancel();this.voice={...voice,kind:voice.enabled?'browser':'typing'};
+    const lesson=SC.modes[SC.canonicalLesson(voice.lesson)];
+    const numeric=lesson?.type==='math'||(lesson?.type!=='chinese'&&lesson?.items?.length>0&&lesson.items.every(item=>[item.answer,...item.aliases||[]].every(answer=>/^\d+$/.test(answer))));
+    this.field.setAttribute('inputmode',numeric?'numeric':'text');
+    // Older iOS keyboards use the digit pattern; text exercises accept any text.
+    this.field.setAttribute('pattern',numeric?'[0-9]*':'.*');
+    // The game judges answers, including mistakes; browser validation must not block them.
+    this.form.noValidate=true;
+    this.field.setAttribute('enterkeyhint','send');if(this.voiceButton)this.voiceButton.hidden=!voice.enabled;const submit=this.form.querySelector('[type=submit]');if(submit)submit.hidden=this.singleLetter();
+  }
   setEnabled(enabled){this.enabled=enabled;this.field.disabled=!enabled||this.voice.enabled;const submit=this.form.querySelector('[type=submit]');if(submit)submit.disabled=!enabled||this.voice.enabled;if(this.voiceButton)this.voiceButton.disabled=!enabled;if(!enabled)this.cancel();else this.focus();}
   get usesAudioTrack(){return SC.speechCaptureMode()==='track';}
   prepare(){
