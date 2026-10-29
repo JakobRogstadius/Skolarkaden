@@ -127,3 +127,9 @@ same-seed restart, a distinct new seed, and the dialog's layout, Escape handling
 and restored focus in a constrained 390×480 viewport.
 
 ![Restart choices at 390×480](klockglantan-restart-1793250444612.jpg)
+
+Released in [PR #11](https://github.com/JakobRogstadius/Skolarkaden/pull/11),
+merged as `f391ce07e43c2f25fc16dbdc919eb0b801bc3cc3`. Pages run `40821829159`
+completed successfully. The public site's new pause controls and same-seed
+restart were exercised after deployment. Its leaderboard still reports that
+it is not ready for this game; the separate Cloudflare deployment remains pending.
