@@ -50,6 +50,9 @@ Kartorna är 72×56, 90×70 respektive 108×84 rutor. Floder, sjöar, berg och t
 blockerar vägen; passager och broar binder samman områdena. Hjältar håller avstånd
 från varandra och patrullerar när de är lediga. Monsterstorlek, rustning, rangmärken
 och bosskronor visar faran. Handlingspanelen ligger till vänster på större skärmar.
+Byggnadernas silhuetter, utrustning och rollmärken visar deras funktion. Örtvårdare
+har vit mössa och medicinväska; klangvävare har violett spetshatt och lysande stav.
+Fiender markeras i rött på översiktskartan, med en större romb för bossboet.
 Ljud för byggande, strid, läkande, varningar och klockor använder den vanliga ljudknappen
 och dämpas vid röstinmatning. En lågmäld bakgrundsmelodi med mjuka stråkar och harpa
 spelas under omgången, tonar in mjukt och fortsätter där den slutade efter paus.

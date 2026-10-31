@@ -51,7 +51,9 @@
       const cost = G.actionCost(w, action);
       const badge = el('span', 'g-cost', options.done ? '✓' : String(cost));
       badge.title = cost + ' rätt i rad';
-      button.append(icon(glyph), text, badge);
+      const symbol = icon(glyph);
+      if (spec?.color) { symbol.classList.add('g-role-icon'); symbol.style.setProperty('--role-color', spec.color); }
+      button.append(symbol, text, badge);
       button.title = [spec?.description, reason || (cost + ' rätt i rad')].filter(Boolean).join(' · ');
       button.setAttribute('aria-label', name + ', ' + cost + ' rätt i rad' + (reason ? '. ' + reason : ''));
       this.live.push(() => {

@@ -19,23 +19,24 @@ body:has(#play[data-game=glantan]:not([hidden])) .masthead{margin-bottom:12px}
 .g-sidebar{grid-column:1;grid-row:1;display:flex;flex-direction:column;min-width:0;min-height:0;background:linear-gradient(130deg,#f0e8d1,#e8e2cb);border-right:1px solid #bcbfa2;box-shadow:4px 0 18px #233b3020}
 .g-sidebar button{font-family:inherit;color:#354b3e}
 .g-tabs{display:grid;grid-template-columns:repeat(4,1fr);flex:none;border-bottom:1px solid #c6c9ac;padding:7px 7px 0;gap:2px;background:#e2e2c9}
-.g-tabs .g-tab{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;padding:8px 1px 10px;border:0;border-radius:6px 6px 0 0;font-size:10px;font-weight:bold;background:transparent;color:#708170}
+.g-tabs .g-tab{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;padding:8px 1px 10px;border:0;border-radius:6px 6px 0 0;font-size:10px;font-weight:bold;background:transparent;color:#52674e}
 .g-tabs .g-tab:hover{background:#d4dcc3}
 .g-tabs .g-tab[aria-selected=true]{color:#334e3d;background:#f0e8d1;box-shadow:inset 0 3px #ae9057}
 .g-icon{display:inline-flex;flex:none;align-items:center;justify-content:center}
 .g-panel{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:14px 13px 18px;scrollbar-width:thin;scrollbar-color:#a6b294 transparent}
 .g-panel-title{font:normal 21px/1.2 Georgia,serif;letter-spacing:-.3px;margin:0 0 8px;color:#344d3d}
-.g-subtitle{font-size:11px;line-height:1.5;color:#72806b;margin:0 0 12px}
+.g-subtitle{font-size:11px;line-height:1.5;color:#57674c;margin:0 0 12px}
 .g-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:10px 0}
 .g-action{position:relative;display:flex;align-items:center;gap:9px;width:100%;padding:10px;margin:0 0 7px;min-height:56px;text-align:left;border:1px solid #bdc2a2;border-radius:7px;background:#faf6e5;box-shadow:0 2px 0 #b6b89925;transition:background .15s,box-shadow .15s}
 .g-action:hover:enabled{background:#fffbee;box-shadow:0 2px 0 #a4a88c55;border-color:#8d9f79}
 .g-action .g-icon{width:23px;color:#64816a}
+.g-action .g-role-icon{height:27px;width:27px;min-width:27px;border:1px solid #203834;border-radius:5px;background:#2b443d;color:var(--role-color);box-shadow:inset 0 1px #ffffff18}
 .g-action-grid .g-action{margin:0;min-height:83px;align-items:flex-start;flex-wrap:wrap;padding:9px;gap:5px}
 .g-action-grid .g-action .g-action-text{flex-basis:100%;padding-right:0}
 .g-action-grid .g-cost{position:absolute;right:8px;top:8px}
 .g-action-text{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
 .g-action-name{font-size:13px;line-height:1.2;font-weight:bold}
-.g-action-detail{font-size:10px;line-height:1.35;font-weight:normal;color:#77816c}
+.g-action-detail{font-size:10px;line-height:1.35;font-weight:normal;color:#58664c}
 .g-cost{display:inline-flex;align-items:center;justify-content:center;flex:none;width:24px;height:24px;border-radius:50%;border:1px solid #c5b17d;background:#f3e4b7;font:600 12px/1 Georgia,serif;color:#7f6337}
 .g-action.g-unavailable{opacity:.53;background:#e4e4ce;box-shadow:none}
 .g-action.g-selected{border-color:#a6874a;background:#fff4d4;box-shadow:0 0 0 1px #a6874a}
@@ -46,10 +47,10 @@ body:has(#play[data-game=glantan]:not([hidden])) .masthead{margin-bottom:12px}
 .g-tech-branch .g-action-detail{font-size:10px}
 .g-hero-row{display:grid;grid-template-columns:23px 1fr auto;gap:4px 8px;align-items:center;width:100%;margin:0 0 5px;padding:8px 9px;border:1px solid #c4c8ab;background:#f7f2de;border-radius:6px;text-align:left}
 .g-hero-row:hover:enabled{background:#fff9e9}
-.g-hero-row>.g-icon{grid-row:1/3;color:var(--hero-color);filter:brightness(.75)}
+.g-hero-row>.g-icon{grid-row:1/3;color:var(--hero-color);background:#2b443d;border-radius:4px;height:28px}
 .g-hero-row strong{font-size:12px}
 .g-level{font-size:9px;color:#81866d;font-weight:normal}
-.g-hero-task{grid-column:2/4;font-size:10px;color:#7b856f;font-weight:normal}
+.g-hero-task{grid-column:2/4;font-size:10px;color:#59694f;font-weight:normal}
 .g-hero-intent{font:italic 17px/1.4 Georgia,serif;color:#71845f;margin:10px 0 16px}
 .g-detail-meter{display:grid;grid-template-columns:1fr auto;font-size:10px;margin:14px 0;color:#7e876f}
 .g-detail-meter strong{font-size:10px;color:#52694f}
@@ -91,7 +92,7 @@ body:has(#play[data-game=glantan]:not([hidden])) .masthead{margin-bottom:12px}
 .g-map-controls{position:absolute;bottom:17px;right:16px;display:flex;gap:2px;background:#26483de0;border:1px solid #afbb8c66;padding:3px;border-radius:7px;box-shadow:0 2px 8px #203b3230}
 .g-map-controls button{display:flex;align-items:center;justify-content:center;width:32px;height:32px;padding:4px;border:0;color:#e7dfb9;background:transparent;border-radius:4px}
 .g-map-controls button:hover:enabled{background:#6e8c5c88}
-.g-minimap{position:absolute;left:14px;bottom:14px!important;width:126px!important;height:98px!important;box-sizing:content-box;border:3px solid #cfcc9b99;border-radius:4px;box-shadow:0 3px 15px #23413455;cursor:crosshair;opacity:.92}
+.g-minimap{position:absolute;left:14px;bottom:14px!important;width:126px!important;height:98px!important;box-sizing:content-box;border:3px solid #dbd4a6;border-radius:4px;box-shadow:0 3px 15px #23413455;cursor:crosshair}
 .g-bell{position:absolute;right:15px;top:14px;display:grid;grid-template-columns:27px auto;gap:0 8px;align-items:center;background:#2f4a3fe8;border:1px solid #9f9f7588;color:#d2d6ad;padding:8px 12px;box-shadow:0 3px 12px #23413444;border-radius:7px;min-height:48px}
 .g-bell>svg{grid-row:1/3}
 .g-bell>span{font-size:11px;font-weight:bold}
@@ -133,6 +134,7 @@ body.playing:has(#play[data-game=glantan]) #answer{flex:1;width:0;min-width:0;mi
   .g-action-detail{font-size:9px}
   .g-action-grid .g-action .g-action-detail{display:none}
   .g-action .g-icon{width:20px}
+  .g-action .g-role-icon{width:23px;min-width:23px;height:23px}
   .g-action .g-icon svg{width:18px;height:18px}
   .g-cost{width:21px;height:21px;font-size:11px}
   .g-action{min-height:48px;padding:8px}

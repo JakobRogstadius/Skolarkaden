@@ -15,16 +15,16 @@
   G.classes = {
     warrior: { name: 'Väktare', role: 'Skyddar andra i närstrid.', color: '#ecb85a', icon: 'shield', guild: 'hall', cost: 2, hp: 125, damage: 14, range: 1.1, speed: 1.5, cooldown: 1.05, courage: 1.2 },
     ranger: { name: 'Spejare', role: 'Utforskar och skjuter på avstånd.', color: '#a4d694', icon: 'bow', guild: 'lodge', cost: 2, hp: 75, damage: 11, range: 4.3, speed: 1.95, cooldown: 1.3, courage: 0.95 },
-    healer: { name: 'Örtvårdare', role: 'Följer och läker sina vänner.', color: '#efa2b4', icon: 'leaf', guild: 'garden', cost: 3, hp: 70, damage: 5, range: 3, speed: 1.65, cooldown: 1.7, courage: 0.85 },
-    mage: { name: 'Klangvävare', role: 'Spräcker grupper med klingande toner.', color: '#aab9f4', icon: 'chime', guild: 'spire', cost: 3, hp: 62, damage: 18, range: 3.7, speed: 1.55, cooldown: 1.9, courage: 0.9 }
+    healer: { name: 'Örtvårdare', role: 'Följer och läker sina vänner.', color: '#ed9fb1', icon: 'heal', guild: 'garden', cost: 3, hp: 70, damage: 5, range: 3, speed: 1.65, cooldown: 1.7, courage: 0.85 },
+    mage: { name: 'Klangvävare', role: 'Spräcker grupper med klingande toner.', color: '#ad91ed', icon: 'chime', guild: 'spire', cost: 3, hp: 62, damage: 18, range: 3.7, speed: 1.55, cooldown: 1.9, courage: 0.9 }
   };
   G.buildings = {
     castle: { name: 'Klockborgen', icon: 'bell', w: 2, h: 2, hp: 1000, color: '#cebb8d', cost: 0, description: 'Gläntans hjärta. Måste överleva.' },
     house: { name: 'Bostad', icon: 'house', w: 2, h: 1, hp: 230, color: '#dfac75', cost: 2, capacity: 4, limit: 6, description: '+4 platser. Högst 24 invånare.' },
-    hall: { name: 'Väktarhus', icon: 'shield', w: 2, h: 2, hp: 400, color: '#c59a5d', cost: 3, limit: 1, description: 'Rekrytera väktare.' },
-    lodge: { name: 'Stighem', icon: 'bow', w: 2, h: 2, hp: 320, color: '#7eaa80', cost: 3, limit: 1, description: 'Rekrytera spejare.' },
-    garden: { name: 'Örtgård', icon: 'leaf', w: 2, h: 2, hp: 300, color: '#d4979c', cost: 3, limit: 1, description: 'Rekrytera örtvårdare. Läker grannar.' },
-    spire: { name: 'Klangverkstad', icon: 'chime', w: 2, h: 2, hp: 290, color: '#959fc5', cost: 4, limit: 1, description: 'Rekrytera klangvävare.' },
+    hall: { name: 'Väktarhus', icon: 'shield', w: 2, h: 2, hp: 400, color: '#ecb85a', cost: 3, limit: 1, description: 'Rekrytera väktare.' },
+    lodge: { name: 'Stighem', icon: 'bow', w: 2, h: 2, hp: 320, color: '#a4d694', cost: 3, limit: 1, description: 'Rekrytera spejare.' },
+    garden: { name: 'Örtgård', icon: 'heal', w: 2, h: 2, hp: 300, color: '#ed9fb1', cost: 3, limit: 1, description: 'Rekrytera örtvårdare. Läker grannar.' },
+    spire: { name: 'Klangverkstad', icon: 'chime', w: 2, h: 2, hp: 290, color: '#ad91ed', cost: 4, limit: 1, description: 'Rekrytera klangvävare.' },
     tower: { name: 'Vindtorn', icon: 'tower', w: 1, h: 1, hp: 350, color: '#aebb9e', cost: 3, limit: 4, description: 'Skjuter på inkräktare.' },
     beacon: { name: 'Gryningsfyr', icon: 'sun', w: 2, h: 2, hp: 750, color: '#f1ce77', cost: 8, limit: 1, group: 'landmark', requires: 'castle2', description: 'Unik. Lång räckvidd, skadar grupper.' },
     conservatory: { name: 'Klockträdgård', icon: 'tree', w: 2, h: 2, hp: 600, color: '#c2d6a0', cost: 8, limit: 1, group: 'landmark', requires: 'castle2', description: 'Unik. Alla hjältar återhämtar sig snabbare.' }
