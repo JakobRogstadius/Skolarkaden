@@ -111,13 +111,16 @@ for (const [chosen, excluded, guild] of [['banner', 'guardian', 'hall'], ['guard
   G.updateBuildings(w, .1); assert(flyer.hp < hp - 10, 'defensive towers can shoot flying targets');
   assert(G.canHit(tower, flyer));
 }
-for (const type of Object.keys(G.lairTypes)) {
-  const { w, lair } = arena(type); G.awakenLair(w, lair);
-  assert(w.monsters.every(m => m.type === G.lairTypes[type].monster));
-  w.time = lair.nextGrowth; G.updateLairs(w);
-  const wave = w.monsters.filter(m => m.wave === lair.waveCount);
-  assert(wave.some(m => m.type === G.lairTypes[type].monster));
-  assert(wave.some(m => m.type === G.lairTypes[type].support), type + ' adds its complementary support at the first upgrade');
+for (const type of Object.keys(G.lairTypes)) for (const tier of [1, 2, 3]) {
+  const { w, lair } = arena(type); lair.tier = tier; G.awakenLair(w, lair);
+  for (const [level, basic, advanced] of [[1, 2, 0], [2, 3, 0], [3, 4, 1], [4, 5, 2]]) {
+    if (level > 1) { w.time = lair.nextGrowth; G.updateLairs(w); }
+    assert.equal(lair.level, level);
+    const wave = w.monsters.filter(m => m.lair === lair.id && !m.guard && m.wave === lair.waveCount);
+    assert.equal(wave.filter(m => m.type === G.lairTypes[type].monster).length, basic + (tier === 3 ? 1 : 0), type + ' basic wave at level ' + level);
+    assert.equal(wave.filter(m => m.type === G.lairTypes[type].support).length, advanced, type + ' advanced wave at level ' + level);
+    assert(wave.every(m => m.strength === G.monsterStrength(lair)), 'wave members use the current lair strength');
+  }
 }
 {
   const { w, lair } = arena(), patient = enemy(w, lair), medic = enemy(w, lair, 'mender', 20, 15);

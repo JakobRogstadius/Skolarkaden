@@ -6,7 +6,7 @@
   G.monsterSpeed = monster => G.monsterTypes[monster.type].speed;
   G.spawnMonster = function(w, lair, { type = G.lairTypes[lair.type].monster, guard = false, wave = 0, at = null, broodParent = null } = {}) {
     const living = w.monsters.filter(G.alive);
-    // Reserve enough room for two guardians at every original or spreading lair.
+    // Raid capacity leaves room for every original or spreading lair's garrison.
     if (living.length >= G.MAX_MONSTERS || !guard && living.filter(m => !m.guard).length >= G.MAX_RAIDERS) return null;
     const spec = G.monsterTypes[type], boss = guard && !!lair.boss;
     const point = G.freeNear(w, at || lair), strength = broodParent ? 1 : G.monsterStrength(lair);
@@ -18,23 +18,36 @@
   G.seedLairGuards = function(w, lair) {
     if (lair.guardsSeeded) return;
     lair.guardsSeeded = true;
-    for (const type of G.lairGuards(lair)) G.spawnMonster(w, lair, { type, guard: true });
+    G.replenishLairGuards(w, lair);
   };
-  G.launchWave = function(w, lair) {
-    const profile = G.profiles[w.pace];
-    lair.waveCount = (lair.waveCount || 0) + 1;
-    const family = G.lairTypes[lair.type];
-    const formation = Array(2 + (lair.tier >= 3 ? 1 : 0)).fill(family.monster);
-    if (lair.level >= 2) formation.push(family.support);
+  G.replenishLairGuards = function(w, lair) {
+    if (!G.alive(lair)) return;
+    const types = G.lairGuards(lair);
+    const living = w.monsters.filter(m => G.alive(m) && m.guard && m.lair === lair.id).length;
+    for (let i = living; i < types.length; i++) G.spawnMonster(w, lair, { type: types[i], guard: true });
+    if (living < types.length) w.revision++;
+  };
+  function sendWave(w, lair, formation) {
     let sent = 0;
-    for (const type of formation) if (G.spawnMonster(w, lair, { type, wave: lair.waveCount })) sent++;
-    // A specialist makes a wave much stronger than another basic attacker.
-    // Allow regrouping between mixed waves rather than multiplying both roles and volume.
-    lair.nextSpawn = w.time + Math.max(50, (82 - lair.level * 5 + (lair.level >= 2 ? 22 : 0)) * profile.spawn);
+    while (formation.length && G.spawnMonster(w, lair, { type: formation[0], wave: lair.waveCount })) { formation.shift(); sent++; }
     if (sent && lair.seen) {
       G.effect(w, 'wave', lair.x, lair.y, { color: '#efb284', duration: 1.5 });
       G.soundEvent?.(w, 'wave', lair, true);
     }
+    if (sent) w.revision++;
+    return sent;
+  }
+  G.launchWave = function(w, lair) {
+    const profile = G.profiles[w.pace];
+    lair.waveCount = (lair.waveCount || 0) + 1;
+    const family = G.lairTypes[lair.type];
+    const sizes = G.lairWave(lair);
+    const formation = [...Array(sizes.basic).fill(family.monster), ...Array(sizes.advanced).fill(family.support)];
+    const sent = sendWave(w, lair, formation);
+    // A final wave must not disappear when the live-monster limit is full.
+    if (!G.alive(lair) && formation.length) lair.pendingWave = formation;
+    // Preserve the regrouping interval for larger waves after the first upgrade.
+    lair.nextSpawn = w.time + Math.max(50, (82 - lair.level * 5 + (lair.level >= 2 ? 22 : 0)) * profile.spawn);
     w.revision++;
     return sent;
   };
@@ -80,8 +93,17 @@
   }
   G.updateLairs = function(w) {
     const profile = G.profiles[w.pace];
+    // Finish destruction waves before living nests claim newly available raid slots.
+    for (const lair of w.lairs) if (lair.pendingWave?.length) {
+      sendWave(w, lair, lair.pendingWave);
+      if (!lair.pendingWave.length) delete lair.pendingWave;
+    }
     for (const lair of [...w.lairs]) {
       if (!G.alive(lair)) continue;
+      if (w.time >= lair.nextGuardAt) {
+        G.replenishLairGuards(w, lair);
+        lair.nextGuardAt = w.time + 30;
+      }
       if (lair.defendersRaised && w.time - (lair.hurtAt || 0) > 15) lair.hp = Math.min(lair.maxHp, lair.hp + lair.maxHp * 0.004 * G.STEP);
       if (!lair.awake) {
         if (!lair.warned && lair.wakeAt - w.time < 30) {
@@ -95,7 +117,7 @@
         if (lair.type === 'spore' && !lair.spread) spread(w, lair);
         if (lair.level < 4) {
           lair.level++; lair.maxHp += 45; lair.hp += 45;
-          if (lair.seen) G.notify(w, G.lairTypes[lair.type].name + ' växte. ' + G.monsterTypes[G.lairTypes[lair.type].support].name + ' följer anfallen!', 'warn');
+          if (lair.seen) G.notify(w, G.lairTypes[lair.type].name + ' växte till nivå ' + lair.level + '.' + (lair.level >= 3 ? ' ' + G.monsterTypes[G.lairTypes[lair.type].support].name + ' följer anfallen!' : ''), 'warn');
           G.launchWave(w, lair);
         }
         lair.nextGrowth = w.time + G.lairTypes[lair.type].interval * profile.growth;

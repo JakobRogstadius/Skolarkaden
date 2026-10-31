@@ -78,11 +78,22 @@
     w.research[w.choices.warrior] = w.research[w.choices.ranger] = true;
     renderer.ui.panelKey = ''; renderer.ui.update();
   }
+  function showLairWaves() {
+    const G = SC.Glantan, w = game.world, lair = w.lairs.find(l => !l.boss && G.alive(l));
+    if (!lair) return;
+    const growth = (4 - lair.level) * 45;
+    frozen = true; lair.seen = lair.awake = true; lair.level = 4; lair.hp += growth; lair.maxHp += growth;
+    lair.nextGuardAt = w.time + 30;
+    const guard = w.monsters.find(m => G.alive(m) && m.guard && m.lair === lair.id);
+    if (guard) G.damage(w, guard, guard.hp);
+    G.launchWave(w, lair); G.reveal(w, lair.x, lair.y, 10);
+    renderer.focus(lair); renderer.ui.inspect({ kind: 'lair', id: lair.id });
+  }
   document.addEventListener('DOMContentLoaded', () => {
     const bar = document.createElement('div'); bar.setAttribute('aria-label', 'Testkontroller');
     bar.style.cssText = 'position:fixed;right:4px;top:4px;z-index:100;display:flex;gap:4px;background:#13282e;padding:4px;font-size:10px';
     bar.style.flexWrap = 'wrap'; bar.style.maxWidth = '95vw';
-    for (const [name, action] of [['Visuell översikt', showVisualRoster], ['Stridsöversikt', showCombat], ['Byt vägval', alternateBranches], ['Visa karta', () => { game.world.explored.fill(1); game.world.lairs.forEach(l => {l.seen=true;}); game.world.fogRevision++; }], ['Visa boss', () => { const l=game.world.lairs.find(l=>l.boss); if (!l) return; SC.Glantan.reveal(game.world,l.x,l.y,10); renderer.focus(l); renderer.ui.inspect({kind:'lair',id:l.id}); }], ['Stanna tiden', () => { frozen=!frozen; }], ['Testvinst', () => { const boss = game.world.lairs.find(l => l.boss); if (boss) { frozen = false; boss.hp = 0; } }], ['Testförlust', () => { frozen = false; SC.Glantan.castle(game.world).hp = 0; }], ['Dölj testknappar', () => bar.remove()]]) {
+    for (const [name, action] of [['Visuell översikt', showVisualRoster], ['Stridsöversikt', showCombat], ['Byt vägval', alternateBranches], ['Bovågor', showLairWaves], ['Visa karta', () => { game.world.explored.fill(1); game.world.lairs.forEach(l => {l.seen=true;}); game.world.fogRevision++; }], ['Visa boss', () => { const l=game.world.lairs.find(l=>l.boss); if (!l) return; SC.Glantan.reveal(game.world,l.x,l.y,10); renderer.focus(l); renderer.ui.inspect({kind:'lair',id:l.id}); }], ['Stanna tiden', () => { frozen=!frozen; }], ['Testvinst', () => { const boss = game.world.lairs.find(l => l.boss); if (boss) { frozen = false; boss.hp = 0; } }], ['Testförlust', () => { frozen = false; SC.Glantan.castle(game.world).hp = 0; }], ['Dölj testknappar', () => bar.remove()]]) {
       const button = document.createElement('button'); button.textContent = name; button.type = 'button'; button.style.cssText = 'padding:5px;font-size:10px';
       button.onclick = () => { if (game?.state === 'playing' || name.startsWith('Dölj')) action(); }; bar.append(button);
     }

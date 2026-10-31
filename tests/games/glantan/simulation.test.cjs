@@ -15,7 +15,7 @@ const make = seed => {
   const threat = G.threat(w, lair);
   G.damage(w, lair, 1, w.heroes[0]);
   assert(lair.awake && lair.defendersRaised, 'an attacked dormant nest wakes immediately');
-  assert.equal(w.monsters.filter(m => m.guard && m.lair === lair.id).length, 2, 'lair keeps its two original guardians');
+  assert.equal(w.monsters.filter(m => m.guard && m.lair === lair.id).length, 1, 'awakening keeps the easy boss garrison at one guardian');
   assert(w.monsters.some(m => m.type === 'guardian'));
   assert(G.threat(w, lair) > threat * .9, 'risk accounts for visible guardians');
   const count = w.monsters.length; G.damage(w, lair, 1, w.heroes[0]);
