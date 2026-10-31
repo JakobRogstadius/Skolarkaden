@@ -19,8 +19,8 @@
     if (world.sounds.length >= 64) world.sounds.shift();
     world.sounds.push({ kind, x: entity?.x, y: entity?.y, important });
   };
-  G.notify = function(world, text, kind = 'info') {
-    world.notices.push({ text, kind, until: world.time + 6, id: world.nextId++ });
+  G.notify = function(world, text, kind = 'info', point = null) {
+    world.notices.push({ text, kind, until: world.time + 6, id: world.nextId++, ...(point ? { x: point.x, y: point.y } : {}) });
     world.notices = world.notices.slice(-4);
     world.revision++;
   };
@@ -88,11 +88,15 @@
     target.hp = Math.max(0, target.hp - amount); target.hurtAt = world.time;
     if (target.hp > 0) {
       if (target.wakeAt !== undefined && !target.defendersRaised) G.alertLair(world, target);
+      if (target.w && target.wakeAt === undefined && dealt > 0 && world.time - (world.lastBuildingWarningAt ?? -30) >= 20) {
+        world.lastBuildingWarningAt = world.time;
+        G.notify(world, G.buildings[target.type].name + ' anfalls!', 'warn', target);
+      }
       return dealt;
     }
     if (target.classId) {
       world.fallen++; target.task = 'Vilar'; target.expedition = null; target.route = []; target.diedAt = world.time;
-      G.notify(world, target.name + ' föll. Kan återkallas.', 'warn');
+      G.notify(world, target.name + ' föll.', 'warn', target);
       G.soundEvent(world, 'hero-down', target, true);
       for (const minion of world.skeletons) if (minion.owner === target.id) minion.hp = 0;
       world.traps = world.traps.filter(trap => trap.owner !== target.id);
@@ -114,13 +118,12 @@
     } else if (target.wakeAt !== undefined) {
       world.destroyed++; world.navRevision++;
       if (!target.boss) G.launchWave(world, target);
-      G.notify(world, G.lairTypes[target.type].name + ' tystnade. Gläntan växer.', 'good');
       G.soundEvent(world, 'lair-down', target, true);
       for (const hero of world.heroes) if (G.alive(hero) && G.distance(hero, target) < 9) G.gainXp(world, hero, 25 + target.tier * 10);
       G.reveal(world, target.x, target.y, 5);
     } else {
       world.navRevision++;
-      if (target.type !== 'castle') G.notify(world, G.buildings[target.type].name + ' förstördes.', 'warn');
+      if (target.type !== 'castle') G.notify(world, G.buildings[target.type].name + ' förstördes.', 'warn', target);
     }
     G.effect(world, 'burst', target.x, target.y, { color: target.classId ? '#e6b8a2' : '#f4dba0', duration: 1.2 });
     world.revision++;
@@ -135,7 +138,6 @@
     for (const hero of world.heroes) if (G.alive(hero)) hero.hp = Math.min(hero.maxHp, hero.hp + hero.maxHp * 0.12);
     G.effect(world, 'bell', castle.x, castle.y, { duration: 2.5, color: '#ffda82' });
     G.soundEvent(world, 'bell', castle, true);
-    G.notify(world, 'Stormklockan samlar mod.', 'good');
     return true;
   };
   G.answerCharge = function(world) {
@@ -184,7 +186,6 @@
       w.lairSites.forEach((site, i) => G.addLair(w, site, G.profiles[pace].firstWake + i * G.profiles[pace].wake));
       delete w.lairSites;
       G.reveal(w, w.home.x, w.home.y, 8);
-      G.notify(w, 'Bygg ett hjältehus och värva dina första hjältar.');
     }
     update(dt) {
       if (!Number.isFinite(dt) || dt <= 0 || this.world.outcome) return;

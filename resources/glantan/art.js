@@ -35,7 +35,8 @@
     arrow: 'M3 12h18m-6-6 6 6-6 6', revive: 'M5 8a8 8 0 1 1-1 9M3 3v6h6M12 8v8m-4-4h8',
     eye: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12ZM15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
     lock: 'M6 10h12v11H6ZM8 10V7a4 4 0 0 1 8 0v3 M12 14v3',
-    crown: 'm3 7 4 4 5-8 5 8 4-4-2 12H5ZM5 22h14'
+    crown: 'm3 7 4 4 5-8 5 8 4-4-2 12H5ZM5 22h14',
+    clock: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0M12 6v6l4 2'
   };
   G.icon = (name, size = 20) => '<svg aria-hidden="true" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="' + (paths[name] || paths.star) + '"/></svg>';
   const hash = (x, y, n = 0) => { let v = Math.imul(x + n * 37, 374761393) + Math.imul(y + 11, 668265263); v = Math.imul(v ^ v >>> 13, 1274126177); return ((v ^ v >>> 16) >>> 0) / 4294967296; };

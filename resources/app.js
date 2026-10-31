@@ -84,7 +84,7 @@ function menuUpdate(){
     chess:'Välj ett drag genom att svara på dess uppgift. Sätt datorns kung schackmatt.',
     klossar:'Klicka på en fri kloss och dess matchande svar. Para ihop alla klossar för att tömma brädet.',
     trassel:'Dra linjer mellan uppgifter och svar som hör ihop. Linjer får inte korsa varandra eller väggar.',
-    glantan:'Bygg en glänta, värva hjältar och sätt belöningar. Rätt svar i rad betalar. Världen fortsätter medan du svarar.',
+    glantan:'Svara på frågor. Bygg en by. Skydda borgen och förstör bossboet.',
     studio:'Svara på uppgifter för att fylla på färg. Byt verktyg fritt och måla i din egen takt, utan poäng.'
   }[kind];
   $('pace').closest('.setup-field').hidden=kind==='studio';$('leaderboard-open').hidden=kind==='studio';
@@ -163,13 +163,13 @@ function onGameEvent(e){
   if(e.type==='end'){
     highscores.finish(e.score);
     input.setEnabled(false);$('pause').disabled=true;$('end-overlay').hidden=false;$('pause-overlay').hidden=true;
-    $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Trädgården är klar.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!',eggs:'Skeppet är säkrat!',home:'Skönt att vara klar!',klossar:'Alla klossar är borta!',trassel:'Trasslet är löst!',glantan:'Gläntan klingar igen!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'Alla plantor vissnade.',hive:'Honungen räckte inte.',eggs:'Rymdkrypen tog över.',glantan:'Klockborgen tystnade.'}[kind]);
+    $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Trädgården är klar.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!',eggs:'Skeppet är säkrat!',home:'Skönt att vara klar!',klossar:'Alla klossar är borta!',trassel:'Trasslet är löst!',glantan:'Du vann!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'Alla plantor vissnade.',hive:'Honungen räckte inte.',eggs:'Rymdkrypen tog över.',glantan:'Borgen föll.'}[kind]);
     if(isBoardGame())$('result-title').textContent=(e.draw?(kind==='chess'?'Remi!':'Oavgjort!'):e.won?'Du vann!':'Datorn vann.')+' '+(kind==='chess'?SC.ChessScoring.resultText(e.resultScore):SC.formatGameScore(kind,e.score))+'–'+(kind==='chess'?SC.ChessScoring.resultText(e.botScore):SC.formatGameScore(kind,e.botScore))+(kind==='chess'?' · '+e.reason:'');
     $('result-game').textContent=names[kind];$('result-context').textContent=SC.modes[game.mode].name+' · '+{gentle:'Lätt',steady:'Medel',brave:'Svår'}[game.pace];
     $('chess-result-breakdown').hidden=kind!=='chess';$('chess-result-breakdown').textContent=kind==='chess'?SC.ChessScoring.summary(e.scoreParts):'';
     $('trassel-result-breakdown').hidden=kind!=='trassel';
     $('trassel-result-breakdown').textContent=kind==='trassel'?['Tid '+Math.round(e.scoreParts.time),'Utrymme '+Math.round(e.scoreParts.optimality),'Rätt svar '+Math.round(e.scoreParts.accuracy),'Ledtrådar −'+e.scoreParts.penalty].join(' · '):'';
-    $('glantan-result-breakdown').hidden=kind!=='glantan';$('glantan-same-map').hidden=kind!=='glantan';
+    $('glantan-result-details').hidden=kind!=='glantan';$('glantan-result-details').open=false;$('glantan-result-breakdown').hidden=kind!=='glantan';$('glantan-same-map').hidden=kind!=='glantan';
     if(kind==='glantan')$('glantan-result-breakdown').textContent=game.world.destroyed+' bon röjda · '+game.world.kills+' monster besegrade · '+(game.shots?Math.round(game.hits/game.shots*100):0)+' % rätt · '+SC.Glantan.clockText(game.clock);
     highscores.showEnd();
     if(soundOn&&!(kind!=='city'&&e.won)&&!(kind==='glantan'&&game.soundscape))sounds.play(e.won?'win':'miss');
@@ -256,7 +256,7 @@ function renderUi(){
 function frame(now){if(noticeUntil&&now>=noticeUntil){$('discovery-notice').hidden=true;noticeUntil=0;}if(now-lastUi>100){lastUi=now;renderUi();if($('settings').open)$('mic-level').value=Math.min(1,microphone.level*6);}uiFrame=requestAnimationFrame(frame);}uiFrame=requestAnimationFrame(frame);
 $('sound').addEventListener('click',()=>{soundOn=!soundOn;renderGlantanAudio();if(!soundOn){sounds.stopCampfire();sounds.stopDinosaurVoices?.();tileSpeech.stop();}$('sound').querySelector('span').textContent=soundOn?'♫':'♪̸';$('sound').title=soundOn?'Ljud på':'Ljud av';$('sound').setAttribute('aria-pressed',String(soundOn));if(soundOn){sounds.unlock();sounds.play('lock');}});
 for(const el of document.querySelectorAll('[data-close]'))el.addEventListener('click',()=>$(el.dataset.close).close());
-$('help-open').addEventListener('click',()=>{pause();$('help').showModal();});
+$('help-open').addEventListener('click',()=>{pause();$('glantan-help').hidden=kind!=='glantan';if(kind==='glantan')SC.Glantan.UI.renderHelp($('glantan-help'),game?.world||{choices:{},research:{},lairs:[]});$('help').showModal();});
 $('settings-open').addEventListener('click',()=>{pause();$('settings').showModal();if(microphone.ready){microphone.begin(true);$('mic-status').textContent='Mikrofonen är aktiv. Prata för att se ljudnivån.';}refreshDevices();});
 $('settings').addEventListener('close',()=>{input.capture();microphone.cancel();if(replaying){try{replaying.stop();}catch(_){}replaying=null;}});
 async function refreshDevices(){try{const devices=await navigator.mediaDevices?.enumerateDevices();const current=$('device').value;$('device').replaceChildren(new Option('Systemets standardmikrofon',''));for(const d of devices||[])if(d.kind==='audioinput')$('device').add(new Option(d.label||'Mikrofon '+($('device').options.length),d.deviceId));if([...$('device').options].some(o=>o.value===current))$('device').value=current;}catch(_){} }

@@ -101,10 +101,10 @@
     completePurchase() {
       const action = this.pending, result = G.purchase(this.world, action);
       if (!result.ok && G.temporaryObstruction(action, result.reason)) {
-        this.feedback = 'Betalt · röj tomten'; this.feedbackUntil = Infinity; return;
+        this.feedback = ''; this.feedbackUntil = Infinity; return;
       }
       this.pending = null; this.progress = 0; this.targets = []; this.queue.clear();
-      if (result.ok) { this.feedback = G.actionName(this.world, action) + ' ✓'; this.feedbackUntil = this.clock + 2; this.emit('glantan-purchase', { action, entity: result.entity }); }
+      if (result.ok) { this.feedback = '✓'; this.feedbackUntil = this.clock + 2; this.emit('glantan-purchase', { action, entity: result.entity }); }
       else G.notify(this.world, result.reason, 'warn');
       this.revision++; this.emit('glantan-ready'); this.save();
     }

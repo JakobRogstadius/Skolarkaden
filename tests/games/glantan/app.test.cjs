@@ -10,7 +10,7 @@ const {boot,settle}=require('../../helpers/homework-app.cjs');
   assert.equal(G.population(glantan.game.world),1);assert(glantan.fields.answer.disabled);
   glantan.game.choose({type:'research',id:'castle2'});glantan.click('pause');assert(glantan.fields.answer.disabled);glantan.click('resume');await settle();assert(!glantan.fields.answer.disabled);
   const seed=glantan.game.world.seed;glantan.game.world.lairs.forEach(l=>{l.hp=0;});glantan.game.world.monsters=[];glantan.game.update(.1);await settle();
-  assert.equal(glantan.fields['result-title'].textContent,'Gläntan klingar igen!');assert(!glantan.fields['glantan-same-map'].hidden);
+  assert.equal(glantan.fields['result-title'].textContent,'Du vann!');assert(!glantan.fields['glantan-same-map'].hidden);
   glantan.click('glantan-same-map');await settle();await settle();assert.equal(glantan.game.world.seed,seed);assert.equal(G.population(glantan.game.world),0);assert.equal(glantan.game.world.time,0);
   assert.equal(glantan.posts[0].leaderboard_key,'v1:glantan:math-addition:gentle');
   glantan.game.choose({type:'research',id:'castle2'});
