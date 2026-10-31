@@ -32,6 +32,11 @@
       this.goal.onclick = () => { const boss = this.game.world.lairs.find(l => l.boss && l.seen); if (boss) { this.focus(boss); this.ui.inspect({ kind: 'lair', id: boss.id }); } else document.getElementById('help-open').click(); };
       this.status.append(castleHealth, population, this.goal); canvas.parentElement.querySelector('.hud').insertBefore(this.status, document.getElementById('pause'));
       this.terrainChunks = new Map();
+      this.previousPositions = new Map();
+      game.simulation.beforeStep = w => {
+        this.previousPositions.clear();
+        for (const units of [w.heroes, w.skeletons, w.monsters]) for (const unit of units) if (G.alive(unit)) this.previousPositions.set(unit.id, { x: unit.x, y: unit.y });
+      };
       // Fog only needs a few texels per tile, rather than a second full world image.
       this.fog = document.createElement('canvas'); this.fog.width = game.world.width * 4; this.fog.height = game.world.height * 4;
       this.minimapTerrain = document.createElement('canvas'); this.minimapTerrain.width = this.minimap.width; this.minimapTerrain.height = this.minimap.height;
@@ -137,7 +142,7 @@
       if (skeleton) { this.ui.inspect({ kind: 'skeleton', id: skeleton.id }); return; }
       // Visible silhouettes stay clickable even when their upper pixels, or a
       // discovered lair's centre, extend into an unrevealed tile.
-      const monster = w.monsters.filter(m => G.alive(m) && w.explored[G.index(w, m.x, m.y)]).sort((a, b) => b.y - a.y).find(m => Math.abs(m.x - point.x) < (G.flying(m) ? .7 : .43) * A.monsterScale(m) && point.y > m.y - (m.boss || G.flying(m) ? 1.1 : ['husher', 'binder', 'mender', 'thornling'].includes(m.type) ? .95 : .7) * A.monsterScale(m) && point.y < m.y + 0.35);
+      const monster = w.monsters.filter(m => G.alive(m) && w.explored[G.index(w, m.x, m.y)]).sort((a, b) => b.y - a.y).find(m => Math.abs(m.x - point.x) < (G.flying(m) ? .7 : .43) * A.monsterScale(m) && point.y > m.y - (m.boss || G.flying(m) ? 1.1 : ['husher', 'binder', 'mender', 'thornling', 'boneservant'].includes(m.type) ? .95 : .7) * A.monsterScale(m) && point.y < m.y + 0.35);
       if (monster) { this.ui.inspect({ kind: 'monster', id: monster.id }); return; }
       const buildings = w.buildings.filter(b => G.footprint(b, point.x, point.y) ||
         G.alive(b) && Math.abs(point.x - b.x) < b.w * .38 && point.y > b.y - (b.type === 'castle' ? 1.9 : ['spire', 'beacon'].includes(b.type) ? 1.8 : 1.4) && point.y < b.y + .4);
@@ -201,10 +206,12 @@
         c.fillStyle = '#3b4e3e'; c.font = 'bold 9px sans-serif'; c.textAlign = 'center'; c.fillText('•'.repeat(bounty.level), x + 11, y - 38);
       }
     }
-    drawEffects() {
+    drawEffects(view) {
       const c = this.ctx, w = this.game.world;
       for (const e of w.effects) {
-        const p = e.age / e.duration, x = e.x * T, y = e.y * T;
+        const padding = e.type === 'bell' ? 10 : 3;
+        if (Math.max(e.x, e.toX ?? e.x) + padding < view.x0 || Math.min(e.x, e.toX ?? e.x) - padding > view.x1 || Math.max(e.y, e.toY ?? e.y) + padding < view.y0 || Math.min(e.y, e.toY ?? e.y) - padding > view.y1) continue;
+        const p = Math.max(0, e.age - this.renderDelay) / e.duration, x = e.x * T, y = e.y * T;
         c.save(); c.globalAlpha = Math.min(1, (1 - p) * 2); c.strokeStyle = c.fillStyle = e.color || '#f3dfab';
         if (e.type === 'spell') A.spell(c, e, p, this.reduced);
         else if (e.type === 'raise' || e.type === 'snare') A.ritual(c, e, p, this.reduced);
@@ -248,7 +255,8 @@
     drawSelection() {
       const s = this.selection, w = this.game.world; if (!s) return;
       const lists = { hero: w.heroes, building: w.buildings, lair: w.lairs, monster: w.monsters, skeleton: w.skeletons, corpse: w.corpses, trap: w.traps };
-      const entity = lists[s.kind] ? lists[s.kind].find(e => e.id === s.id) : s;
+      const found = lists[s.kind] ? lists[s.kind].find(e => e.id === s.id) : s;
+      const entity = found && this.renderUnit(found);
       if (!entity) return;
       const c = this.ctx, x = entity.x * T, y = entity.y * T;
       c.strokeStyle = '#f9e9a7'; c.lineWidth = 2.2; c.setLineDash([4, 4]); c.beginPath(); c.ellipse(x, y + 3, entity.w ? entity.w * 25 : 16, entity.h ? entity.h * 17 : 9, 0, 0, Math.PI * 2); c.stroke(); c.setLineDash([]);
@@ -258,7 +266,10 @@
     }
     draw() {
       if (!this.width || !this.camera) return;
-      const c = this.ctx, w = this.game.world, time = this.reduced ? 0 : w.time;
+      const c = this.ctx, w = this.game.world;
+      this.renderAlpha = this.game.state === 'playing' ? G.clamp(this.game.simulation.accumulator / G.STEP, 0, 1) : 1;
+      this.renderDelay = (1 - this.renderAlpha) * G.STEP;
+      const time = this.reduced ? 0 : Math.max(0, w.time - this.renderDelay);
       c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); c.fillStyle = '#294a41'; c.fillRect(0, 0, this.width, this.height);
       c.save(); c.translate(this.width / 2, this.height / 2); c.scale(this.camera.zoom, this.camera.zoom); c.translate(-this.camera.x, -this.camera.y);
       this.drawTerrain(); this.drawFog();
@@ -275,14 +286,15 @@
         ...w.monsters.filter(m => G.alive(m) && w.explored[G.index(w, m.x, m.y)]).map(value => ({ type: 'monster', value }))
       ].filter(e => visible(e.value)).sort((a, b) => a.value.y - b.value.y);
       this.drawSelection();
-      for (const { type, value } of entities) {
+      for (const entity of entities) {
+        const { type } = entity, value = this.renderUnit(entity.value);
         A[type](c, value, w, time);
         if (G.alive(value) && !value.w) A.status(c, value, w);
         const selected = this.selection?.id === value.id;
         if (G.alive(value) && (selected || value.hp < value.maxHp * 0.98)) this.drawBar(value, type === 'building' || type === 'lair' ? 29 : 8, type === 'monster' || type === 'lair' ? '#e7aa8d' : '#c7e2a6');
         if (type === 'hero' && selected) { const y = value.y * T - (value.classId === 'mage' ? 66 : 57); c.font = 'bold 12px Trebuchet MS'; c.textAlign = 'center'; c.fillStyle = '#fff1ce'; c.strokeStyle = '#20372e'; c.lineWidth = 3; c.strokeText(value.name, value.x * T, y); c.fillText(value.name, value.x * T, y); }
       }
-      this.drawFlags(); this.drawBlueprint(); this.drawEffects();
+      this.drawFlags(); this.drawBlueprint(); this.drawEffects(view);
       for (const notice of w.notices) if (Number.isFinite(notice.x) && w.explored[G.index(w, notice.x, notice.y)]) {
         c.strokeStyle = '#ffdc92'; c.lineWidth = 3 / this.camera.zoom; c.beginPath(); c.arc(notice.x * T, notice.y * T, this.reduced ? 42 : 36 + Math.sin(w.time * 4) * 6, 0, Math.PI * 2); c.stroke();
       }
@@ -296,8 +308,16 @@
       vignette.addColorStop(0, '#19392f00'); vignette.addColorStop(1, '#19392f38'); c.fillStyle = vignette; c.fillRect(0, 0, this.width, this.height);
       this.drawMinimap();
     }
+    renderUnit(unit) {
+      const previous = this.previousPositions.get(unit.id);
+      if (!previous || this.renderAlpha === 1 || G.distance(previous, unit) > 3) return unit;
+      return { ...unit, x: previous.x + (unit.x - previous.x) * this.renderAlpha, y: previous.y + (unit.y - previous.y) * this.renderAlpha };
+    }
     drawMinimap() {
       const w = this.game.world, c = this.minimap.getContext('2d'), sx = this.minimap.width / w.width, sy = this.minimap.height / w.height;
+      const frameKey = [w.tick, w.revision, w.fogRevision, this.camera.x, this.camera.y, this.camera.zoom, this.width, this.height].join(':');
+      if (frameKey === this.minimapFrameKey) return;
+      this.minimapFrameKey = frameKey;
       if (this.minimapKey !== w.fogRevision) {
         this.minimapKey = w.fogRevision; const base = this.minimapTerrain.getContext('2d');
         const colors = ['#9ab780', '#76965e', '#397daf', '#798485', '#afb3a3', '#315940'];
@@ -338,6 +358,7 @@
     }
     scoreEvent(e) { if (e.type.startsWith('glantan') || e.type === 'miss') { this.ui.update(); this.updateOverlay(); } }
     destroy() {
+      this.game.simulation.beforeStep = null;
       this.game.soundscape?.destroy();
       for (const chunk of this.terrainChunks.values()) chunk.canvas.width = chunk.canvas.height = 0;
       this.terrainChunks.clear(); this.fog.width = this.fog.height = 0;

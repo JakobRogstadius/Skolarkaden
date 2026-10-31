@@ -50,13 +50,18 @@
       const h = G.addHero(w, role); Object.assign(h, { x: x + dx, y: y + dy, level: 3, route: [], task: 'Stridsöversikt' }); h.hp = h.maxHp = G.heroStats(w, h).hp;
     }
     const necro = w.heroes.find(h => h.classId === 'necromancer');
-    for (const [dx, dy, level] of [[1, 0, 2], [1, 1.2, 4]]) {
+    for (const [dx, dy, level] of [[1, 0, 4]]) {
       w.corpses.push({ id: w.nextId++, x: necro.x + 1, y: necro.y, level, monsterType: 'rattler', diedAt: w.time });
       necro.raiseAt = 0; const s = G.raiseSkeleton(w, necro); s.x = x + dx; s.y = y + dy;
     }
     const types = ['nightwing', 'husher', 'binder', 'mender', 'broodcap', 'siegebreaker', 'thornling', 'bulwark'];
     for (let i = 0; i < types.length; i++) {
       const m = G.spawnMonster(w, lair, { type: types[i] }); m.x = x + 3 + i % 3 * 1.6; m.y = y + Math.floor(i / 3) * 2; m.rank = i < 4 ? 2 : 3;
+    }
+    const binder = w.monsters.find(m => m.type === 'binder');
+    for (let i = 0; i < 4; i++) {
+      w.corpses.push({ id: w.nextId++, x: binder.x + 1, y: binder.y, level: 2, monsterType: 'rattler', diedAt: w.time });
+      binder.raiseAt = 0; const s = G.raiseEnemySkeleton(w, binder); s.x = x + 7.5 + (i % 2) * .9; s.y = y + 2.5 + Math.floor(i / 2) * 1.3;
     }
     for (const [dx, dy] of [[1, 3.2], [2.2, 4.4], [3.4, 5.4]]) w.traps.push({ id: w.nextId++, x: x + dx, y: y + dy, owner: w.heroes[1].id, lair: lair.id, level: 3 });
     w.corpses.push({ id: w.nextId++, x: x + 1.5, y: y - 2, level: 3, monsterType: 'rattler', diedAt: w.time });
@@ -68,7 +73,7 @@
     w.monsters[4].rootedUntil = w.time + 2.8;
     w.explored.fill(1); w.fogRevision++; w.revision++; w.navRevision++;
     renderer.terrainChunks.forEach(chunk => { chunk.canvas.width = chunk.canvas.height = 0; }); renderer.terrainChunks.clear();
-    renderer.camera.zoom = Math.min(1.25, renderer.width / 670, renderer.height / 530);
+    renderer.camera.zoom = Math.min(1.1, renderer.width / 850, renderer.height / 650);
     renderer.focus({ x, y: y + .8 }); renderer.ui.inspect({ kind: 'hero', id: necro.id });
   }
   function alternateBranches() {
@@ -89,6 +94,24 @@
     G.launchWave(w, lair); G.reveal(w, lair.x, lair.y, 10);
     renderer.focus(lair); renderer.ui.inspect({ kind: 'lair', id: lair.id });
   }
+  function renderProbe(output) {
+    showCombat();
+    const G = SC.Glantan, w = game.world, source = w.effects.filter(e => e.type === 'spell');
+    // Identical, stationary combat load isolates drawing from simulation changes.
+    for (let i = 0; i < 21; i++) w.effects.push({ ...source[i % source.length], x: source[i % source.length].x + (i % 4) * .7, y: source[i % source.length].y + Math.floor(i / 4) * .4 });
+    renderer.finishProbe?.();
+    const originalDraw = renderer.draw, frames = [], draw = []; let last = 0, start = performance.now();
+    renderer.finishProbe = () => { renderer.draw = originalDraw; renderer.finishProbe = null; };
+    renderer.draw = function() {
+      const at = performance.now(); originalDraw.call(this); const cost = performance.now() - at;
+      if (last && at - start > 1000) { frames.push(at-last); draw.push(cost); }
+      last = at;
+      if (at - start < 6000) { output.textContent = 'Mäter grafik…'; return; }
+      this.finishProbe(); frames.sort((a,b)=>a-b); draw.sort((a,b)=>a-b);
+      const mean = a => a.reduce((n,x)=>n+x,0)/a.length;
+      output.textContent = 'Grafik: ' + (1000/mean(frames)).toFixed(1) + ' fps · bild p95 ' + frames[Math.floor(frames.length*.95)].toFixed(1) + ' ms · ritning ' + mean(draw).toFixed(2) + ' ms · 24 trollformler';
+    };
+  }
   document.addEventListener('DOMContentLoaded', () => {
     const bar = document.createElement('div'); bar.setAttribute('aria-label', 'Testkontroller');
     bar.style.cssText = 'position:fixed;right:4px;top:4px;z-index:100;display:flex;gap:4px;background:#13282e;padding:4px;font-size:10px';
@@ -98,6 +121,10 @@
       button.onclick = () => { if (game?.state === 'playing' || name.startsWith('Dölj')) action(); }; bar.append(button);
     }
     document.body.append(bar);
+    const performanceOutput = document.createElement('output'), performanceButton = document.createElement('button');
+    performanceOutput.setAttribute('aria-label', 'Grafikprestanda'); performanceButton.textContent = 'Mät grafik';
+    performanceButton.onclick = () => { if (game?.state === 'playing') renderProbe(performanceOutput); };
+    bar.append(performanceButton, performanceOutput);
     const audio = document.createElement('output'); audio.setAttribute('aria-label', 'Ljudstatus'); bar.append(audio);
     const meter = setInterval(() => {
       if (!bar.isConnected) { clearInterval(meter); return; }

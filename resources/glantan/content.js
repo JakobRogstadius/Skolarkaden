@@ -8,6 +8,8 @@
   G.MAX_MONSTERS = 87; // 64 raiders + 23 guards across nine hard-mode lairs and two spreading nests.
   G.MAX_RAIDERS = 64;
   G.MAX_CORPSES = 128;
+  G.CORPSE_LIFETIME = 45;
+  G.NECROMANCER_LIMIT = 1;
   G.profiles = {
     gentle: { lairs: 5, mapScale: 2, firstWake: 120, wake: 105, spawn: 1.32, damage: 0.72, growth: 1.3, bossLevels: 10, bossGuardCount: 1 },
     steady: { lairs: 7, mapScale: 2.5, firstWake: 105, wake: 88, spawn: 1, damage: 1, growth: 1, bossLevels: 20, bossGuardCount: 2 },
@@ -18,7 +20,7 @@
     ranger: { name: 'Spejare', role: 'Utforskar och skjuter på avstånd.', color: '#a4d694', icon: 'bow', guild: 'lodge', cost: 2, hp: 75, damage: 11, range: 4.3, speed: 1.95, cooldown: 1.3, courage: 0.95 },
     healer: { name: 'Örtvårdare', role: 'Följer och läker sina vänner.', color: '#ed9fb1', icon: 'heal', guild: 'garden', cost: 3, hp: 70, damage: 5, range: 3, speed: 1.65, cooldown: 1.7, courage: 0.85 },
     mage: { name: 'Klangvävare', role: 'Spräcker grupper med klingande toner.', color: '#ad91ed', icon: 'chime', guild: 'spire', cost: 3, hp: 62, damage: 18, range: 3.7, speed: 1.55, cooldown: 1.9, courage: 0.9 },
-    necromancer: { name: 'Skelettmästare', role: 'Väcker upp till två monsterskelett. Svag områdesmagi läker mästaren och de egna skeletten.', color: '#93e3cb', icon: 'skull', guild: 'crypt', cost: 3, hp: 74, damage: 7, range: 3.8, speed: 1.55, cooldown: 2, courage: 0.9 }
+    necromancer: { name: 'Skelettmästare', role: 'Väcker ett monsterskelett åt gången. Svag områdesmagi läker mästaren och det egna skelettet.', color: '#93e3cb', icon: 'skull', guild: 'crypt', cost: 3, hp: 74, damage: 7, range: 3.8, speed: 1.55, cooldown: 2, courage: 0.9 }
   };
   G.buildings = {
     castle: { name: 'Klockborgen', icon: 'bell', w: 2, h: 2, hp: 1000, color: '#cebb8d', cost: 0, description: 'Gläntans hjärta. Måste överleva.' },
@@ -49,7 +51,7 @@
   G.lairTypes = {
     rust: { name: 'Skrammelbo', monster: 'rattler', support: 'mender', color: '#bd7350', icon: 'gear', description: 'Rusande skramlare. Från nivå 3 får de skrotläkare bakom fronten.', interval: 175 },
     spore: { name: 'Sporkupa', monster: 'sporeling', support: 'broodcap', color: '#c582aa', icon: 'spore', description: 'Små fnyslingar. Från nivå 3 följer jättesvampar som odlar fler i strid.', interval: 205 },
-    hush: { name: 'Tystnadskvarn', monster: 'husher', support: 'binder', color: '#858fb2', icon: 'moon', description: 'Magiker på avstånd. Från nivå 3 låser rotbindare deras mål.', interval: 190 },
+    hush: { name: 'Tystnadskvarn', monster: 'husher', support: 'binder', color: '#858fb2', icon: 'moon', description: 'Magiker på avstånd. Från nivå 3 följer rotbindare som binder hjältar och väcker röda skelett.', interval: 190 },
     sky: { name: 'Vindnäste', monster: 'nightwing', support: 'siegebreaker', color: '#81b4c6', icon: 'wing', description: 'Flygare kräver avståndsattacker. Från nivå 3 följer murknäckare.', interval: 185 },
     thorn: { name: 'Törnsnår', monster: 'thornling', support: 'bulwark', color: '#a1ab6e', icon: 'bow', description: 'Taggskyttar håller avstånd. Från nivå 3 skyddas de av skalväktare.', interval: 180 }
   };
@@ -60,7 +62,8 @@
     nightwing: { name: 'Nattvinge', role: 'Flyger över hinder. Kan inte träffas av väktare, skelett eller markfällor.', hp: 34, damage: 6, speed: 1.5, range: 1.2, cooldown: 1.7, color: '#9dc9df', xp: 12, flying: true },
     thornling: { name: 'Taggskytt', role: 'Rörlig skytt. Backar när hjältar kommer nära.', hp: 34, damage: 8, speed: 1.25, range: 3.6, cooldown: 1.6, color: '#bdd084', xp: 12, kite: true },
     mender: { name: 'Skrotläkare', role: 'Läker andra monster. Svag om frontlinjen faller.', hp: 78, damage: 4, speed: 1.05, range: 3.5, cooldown: 2, color: '#f2bd88', xp: 22, medic: true, spell: true },
-    binder: { name: 'Rotbindare', role: 'Binder en hjälte eller ett skelett med rötter. Målet kan fortfarande anfalla och får en kort frist mellan bindningar.', hp: 82, damage: 4, speed: 1, range: 4.3, cooldown: 2.4, color: '#c6a3da', xp: 24, bind: true, spell: true },
+    binder: { name: 'Rotbindare', role: 'Binder hjältar med rötter och väcker högst fyra röda skelett ur benrester. Skeletten faller när rotbindaren besegras.', hp: 82, damage: 4, speed: 1, range: 4.3, cooldown: 2.4, color: '#c6a3da', xp: 24, bind: true, spell: true, raises: 4 },
+    boneservant: { name: 'Bensoldat', role: 'Rött fiendeskelett. Strider i närkamp och följer sin rotbindare. Lämnar inga nya benrester.', hp: 52, damage: 7.4, speed: 1.85, range: 1.05, cooldown: 1.3, color: '#e47770', xp: 4, skeletal: true },
     siegebreaker: { name: 'Murknäckare', role: 'Tung belägrare. Prioriterar byggnader framför hjältar.', hp: 165, damage: 23, speed: .78, range: 1.35, cooldown: 2.5, color: '#b79869', xp: 28, siege: true },
     broodcap: { name: 'Jättesporsvamp', role: 'Odlar upp till tre levande fnyslingar när den slåss.', hp: 145, damage: 10, speed: .8, range: 1.4, cooldown: 2, color: '#c880b5', xp: 28, brood: true },
     bulwark: { name: 'Skalväktare', role: 'Skyddar andra monster i närheten från 25 % av skadan.', hp: 145, damage: 10, speed: .85, range: 1.2, cooldown: 1.8, color: '#9fae80', xp: 26, ward: true },
@@ -83,7 +86,7 @@
   ];
   G.xpFor = level => 18 + level * level * 9;
   G.clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-  G.distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+  G.distance = (a, b) => { const dx = a.x - b.x, dy = a.y - b.y; return Math.sqrt(dx * dx + dy * dy); };
   G.alive = entity => entity.hp > 0;
   G.clockText = seconds => Math.floor(seconds / 60) + ':' + String(Math.floor(seconds % 60)).padStart(2, '0');
 })(globalThis);

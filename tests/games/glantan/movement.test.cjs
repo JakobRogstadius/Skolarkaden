@@ -52,6 +52,35 @@ function quiet(seed) {
   assert(G.expeditionReadiness(w,party)>before*2,'guard losses lower the remaining risk');
 }
 console.log('movement: body separation, purposeful patrols, safe boss retreat and regrouping');
+for (const type of ['spore', 'sky']) {
+  const w = G.createMap('wave-cohesion', 'gentle');
+  w.terrain.fill(0); w.explored.fill(1); delete w.lairSites;
+  G.addBuilding(w, 'castle', 4, 22);
+  const lair = G.addLair(w, { type, tier: 1, tx: 52, ty: 22 }, 1e6);
+  w.monsters = []; lair.level = 4;
+  // A long river with one pass: flying escorts must share the ground detour.
+  for (let y = 1; y < w.height - 1; y++) if (y < 8 || y > 10) w.terrain[G.index(w, 25, y)] = 2;
+  w.navRevision++; G.launchWave(w, lair);
+  const wave = [...w.monsters]; let widest = 0, crossed = false;
+  for (let step = 0; step < 2400 && !wave.some(m => m.waveEngaged); step++) {
+    w.time += .1; G.updateMonsters(w, .1);
+    if (wave.some(m => m.waveEngaged)) break;
+    for (const a of wave) for (const b of wave) widest = Math.max(widest, G.distance(a,b));
+    assert(wave.every(m => G.open(w,m.x,m.y)), 'all intact wave members follow the pass, including flyers');
+    crossed ||= wave.every(m => m.x < 25);
+  }
+  assert(widest < 9, type + ' escorts never split from the wave: ' + widest);
+  assert(crossed, type + ' wave makes progress around the obstacle');
+  assert(wave.every(m => m.waveEngaged), 'contact releases the whole wave to use its combat abilities');
+  assert.notEqual(G.monsterSpeed(wave[0]), G.monsterSpeed(wave.at(-1)), 'individual combat speeds remain distinct');
+}
+{
+  const sim = quiet('wave-ambush'), w = sim.world, lair = w.lairs.find(l => !l.boss);
+  w.monsters = []; lair.level = 3; G.launchWave(w,lair);
+  const wave = [...w.monsters]; G.damage(w,wave[0],1);
+  G.updateMonsters(w,.1);
+  assert(wave.every(m=>m.waveEngaged), 'an attack on one member releases its entire wave');
+}
 {
   const sim=quiet('scout-arrival'),w=sim.world,scout=G.addHero(w,'ranger');
   scout.scoutGoal={x:scout.x,y:scout.y};scout.rethinkAt=9;w.tick=9;

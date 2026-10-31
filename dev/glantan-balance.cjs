@@ -8,15 +8,16 @@ const { runtime } = require('../tests/games/glantan/helpers.cjs');
 if (process.argv[2] === '--boss') {
   const { G } = runtime();
   // Controlled arena isolates replenishing guardians from travel and raid waves.
+  // The medium party uses two healers now that healing shares the attack timer.
   // Three hard-mode guards require the ordinary late-game combat upgrades.
-  for (const [pace, levels, upgraded = false] of [['gentle', [3, 3, 2, 2]], ['gentle', [2, 1, 1, 1]], ['steady', [5, 5, 5, 5]], ['steady', [3, 3, 2, 2]], ['brave', [5, 5, 5, 5, 5, 5], true], ['brave', [3, 3, 3, 2, 2, 2], true]]) {
+  for (const [pace, levels, upgraded = false] of [['gentle', [3, 3, 2, 2]], ['gentle', [2, 1, 1, 1]], ['steady', [4, 4, 4, 4, 4]], ['steady', [3, 3, 2, 2]], ['brave', [5, 5, 5, 5, 5, 5], true], ['brave', [3, 3, 3, 2, 2, 2], true]]) {
     const w = G.createMap('boss-probe', pace);
     w.terrain.fill(0); w.paths.fill(0); w.explored.fill(1); delete w.lairSites;
     G.addBuilding(w, 'castle', 4, 4); G.addBuilding(w, 'house', 7, 7);
     const lair = G.addLair(w, { tx: 20, ty: 14, type: 'hush', tier: 3, boss: true, suggestedLevels: G.profiles[pace].bossLevels }, 1e6);
     lair.awake = lair.defendersRaised = true; lair.nextSpawn = lair.nextGrowth = 1e6;
     if (upgraded) Object.assign(w.research, { armor: true, banner: true, bloom: true });
-    const roles = levels.length === 6 ? ['warrior', 'warrior', 'warrior', 'healer', 'healer', 'mage'] : ['warrior', 'warrior', 'healer', 'ranger'];
+    const roles = levels.length === 5 ? ['warrior', 'warrior', 'healer', 'healer', 'mage'] : levels.length === 6 ? ['warrior', 'warrior', 'warrior', 'healer', 'healer', 'mage'] : ['warrior', 'warrior', 'healer', 'ranger'];
     const heroes = levels.map((level, i) => {
       const hero = G.addHero(w, roles[i]); hero.level = level; hero.trait = 2;
       hero.maxHp = G.heroStats(w, hero).hp; hero.hp = hero.maxHp;

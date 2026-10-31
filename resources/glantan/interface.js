@@ -179,15 +179,15 @@
       this.panel.append(head);
     }
     followers(hero) {
-      const w = this.game.world, count = hero.classId === 'necromancer' ? 2 : 4, kind = count === 2 ? 'skeleton' : 'trap', row = el('div', 'g-slots'); this.panel.append(row);
+      const w = this.game.world, count = hero.monster ? G.monsterTypes[hero.type].raises : hero.classId === 'necromancer' ? G.NECROMANCER_LIMIT : 4, kind = hero.monster ? 'monster' : hero.classId === 'necromancer' ? 'skeleton' : 'trap', row = el('div', 'g-slots'); this.panel.append(row);
       this.live.push(() => {
-        const units = kind === 'skeleton' ? G.ownedSkeletons(w, hero) : w.traps.filter(t => t.owner === hero.id), key = units.map(s => s.id + ':' + s.level).join(',');
+        const units = hero.monster ? G.enemySkeletons(w, hero) : kind === 'skeleton' ? G.ownedSkeletons(w, hero) : w.traps.filter(t => t.owner === hero.id), key = units.map(s => s.id + ':' + s.level).join(',');
         if (row.dataset.state === key) return; row.dataset.state = key; row.replaceChildren();
         for (let i = 0; i < count; i++) {
           const slot = el('span', 'g-slot' + (units[i] ? '' : ' g-slot-empty'));
-          slot.append(units[i] ? U.portrait(w, kind, null, { small: true, entity: units[i] }) : icon(kind === 'skeleton' ? 'skull' : 'trap')); row.append(slot);
+          slot.append(units[i] ? U.portrait(w, kind, units[i].type, { small: true, entity: units[i] }) : icon(kind !== 'trap' ? 'skull' : 'trap')); row.append(slot);
         }
-        row.setAttribute('aria-label', units.length + ' av ' + count + (kind === 'skeleton' ? ' skelett' : ' fällor'));
+        row.setAttribute('aria-label', units.length + ' av ' + count + (kind !== 'trap' ? ' skelett' : ' fällor'));
       });
     }
     inspectPanel() {
@@ -212,7 +212,7 @@
         if (owner) { const row = el('div', 'g-owner'); row.append(U.portrait(w, 'hero', owner.classId, { small: true }), el('span', '', owner.name)); this.panel.append(row); }
         if (selected.kind === 'corpse') {
           const chain = el('div', 'g-picture-chain'); chain.append(U.portrait(w, 'corpse', null, { entity }), U.portrait(w, 'hero', 'necromancer'), icon('arrow'), U.portrait(w, 'skeleton', null, { entity })); this.panel.append(chain);
-          this.more(['En skelettmästare väcker benresterna. Skelettet får monstrets nivå. Varje mästare kan ha två skelett.']);
+          this.more(['En skelettmästare väcker benresterna. Skelettet får monstrets nivå. Varje mästare kan ha ett skelett. Benrester försvinner efter 45 sekunder.']);
         } else if (selected.kind === 'trap') {
           this.panel.append(U.symbols(['trap', 'arrow', 'lock', 'heart'], 'Fångar och skadar ett markmonster'));
           this.more([G.trapDamage(entity.level) + ' skada. Fångar ett markmonster i 2,8 sekunder (bossvakter: 1,2). Hämtas när boet är förstört.']);
@@ -237,6 +237,7 @@
         if (isLair) this.lairStatus(target, spec);
         else {
           const [glyph, label] = U.monsters[target.type]; const ability = el('p', 'g-role-summary'); ability.append(icon(glyph), el('span', '', label)); this.panel.append(ability);
+          if (spec.raises) this.followers(target);
           if (G.flying(target)) { this.panel.append(el('p', 'g-important', 'Kan inte nås med svärd')); const counters = el('div', 'g-picture-chain'); for (const id of ['ranger', 'mage', 'necromancer']) counters.append(U.portrait(w, 'hero', id, { small: true })); this.panel.append(counters); }
         }
         const bounty = w.bounties.find(b => b.type === 'attack' && b.target === target.id);

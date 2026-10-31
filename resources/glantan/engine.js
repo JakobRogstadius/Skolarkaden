@@ -4,7 +4,7 @@
   const G = root.Starlight.Glantan;
   G.allies = w => [...w.heroes, ...(w.skeletons || [])].filter(G.alive);
   G.flying = unit => !!(unit.monster && G.monsterTypes[unit.type]?.flying);
-  G.canHit = (attacker, target) => !(G.flying(target) && (attacker.classId === 'warrior' || attacker.skeleton));
+  G.canHit = (attacker, target) => !(G.flying(target) && (attacker.classId === 'warrior' || attacker.skeleton || G.monsterTypes[attacker.type]?.skeletal));
   G.attackLine = (w, from, to) => G.flying(from) || G.flying(to) ? G.inside(w, from.x, from.y) && G.inside(w, to.x, to.y) : G.clearLine(w, from, to);
   G.offenseBoost = (w, unit) => w.research.banner && w.heroes.some(h => G.alive(h) && h.classId === 'warrior' && G.distance(h, unit) < 4 && G.clearLine(w, h, unit)) ? 1.25 : 1;
   G.resolveOutcome = w => {
@@ -56,7 +56,7 @@
     const guild = world.buildings.find(b => G.alive(b) && b.type === G.classes[classId].guild) || G.castle(world);
     const point = G.freeNear(world, at || guild);
     const n = world.heroes.length;
-    const hero = { id: world.nextId++, classId, name: G.names[(n + G.seedNumber(world.seed) % G.names.length) % G.names.length] + (n >= G.names.length ? ' ' + (Math.floor(n / G.names.length) + 1) : ''), trait: Math.floor(G.random(world) * G.traits.length), level: 1, xp: 0, totalXp: 0, supportXp: 0, ...point, hp: G.classes[classId].hp, cooldown: 0, healCooldown: 0, attackAt: 0, rethinkAt: 0, task: 'Vaktar', expedition: null, route: [], routeKey: '', kills: 0, healing: 0, scouting: 0, shieldUntil: 0, retreating: false, facing: 1, born: world.time };
+    const hero = { id: world.nextId++, classId, name: G.names[(n + G.seedNumber(world.seed) % G.names.length) % G.names.length] + (n >= G.names.length ? ' ' + (Math.floor(n / G.names.length) + 1) : ''), trait: Math.floor(G.random(world) * G.traits.length), level: 1, xp: 0, totalXp: 0, supportXp: 0, ...point, hp: G.classes[classId].hp, cooldown: 0, attackAt: 0, rethinkAt: 0, task: 'Vaktar', expedition: null, route: [], routeKey: '', kills: 0, healing: 0, scouting: 0, shieldUntil: 0, retreating: false, facing: 1, born: world.time };
     hero.maxHp = G.heroStats(world, hero).hp; hero.hp = hero.maxHp;
     world.heroes.push(hero); world.revision++;
     G.effect(world, 'summon', hero.x, hero.y, { color: G.classes[classId].color });
@@ -86,6 +86,7 @@
     if (target.monster && world.monsters.some(m => m !== target && G.alive(m) && G.monsterTypes[m.type].ward && G.distance(m, target) < 3 && G.attackLine(world, m, target))) amount *= .75;
     const dealt = Math.min(target.hp, Math.max(0, amount));
     target.hp = Math.max(0, target.hp - amount); target.hurtAt = world.time;
+    if (target.monster && dealt > 0) target.waveEngaged = true;
     if (target.hp > 0) {
       if (target.wakeAt !== undefined && !target.defendersRaised) G.alertLair(world, target);
       if (target.w && target.wakeAt === undefined && dealt > 0 && world.time - (world.lastBuildingWarningAt ?? -30) >= 20) {
@@ -104,9 +105,14 @@
       G.effect(world, 'bones', target.x, target.y, { duration: .7, color: '#d7e8bd' });
     } else if (target.monster) {
       world.kills++;
-      const point = G.nearestOpen(world, target) || target;
-      world.corpses.push({ id: world.nextId++, x: point.x, y: point.y, monsterType: target.type, level: target.rank || 1, diedAt: world.time });
-      if (world.corpses.length > G.MAX_CORPSES) world.corpses.shift();
+      if (!G.monsterTypes[target.type].skeletal) {
+        const point = G.nearestOpen(world, target) || target;
+        world.corpses.push({ id: world.nextId++, x: point.x, y: point.y, monsterType: target.type, level: target.rank || 1, diedAt: world.time });
+        if (world.corpses.length > G.MAX_CORPSES) world.corpses.shift();
+      }
+      for (const minion of world.monsters) if (minion.raisedBy === target.id && G.alive(minion)) {
+        minion.hp = 0; G.effect(world, 'bones', minion.x, minion.y, { duration: .7, color: '#e47770' });
+      }
       // Nearby support shares XP, with diminishing returns against weak enemies.
       // Tower-only kills teach less than taking part in the encounter.
       for (const hero of world.heroes) if (G.alive(hero) && G.distance(hero, target) < 7) {
@@ -171,6 +177,16 @@
       const w = this.world;
       // Additive save migration preserves heroes, purchases and paid answer streaks.
       w.skeletons ||= []; w.corpses ||= []; w.traps ||= [];
+      w.corpses = w.corpses.filter(c => G.freshCorpse(w, c));
+      for (const hero of w.heroes) if (hero.healCooldown !== undefined) {
+        if (hero.classId === 'healer') hero.cooldown = Math.max(hero.cooldown || 0, hero.healCooldown || 0);
+        delete hero.healCooldown;
+      }
+      // Retain the strongest summon when loading a run made under the old cap.
+      for (const hero of w.heroes) if (hero.classId === 'necromancer') {
+        const excess = new Set(G.ownedSkeletons(w, hero).sort((a,b) => b.level - a.level || a.id - b.id).slice(G.NECROMANCER_LIMIT).map(s => s.id));
+        w.skeletons = w.skeletons.filter(s => !excess.has(s.id));
+      }
       for (const lair of w.lairs) {
         // Existing runs retain their original two-guard garrisons and map layout.
         lair.guardCount ??= 2;
@@ -195,7 +211,9 @@
     step(dt) {
       const w = this.world;
       if (G.resolveOutcome(w)) { w.score = G.score(w); return; }
+      this.beforeStep?.(w);
       w.time += dt; w.tick++;
+      w.corpses = w.corpses.filter(c => G.freshCorpse(w, c));
       G.updateLairs(w, dt);
       if (w.tick % 10 === 0) G.planExpeditions(w);
       G.updateHeroes(w, dt);

@@ -65,6 +65,8 @@ assert(!G.clearLine(w, { x: 8.5, y: 8.5 }, { x: 9.5, y: 9.5 }), 'diagonal fire c
 const castle = G.addBuilding(w, 'castle', 25, 25);
 assert(G.clearLine(w, { x: 24.5, y: 26 }, castle), 'a target structure can be struck at its own footprint');
 assert(G.clearLine(w, castle, { x: 24.5, y: 26 }), 'a tower/castle can shoot out of its own footprint');
+assert(G.clearLine(w, { x: 27.5, y: 25.5 }, castle), 'an exact grid-edge target cannot make the ray overshoot its column');
+assert(G.clearLine(w, castle, { x: 27.5, y: 25.5 }), 'the grid-edge ray works in both directions');
 G.addBuilding(w, 'house', 22, 25);
 assert(!G.clearLine(w, { x: 20.5, y: 25.5 }, castle), 'another structure blocks the ray');
 const first = G.freeNear(w, castle); w.heroes.push({ ...first, hp: 10 });

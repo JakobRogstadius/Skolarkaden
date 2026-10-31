@@ -455,6 +455,7 @@
   };
   A.monsterScale = m => ({ guardian: 1.65, husher: 1.16, sporeling: .94, broodcap: 1.6, siegebreaker: 1.5, bulwark: 1.35, mender: 1.15, binder: 1.15 }[m.type] || 1) * (1 + Math.min(.5, Math.max(0, (m.strength || 1) - 1) * .22));
   A.monster = function(c, m, w, time) {
+    if (G.monsterTypes[m.type].skeletal) { A.skeleton(c, { ...m, monster: true }, w, time); return; }
     c.save(); c.translate(m.x * A.tile, m.y * A.tile);
     const rank = Math.max(1, m.rank || 1), scale = A.monsterScale(m), boss = m.boss || m.type === 'guardian';
     const bob = Math.sin(time * (boss ? 3.5 : 7) + m.id) * (boss ? 0.65 : 1.5);
