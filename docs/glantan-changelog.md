@@ -44,3 +44,9 @@ Release changelog, 2026-10-29.
 - Integrate the new checks with the repository's selective test runner and moved test files. All 92 ordinary suites pass after synchronization with current `main`.
 
 See [review evidence and limitations](glantan-review.md), including reproducible balance commands and screenshots. Speaker/headphone audition and physical touch-keyboard testing were not part of the checks.
+
+## Background music — 2026-10-31
+
+- Add an original, quiet woodland theme for soft strings and harp, with a seamless 40-second stereo loop and a gentle fade-in.
+- Keep music below exercise feedback; use the existing sound toggle and speech ducking. Pause, backgrounding and game outcomes stop the music, while resume continues the phrase.
+- Render locally and cache one music buffer per shared AudioContext, with no downloads, extra playback timers or changes to game balance and saves.

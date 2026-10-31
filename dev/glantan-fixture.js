@@ -23,5 +23,12 @@
       button.onclick = () => { if (game?.state === 'playing' || name.startsWith('Dölj')) action(); }; bar.append(button);
     }
     document.body.append(bar);
+    const audio = document.createElement('output'); audio.setAttribute('aria-label', 'Ljudstatus'); bar.append(audio);
+    const meter = setInterval(() => {
+      if (!bar.isConnected) { clearInterval(meter); return; }
+      const mixer = game?.soundscape, music = mixer?.music, track = music?.active;
+      const position = track ? (track.offset + music.context.currentTime - track.at) % 40 : music?.offset || 0;
+      audio.textContent = (track ? 'Musik spelar' : 'Musik tyst') + ' · ' + (mixer?.context?.state || 'ej startad') + ' · ' + position.toFixed(1) + ' s · ' + ((track?.gain.gain.value || 0) * (mixer?.bus?.gain.value || 0)).toFixed(4);
+    }, 250);
   });
 })();
