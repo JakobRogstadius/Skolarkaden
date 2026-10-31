@@ -127,7 +127,7 @@ function renderGlantanAudio(){
   if(kind!=='glantan'||!game?.soundscape)return;
   const camera=renderer?.game===game?renderer.camera:null,T=SC.Glantan.Art?.tile||48;
   const listener=camera?{x:camera.x/T,y:camera.y/T}:SC.Glantan.castle(game.world);
-  game.soundscape.setMix({enabled:soundOn,playing:['playing','won','lost'].includes(game.state)&&!document.hidden,duck:input.listening?.23:1,listener,radius:camera?Math.max(7,Math.hypot(renderer.width,renderer.height)/(2*camera.zoom*T)):12});
+  game.soundscape.setMix({enabled:soundOn,playing:['playing','won','lost'].includes(game.state)&&!document.hidden,music:game.state==='playing',duck:input.listening?.23:1,listener,radius:camera?Math.max(7,Math.hypot(renderer.width,renderer.height)/(2*camera.zoom*T)):12});
   const events=game.world.sounds?.splice(0)||[];
   events.sort((a,b)=>(SC.Glantan.soundSpecs[b.kind]?.priority||0)-(SC.Glantan.soundSpecs[a.kind]?.priority||0));
   for(const event of events)game.soundscape.play(event.kind,event);

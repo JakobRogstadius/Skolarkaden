@@ -170,7 +170,8 @@
     constructor(sharedSounds) {
       this.shared = sharedSounds; this.context = null; this.bus = null; this.compressor = null;
       this.buffers = new Map(); this.voices = new Set(); this.last = new Map(); this.serial = 0;
-      this.mix = { enabled: true, playing: true, duck: 1, listener: null, radius: 12 };
+      this.music = new G.GladeMusic();
+      this.mix = { enabled: true, playing: true, music: false, duck: 1, listener: null, radius: 12 };
       this.disposed = false;
     }
     setMix(options = {}) {
@@ -180,6 +181,8 @@
       this.mix.duck = G.clamp(Number.isFinite(this.mix.duck) ? this.mix.duck : 1, 0, 1);
       this.mix.radius = Math.max(1, Number.isFinite(this.mix.radius) ? this.mix.radius : 12);
       if (!(this.mix.enabled && this.mix.playing)) { if (wasAudible || this.voices.size) this.stop(); return; }
+      if (this.mix.music && this.ensureContext()) this.music.play(this.context, this.bus);
+      else this.music.stop();
       if (this.bus && this.context?.state !== 'closed') {
         const gain = this.bus.gain, now = this.context.currentTime;
         gain.cancelScheduledValues(now); gain.setTargetAtTime(this.mix.duck, now, .025);
@@ -228,7 +231,8 @@
         attenuation = important ? Math.max(.58, localGain) : localGain;
         pan = G.clamp(dx / radius, -.85, .85) * (important ? .5 : 1);
       }
-      // Eight sources are the hard ceiling; at most four routine combat/leaf
+      // Eight effect sources are the ceiling, independent of the music loop;
+      // at most four routine combat/leaf
       // sounds overlap. A bell or warning displaces a quiet strike, never vice versa.
       const routine = [...this.voices].filter(v => v.priority < 3);
       if (spec.priority < 3 && routine.length >= 4) return false;
@@ -264,11 +268,12 @@
       voice.source.disconnect(); voice.node.disconnect(); voice.panner?.disconnect();
     }
     stop() {
+      this.music.stop();
       for (const voice of [...this.voices]) this.releaseVoice(voice, true);
       this.last.clear();
     }
     releaseGraph() {
-      this.stop(); this.bus?.disconnect(); this.compressor?.disconnect();
+      this.stop(); this.music.destroy(); this.bus?.disconnect(); this.compressor?.disconnect();
       this.bus = this.compressor = null; this.context = null; this.buffers.clear();
     }
     destroy() {

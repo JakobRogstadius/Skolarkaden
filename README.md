@@ -51,7 +51,8 @@ blockerar vägen; passager och broar binder samman områdena. Hjältar håller a
 från varandra och patrullerar när de är lediga. Monsterstorlek, rustning, rangmärken
 och bosskronor visar faran. Handlingspanelen ligger till vänster på större skärmar.
 Ljud för byggande, strid, läkande, varningar och klockor använder den vanliga ljudknappen
-och dämpas vid röstinmatning.
+och dämpas vid röstinmatning. En lågmäld bakgrundsmelodi med mjuka stråkar och harpa
+spelas under omgången, tonar in mjukt och fortsätter där den slutade efter paus.
 
 Mus och pekskärm: välj med klick/tryck, dra kartan, zooma med hjul, nypning eller knappar.
 Upptäckta områden fortsätter vara synliga. Paus stoppar världen. Omgång och aktuell betalning

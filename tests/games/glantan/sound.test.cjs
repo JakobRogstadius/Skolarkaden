@@ -1,6 +1,7 @@
 'use strict';
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
 const context = vm.createContext({ console, Float32Array, Math, Starlight: { Glantan: { clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)) } } });
+vm.runInContext(fs.readFileSync(path.join(__dirname, '../../../resources/glantan/music.js'), 'utf8'), context);
 vm.runInContext(fs.readFileSync(path.join(__dirname, '../../../resources/glantan/sound.js'), 'utf8'), context);
 const G = context.Starlight.Glantan;
 const rms = data => Math.sqrt(data.reduce((n, v) => n + v * v, 0) / data.length);
@@ -36,10 +37,11 @@ class AudioContext {
   createDynamicsCompressor() { return this.node({ threshold: param(), knee: param(), ratio: param(), attack: param(), release: param() }); }
   createStereoPanner() { return this.node({ pan: param() }); }
   createBufferSource() {
-    const node = this.node({ playbackRate: param(1), start() { this.started = true; }, stop() { this.stopped = true; } }); this.sources.push(node); return node;
+    const node = this.node({ playbackRate: param(1), start(at = 0, offset = 0) { this.started = true; this.offset = offset; }, stop(at = 0) { this.stopped = true; this.stopAt = at; } }); this.sources.push(node); return node;
   }
   createBuffer(channels, count, sampleRate) {
-    const buffer = { channels, sampleRate, data: new Float32Array(count), copyToChannel(data) { this.data.set(data); } }; this.buffers.push(buffer); return buffer;
+    const channelData = Array.from({ length: channels }, () => new Float32Array(count));
+    const buffer = { channels, sampleRate, data: channelData[0], channelData, copyToChannel(data, channel = 0) { this.channelData[channel].set(data); } }; this.buffers.push(buffer); return buffer;
   }
 }
 const shared = { context: null }, mixer = new G.Soundscape(shared);
@@ -97,12 +99,55 @@ assert(shared.context.state === 'running', 'destroying a game does not close sha
 battle.destroy(); mixer.destroy();
 console.log('PASS busy fight (' + accepted + ' cues/9000 events, peak ' + maxVoices + ' routine voices), priority, reset and disposal.');
 
+// One quiet loop follows the real audio lifecycle, independent of effect voices.
+{
+  const owner = { context: new AudioContext() }, score = new G.Soundscape(owner), c = owner.context;
+  score.setMix({ music: true, enabled: false }); assert.equal(c.sources.length, 0, 'muted games do not start music');
+  c.state = 'suspended'; score.setMix({ enabled: true }); assert.equal(c.sources.length, 0, 'music waits for the user to unlock audio');
+  c.state = 'running'; score.setMix({ music: true });
+  const track = score.music.active, buffer = track.source.buffer;
+  assert(track.source.loop); assert.equal(buffer.channels, 2); assert.equal(buffer.data.length / buffer.sampleRate, 40);
+  assert.notDeepEqual(buffer.channelData[0], buffer.channelData[1], 'the theme has a stereo room');
+  for (const data of buffer.channelData) {
+    assert(data.every(Number.isFinite));
+    assert(data.reduce((n, v) => Math.max(n, Math.abs(v)), 0) <= .601);
+    assert(Math.abs(data.reduce((n, v) => n + v, 0) / data.length) < .0001);
+    const steps = data.slice(1, 400).map((v, i) => Math.abs(v - data[i]));
+    assert(Math.abs(data[0] - data.at(-1)) < Math.max(...steps), 'the loop seam has no abnormal sample jump');
+    const level = rms(data) * track.gain.gain.value, feedback = rms(waves.get('correct')) * G.soundSpecs.correct.gain;
+    assert(level > .001 && level < feedback / 3, 'music stays well below answer feedback');
+  }
+  for (let i = 0; i < 20; i++) { c.currentTime += .1; score.setMix({ music: true }); }
+  assert.equal(c.sources.length, 1, 'UI refreshes never stack music loops'); assert.equal(score.voices.size, 0);
+  score.setMix({ duck: .23 }); assert.equal(score.bus.gain.value, .23); assert.equal(track.gain.target, score.bus);
+  c.currentTime = 9.5; score.setMix({ playing: false });
+  assert.equal(score.music.active, null); assert.equal(track.gain.gain.value, 0); assert(track.source.stopAt <= c.currentTime + .2);
+  track.source.onended(); assert(track.source.disconnected && track.gain.disconnected, 'fade completion releases the audio graph');
+  c.currentTime += 50; score.setMix({ playing: true });
+  assert.equal(score.music.active.source.offset, 9.5, 'resuming continues the phrase instead of restarting it');
+  assert.equal(score.music.active.source.buffer, buffer, 'pause/resume reuses the rendered theme');
+  assert(score.play('victory'));
+  score.setMix({ music: false }); assert.equal(score.music.active, null); assert.equal(score.voices.size, 1, 'ending fanfare survives music stopping');
+  score.setMix({ music: true }); const resumed = score.music.active;
+  score.setMix({ enabled: false }); assert.equal(score.music.active, null); assert.equal(score.voices.size, 0);
+  score.setMix({ enabled: true }); assert(resumed.source.disconnected, 'quick mute/unmute cleans the old fading loop');
+  score.destroy(); assert.equal(score.music.active, null); assert.equal(score.music.tail, null);
+  const replay = new G.Soundscape(owner); replay.setMix({ music: true });
+  assert.equal(replay.music.active.source.buffer, buffer, 'another game reuses the same-context music buffer');
+  const oldSource = replay.music.active.source;
+  owner.context = new AudioContext(); replay.setMix({ music: true });
+  assert(oldSource.disconnected); assert.notEqual(replay.music.active.source.buffer, buffer, 'context replacement rebuilds the track');
+  const last = replay.music.active.source; replay.destroy(); assert(last.stopped && last.disconnected);
+  replay.setMix({ music: true }); assert.equal(replay.music.active, null, 'disposed games cannot restart music');
+  console.log('PASS quiet stereo music, seamless loop, shared context, single playback, ducking, pause position, mute, endings and teardown.');
+}
 
 // Exercise and simulation events cross a transient queue, not the saved game.
 // Verify actual game methods, rather than a parallel event-mapping fixture.
 {
   const { runtime } = require('./helpers.cjs');
   const { G: rules, SC, context: integrated } = runtime(true);
+  vm.runInContext(fs.readFileSync(path.join(__dirname, '../../../resources/glantan/music.js'), 'utf8'), integrated);
   vm.runInContext(fs.readFileSync(path.join(__dirname, '../../../resources/glantan/sound.js'), 'utf8'), integrated);
   const owner = { context: new AudioContext() }, events = [];
   const options = { mode: 'swedish', items: [{ label: 'sol', answer: 'sol' }], seed: 'audio-contract', fresh: true };
