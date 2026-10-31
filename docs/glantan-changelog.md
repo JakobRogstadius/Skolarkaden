@@ -164,3 +164,12 @@ Reproduce with `node dev/glantan-performance.cjs --ref f919ced` and `node dev/gl
 Validation: **93/93 ordinary suites passed**. Combat checks exercise actual attacks by every class and monster type, friendly skeleton attacks and cooldowns without repeated animation triggers. Browser checks cover the complete roster, both facing directions, reduced motion and a live mixed-unit fight. The development-only **Alla anfall** control compares idle and attacking poses, with playback and individual phase controls.
 
 ![Idle and attacking poses for every hero, summon, monster and warrior/ranger upgrade](klockglantan-attacks-2026-10-31.jpg)
+
+## Level indicators clear of heads — 2026-10-31
+
+- Place each monster's level badge above its full physical silhouette, accounting for the label's own height, unit scale, higher-rank horns, crowns and attack motion. Keep the label steady through the animation, with a clear gap below it.
+- Give friendly and enemy skeletons the same clearance. Fit inspection portraits and summon slots using the corrected badge bounds, so neither heads nor labels are clipped.
+
+Validation: **93/93 ordinary suites passed**. Browser checks cover all monster types in idle and attack poses, stronger monsters in the combat scene, and the necromancer/binder portraits and summon slots.
+
+![Level indicators above unobstructed monster heads](klockglantan-clear-levels-2026-10-31.jpg)
