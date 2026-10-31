@@ -113,3 +113,17 @@ The requested changes materially increase medium/hard pressure. Paid-answer camp
 These are limited automated balance probes, not general win-rate estimates or required answer speeds. They supersede the earlier campaign results above for the new rules. Reproduce with `node dev/glantan-balance.cjs <gentle|steady|brave> <5|10> 0`; use `--boss` for the controlled encounters.
 
 ![Level-four lair wave composition and guardian replenishment](klockglantan-lair-waves-1793470188315.jpg)
+
+## Picture-led interface — 2026-10-31
+
+- Replace decorative headings, repeated totals and routine success prose with short labels and visual feedback. Keep longer descriptions, precise statistics and fantasy names under **Mer**.
+- Reuse the actual building, hero and monster artwork in purchase cards, selections, wave previews, guardians and summon slots. Building cards show the hero they unlock; healer and mage cards state their different roles.
+- Enlarge labels and touch targets. Reflow phone controls across the full panel width, preserve the question and input in reduced-height views, and remove the rules that hid important descriptions on small screens.
+- Show exclusive hero upgrades side by side under **Välj en**, with the upgraded appearance, a short effect description, a completion mark and a lock on the competing path. Present all three competing eight-answer choices together.
+- Show answer progress as filled circles beside the selected purchase picture. Keep exercise hints, answer matching and streak rules intact. Placement uses a ghost building, marked blocked tiles and a tick/cross, with no placement instructions or obstruction prose.
+- Give lairs illustrated wave counts, guardian slots and separately identified timers. Show the destruction wave graphically, without warning text. Keep the boss victory goal explicit.
+- Show health, experience, hero status, owned skeletons and traps visually; expose detailed statistics on demand. Keep the flying-enemy counter clear.
+- Use **Anfall här**, **Vakta här** and **Utforska här** consistently. Show gathering parties and actionable shortages. Locate important warnings on the map/minimap and let players tap the notification to go there.
+- Simplify the castle/population HUD and bell charge display. Replace the long game help with illustrated steps, move result statistics under **Mer**, and use **Du vann!** / **Borgen föll.** Keep restart and public-name consequences clear. No spoken UI help was added.
+
+Validation: all 93 ordinary suites pass. Browser checks cover building placement (valid and blocked), a completed four-answer upgrade and its mutually exclusive lock, necromancer slots, lair waves, illustrated help, and 390×844 / 390×500 layouts. The reduced-height view models available keyboard space; no physical touch keyboard was used. [Interface example](klockglantan-readable-ui-1793473044549.jpg).

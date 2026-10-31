@@ -11,21 +11,26 @@
       this.node = make('section', 'g-scene'); this.stage = make('div', 'g-stage');
       this.canvas = make('canvas', 'g-world'); this.canvas.tabIndex = 0; this.canvas.setAttribute('aria-label', 'Klockgläntans karta. Dra för att flytta, rulla för att zooma. Piltangenter flyttar kartan.');
       this.ctx = this.canvas.getContext('2d'); this.stage.append(this.canvas);
-      this.mapBadge = make('div', 'g-map-badge');
-      const names = ['Mossviken', 'Kopparlyckan', 'Rävbäcken', 'Lilla Efterklang', 'Tegelgläntan', 'Daggholmen'];
-      this.mapBadge.innerHTML = G.icon('compass', 15); const mapName = document.createElement('span'); mapName.textContent = names[G.seedNumber(game.world.seed) % names.length]; this.mapBadge.append(mapName); this.mapBadge.title = 'Kartfrö: ' + game.world.seed;
-      this.stage.append(this.mapBadge);
-      this.toast = make('div', 'g-toast'); this.toast.setAttribute('role', 'status'); this.toast.setAttribute('aria-live', 'polite'); this.stage.append(this.toast);
+      this.toast = make('button', 'g-toast'); this.toast.type = 'button'; this.toast.setAttribute('aria-live', 'polite'); this.stage.append(this.toast);
+      this.toast.onclick = () => { const notice = this.game.world.notices.at(-1); if (Number.isFinite(notice?.x)) this.focus(notice); };
       this.controls = make('div', 'g-map-controls');
       for (const [glyph, label, action] of [['minus', 'Zooma ut', () => this.zoomBy(0.8)], ['home', 'Till klockborgen', () => this.focus(G.castle(this.game.world))], ['plus', 'Zooma in', () => this.zoomBy(1.25)]]) {
         const button = document.createElement('button'); button.type = 'button'; button.innerHTML = G.icon(glyph, 19); button.title = label; button.setAttribute('aria-label', label); button.onclick = action; this.controls.append(button);
       }
       this.stage.append(this.controls);
-      this.bell = make('button', 'g-bell'); this.bell.type = 'button'; this.bell.innerHTML = G.icon('bell', 25) + '<span>Stormklocka</span><small></small>';
+      this.bell = make('button', 'g-bell'); this.bell.type = 'button'; this.bell.innerHTML = G.icon('bell', 25) + '<span>Ring</span><span class="g-bell-charge" aria-hidden="true">' + '<i></i>'.repeat(6) + '</span>';
       this.bell.title = 'Samlar mod, läker hjältar och hejdar monster nära borgen. Laddas av 6 rätta svar, även över brutna följder.';
       this.bell.onclick = () => this.game.ringBell(); this.stage.append(this.bell);
       this.minimap = make('canvas', 'g-minimap'); this.minimap.width = 180; this.minimap.height = 140; this.minimap.tabIndex = 0; this.minimap.setAttribute('role', 'button'); this.minimap.setAttribute('aria-label', 'Översiktskarta. Piltangenter flyttar utsnittet, Home återgår till borgen.'); this.stage.append(this.minimap);
       this.ui = new G.Interface(this); this.node.append(this.ui.node, this.stage); canvas.parentElement.append(this.node);
+      const U = G.UI;
+      this.status = make('div', 'g-status');
+      const castleHealth = make('div', 'g-castle-health'); castleHealth.append(U.portrait(game.world, 'building', 'castle', { small: true }), U.icon('tower'));
+      this.castleHealth = make('progress', ''); this.castleHealth.setAttribute('aria-label', 'Borgens liv'); castleHealth.append(this.castleHealth);
+      const population = make('div', 'g-population'); this.population = make('span', ''); population.append(U.icon('people'), this.population);
+      this.goal = make('button', 'g-goal'); this.goal.type = 'button'; this.goal.innerHTML = G.icon('crown') + '<span>Bossboet</span>'; this.goal.setAttribute('aria-label', 'Förstör bossboet för att vinna');
+      this.goal.onclick = () => { const boss = this.game.world.lairs.find(l => l.boss && l.seen); if (boss) { this.focus(boss); this.ui.inspect({ kind: 'lair', id: boss.id }); } else document.getElementById('help-open').click(); };
+      this.status.append(castleHealth, population, this.goal); canvas.parentElement.querySelector('.hud').insertBefore(this.status, document.getElementById('pause'));
       this.terrainChunks = new Map();
       // Fog only needs a few texels per tile, rather than a second full world image.
       this.fog = document.createElement('canvas'); this.fog.width = game.world.width * 4; this.fog.height = game.world.height * 4;
@@ -122,7 +127,8 @@
       if (!G.inside(w, point.x, point.y)) return;
       if (this.blueprint) {
         const action = { type: 'build', id: this.blueprint, x: Math.floor(point.x), y: Math.floor(point.y) };
-        if (this.game.choose(action)) { this.blueprint = null; this.selection = null; }
+        this.placementPoint = { x: action.x, y: action.y };
+        if (!G.placementReason(w, action.id, action.x, action.y) && this.game.choose(action)) { this.blueprint = null; this.selection = null; }
         this.ui.questionKey = ''; this.ui.update(); return;
       }
       const hero = [...w.heroes].filter(G.alive).sort((a, b) => G.distance(a, point) - G.distance(b, point)).find(h => Math.hypot(h.x - point.x, h.y - 0.25 - point.y) < 0.6 / Math.min(1, this.camera.zoom) || Math.abs(h.x - point.x) < .38 && point.y > h.y - (h.classId === 'warrior' && w.research.banner ? 1.3 : ['mage', 'necromancer'].includes(h.classId) ? 1.05 : .9) && point.y < h.y);
@@ -220,7 +226,7 @@
       }
     }
     drawBlueprint() {
-      const w = this.game.world, action = this.blueprint && this.hover ? { id: this.blueprint, x: this.hover.x, y: this.hover.y } : this.game.pending?.type === 'build' ? this.game.pending : null;
+      const w = this.game.world, point = this.hover || this.placementPoint, action = this.blueprint && point ? { id: this.blueprint, x: point.x, y: point.y } : this.game.pending?.type === 'build' ? this.game.pending : null;
       if (!action) return;
       const c = this.ctx, spec = G.buildings[action.id], valid = !G.placementReason(w, action.id, action.x, action.y);
       c.save(); c.strokeStyle = '#cfe2b552'; c.lineWidth = 1;
@@ -228,7 +234,16 @@
       for (let y = view.y0; y < view.y1; y++) for (let x = view.x0; x < view.x1; x++) if (w.explored[y * w.width + x]) c.strokeRect(x * T, y * T, T, T);
       c.fillStyle = valid ? '#cce9a965' : '#ef998465'; c.strokeStyle = valid ? '#edffbb' : '#ffc4ad'; c.lineWidth = 2;
       c.fillRect(action.x * T, action.y * T, spec.w * T, spec.h * T); c.strokeRect(action.x * T, action.y * T, spec.w * T, spec.h * T);
-      c.globalAlpha = 0.5; A.building(c, { type: action.id, id: 0, tx: action.x, ty: action.y, x: action.x + spec.w / 2, y: action.y + spec.h / 2, w: spec.w, h: spec.h, hp: spec.hp }, w, w.time); c.restore();
+      for (let y = action.y; y < action.y + spec.h; y++) for (let x = action.x; x < action.x + spec.w; x++) {
+        const blocked = !G.inside(w, x, y) || !w.explored[G.index(w, x, y)] || G.tile(w, x, y) !== 0 || G.occupant(w, x, y);
+        if (blocked) { c.fillStyle = '#b9474466'; c.fillRect(x * T, y * T, T, T); A.line(c, [[x * T + 12, y * T + 12], [(x + 1) * T - 12, (y + 1) * T - 12]], '#ffe6ce', 3); A.line(c, [[x * T + 12, (y + 1) * T - 12], [(x + 1) * T - 12, y * T + 12]], '#ffe6ce', 3); }
+      }
+      c.globalAlpha = 0.5; A.building(c, { type: action.id, id: 0, tx: action.x, ty: action.y, x: action.x + spec.w / 2, y: action.y + spec.h / 2, w: spec.w, h: spec.h, hp: spec.hp }, w, w.time);
+      c.globalAlpha = 1; const x = (action.x + spec.w / 2) * T, y = (action.y + spec.h) * T + 13;
+      A.ellipse(c, x, y, 13, 13, valid ? '#33572e' : '#803d35');
+      if (valid) A.line(c, [[x - 7, y], [x - 2, y + 5], [x + 7, y - 5]], '#fff2d2', 3);
+      else { A.line(c, [[x - 5, y - 5], [x + 5, y + 5]], '#fff2d2', 3); A.line(c, [[x + 5, y - 5], [x - 5, y + 5]], '#fff2d2', 3); }
+      c.restore();
     }
     drawSelection() {
       const s = this.selection, w = this.game.world; if (!s) return;
@@ -268,6 +283,9 @@
         if (type === 'hero' && selected) { const y = value.y * T - (value.classId === 'mage' ? 66 : 57); c.font = 'bold 12px Trebuchet MS'; c.textAlign = 'center'; c.fillStyle = '#fff1ce'; c.strokeStyle = '#20372e'; c.lineWidth = 3; c.strokeText(value.name, value.x * T, y); c.fillText(value.name, value.x * T, y); }
       }
       this.drawFlags(); this.drawBlueprint(); this.drawEffects();
+      for (const notice of w.notices) if (Number.isFinite(notice.x) && w.explored[G.index(w, notice.x, notice.y)]) {
+        c.strokeStyle = '#ffdc92'; c.lineWidth = 3 / this.camera.zoom; c.beginPath(); c.arc(notice.x * T, notice.y * T, this.reduced ? 42 : 36 + Math.sin(w.time * 4) * 6, 0, Math.PI * 2); c.stroke();
+      }
       if (!this.reduced) for (let i = 0; i < 14; i++) {
         const x = (A.hash(i, G.seedNumber(w.seed)) * w.width + Math.sin(time * 0.12 + i) * 0.4) * T;
         const y = (A.hash(i + 7, 3) * w.height + Math.cos(time * 0.16 + i) * 0.3) * T;
@@ -303,15 +321,19 @@
       for (const h of w.heroes) if (G.alive(h)) mark(h, '#fff0bf', 1.3);
       for (const s of w.skeletons) if (G.alive(s)) mark(s, '#b3f4db', .8);
       mark(G.castle(w), '#fff1bb', 3);
+      for (const notice of w.notices) if (Number.isFinite(notice.x) && w.explored[G.index(w, notice.x, notice.y)]) { c.strokeStyle = '#ffe69e'; c.lineWidth = 2; c.beginPath(); c.arc(notice.x * sx, notice.y * sy, 6, 0, Math.PI * 2); c.stroke(); }
       c.strokeStyle = '#fff3c9'; c.lineWidth = 1;
       const topLeft = this.toWorld(0, 0); c.strokeRect(topLeft.x / T * sx, topLeft.y / T * sy, this.width / this.camera.zoom / T * sx, this.height / this.camera.zoom / T * sy);
     }
     updateOverlay() {
       const w = this.game.world, notice = w.notices.at(-1);
       this.toast.hidden = !notice; this.toast.textContent = notice?.text || ''; this.toast.dataset.kind = notice?.kind || '';
+      this.toast.disabled = !Number.isFinite(notice?.x);
       this.bell.disabled = !w.bellCharges || this.game.state !== 'playing'; this.bell.classList.toggle('g-ready', !!w.bellCharges);
-      this.bell.querySelector('small').textContent = w.bellCharges ? 'Redo' : (w.bellProgress || 0) + ' / 6';
+      [...this.bell.querySelectorAll('i')].forEach((pip, i) => pip.classList.toggle('filled', !!w.bellCharges || i < w.bellProgress));
       this.bell.setAttribute('aria-label', 'Stormklocka, ' + (w.bellCharges ? 'redo' : (w.bellProgress || 0) + ' av 6 rätta svar'));
+      this.castleHealth.max = G.castle(w).maxHp; this.castleHealth.value = G.castle(w).hp;
+      this.population.textContent = G.population(w) + ' / ' + G.capacity(w); this.population.setAttribute('aria-label', G.population(w) + ' av ' + G.capacity(w) + ' platser');
       this.canvas.style.cursor = this.blueprint ? 'crosshair' : this.down?.dragged ? 'grabbing' : 'grab';
     }
     scoreEvent(e) { if (e.type.startsWith('glantan') || e.type === 'miss') { this.ui.update(); this.updateOverlay(); } }
@@ -319,7 +341,7 @@
       this.game.soundscape?.destroy();
       for (const chunk of this.terrainChunks.values()) chunk.canvas.width = chunk.canvas.height = 0;
       this.terrainChunks.clear(); this.fog.width = this.fog.height = 0;
-      root.cancelAnimationFrame(this.raf); this.resizeObserver.disconnect(); this.listeners.forEach(off => off()); this.game.save(); this.node.remove(); this.original.hidden = false;
+      root.cancelAnimationFrame(this.raf); this.resizeObserver.disconnect(); this.listeners.forEach(off => off()); this.game.save(); this.status.remove(); this.node.remove(); this.original.hidden = false;
     }
   }
   SC.GlantanRenderer = GlantanRenderer;

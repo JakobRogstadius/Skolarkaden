@@ -57,7 +57,7 @@
     lair.wakeAt = Math.min(lair.wakeAt, w.time);
     lair.nextGrowth = w.time + G.lairTypes[lair.type].interval * G.profiles[w.pace].growth;
     if (lair.seen) {
-      G.notify(w, (lair.boss ? 'Tystnadens hjärta' : G.lairTypes[lair.type].name) + ' vaknade.', 'warn');
+      G.notify(w, (lair.boss ? 'Tystnadens hjärta' : G.lairTypes[lair.type].name) + ' vaknade.', 'warn', lair);
       G.soundEvent?.(w, 'awaken', lair, true);
     }
     G.launchWave(w, lair);
@@ -86,7 +86,7 @@
       const child = G.addLair(w, { type: 'spore', tx, ty, tier: 1, spread: true }, w.time + 75);
       child.spread = true; lair.spread = true;
       child.seen = !!w.explored[G.index(w, child.x, child.y)];
-      if (child.seen || lair.seen) G.notify(w, 'En sporkupa slog rot.', 'warn');
+      if (child.seen || lair.seen) G.notify(w, 'Ett nytt svampbo!', 'warn', child.seen ? child : lair);
       return true;
     }
     return false;
@@ -108,7 +108,7 @@
       if (!lair.awake) {
         if (!lair.warned && lair.wakeAt - w.time < 30) {
           lair.warned = true;
-          if (lair.seen) G.notify(w, G.lairTypes[lair.type].name + ' börjar röra på sig.', 'warn');
+          if (lair.seen) G.notify(w, G.lairTypes[lair.type].name + ' vaknar snart.', 'warn', lair);
         }
         if (w.time < lair.wakeAt) continue;
         G.awakenLair(w, lair);
@@ -117,7 +117,7 @@
         if (lair.type === 'spore' && !lair.spread) spread(w, lair);
         if (lair.level < 4) {
           lair.level++; lair.maxHp += 45; lair.hp += 45;
-          if (lair.seen) G.notify(w, G.lairTypes[lair.type].name + ' växte till nivå ' + lair.level + '.' + (lair.level >= 3 ? ' ' + G.monsterTypes[G.lairTypes[lair.type].support].name + ' följer anfallen!' : ''), 'warn');
+          if (lair.seen) G.notify(w, G.lairTypes[lair.type].name + ' · nivå ' + lair.level, 'warn', lair);
           G.launchWave(w, lair);
         }
         lair.nextGrowth = w.time + G.lairTypes[lair.type].interval * profile.growth;

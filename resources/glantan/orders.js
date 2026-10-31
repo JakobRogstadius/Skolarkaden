@@ -154,7 +154,6 @@
         if (G.alive(hero)) hero.hp += hp - hero.maxHp;
         hero.maxHp = hp;
       }
-      G.notify(world, spec.name + ' klart.', 'good');
     } else if (action.type === 'resurrect') {
       entity = world.heroes.find(h => h.id === action.target);
       Object.assign(entity, G.freeNear(world, G.castle(world)), { hp: entity.maxHp, retreating: false, expedition: null, task: 'Tillbaka', routeKey: '', route: [], shieldUntil: world.time + 4 });
