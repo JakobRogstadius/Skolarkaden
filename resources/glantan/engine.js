@@ -2,6 +2,17 @@
 (function(root) {
   'use strict';
   const G = root.Starlight.Glantan;
+  G.allies = w => [...w.heroes, ...(w.skeletons || [])].filter(G.alive);
+  G.flying = unit => !!(unit.monster && G.monsterTypes[unit.type]?.flying);
+  G.canHit = (attacker, target) => !(G.flying(target) && (attacker.classId === 'warrior' || attacker.skeleton));
+  G.attackLine = (w, from, to) => G.flying(from) || G.flying(to) ? G.inside(w, from.x, from.y) && G.inside(w, to.x, to.y) : G.clearLine(w, from, to);
+  G.offenseBoost = (w, unit) => w.research.banner && w.heroes.some(h => G.alive(h) && h.classId === 'warrior' && G.distance(h, unit) < 4 && G.clearLine(w, h, unit)) ? 1.25 : 1;
+  G.resolveOutcome = w => {
+    if (w.outcome) return w.outcome;
+    if (G.castle(w)?.hp <= 0) w.outcome = 'lost';
+    else if (w.lairs.some(l => l.boss && !G.alive(l))) w.outcome = 'won';
+    return w.outcome;
+  };
   // Presentation events are transient: never replay old sounds after loading a save.
   G.soundEvent = function(world, kind, entity, important = false) {
     if (!world.sounds) Object.defineProperty(world, 'sounds', { value: [], writable: true, configurable: true });
@@ -35,8 +46,8 @@
     const role = G.classes[hero.classId], level = hero.level - 1;
     return {
       hp: Math.round(role.hp * (1 + level * 0.17) * (world.research.armor ? 1.2 : 1)),
-      damage: role.damage * (1 + level * 0.16) * (hero.classId === 'ranger' && world.research.marksman ? 1.4 : 1),
-      speed: role.speed * G.traits[hero.trait].speed * (world.research.boots ? 1.18 : 1) * (hero.classId === 'ranger' && world.research.pathfinder ? 1.18 : 1) * (world.bellUntil > world.time ? 1.22 : 1),
+      damage: role.damage * (1 + level * 0.16) * (hero.classId === 'ranger' && world.research.marksman ? 1.4 : 1) * G.offenseBoost(world, hero),
+      speed: role.speed * G.traits[hero.trait].speed * (world.research.boots ? 1.18 : 1) * (world.bellUntil > world.time ? 1.22 : 1),
       range: role.range + (hero.classId === 'ranger' && world.research.marksman ? 0.8 : 0),
       cooldown: role.cooldown
     };
@@ -67,26 +78,35 @@
     }
   };
   G.damage = function(world, target, amount, attacker) {
-    if (!target || !G.alive(target)) return;
+    if (world.outcome || !target || !G.alive(target) || attacker && !G.canHit(attacker, target)) return 0;
     if (target.wakeAt !== undefined && !target.defendersRaised) G.alertLair(world, target);
-    if (target.classId) {
+    if (target.classId || target.skeleton) {
       if (target.shieldUntil > world.time) amount *= 0.65;
-      if (world.research.guardian && world.heroes.some(h => G.alive(h) && h.classId === 'warrior' && G.distance(h, target) < 2.8)) amount *= 0.78;
+      if (world.research.guardian && world.heroes.some(h => G.alive(h) && h.classId === 'warrior' && G.distance(h, target) < 2.8 && G.clearLine(world, h, target))) amount *= 0.78;
     }
+    if (target.monster && world.monsters.some(m => m !== target && G.alive(m) && G.monsterTypes[m.type].ward && G.distance(m, target) < 3 && G.attackLine(world, m, target))) amount *= .75;
+    const dealt = Math.min(target.hp, Math.max(0, amount));
     target.hp = Math.max(0, target.hp - amount); target.hurtAt = world.time;
-    if (target.hp > 0) return;
+    if (target.hp > 0) return dealt;
     if (target.classId) {
       world.fallen++; target.task = 'Vilar'; target.expedition = null; target.route = []; target.diedAt = world.time;
       G.notify(world, target.name + ' föll. Kan återkallas.', 'warn');
       G.soundEvent(world, 'hero-down', target, true);
+      for (const minion of world.skeletons) if (minion.owner === target.id) minion.hp = 0;
+      world.traps = world.traps.filter(trap => trap.owner !== target.id);
+    } else if (target.skeleton) {
+      G.effect(world, 'bones', target.x, target.y, { duration: .7, color: '#d7e8bd' });
     } else if (target.monster) {
       world.kills++;
+      const point = G.nearestOpen(world, target) || target;
+      world.corpses.push({ id: world.nextId++, x: point.x, y: point.y, monsterType: target.type, level: target.rank || 1, diedAt: world.time });
+      if (world.corpses.length > G.MAX_CORPSES) world.corpses.shift();
       // Nearby support shares XP, with diminishing returns against weak enemies.
       // Tower-only kills teach less than taking part in the encounter.
       for (const hero of world.heroes) if (G.alive(hero) && G.distance(hero, target) < 7) {
         const gap = hero.level - (target.rank || 1), learning = gap >= 2 ? 0 : gap > 0 ? 0.35 : 1;
         const involved = attacker?.classId || world.time - (hero.contributedAt ?? -100) < 10;
-        G.gainXp(world, hero, G.monsterTypes[target.type].xp * learning * (involved ? 1 : 0.2));
+        G.gainXp(world, hero, G.monsterTypes[target.type].xp * (target.broodParent ? .25 : 1) * learning * (involved ? 1 : 0.2));
       }
       if (attacker?.classId) attacker.kills++;
     } else if (target.wakeAt !== undefined) {
@@ -95,13 +115,14 @@
       G.soundEvent(world, 'lair-down', target, true);
       for (const hero of world.heroes) if (G.alive(hero) && G.distance(hero, target) < 9) G.gainXp(world, hero, 25 + target.tier * 10);
       G.reveal(world, target.x, target.y, 5);
-      if (!world.lairs.some(G.alive)) { world.explored.fill(1); world.fogRevision++; G.notify(world, 'Bona är borta. Jaga de sista skramlarna!', 'good'); }
     } else {
       world.navRevision++;
       if (target.type !== 'castle') G.notify(world, G.buildings[target.type].name + ' förstördes.', 'warn');
     }
     G.effect(world, 'burst', target.x, target.y, { color: target.classId ? '#e6b8a2' : '#f4dba0', duration: 1.2 });
     world.revision++;
+    G.resolveOutcome(world);
+    return dealt;
   };
   G.ringBell = function(world) {
     if (!world.bellCharges || world.outcome) return false;
@@ -127,11 +148,11 @@
       }
       const range = building.type === 'beacon' ? 8.5 : building.type === 'tower' ? 6 : building.type === 'castle' ? 5 : 0;
       if (!range || building.shotAt > world.time) continue;
-      const target = world.monsters.filter(G.alive).filter(m => G.distance(building, m) < range && G.clearLine(world, building, m)).sort((a, b) => G.distance(a, building) - G.distance(b, building))[0];
+      const target = world.monsters.filter(G.alive).filter(m => G.distance(building, m) < range && G.attackLine(world, building, m)).sort((a, b) => G.distance(a, building) - G.distance(b, building))[0];
       if (!target) continue;
       building.shotAt = world.time + (building.type === 'beacon' ? 1.4 : 1.5);
       const damage = building.type === 'beacon' ? 28 : building.type === 'tower' ? 13 : 8;
-      G.effect(world, 'bolt', building.x, building.y - 0.6, { toX: target.x, toY: target.y, color: '#ffe0a0', duration: 0.3 });
+      G.effect(world, building.type === 'beacon' ? 'spell' : 'bolt', building.x, building.y - 0.6, { toX: target.x, toY: target.y, color: '#ffe0a0', school: 'sun', radius: 2, duration: building.type === 'beacon' ? .8 : .3 });
       G.soundEvent(world, building.type === 'beacon' ? 'mage' : 'ranger', building);
       G.damage(world, target, damage, building);
       if (building.type === 'beacon') for (const m of world.monsters) if (m !== target && G.alive(m) && G.distance(m, target) < 2) G.damage(world, m, damage * 0.6, building);
@@ -142,8 +163,14 @@
   class Simulation {
     constructor({ seed = 'dagg', pace = 'gentle', saved = null } = {}) {
       this.world = saved || G.createMap(seed, pace); this.accumulator = 0;
-      if (saved) return;
       const w = this.world;
+      // Additive save migration preserves heroes, purchases and paid answer streaks.
+      w.skeletons ||= []; w.corpses ||= []; w.traps ||= [];
+      for (const [old, current] of [['breaker', 'banner'], ['pathfinder', 'traps']]) {
+        if (w.research[old]) { w.research[current] = true; delete w.research[old]; }
+        for (const group of ['warrior', 'ranger']) if (w.choices[group] === old) w.choices[group] = current;
+      }
+      if (saved) return;
       G.addBuilding(w, 'castle', w.home.tx, w.home.ty);
       G.addBuilding(w, 'house', w.home.tx + 3, w.home.ty + 3);
       w.lairSites.forEach((site, i) => G.addLair(w, site, G.profiles[pace].firstWake + i * G.profiles[pace].wake));
@@ -158,10 +185,15 @@
     }
     step(dt) {
       const w = this.world;
+      if (G.resolveOutcome(w)) { w.score = G.score(w); return; }
       w.time += dt; w.tick++;
       G.updateLairs(w, dt);
       if (w.tick % 10 === 0) G.planExpeditions(w);
-      G.updateHeroes(w, dt); G.updateMonsters(w, dt); G.updateBuildings(w, dt);
+      G.updateHeroes(w, dt);
+      if (!w.outcome) G.updateSkeletons(w, dt);
+      if (!w.outcome) G.updateMonsters(w, dt);
+      if (!w.outcome) G.updateTraps(w, dt);
+      if (!w.outcome) G.updateBuildings(w, dt);
       G.separateHeroes(w, dt);
       w.effects.forEach(e => { e.age += dt; }); w.effects = w.effects.filter(e => e.age < e.duration);
       w.notices = w.notices.filter(n => n.until > w.time);
@@ -171,8 +203,7 @@
         if (b.type === 'explore') return !w.explored[G.index(w, b.x, b.y)];
         return true;
       });
-      if (G.castle(w).hp <= 0) w.outcome = 'lost';
-      else if (!w.lairs.some(G.alive) && !w.monsters.some(G.alive)) w.outcome = 'won';
+      G.resolveOutcome(w);
       w.score = G.score(w);
     }
     snapshot() { return JSON.parse(JSON.stringify(this.world)); }

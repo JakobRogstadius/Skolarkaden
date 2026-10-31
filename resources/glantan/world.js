@@ -112,7 +112,7 @@
     const w = {
       version: G.VERSION, seed: String(seed), pace, rng: G.seedNumber(seed), width: Math.round(36 * scale), height: Math.round(28 * scale),
       time: 0, nextId: 1, tick: 0, navRevision: 0, fogRevision: 0, revision: 0,
-      buildings: [], heroes: [], monsters: [], lairs: [], bounties: [], expeditions: [], effects: [], notices: [],
+      buildings: [], heroes: [], skeletons: [], corpses: [], traps: [], monsters: [], lairs: [], bounties: [], expeditions: [], effects: [], notices: [],
       research: {}, choices: {}, kills: 0, destroyed: 0, fallen: 0, bellCharges: 1, bellUntil: 0,
       outcome: null, score: 0, mood: 0, purchases: 0, stats: { healed: 0, explored: 0 }
     };
@@ -154,6 +154,10 @@
     // The village has room for housing and guilds without an empty continent.
     for (let y = cy - 7; y <= cy + 7; y++) for (let x = cx - 8; x <= cx + 8; x++) w.terrain[y * w.width + x] = 0;
     w.lairSites = [];
+    // Three families per map: a readable melee opening plus two different threats.
+    const families = ['spore', 'hush', 'sky', 'thorn'];
+    for (let i = families.length - 1; i > 0; i--) { const j = Math.floor(G.random(w) * (i + 1)); [families[i], families[j]] = [families[j], families[i]]; }
+    w.families = ['rust', ...families.slice(0, 2)];
     const angle = G.random(w) * Math.PI * 2;
     for (let i = 0; i < profile.lairs; i++) {
       const progress = i / (profile.lairs - 1), boss = i === profile.lairs - 1, a = angle + i * 2.39996323;
@@ -169,7 +173,7 @@
         const score = Math.hypot(xx, yy) + obstruction * 0.8;
         if (score < bestScore) { bestScore = score; best = { tx, ty }; }
       }
-      const site = { ...best, type: boss ? 'hush' : i === 0 ? 'rust' : ['rust', 'spore', 'hush'][Math.floor(G.random(w) * 3)], tier: i < 2 ? 1 : i < 5 ? 2 : 3, boss, suggestedLevels: boss ? profile.bossLevels || { gentle: 10, steady: 20, brave: 30 }[pace] : undefined };
+      const site = { ...best, type: w.families[i % w.families.length], tier: i < 2 ? 1 : i < 5 ? 2 : 3, boss, suggestedLevels: boss ? profile.bossLevels || { gentle: 10, steady: 20, brave: 30 }[pace] : undefined };
       w.lairSites.push(site); clear(w, site.tx + 0.5, site.ty + 0.5, boss ? 5.2 : 3.1);
     }
     let reached = reachableTerrain(w);
@@ -182,7 +186,7 @@
     return w;
   };
   G.freeNear = function(world, point, radius = 4) {
-    const units = [...world.heroes, ...world.monsters].filter(G.alive);
+    const units = [...world.heroes, ...world.skeletons, ...world.monsters].filter(G.alive);
     let fallback = null;
     for (let r = 1; r <= radius; r++) for (let i = 0; i < 16; i++) {
       const a = i / 16 * Math.PI * 2;
@@ -281,6 +285,7 @@
     return true;
   };
   G.move = function(world, unit, destination, speed, dt) {
+    if (unit.rootedUntil > world.time) return;
     const key = Math.floor(destination.x) + ':' + Math.floor(destination.y) + ':' + world.navRevision;
     if (unit.routeKey !== key || !unit.route?.length && G.distance(unit, destination) > 0.2 && (unit.repathAt || 0) < world.time) {
       unit.route = G.path(world, unit, destination); unit.routeKey = key; unit.repathAt = world.time + 2;

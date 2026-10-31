@@ -247,7 +247,7 @@ function renderUi(){
   else if(kind==='marshmallows'||kind==='eggs'){objective='';secondary='';value=0;}
   else if(isBoardGame()){objective=game.turns+' drag';secondary=kind==='chess'?(game.phase==='end'?game.reason:'Du spelar vit'):'Datorn: '+SC.formatGameScore(kind,game.botScore);value=0;}
   else if(isTileGame()){objective=game.hits+' / '+game.total+' par';secondary=SC.klossarClock(game.elapsed);value=game.hits/game.total*100;}
-  else if(kind==='glantan'){const w=game.world,G=SC.Glantan;objective=G.population(w)+' / '+G.capacity(w)+' invånare';secondary=w.lairs.filter(G.alive).length+' bon kvar · '+Math.ceil(G.castle(w).hp/G.castle(w).maxHp*100)+' % borg';value=G.castle(w).hp/G.castle(w).maxHp*100;}
+  else if(kind==='glantan'){const w=game.world,G=SC.Glantan;objective=G.population(w)+' / '+G.capacity(w)+' invånare';secondary='Mål: bossboet · '+Math.ceil(G.castle(w).hp/G.castle(w).maxHp*100)+' % borg';value=G.castle(w).hp/G.castle(w).maxHp*100;}
   else if(kind==='home'){objective=Math.min(game.cleaned,game.total)+' / '+game.total;secondary='';value=Math.min(100,game.cleaned/game.total*100);}
   else if(kind==='paint'||kind==='dinosaur'){objective=game.passed+' / '+game.total;secondary='';value=game.passed/game.total*100;}
   else{const flowers=game.pots.filter(p=>p.bloom).length;objective=flowers+' / '+game.pots.length+' ✿';secondary='';value=game.pots.reduce((sum,p)=>sum+(p.dead?1:p.growth),0)/game.pots.length*100;}

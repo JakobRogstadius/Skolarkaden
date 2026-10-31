@@ -5,6 +5,9 @@
   const paths = {
     shield: 'M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6Z M12 7v10 M8 11h8',
     bow: 'M5 3q19 9 0 18l5-9Z M4 12h17m-4-3 4 3-4 3',
+    skull: 'M6 16C0 9 4 2 12 2s12 7 6 14v5H6ZM8 10h1m6 0h1M10 16v5m4-5v5M12 12l-1 2h2Z',
+    trap: 'M3 8l3 4 3-4 3 4 3-4 3 4 3-4M3 16l3-4 3 4 3-4 3 4 3-4 3 4M3 8a10 7 0 0 0 18 0M3 16a10 7 0 0 1 18 0',
+    wing: 'M12 12C8 1 4 3 2 5l2 11 4-2 4 7 4-7 4 2 2-11c-2-2-6-4-10 7Z',
     leaf: 'M20 3C7 2 1 11 7 17S22 16 20 3ZM4 21 16 8 M8 16v-5m4 1h5',
     chime: 'M7 3v8a5 5 0 0 0 10 0V3M12 16v6 M4 6h3m10 0h3 M10 3v6m4-6v6',
     bell: 'M5 17h14l-2-4V9a5 5 0 0 0-10 0v4ZM10 20a2 2 0 0 0 4 0 M12 2v2',
@@ -154,6 +157,10 @@
     } else if (kind === 'chime') {
       line(c, [[-6, -9], [-6, 0], [0, 4], [6, 0], [6, -9]], color, 3);
       line(c, [[0, 3], [0, 10]], color, 2.5); ellipse(c, 0, -3, 2, 2, '#e9f6ff');
+    } else if (kind === 'skull') {
+      ellipse(c, 0, -2, 8, 8, color); round(c, -5, 1, 10, 8, 2, color);
+      for (const side of [-1, 1]) ellipse(c, side * 3, -2, 2, 2.5, '#243b3c');
+      line(c, [[-2, 5], [-2, 9]], '#243b3c', 1); line(c, [[2, 5], [2, 9]], '#243b3c', 1);
     }
     c.restore();
   }
@@ -240,6 +247,22 @@
       ellipse(c, 0, -79, 4, 4, '#e2efff'); ellipse(c, 0, -79, 8, 8, '#d1c1ff30');
       round(c, -7, 1, 14, 19, [7, 7, 0, 0], '#2e314b', '#c2b4e4');
       emblem(c, 0, -19, 'chime', '#cbb6ff', 10);
+    } else if (b.type === 'crypt') {
+      round(c, -30, -31, 60, 51, [28, 28, 3, 3], '#55706a', '#233d3b');
+      round(c, -23, -26, 46, 45, [21, 21, 0, 0], '#293f40', '#becab7');
+      for (const xx of [-32, 24]) {
+        round(c, xx, -27, 8, 48, 3, '#cbd0b9', ink);
+        ellipse(c, xx + 4, -29, 7, 6, '#e4dfc3');
+        line(c, [[xx + 1, -30], [xx + 2, -28]], '#26423e', 2); line(c, [[xx + 6, -30], [xx + 6, -28]], '#26423e', 2);
+      }
+      polygon(c, [[-34, -32], [-23, -49], [23, -49], [34, -32]], '#244c49', ink);
+      line(c, [[-24, -47], [24, -47]], '#9bd3be', 3);
+      emblem(c, 0, -35, 'skull', '#e6efcf', 11);
+      for (const xx of [-15, 15]) {
+        line(c, [[xx, -17], [xx, 7]], '#8ea399', 2);
+        ellipse(c, xx, -7, 6, 9, '#87f0c53a'); ellipse(c, xx, -7, 3, 5, '#c5ffe3');
+      }
+      for (const yy of [12, 18, 23]) round(c, -19 - (yy - 12), yy, 38 + (yy - 12) * 2, 5, 1, '#85978a', ink);
     } else if (b.type === 'tower') {
       polygon(c, [[-14, 18], [-10, -34], [10, -34], [14, 18]], '#d0c9ab', ink);
       polygon(c, [[5, -34], [10, -34], [14, 18], [5, 18]], '#969c81');
@@ -283,7 +306,8 @@
     const x = hero.x * A.tile, y = hero.y * A.tile;
     c.save(); c.translate(x, y);
     if (hero.hp <= 0) { ellipse(c, 0, 0, 8, 3, '#536a4d'); line(c, [[0, 1], [0, -9]], '#dad4aa', 2); ellipse(c, 0, -10 + Math.sin(time * 2) * 2, 3, 3, '#f7e0ad'); c.restore(); return; }
-    const color = G.classes[hero.classId].color, walk = hero.route?.length ? Math.sin(time * 11 + hero.id) : 0, ink = '#293b39';
+    const path = w.choices[hero.classId], color = path === 'guardian' ? '#9dbed2' : path === 'banner' ? '#d96642' : path === 'traps' ? '#b99a59' : G.classes[hero.classId].color;
+    const walk = hero.route?.length ? Math.sin(time * 11 + hero.id) : 0, ink = '#293b39';
     ellipse(c, 1, 2, 10, 4, '#1e342f66');
     if (hero.shieldUntil > time) { c.strokeStyle = '#bedeca90'; c.lineWidth = 2; c.beginPath(); c.ellipse(0, -10, 13, 19, 0, 0, Math.PI * 2); c.stroke(); }
     line(c, [[-3, -3], [-4 - walk * 2, 2]], '#303c35', 3.3); line(c, [[3, -3], [4 + walk * 2, 2]], '#303c35', 3.3);
@@ -292,16 +316,32 @@
     round(c, -5, -29, 10, 11, 4, '#f1c493', ink);
     ellipse(c, hero.facing * 3, -24, 1.1, 1.1, '#263533');
     if (hero.classId === 'warrior') {
+      if (path === 'banner') {
+        line(c, [[-12, 1], [-12, -57]], '#393c31', 3);
+        polygon(c, [[-11, -56], [11, -52 + Math.sin(time * 3) * 2], [6, -41], [-11, -43]], '#df7348', '#482c26');
+        polygon(c, [[-4, -52], [0, -48], [-4, -44], [-8, -48]], '#ffe7a3');
+      }
       round(c, -7, -33, 14, 8, [6, 6, 1, 1], '#c9d3cf', ink); line(c, [[-8, -26], [8, -26]], '#f4eed4', 2);
-      polygon(c, [[-14, -21], [-3, -21], [-3, -9], [-8, -4], [-14, -9]], '#e3a83c', ink);
+      polygon(c, path === 'guardian' ? [[-18, -25], [-2, -25], [-2, -8], [-10, -1], [-18, -8]] : [[-14, -21], [-3, -21], [-3, -9], [-8, -4], [-14, -9]], path === 'guardian' ? '#47738e' : '#e3a83c', ink);
+      if (path === 'guardian') { line(c, [[-16, -23], [-4, -23], [-4, -9], [-10, -4], [-16, -9], [-16, -23]], '#e5f4f2', 2); line(c, [[-4, -35], [3, -35]], '#7aafca', 4); }
       line(c, [[-8, -18], [-8, -8]], '#fff1bb', 2); line(c, [[-11, -14], [-5, -14]], '#fff1bb', 1.5);
       line(c, [[10, -3], [10, -27]], ink, 4); line(c, [[10, -8], [10, -27]], '#f0f3df', 2.5); line(c, [[6, -9], [14, -9]], '#d9aa51', 2);
     } else if (hero.classId === 'ranger') {
+      if (path === 'traps') {
+        round(c, -15, -23, 10, 18, 3, '#7a5636', ink);
+        for (let i = 0; i < 3; i++) line(c, [[-14 + i * 3, -23], [-9 + i * 3, -6]], '#dbcc96', 1);
+        ellipse(c, -12, -8, 7, 5, '#d6d6bd'); ellipse(c, -12, -8, 4, 2.5, '#415044');
+      }
       polygon(c, [[-8, -25], [-6, -33], [2, -37], [8, -26], [1, -29]], '#31714a', ink);
       line(c, [[1, -33], [6, -42]], '#ffe3a0', 2);
       line(c, [[-10, -9], [-11, -25], [-8, -30]], '#755030', 3);
       c.strokeStyle = '#634029'; c.lineWidth = 3; c.beginPath(); c.arc(5, -13, 13, -1.1, 1.1); c.stroke(); line(c, [[11, -25], [11, -1]], '#fff0c2', 1.3);
       line(c, [[6, -14], [20, -14]], '#e9d0a1', 1.5);
+      if (path === 'marksman') {
+        c.strokeStyle = '#f3cf77'; c.lineWidth = 3.5; c.beginPath(); c.arc(3, -15, 19, -1.2, 1.2); c.stroke();
+        line(c, [[10, -33], [10, 3]], '#fff5ce', 1.5);
+        for (const xx of [-13, -9, -5]) line(c, [[xx, -20], [xx - 3, -36], [xx, -33]], '#f4dd9c', 2);
+      }
     } else if (hero.classId === 'healer') {
       // White bonnet/apron and a green medical cross, separated from the mage's violet robe.
       polygon(c, [[-8, -28], [-6, -36], [6, -36], [9, -28]], '#fff6e0', ink);
@@ -312,6 +352,15 @@
       line(c, [[-8, -11], [-8, -5]], '#28754d', 2); line(c, [[-11, -8], [-5, -8]], '#28754d', 2);
       line(c, [[7, -18], [10, -12]], '#e6bb8f', 3);
       round(c, 8, -16, 4, 5, 1, '#f6e1a2', ink); ellipse(c, 10, -8, 5, 6, '#376f47'); ellipse(c, 9, -9, 2.5, 3.5, '#bce68a');
+    } else if (hero.classId === 'necromancer') {
+      polygon(c, [[-10, -3], [-9, -24], [0, -39], [9, -24], [11, -3]], '#245951', ink);
+      ellipse(c, 0, -25, 5, 7, '#172e31'); line(c, [[-3, -26], [-1, -26]], '#cbffdf', 2); line(c, [[2, -26], [4, -26]], '#cbffdf', 2);
+      for (const xx of [-7, 7]) ellipse(c, xx, -20, 4, 3, '#ede3c1');
+      for (const yy of [-15, -10]) line(c, [[-4, yy], [0, yy + 2], [4, yy]], '#ddd8b4', 1.8);
+      line(c, [[13, 0], [13, -40]], '#c9c3a4', 3);
+      ellipse(c, 13, -42, 6, 6, '#e9e3c8'); round(c, 10, -41, 6, 6, 1, '#e9e3c8');
+      for (const xx of [11, 15]) ellipse(c, xx, -42, 1.5, 2, '#25564e');
+      ellipse(c, 13, -43, 10, 10, '#a4ffe624');
     } else {
       polygon(c, [[-8, -29], [-1, -48], [6, -40], [9, -29]], '#7151b0', '#302f4b');
       line(c, [[-9, -28], [10, -28]], '#c9adfb', 4); line(c, [[-5, -33], [7, -33]], '#f4d17b', 2);
@@ -320,7 +369,7 @@
       line(c, [[13, -34], [18, -37], [18, -45]], '#e4ba65', 2);
       ellipse(c, 13, -40, 6, 6, '#d7caff50'); ellipse(c, 13, -40, 3.5, 3.5, '#e6f2ff');
     }
-    if (hero.level >= 3) { c.fillStyle = '#ffe5a3'; c.strokeStyle = ink; c.lineWidth = 2.5; c.font = 'bold 9px sans-serif'; c.textAlign = 'center'; const dots = '•'.repeat(Math.min(3, Math.floor(hero.level / 2))), y = hero.classId === 'mage' ? -55 : -46; c.strokeText(dots, 0, y); c.fillText(dots, 0, y); }
+    if (hero.level >= 3) { c.fillStyle = '#ffe5a3'; c.strokeStyle = ink; c.lineWidth = 2.5; c.font = 'bold 9px sans-serif'; c.textAlign = 'center'; const dots = '•'.repeat(Math.min(3, Math.floor(hero.level / 2))), y = path === 'banner' ? -64 : ['mage', 'necromancer'].includes(hero.classId) ? -55 : -46; c.strokeText(dots, 0, y); c.fillText(dots, 0, y); }
     c.restore();
   };
   A.lair = function(c, lair, w, time) {
@@ -369,6 +418,20 @@
         ellipse(c, xx - r * 0.2, yy - 25 - pulse, r * 0.6, r * 0.25, '#c08b9f');
         for (let i = 0; i < 3; i++) ellipse(c, xx - 10 + i * 9, yy - 23 - pulse, 3, 2, '#e4cbb2');
       }
+    } else if (lair.type === 'sky') {
+      polygon(c, [[-32, 18], [-25, -28], [-8, -54], [6, -45], [24, -24], [32, 18]], '#5f7380', '#33434b');
+      polygon(c, [[-25, -28], [-8, -54], [-6, -16], [-20, 14]], '#a7b7b8');
+      ellipse(c, 0, -16, 30, 12, '#554f3c'); ellipse(c, 0, -18, 24, 8, '#b6a37b');
+      for (const xx of [-11, 2, 13]) ellipse(c, xx, -23, 6, 9, '#d2e3d5');
+      for (const side of [-1, 1]) polygon(c, [[side * 6, -35], [side * 36, -56], [side * 30, -28], [side * 18, -34]], '#3c6875', '#223f49');
+    } else if (lair.type === 'thorn') {
+      for (const side of [-1, 1]) {
+        polygon(c, [[side * 8, 18], [side * 31, 9], [side * 25, -31], [side * 10, -50], [side * 14, -12]], '#355745', '#293c30');
+        line(c, [[side * 25, 10], [side * 20, -27], [side * 5, -40]], '#9ca568', 3);
+        for (let i = 0; i < 4; i++) polygon(c, [[side * 22, 8 - i * 11], [side * 38, -4 - i * 11], [side * 21, -2 - i * 11]], '#c8bd89', '#354838');
+      }
+      round(c, -10, -16, 20, 35, [10, 10, 0, 0], '#203d34');
+      ellipse(c, 0, -31, 10, 10, '#d5a979'); ellipse(c, 0, -31, 5, 5, '#7e4749');
     } else {
       round(c, -23, -27, 46, 45, 7, '#788497');
       polygon(c, [[-30, -24], [0, -60], [30, -24]], '#526370');
@@ -389,14 +452,16 @@
     if (!lair.awake) { c.fillStyle = '#e1ddbd'; c.font = 'italic 13px Georgia'; c.textAlign = 'center'; c.fillText('z z', 28, lair.boss ? -74 : -49 - Math.sin(time) * 2); }
     c.restore();
   };
-  A.monsterScale = m => (m.type === 'guardian' ? 1.65 : m.type === 'husher' ? 1.16 : m.type === 'sporeling' ? 0.94 : 1) * (1 + Math.min(0.5, Math.max(0, (m.strength || 1) - 1) * 0.22));
+  A.monsterScale = m => ({ guardian: 1.65, husher: 1.16, sporeling: .94, broodcap: 1.6, siegebreaker: 1.5, bulwark: 1.35, mender: 1.15, binder: 1.15 }[m.type] || 1) * (1 + Math.min(.5, Math.max(0, (m.strength || 1) - 1) * .22));
   A.monster = function(c, m, w, time) {
     c.save(); c.translate(m.x * A.tile, m.y * A.tile);
     const rank = Math.max(1, m.rank || 1), scale = A.monsterScale(m), boss = m.boss || m.type === 'guardian';
     const bob = Math.sin(time * (boss ? 3.5 : 7) + m.id) * (boss ? 0.65 : 1.5);
     ellipse(c, 1, 3, 11 * scale, 4 * scale, '#29353b66');
     c.save(); c.scale(scale, scale);
-    if (m.type === 'rattler') {
+    if (A.specialMonster(c, m, bob, time)) {
+      // New families share the same scale, rank badge and health conventions.
+    } else if (m.type === 'rattler') {
       for (const side of [-1, 1]) line(c, [[side * 5, -8], [side * 12, -4 + bob], [side * 11, 2]], '#6d6950', 2);
       round(c, -9, -18 + bob, 18, 17, 5, '#b9895d'); round(c, -7, -23 + bob, 14, 7, 3, '#d5b378');
       line(c, [[-12, -15 + bob], [-8, -15 + bob]], '#b8b298', 3); ellipse(c, 8, -13 + bob, 5, 5, '#b4b1a0');
@@ -426,7 +491,7 @@
       line(c, [[-7, -5], [0, -2], [7, -5]], '#e7bd82', 2);
     }
     c.restore();
-    const badgeY = -(boss ? 57 : m.type === 'husher' ? 39 : 31) * scale;
+    const badgeY = -(boss ? 57 : m.type === 'nightwing' ? 53 : ['husher', 'binder', 'mender', 'thornling'].includes(m.type) ? 43 : m.type === 'broodcap' ? 38 : 31) * scale;
     round(c, boss ? -17 : -10, badgeY, boss ? 34 : 20, 15, 4, boss ? '#542e46' : rank >= 3 ? '#75413c' : '#3b4944');
     c.fillStyle = '#ffe8c4'; c.font = 'bold 10px sans-serif'; c.textAlign = 'center'; c.fillText(String(rank), boss ? 7 : 0, badgeY + 11);
     if (boss) line(c, [[-12, badgeY + 5], [-10, badgeY + 10], [-7, badgeY + 4], [-4, badgeY + 10], [-2, badgeY + 5]], '#f2c582', 1.2);

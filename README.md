@@ -31,7 +31,7 @@ men visas aldrig i topplistan. En gemensam svensk/engelsk namnspärr finns i
 
 Ett strategispel i realtid med en liten glänta av mossa, koppar och klingande toner.
 Du börjar med bara klockborgen och en bostad. Bygg ett hjältehus för att värva de första hjältarna.
-Bygg på kartans rutnät, rekrytera självständiga väktare, spejare, örtvårdare och klangvävare,
+Bygg på kartans rutnät, rekrytera självständiga väktare, spejare, örtvårdare, klangvävare och skelettmästare,
 och sätt belöningar som lockar till tillfälliga expeditioner. Valda handlingar betalas med
 1–4 rätta svar i rad. Fel svar eller byte av handling nollställer betalningen, men byten
 ger inte en ny uppgift. En blockerad tomt behåller betalningen tills monstren är borta.
@@ -43,8 +43,25 @@ Stormklockan läker, stärker modet och hejdar angripare; sex rätta svar laddar
 över brutna följder. Alla monsterbon börjar med två patrullerande försvarare. När ett bo
 vaknar börjar det skicka anfallsvågor mot byn. Bon förstärks och kan sprida högst två
 nya bon. Varje karta har ett bossbo: sikta på cirka 10/20/30 sammanlagda hjältenivåer
-på lätt/medel/svår, med både frontlinje och läkekraft. Alla bon och monster måste
-bort; förstörs klockborgen är omgången förlorad.
+på lätt/medel/svår, med både frontlinje och läkekraft. Förstör bossboet för att vinna
+direkt, även om andra bon och monster finns kvar. Förstörs klockborgen är omgången förlorad.
+
+Benvalvet värvar skelettmästare. Deras svaga områdesattack läker dem själva och deras
+egna skelett. Besegrade monster lämnar benrester; varje skelettmästare väcker högst två
+skelett med monstrets ursprungliga nivå. Skelett tar ingen bostadsplats och faller med sin mästare.
+Väktare väljer permanent mellan Fanbärare (+25 % gruppskada inom fyra rutor) och
+Sköldvänner (22 % mindre mottagen skada inom 2,8 rutor). Flera likadana auror staplas inte.
+Spejare väljer mellan Törnpilar (+40 % pilskada och längre räckvidd) och Fällor.
+Fällspejare lägger högst fyra fällor vardera längs den mittersta 30–70 % av vägen
+mellan by och bo. Varje fälla skadar ett markmonster med 14 + 6 × spejarens nivå när
+fällan lades, och binder det i 2,8 sekunder (bossvakter 1,2). Överblivna fällor hämtas
+när boet har röjts. Vägvalen gäller alla nuvarande och framtida hjältar av samma klass.
+
+Varje karta väljer tre av fem monsterfamiljer. Ett växande bo blandar sin ursprungliga
+typ med stöd: skramlare + läkare, svampar + ynglande jättesvamp, klangmagiker +
+bindare, flygare + murknäckare eller törnskyttar + sköldeskort. Flygare korsar hinder;
+väktare, skelett och markfällor kan inte träffa dem. Pilskyttar, magi och torn kan det.
+Magiska anfall har tydliga kastcirklar, lysande projektiler och effekter vid träff.
 
 Kartorna är 72×56, 90×70 respektive 108×84 rutor. Floder, sjöar, berg och tät skog
 blockerar vägen; passager och broar binder samman områdena. Hjältar håller avstånd

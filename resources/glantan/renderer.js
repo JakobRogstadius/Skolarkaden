@@ -125,11 +125,13 @@
         if (this.game.choose(action)) { this.blueprint = null; this.selection = null; }
         this.ui.questionKey = ''; this.ui.update(); return;
       }
-      const hero = [...w.heroes].filter(G.alive).sort((a, b) => G.distance(a, point) - G.distance(b, point)).find(h => Math.hypot(h.x - point.x, h.y - 0.25 - point.y) < 0.6 / Math.min(1, this.camera.zoom) || Math.abs(h.x - point.x) < .28 && point.y > h.y - (h.classId === 'mage' ? 1.05 : .9) && point.y < h.y);
+      const hero = [...w.heroes].filter(G.alive).sort((a, b) => G.distance(a, point) - G.distance(b, point)).find(h => Math.hypot(h.x - point.x, h.y - 0.25 - point.y) < 0.6 / Math.min(1, this.camera.zoom) || Math.abs(h.x - point.x) < .38 && point.y > h.y - (h.classId === 'warrior' && w.research.banner ? 1.3 : ['mage', 'necromancer'].includes(h.classId) ? 1.05 : .9) && point.y < h.y);
       if (hero) { this.ui.inspect({ kind: 'hero', id: hero.id }); return; }
+      const skeleton = w.skeletons.find(s => G.alive(s) && Math.hypot(s.x - point.x, s.y - .3 - point.y) < .55 / Math.min(1, this.camera.zoom));
+      if (skeleton) { this.ui.inspect({ kind: 'skeleton', id: skeleton.id }); return; }
       // Visible silhouettes stay clickable even when their upper pixels, or a
       // discovered lair's centre, extend into an unrevealed tile.
-      const monster = w.monsters.filter(m => G.alive(m) && w.explored[G.index(w, m.x, m.y)]).sort((a, b) => b.y - a.y).find(m => Math.abs(m.x - point.x) < 0.43 * A.monsterScale(m) && point.y > m.y - (m.boss ? 1.1 : 0.65) * A.monsterScale(m) && point.y < m.y + 0.35);
+      const monster = w.monsters.filter(m => G.alive(m) && w.explored[G.index(w, m.x, m.y)]).sort((a, b) => b.y - a.y).find(m => Math.abs(m.x - point.x) < (G.flying(m) ? .7 : .43) * A.monsterScale(m) && point.y > m.y - (m.boss || G.flying(m) ? 1.1 : ['husher', 'binder', 'mender', 'thornling'].includes(m.type) ? .95 : .7) * A.monsterScale(m) && point.y < m.y + 0.35);
       if (monster) { this.ui.inspect({ kind: 'monster', id: monster.id }); return; }
       const buildings = w.buildings.filter(b => G.footprint(b, point.x, point.y) ||
         G.alive(b) && Math.abs(point.x - b.x) < b.w * .38 && point.y > b.y - (b.type === 'castle' ? 1.9 : ['spire', 'beacon'].includes(b.type) ? 1.8 : 1.4) && point.y < b.y + .4);
@@ -137,6 +139,10 @@
       if (building) { this.ui.inspect({ kind: 'building', id: building.id }); return; }
       const lair = w.lairs.find(b => b.seen && (G.footprint(b, point.x, point.y) || G.alive(b) && Math.abs(point.x - b.x) < 0.85 && point.y > b.y - (b.boss ? 2.15 : 1.6) && point.y < b.y + .4));
       if (lair) { this.ui.inspect({ kind: 'lair', id: lair.id }); return; }
+      for (const [kind, items] of [['trap', w.traps], ['corpse', w.corpses]]) {
+        const item = items.find(e => w.explored[G.index(w, e.x, e.y)] && G.distance(e, point) < .4 / Math.min(1, this.camera.zoom));
+        if (item) { this.ui.inspect({ kind, id: item.id }); return; }
+      }
       this.ui.inspect({ kind: 'ground', x: Math.floor(point.x) + 0.5, y: Math.floor(point.y) + 0.5 });
     }
     viewBounds(padding = 0) {
@@ -194,9 +200,11 @@
       for (const e of w.effects) {
         const p = e.age / e.duration, x = e.x * T, y = e.y * T;
         c.save(); c.globalAlpha = Math.min(1, (1 - p) * 2); c.strokeStyle = c.fillStyle = e.color || '#f3dfab';
-        if (e.type === 'bolt') {
+        if (e.type === 'spell') A.spell(c, e, p, this.reduced);
+        else if (e.type === 'raise' || e.type === 'snare') A.ritual(c, e, p, this.reduced);
+        else if (e.type === 'bolt') {
           const xx = x + (e.toX * T - x) * Math.min(1, p * 1.6), yy = y + (e.toY * T - y) * Math.min(1, p * 1.6) - 11;
-          A.line(c, [[xx - (e.toX * T - x) * 0.07, yy - (e.toY * T - y) * 0.07], [xx, yy]], e.color, 2.5); A.ellipse(c, xx, yy, 3, 3, e.color);
+          A.line(c, [[xx - (e.toX * T - x) * 0.07, yy - (e.toY * T - y) * 0.07], [xx, yy]], e.color, e.heavy ? 4 : 2.5); A.ellipse(c, xx, yy, e.heavy ? 4 : 3, 3, e.color);
         } else if (e.type === 'slash') {
           c.lineWidth = 3; c.beginPath(); c.arc(e.toX * T, e.toY * T - 8, 13, -2 + p, 0.5 + p); c.stroke();
         } else if (e.type === 'heal') {
@@ -224,7 +232,8 @@
     }
     drawSelection() {
       const s = this.selection, w = this.game.world; if (!s) return;
-      const entity = s.kind === 'hero' ? w.heroes.find(h => h.id === s.id) : s.kind === 'building' ? w.buildings.find(b => b.id === s.id) : s.kind === 'lair' ? w.lairs.find(l => l.id === s.id) : s.kind === 'monster' ? w.monsters.find(m => m.id === s.id) : s;
+      const lists = { hero: w.heroes, building: w.buildings, lair: w.lairs, monster: w.monsters, skeleton: w.skeletons, corpse: w.corpses, trap: w.traps };
+      const entity = lists[s.kind] ? lists[s.kind].find(e => e.id === s.id) : s;
       if (!entity) return;
       const c = this.ctx, x = entity.x * T, y = entity.y * T;
       c.strokeStyle = '#f9e9a7'; c.lineWidth = 2.2; c.setLineDash([4, 4]); c.beginPath(); c.ellipse(x, y + 3, entity.w ? entity.w * 25 : 16, entity.h ? entity.h * 17 : 9, 0, 0, Math.PI * 2); c.stroke(); c.setLineDash([]);
@@ -241,15 +250,19 @@
       c.imageSmoothingEnabled = true; c.drawImage(this.fog, 0, 0, w.width * T, w.height * T);
       const view = this.viewBounds(3);
       const visible = entity => entity.x >= view.x0 && entity.x <= view.x1 && entity.y >= view.y0 && entity.y <= view.y1;
+      for (const corpse of w.corpses) if (visible(corpse) && w.explored[G.index(w, corpse.x, corpse.y)]) A.corpse(c, corpse);
+      for (const trap of w.traps) if (visible(trap)) A.trap(c, trap, w);
       const entities = [
         ...w.buildings.map(value => ({ type: 'building', value })),
         ...w.lairs.filter(l => l.seen).map(value => ({ type: 'lair', value })),
         ...w.heroes.map(value => ({ type: 'hero', value })),
+        ...w.skeletons.filter(G.alive).map(value => ({ type: 'skeleton', value })),
         ...w.monsters.filter(m => G.alive(m) && w.explored[G.index(w, m.x, m.y)]).map(value => ({ type: 'monster', value }))
       ].filter(e => visible(e.value)).sort((a, b) => a.value.y - b.value.y);
       this.drawSelection();
       for (const { type, value } of entities) {
         A[type](c, value, w, time);
+        if (G.alive(value) && !value.w) A.status(c, value, w);
         const selected = this.selection?.id === value.id;
         if (G.alive(value) && (selected || value.hp < value.maxHp * 0.98)) this.drawBar(value, type === 'building' || type === 'lair' ? 29 : 8, type === 'monster' || type === 'lair' ? '#e7aa8d' : '#c7e2a6');
         if (type === 'hero' && selected) { const y = value.y * T - (value.classId === 'mage' ? 66 : 57); c.font = 'bold 12px Trebuchet MS'; c.textAlign = 'center'; c.fillStyle = '#fff1ce'; c.strokeStyle = '#20372e'; c.lineWidth = 3; c.strokeText(value.name, value.x * T, y); c.fillText(value.name, value.x * T, y); }
@@ -288,6 +301,7 @@
         const radius = m.boss ? 2 : 1.4; mark(m, '#431e25', radius + .6); mark(m, '#ff3545', radius);
       }
       for (const h of w.heroes) if (G.alive(h)) mark(h, '#fff0bf', 1.3);
+      for (const s of w.skeletons) if (G.alive(s)) mark(s, '#b3f4db', .8);
       mark(G.castle(w), '#fff1bb', 3);
       c.strokeStyle = '#fff3c9'; c.lineWidth = 1;
       const topLeft = this.toWorld(0, 0); c.strokeRect(topLeft.x / T * sx, topLeft.y / T * sy, this.width / this.camera.zoom / T * sx, this.height / this.camera.zoom / T * sy);

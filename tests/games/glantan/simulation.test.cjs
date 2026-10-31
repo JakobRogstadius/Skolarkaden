@@ -68,7 +68,7 @@ for (const assignment of ['defend', 'gather']) {
   const sim = make('aftermath'), w = sim.world, hero = w.heroes[0]; w.explored.fill(1); w.monsters = [];
   w.heroes.slice(1).forEach(h => { h.hp = 0; });
   w.lairs.forEach(l => { l.wakeAt = l.nextSpawn = l.nextGrowth = 1e6; });
-  const lair = w.lairs.find(l => G.distance(l, G.castle(w)) > 12);
+  const lair = w.lairs.find(l => !l.boss && G.distance(l, G.castle(w)) > 12);
   Object.assign(hero, G.freeNear(w, lair), { trait: 0 }); lair.defendersRaised = true;
   const enemy = G.spawnMonster(w, lair, { type: 'husher', guard: true });
   Object.assign(enemy, { x: hero.x + .5, y: hero.y, targetId: hero.id, raidAt: 0 });
@@ -104,9 +104,9 @@ for (const assignment of ['defend', 'gather']) {
   const last = G.spawnMonster(w, w.lairs[0]);
   Object.assign(last, G.freeNear(w, {x:w.home.x - 10,y:w.home.y}), { raidAt: 9999 });
   advance(sim, 120);
-  assert.equal(w.outcome, 'won', 'heroes automatically find and finish the final survivor');
+  assert.equal(w.outcome, 'won', 'destroying the boss wins without hunting survivors');
   const endedAt = w.time; advance(sim, 5); assert.equal(w.time, endedAt);
   const lost = make('castle-loss'); G.castle(lost.world).hp = 0; advance(lost, .2);
   assert.equal(lost.world.outcome, 'lost', 'castle destruction ends the run');
 }
-console.log('simulation: defended lairs, shared alarms, reinforcements, support XP, bounded escalation and terminal cleanup');
+console.log('simulation: defended lairs, shared alarms, reinforcements, support XP, bounded escalation and terminal victory');
