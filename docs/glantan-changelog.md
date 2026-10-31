@@ -152,3 +152,15 @@ CPU benchmark on the same machine, comparing `f919ced` with this release, with 2
 Reproduce with `node dev/glantan-performance.cjs --ref f919ced` and `node dev/glantan-performance.cjs`. Each scene discards three warm-up runs, then samples 500 ticks. The development review page also includes a six-second drawing probe. These timings measure simulation CPU work; this environment did not provide a reliable device frame-rate measurement.
 
 ![Rotbindare with four red skeletons, alongside a friendly white skeleton](klockglantan-summons-2026-10-31.jpg)
+
+## Visible attacks for every unit — 2026-10-31
+
+- Animate every hero class and all twelve monster types, including friendly and enemy skeletons, boss guardians and both warrior/ranger upgrade paths. Warriors and skeletons swing their swords; archers draw and release their bows; magic users gesture with their hands or staffs and light up at the casting point.
+- Give monsters readable physical attacks: metal-fist jabs, mushroom hops and compression, folding-wing dives, siege lunges, shield bashes and heavy guardian slams.
+- Replace the small target-only melee arc with a directional, outlined sweep and impact spark. Heavy hits add a ground ring; flying attacks use paired claw trails. Arrows have contrasting shafts, heads and fletching.
+- Trigger poses from actual attacks, healing and summoning. Retain the action's direction through follow-through even if the target dies or the attacker starts moving away. New and idle units do not show false attacks. Damage, cooldowns and movement rules are unchanged.
+- Preserve brief static attack poses and clear source/target effects under reduced motion. Keep inspection portraits still. Use the existing animation loop and inexpensive canvas geometry, without extra production timers or blur filters.
+
+Validation: **93/93 ordinary suites passed**. Combat checks exercise actual attacks by every class and monster type, friendly skeleton attacks and cooldowns without repeated animation triggers. Browser checks cover the complete roster, both facing directions, reduced motion and a live mixed-unit fight. The development-only **Alla anfall** control compares idle and attacking poses, with playback and individual phase controls.
+
+![Idle and attacking poses for every hero, summon, monster and warrior/ranger upgrade](klockglantan-attacks-2026-10-31.jpg)

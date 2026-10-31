@@ -26,7 +26,7 @@
     wrap.setAttribute('role', 'img'); wrap.setAttribute('aria-label', options.label || spec?.name || ({ corpse: 'Benrester', skeleton: 'Skelett', trap: 'Fälla' }[kind]));
     const c = canvas.getContext('2d'), world = { ...w, choices: { ...w.choices }, research: { ...w.research } };
     if (options.branch) { world.choices[G.research[options.branch].group] = options.branch; world.research[options.branch] = true; }
-    const entity = { id: 0, hp: 100, maxHp: 100, facing: 1, level: 1, rank: 1, route: [], ...(options.entity || {}), x: 0, y: 0 };
+    const entity = { id: 0, hp: 100, maxHp: 100, facing: 1, level: 1, rank: 1, route: [], ...(options.entity || {}), actionCue: null, x: 0, y: 0 };
     c.scale(2, 2); c.translate(40, kind === 'corpse' ? 32 : kind === 'trap' ? 46 : 69);
     const monsterTop = type === 'guardian' || entity.boss ? 57 : ['nightwing', 'boneservant'].includes(type) ? 57 : ['husher', 'binder', 'mender', 'thornling'].includes(type) ? 43 : type === 'broodcap' ? 38 : 31;
     const heroHeight = world.choices[type] === 'banner' ? 72 : ['mage', 'necromancer'].includes(type) ? 64 : entity.level >= 3 ? 54 : 46;

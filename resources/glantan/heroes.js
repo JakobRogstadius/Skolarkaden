@@ -123,6 +123,7 @@
     const patients = w.heroes.filter(h => G.alive(h) && h.hp < h.maxHp * 0.94 && G.distance(h, hero) < 4.2 && G.clearLine(w, hero, h)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
     if (!patients.length) return false;
     hero.cooldown = 2.1; hero.castAt = w.time;
+    G.combatCue(w, hero, patients[0], 'heal');
     G.soundEvent(w, 'heal', hero);
     for (const patient of patients.slice(0, w.research.bloom ? 4 : 1)) {
       const amount = Math.min(patient.maxHp - patient.hp, 16 + hero.level * 3);
@@ -139,11 +140,12 @@
   function strike(w, hero, target, stats) {
     if (hero.cooldown > 0 || !G.canHit(hero, target) || !G.attackLine(w, hero, target)) return;
     hero.cooldown = stats.cooldown; hero.attackAt = w.time; hero.contributedAt = w.time;
+    G.combatCue(w, hero, target);
     let damage = stats.damage;
     const mastery = hero.classId === 'mage' && w.research.mastery && hero.level >= 5 && (hero.masteryAt || 0) < w.time;
     if (mastery) { damage *= 3; hero.masteryAt = w.time + 8; G.effect(w, 'bell', target.x, target.y, { duration: 1.3, color: '#cfbcff' }); }
     const magic = ['mage', 'healer', 'necromancer'].includes(hero.classId);
-    G.effect(w, magic ? 'spell' : hero.classId === 'warrior' ? 'slash' : 'bolt', hero.x, hero.y, { toX: target.x, toY: target.y, school: hero.classId === 'necromancer' ? 'soul' : 'arcane', color: G.classes[hero.classId].color, radius: hero.classId === 'necromancer' ? 1.7 : mastery ? 2.6 : 1.5, duration: magic ? .8 : .3, heavy: hero.classId === 'ranger' && w.research.marksman });
+    G.effect(w, magic ? 'spell' : hero.classId === 'warrior' ? 'slash' : 'bolt', hero.x, hero.y, { toX: target.x, toY: target.y, school: hero.classId === 'necromancer' ? 'soul' : 'arcane', color: G.classes[hero.classId].color, radius: hero.classId === 'necromancer' ? 1.7 : mastery ? 2.6 : 1.5, duration: magic ? .8 : .48, heavy: hero.classId === 'ranger' && w.research.marksman });
     G.soundEvent(w, magic ? 'mage' : hero.classId, hero);
     if (hero.classId === 'necromancer') G.necromancerStrike(w, hero, target, damage);
     else G.damage(w, target, damage, hero);

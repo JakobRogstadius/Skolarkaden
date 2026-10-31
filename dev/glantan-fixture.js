@@ -112,6 +112,63 @@
       output.textContent = 'Grafik: ' + (1000/mean(frames)).toFixed(1) + ' fps · bild p95 ' + frames[Math.floor(frames.length*.95)].toFixed(1) + ' ms · ritning ' + mean(draw).toFixed(2) + ' ms · 24 trollformler';
     };
   }
+  function showAttackRoster() {
+    const G = SC.Glantan, A = G.Art, panel = document.createElement('div'), controls = document.createElement('div'), canvas = document.createElement('canvas');
+    panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Alla anfallsanimationer');
+    panel.style.cssText = 'position:fixed;inset:0;z-index:200;background:#142f30;padding:12px;overflow:auto;color:#fff5d4';
+    controls.style.cssText = 'display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px';
+    const title = document.createElement('strong'); title.textContent = 'Alla anfall · vilande till vänster, anfall till höger'; controls.append(title);
+    const roster = [
+      ...Object.entries(G.classes).map(([type, spec]) => ({ kind: 'hero', type, label: spec.name })),
+      { kind: 'skeleton', label: 'Vänligt skelett' },
+      ...Object.entries(G.monsterTypes).map(([type, spec]) => ({ kind: 'monster', type, label: spec.name })),
+      ...['banner', 'guardian', 'marksman', 'traps'].map(branch => ({ kind: 'hero', type: G.research[branch].group, branch, label: G.research[branch].name }))
+    ];
+    canvas.width = 1200; canvas.height = Math.ceil(roster.length / 6) * 180;
+    canvas.style.cssText = 'display:block;max-width:100%;height:auto;margin:auto';
+    canvas.setAttribute('role', 'img'); canvas.setAttribute('aria-label', 'Fem hjälteklasser, vänligt skelett, tolv monstertyper och fyra hjältevägar');
+    const c = canvas.getContext('2d'); let playing = false, age = .27, facing = 1, reduced = false, last = performance.now();
+    const world = { ...game.world, time: 2 };
+    function draw() {
+      c.fillStyle = '#142f30'; c.fillRect(0, 0, canvas.width, canvas.height);
+      roster.forEach((row, i) => {
+        const left = i % 6 * 200, top = Math.floor(i / 6) * 180, scale = row.kind === 'monster' ? .82 : 1.1;
+        c.fillStyle = '#a3b68b'; c.fillRect(left + 3, top + 3, 194, 174);
+        c.fillStyle = '#213b33'; c.font = 'bold 14px Trebuchet MS'; c.textAlign = 'center'; c.fillText(row.label, left + 100, top + 24);
+        const w = { ...world, choices: row.branch ? { [row.type]: row.branch } : {}, research: row.branch ? { [row.branch]: true } : {} };
+        for (const attacking of [false, true]) {
+          const unit = { id: 1, x: 0, y: 0, hp: 100, maxHp: 100, level: 2, rank: 2, strength: 1, facing, route: [], classId: row.kind === 'hero' ? row.type : undefined, type: row.type, monster: row.kind === 'monster' };
+          const target = { x: facing, y: .2 };
+          if (attacking) G.combatCue(w, unit, target);
+          c.save(); c.translate(left + (attacking ? 137 : 48), top + 142); c.scale(scale, scale);
+          A[row.kind](c, unit, w, 2 + age, reduced);
+          if (attacking && age < .48) {
+            const magic = ['mage', 'healer', 'necromancer'].includes(row.type) || G.monsterTypes[row.type]?.spell;
+            const ranged = row.type === 'ranger' || row.type === 'thornling';
+            const effect = { x: 0, y: 0, toX: target.x, toY: target.y, color: row.kind === 'monster' ? '#ff8c8a' : G.classes[row.type]?.color || '#ddf4c7', radius: .4, school: row.type === 'necromancer' ? 'soul' : 'arcane', heavy: ['guardian', 'siegebreaker', 'broodcap', 'bulwark'].includes(row.type), claw: row.type === 'nightwing' };
+            A[magic ? 'spell' : ranged ? 'bolt' : 'slash'](c, effect, age / (magic ? .8 : .48), reduced);
+          }
+          c.restore();
+        }
+      });
+    }
+    for (const [label, action] of [
+      ['Spela animationer', () => { playing = !playing; last = performance.now(); }],
+      ['Start', () => { playing = false; age = .04; }],
+      ['Träff', () => { playing = false; age = .27; }],
+      ['Återgång', () => { playing = false; age = .52; }],
+      ['Vänd', () => { facing *= -1; }],
+      ['Minskad rörelse', () => { reduced = !reduced; }],
+      ['Stäng', () => panel.remove()]
+    ]) { const button = document.createElement('button'); button.textContent = label; button.onclick = () => { action(); draw(); }; controls.append(button); }
+    panel.append(controls, canvas); document.body.append(panel); draw();
+    function frame(now) {
+      if (!panel.isConnected) return;
+      if (playing) { age = (age + (now - last) / 1000) % 1.4; draw(); }
+      last = now; requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
   document.addEventListener('DOMContentLoaded', () => {
     const bar = document.createElement('div'); bar.setAttribute('aria-label', 'Testkontroller');
     bar.style.cssText = 'position:fixed;right:4px;top:4px;z-index:100;display:flex;gap:4px;background:#13282e;padding:4px;font-size:10px';
@@ -125,6 +182,7 @@
     performanceOutput.setAttribute('aria-label', 'Grafikprestanda'); performanceButton.textContent = 'Mät grafik';
     performanceButton.onclick = () => { if (game?.state === 'playing') renderProbe(performanceOutput); };
     bar.append(performanceButton, performanceOutput);
+    const attacks = document.createElement('button'); attacks.textContent = 'Alla anfall'; attacks.onclick = () => { if (game?.state === 'playing') showAttackRoster(); }; bar.append(attacks);
     const audio = document.createElement('output'); audio.setAttribute('aria-label', 'Ljudstatus'); bar.append(audio);
     const meter = setInterval(() => {
       if (!bar.isConnected) { clearInterval(meter); return; }

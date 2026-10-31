@@ -28,6 +28,13 @@
     world.effects.push({ type, x, y, age: 0, duration: 0.7, ...extra });
     if (world.effects.length > 100) world.effects.shift();
   };
+  // Keep the direction of the actual action, even if its target dies or moves.
+  // This is presentation state only; it never delays damage or changes a route.
+  G.combatCue = function(w, unit, target, kind = 'attack') {
+    const dx = target.x - unit.x, dy = target.y - unit.y, length = Math.hypot(dx, dy);
+    unit.actionCue = { at: w.time, kind, dx: length ? dx / length : unit.facing || 1, dy: length ? dy / length : 0 };
+    if (Math.abs(dx) > .05) unit.facing = dx < 0 ? -1 : 1;
+  };
   G.addBuilding = function(world, type, tx, ty) {
     const spec = G.buildings[type];
     const building = { id: world.nextId++, type, tx, ty, w: spec.w, h: spec.h, x: tx + spec.w / 2, y: ty + spec.h / 2, hp: spec.hp, maxHp: spec.hp, shotAt: 0, born: world.time };
