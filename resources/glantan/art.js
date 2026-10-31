@@ -471,16 +471,19 @@
     c.restore();
   };
   A.monsterScale = m => ({ guardian: 1.65, husher: 1.16, sporeling: .94, broodcap: 1.6, siegebreaker: 1.5, bulwark: 1.35, mender: 1.15, binder: 1.15 }[m.type] || 1) * (1 + Math.min(.5, Math.max(0, (m.strength || 1) - 1) * .22));
-  // Highest physical silhouette across idle and attack poses, before scaling.
-  // Keep badges steady, with their bottom edge above hats, horns and crowns.
+  // Blend the original badge anchor with the full attack-clearance position.
+  // The midpoint keeps labels closer to the unit without bobbing each frame.
   const monsterHeights = { rattler: 32, sporeling: 36, husher: 40, nightwing: 52, thornling: 44, mender: 48, binder: 48, boneservant: 50, siegebreaker: 35, broodcap: 44, bulwark: 40, guardian: 64 };
   A.monsterBadgeY = function(m) {
     const skeletal = G.monsterTypes[m.type].skeletal;
     const armourHeight = m.rank >= 3 ? (['siegebreaker', 'bulwark'].includes(m.type) ? 42 : 39) : 0;
     const height = Math.max(monsterHeights[m.type], armourHeight), scale = skeletal ? 1 : A.monsterScale(m);
-    return -height * scale - 6 - (skeletal ? 13 : 15);
+    const originalHeight = m.boss || m.type === 'guardian' ? 57 : m.type === 'nightwing' ? 53 : ['husher', 'binder', 'mender', 'thornling'].includes(m.type) ? 43 : m.type === 'broodcap' ? 38 : 31;
+    const originalY = skeletal ? -53 : -originalHeight * scale;
+    const raisedY = -height * scale - 6 - (skeletal ? 13 : 15);
+    return (originalY + raisedY) / 2;
   };
-  A.skeletonBadgeY = -63;
+  A.skeletonBadgeY = -58;
   A.monster = function(c, m, w, time, reduced = false) {
     if (G.monsterTypes[m.type].skeletal) { A.skeleton(c, { ...m, monster: true }, w, time, reduced); return; }
     c.save(); c.translate(m.x * A.tile, m.y * A.tile);

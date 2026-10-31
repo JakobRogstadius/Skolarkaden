@@ -173,3 +173,12 @@ Validation: **93/93 ordinary suites passed**. Combat checks exercise actual atta
 Validation: **93/93 ordinary suites passed**. Browser checks cover all monster types in idle and attack poses, stronger monsters in the combat scene, and the necromancer/binder portraits and summon slots.
 
 ![Level indicators above unobstructed monster heads](klockglantan-clear-levels-2026-10-31.jpg)
+
+## Tighter level-indicator spacing — 2026-10-31
+
+- Move monster level badges exactly halfway between their original anchors and the increased clearance introduced above. Apply the same midpoint adjustment to friendly and enemy skeletons.
+- Keep the anchors steady during attacks. Inspection portraits and summon slots continue to fit the same badge bounds as the map artwork.
+
+Validation: **93/93 ordinary suites passed**. Browser inspection compares idle and attacking poses for the complete unit roster. This adjustment changes label placement only; it makes no frame-rate claim.
+
+![Level indicators with the requested midpoint spacing](klockglantan-level-midpoints-2026-10-31.jpg)
