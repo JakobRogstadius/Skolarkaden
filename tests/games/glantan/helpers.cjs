@@ -6,7 +6,7 @@ function runtime(exercises = false) {
   const context = vm.createContext({ console, Math, Date, Event, EventTarget, CustomEvent, performance, setTimeout, clearTimeout, localStorage: { getItem: k => values.get(k) || null, setItem: (k, v) => values.set(k, v), removeItem: k => values.delete(k) }, Starlight: {} });
   const load = name => vm.runInContext(fs.readFileSync(path.join(root, 'resources', name + '.js'), 'utf8'), context, { filename: name });
   if (exercises) { load('pinyin'); load('data'); load('language-exercises-data'); load('language-exercises'); load('input'); }
-  for (const name of ['content', 'world', 'engine', 'orders', 'heroes', 'monsters']) load('glantan/' + name);
+  for (const name of ['content', 'world', 'engine', 'orders', 'summons', 'traps', 'heroes', 'monsters']) load('glantan/' + name);
   if (exercises) load('glantan/game');
   return { G: context.Starlight.Glantan, SC: context.Starlight, context };
 }

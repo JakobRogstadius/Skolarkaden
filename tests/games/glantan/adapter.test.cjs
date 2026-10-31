@@ -67,3 +67,18 @@ for (const mode of Object.keys(SC.modes).filter(m => m !== 'homework')) {
   assert.equal(practice.progress, 1, mode + ' accepts its real exercise answer');
 }
 console.log('adapter: streaks, realtime, bell, pause, exercise-aware saves and all exercise families');
+
+{
+  const { SC, G, context } = runtime(true);
+  const options = { mode: 'swedish', items: [{ label: 'sol', answer: 'sol' }] };
+  const original = new SC.GlantanGame(); original.start({ ...options, fresh: true, seed: 'legacy-branches' });
+  G.addBuilding(original.world, 'hall', original.world.home.tx - 4, original.world.home.ty + 3);
+  original.world.research.castle2 = true;
+  original.choose({ type: 'research', id: 'banner' }); original.answer({ text: 'sol', source: 'typing' });
+  const saved = JSON.parse(context.localStorage.getItem('skolarkaden-klockglantan-v2'));
+  saved.pending.id = 'breaker'; delete saved.world.corpses; delete saved.world.skeletons; delete saved.world.traps;
+  context.localStorage.setItem('skolarkaden-klockglantan-v2', JSON.stringify(saved));
+  const restored = new SC.GlantanGame(); restored.start(options);
+  assert(restored.resumed); assert.equal(restored.pending.id, 'banner'); assert.equal(restored.progress, 1);
+  assert.equal(restored.targets[0].id, original.targets[0].id, 'legacy branch migration preserves the actual unpaid question');
+}

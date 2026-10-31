@@ -37,11 +37,11 @@ const world = () => {
   assert(!G.purchase(w, { type: 'research', id: 'guardian' }).ok);
   assert(G.purchase(w, { type: 'research', id: 'castle2' }).ok);
   assert(G.purchase(w, { type: 'research', id: 'guardian' }).ok);
-  assert(!G.purchase(w, { type: 'research', id: 'breaker' }).ok, 'permanent mutually exclusive class choice');
+  assert(!G.purchase(w, { type: 'research', id: 'banner' }).ok, 'permanent mutually exclusive class choice');
   assert(!G.purchase(w, { type: 'research', id: 'guardian' }).ok, 'no duplicate research');
   const hall = w.buildings.find(b => b.type === 'hall'); hall.hp = 0;
   G.addBuilding(w, 'hall', hall.tx, hall.ty);
-  assert(!G.purchase(w, { type: 'research', id: 'breaker' }).ok, 'rebuilding does not reset specialisation');
+  assert(!G.purchase(w, { type: 'research', id: 'banner' }).ok, 'rebuilding does not reset specialisation');
 }
 {
   const w = world();

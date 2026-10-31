@@ -6,7 +6,7 @@ const data=[...resource('data.js','pinyin.js','language-exercises.js','language-
 const input=[...data,...resource('input.js','speech.js')];
 const canvas=[...input,'resources/game.js'];
 const board=[...input,'resources/homework.js','resources/game.js'];
-const glantanCore=resource(...['content','world','engine','orders','heroes','monsters'].map(name=>'glantan/'+name+'.js'));
+const glantanCore=resource(...['content','world','engine','orders','summons','traps','heroes','monsters'].map(name=>'glantan/'+name+'.js'));
 const gameSources={
  city:[...canvas,...resource('people.js')],
  food:[...canvas,...resource('people.js','foodtruck.js')],
@@ -43,7 +43,7 @@ game('klossar','creatures',['resources/klossar-creatures.js']);
 game('klossar','pronunciation',[...gameSources.klossar,...resource('klossar-speech.js','audio/bopomofo/')]);
 game('trassel','chinese');
 game('trassel','layouts',resource('trassel-engine.js','trassel-layouts.js').concat('dev/trassel-layouts.cjs','dev/trassel-generate.cjs'));
-for(const domain of ['world','orders','simulation','adapter','encounters','movement'])game('glantan',domain,[...glantanCore,'tests/games/glantan/helpers.cjs','tests/games/glantan/run.cjs',...(domain==='adapter'?[...input,'resources/glantan/game.js']:[])]);
+for(const domain of ['world','orders','simulation','adapter','encounters','tactics','movement'])game('glantan',domain,[...glantanCore,'tests/games/glantan/helpers.cjs','tests/games/glantan/run.cjs',...(domain==='adapter'?[...input,'resources/glantan/game.js']:[])]);
 add('games/glantan/sound.test.cjs',['glantan','sounds'],[...glantanCore,...input,'resources/glantan/game.js','resources/glantan/sound.js','resources/glantan/music.js','tests/games/glantan/helpers.cjs','tests/games/glantan/run.cjs']);
 for(const area of ['dinosaur','home','eggs','marshmallows'])game(area,'app',[...app,...gameSources[area]]);
 for(const area of ['reversi','chess','klossar','trassel','glantan','studio'])game(area,'app',[...homeworkApp,...gameSources[area],...(['klossar','trassel'].includes(area)?resource('klossar-speech.js'):[]),...(area==='trassel'?resource('trassel-renderer.js','trassel.css'):[])]);

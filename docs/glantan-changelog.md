@@ -60,3 +60,30 @@ See [review evidence and limitations](glantan-review.md), including reproducible
 - Mark every enemy in red on the minimap, distinguish dormant/awake lairs with red shades, and retain the larger boss-lair diamond. Keep tall building and hero silhouettes selectable and hero labels clear of hats.
 
 Validation: all 92 ordinary suites pass. Browser checks cover the complete visual roster at desktop and 390×844 layouts, hero controls and selection on the mage's hat. [Artwork overview](klockglantan-visual-clarity-1793433554156.jpg) shows all building and hero types together in the development-only review scene.
+
+## Combat roles and necromancy — 2026-10-31
+
+- Add **Skelettmästare**, recruited at the new **Benvalv**. Killed monsters leave visible, inspectable bone piles. Each master raises up to two skeletons at the source monster's level; summons follow, fight, retreat with their master and use no housing. Their master's weak area attack heals only that master and its own skeletons.
+- Give warriors an exclusive choice between **Fanbärare** (+25% nearby group damage) and **Sköldvänner** (nearby group protection). Banners and warm cloaks distinguish the offensive path; broad blue shields and armour distinguish the defensive path.
+- Give rangers an exclusive choice between **Törnpilar** (+40% arrow damage and greater range) and **Fällor**. Longbows and prominent quivers distinguish archers; nets, trap gear and brown equipment distinguish trappers.
+- Trappers walk out to lay at most four traps each, 30–70% along an explored route between village and lair. Each trap catches one ground monster, deals `14 + 6 × ranger level at placement` damage and immobilizes it for 2.8 seconds (1.2 for boss guards). Surviving traps are collected after their lair falls.
+- Replace faint magic bolts with layered cast runes, bright trails, impact rings and sparks, with separate colours for friendly magic, healing, soul magic and enemy spells. Reduced-motion rendering retains clear static attack links and impacts.
+- Win immediately when **Tystnadens hjärta**, the boss lair, is destroyed. Other nests and surviving monsters no longer require cleanup. The HUD, help and boss inspection explain the objective.
+- Select three of five enemy families per map. Eleven monster types, including boss guardians, have distinct silhouettes, level badges and inspectable role descriptions. Flyers cross obstacles and require arrows, magic or towers; warriors, skeletons and ground traps cannot hit them.
+- Upgraded lairs immediately release mixed waves: melee + healer, mushrooms + brood-spawning giant, ranged magic + immobilizer, flying attacks + siege creature, or ranged thorns + armoured escort. Charging, kiting, healing, rooting, building attacks and bounded brood growth give the families different tactics.
+- Give stronger mixed waves time to regroup between attacks. Enemy roots leave a short movement window so multiple binders cannot hold one hero forever.
+- Preserve existing version-two saves and in-progress exercise purchases. Former hammer and scouting branches migrate to Fanbärare and Fällor without losing the held question or partial payment.
+
+Validation: 93 ordinary test suites; 90 deterministic maps; focused ownership, life-drain, trap, flight, support-role and victory checks; controlled boss parties at 10/20/30 combined levels. Browser checks cover both branch appearances, active combat, skeleton inspection, and a complete three-answer necromancer recruitment at 390×844.
+
+Final paid-answer campaign probes (seeds 0–2, one correct answer per 10 seconds):
+
+| Army / difficulty | Wins | Duration | Fallen heroes |
+| --- | ---: | --- | ---: |
+| Necromancer + trapper, easy | 3/3 | 15:34–18:55 | 0 |
+| Standard mixed army, medium | 3/3 | 17:00–20:26 | 0–3 |
+| Larger mixed army + beacon, hard | 3/3 | 26:01–37:02 | 1–15 |
+
+These are deterministic automated strategies, not universal completion times. Hard maps can require resurrection and rebuilding. Reproduce with `node dev/glantan-balance.cjs steady 10 0 1 2`, `node dev/glantan-balance.cjs brave 10 0 1 2`, or `GLANTAN_SPECIALISTS=1 node dev/glantan-balance.cjs gentle 10 0 1 2`.
+
+![Necromancer, branching heroes, mixed monsters and visible magic](klockglantan-combat-1793437747961.jpg)

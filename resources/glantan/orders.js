@@ -140,7 +140,8 @@
       const spec = G.buildings[action.id];
       if (spec.group) { world.choices[spec.group] = action.id; world.landmarkBuilt = true; }
       // Units on a newly built footprint move to its entrance, never get trapped.
-      for (const hero of world.heroes) if (G.alive(hero) && G.footprint(entity, hero.x, hero.y)) Object.assign(hero, G.freeNear(world, entity), { routeKey: '', route: [] });
+      for (const hero of G.allies(world)) if (G.footprint(entity, hero.x, hero.y)) Object.assign(hero, G.freeNear(world, entity), { routeKey: '', route: [] });
+      world.traps = world.traps.filter(trap => !G.footprint(entity, trap.x, trap.y));
       G.effect(world, 'build', entity.x, entity.y, { duration: 1.3, color: spec.color });
     } else if (action.type === 'recruit') entity = G.addHero(world, action.id);
     else if (action.type === 'research') {

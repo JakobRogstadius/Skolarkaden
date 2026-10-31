@@ -93,7 +93,7 @@
       for (const [id, spec] of entries) {
         if (!spec.cost || spec.group) continue;
         const count = this.game.world.buildings.filter(b => b.type === id && G.alive(b)).length;
-        grid.append(this.action({ type: 'build', id }, { spec, detail: id === 'house' ? '+4 platser' : count ? 'Byggt' : { hall: 'Väktare', lodge: 'Spejare', garden: 'Örtvårdare · läker grannar', spire: 'Klangvävare', tower: 'Skjuter på inkräktare' }[id], done: count >= spec.limit }));
+        grid.append(this.action({ type: 'build', id }, { spec, detail: id === 'house' ? '+4 platser' : count ? 'Byggt' : { hall: 'Väktare', lodge: 'Spejare', garden: 'Örtvårdare · läker grannar', spire: 'Klangvävare', crypt: 'Skelettmästare', tower: 'Skjuter på inkräktare' }[id], done: count >= spec.limit }));
       }
       this.panel.append(grid);
       if (this.game.world.research.castle2) {
@@ -127,7 +127,7 @@
       for (const id of ['castle2', 'armor', 'boots']) this.panel.append(this.action({ type: 'research', id }, { spec: G.research[id], detail: G.research[id].description, done: !!w.research[id] }));
       if (!w.research.castle2) return;
       this.panel.append(el('h4', 'g-section-title', 'Vägval · välj ett per par'));
-      for (const [classId, ids] of [['warrior', ['guardian', 'breaker']], ['ranger', ['pathfinder', 'marksman']], ['healer', ['bloom', 'ward']], ['mage', ['echo', 'frost']]]) {
+      for (const [classId, ids] of [['warrior', ['guardian', 'banner']], ['ranger', ['marksman', 'traps']], ['healer', ['bloom', 'ward']], ['mage', ['echo', 'frost']]]) {
         const group = el('div', 'g-tech-branch'); group.append(el('small', 'g-branch-name', G.classes[classId].name));
         for (const id of ids) group.append(this.action({ type: 'research', id }, { spec: G.research[id], detail: G.research[id].description, done: !!w.research[id], small: true }));
         this.panel.append(group);
@@ -170,10 +170,28 @@
         this.live.push(() => { this.panel.querySelector('.g-hero-intent').textContent = hero.task; });
         this.meter(hero.hp, hero.maxHp, 'Liv', () => [hero.hp, hero.maxHp]); this.meter(hero.xp, G.xpFor(hero.level), 'Erfarenhet', () => [hero.xp, G.xpFor(hero.level)]);
         this.panel.append(el('p', 'g-subtitle', spec.role));
+        const branch = w.choices[hero.classId];
+        if (branch && G.research[branch]) this.panel.append(el('p', 'g-subtitle', G.research[branch].name + ' · ' + G.research[branch].description));
+        if (hero.classId === 'necromancer' || hero.classId === 'ranger' && w.research.traps) {
+          const followers = el('p', 'g-subtitle g-followers'); this.panel.append(followers);
+          this.live.push(() => {
+            const skeletons = G.ownedSkeletons(w, hero);
+            followers.textContent = hero.classId === 'necromancer' ? skeletons.length + ' / 2 skelett' + (skeletons.length ? ' · nivå ' + skeletons.map(s => s.level).join(', ') : '') : w.traps.filter(t => t.owner === hero.id).length + ' / 4 fällor utlagda';
+          });
+        }
         const contributions = [hero.kills + ' besegrade', Math.round(hero.healing) + ' läkta liv', hero.scouting + ' upptäckta rutor'];
         this.panel.append(el('p', 'g-contributions', contributions.join(' · ')));
         this.live.push(() => { this.panel.querySelector('.g-contributions').textContent = [hero.kills + ' besegrade', Math.round(hero.healing) + ' läkta liv', hero.scouting + ' upptäckta rutor'].join(' · '); });
         if (!G.alive(hero)) this.panel.append(this.action({ type: 'resurrect', target: hero.id }, { icon: 'revive', detail: 'Erfarenheten finns kvar.' }));
+      } else if (['skeleton', 'corpse', 'trap'].includes(selected.kind)) {
+        const list = selected.kind === 'skeleton' ? w.skeletons : selected.kind === 'corpse' ? w.corpses : w.traps;
+        const entity = list.find(e => e.id === selected.id);
+        if (!entity) { this.heading('Tillbaka i kretsloppet'); return; }
+        const owner = w.heroes.find(h => h.id === entity.owner);
+        this.heading(selected.kind === 'skeleton' ? 'Skelett · nivå ' + entity.level : selected.kind === 'corpse' ? 'Benrester · nivå ' + entity.level : 'Fälla · nivå ' + entity.level,
+          selected.kind === 'corpse' ? 'En skelettmästare kan väcka dessa ben. Skelettet behåller monstrets nivå.' : 'Tillhör ' + (owner?.name || 'gläntan'));
+        if (selected.kind === 'skeleton') this.meter(entity.hp, entity.maxHp, 'Liv', () => [entity.hp, entity.maxHp]);
+        if (selected.kind === 'trap') this.panel.append(el('p', 'g-subtitle', G.trapDamage(entity.level) + ' skada. Fångar ett markmonster i 2,8 sekunder (bossvakter: 1,2). Hämtas när boet röjts.'));
       } else if (selected.kind === 'building') {
         const building = w.buildings.find(b => b.id === selected.id); if (!building) return;
         const spec = G.buildings[building.type]; this.heading(spec.name, spec.description); this.meter(building.hp, building.maxHp, 'Liv', () => [building.hp, building.maxHp]);
@@ -187,14 +205,17 @@
         const isLair = selected.kind === 'lair';
         this.heading(isLair && target.boss ? 'Tystnadens hjärta' : spec.name, isLair ? target.boss ? 'Bossbo · ' + spec.name : spec.description : (target.boss ? 'Bossvakt' : target.guard ? 'Boförsvarare' : 'Anfallare') + ' · nivå ' + (target.rank || 1));
         this.meter(target.hp, target.maxHp, 'Liv', () => [target.hp, target.maxHp]);
+        if (!isLair) this.panel.append(el('p', 'g-subtitle', spec.role));
         if (!G.alive(target)) { this.panel.append(el('p', 'g-hero-intent', 'Här klingar det igen.')); return; }
         if (selected.kind === 'lair') {
           if (target.boss) {
-            const warning = el('p', 'g-boss-warning'); warning.append(icon('crown'), el('span', '', 'Farliga väktare. Samla cirka ' + target.suggestedLevels + ' hjältenivåer.')); this.panel.append(warning);
+            const warning = el('p', 'g-boss-warning'); warning.append(icon('crown'), el('span', '', 'Förstör detta bo för att vinna. Farliga väktare: samla cirka ' + target.suggestedLevels + ' hjältenivåer.')); this.panel.append(warning);
           }
           const timer = el('p', 'g-lair-timer'); this.panel.append(timer);
           this.live.push(() => { timer.textContent = !target.awake ? 'Vaknar om ' + G.clockText(Math.max(0, target.wakeAt - w.time)) : 'Nästa anfall om ' + G.clockText(Math.max(0, target.nextSpawn - w.time)); });
           const guards = el('p', 'g-subtitle'); this.panel.append(guards);
+          const formation = el('p', 'g-subtitle'); this.panel.append(formation);
+          this.live.push(() => { formation.textContent = 'Anfall: ' + G.monsterTypes[spec.monster].name + (target.level >= 2 ? ' + ' : ' · efter tillväxt: + ') + G.monsterTypes[spec.support].name; });
           this.live.push(() => { guards.textContent = w.monsters.filter(m => m.guard && m.lair === target.id && G.alive(m)).length + ' boförsvarare kvar' + (target.awake && target.level < 4 ? ' · ' + (target.type === 'spore' && !target.spread ? 'sprider sig om ' : 'växer om ') + G.clockText(Math.max(0, target.nextGrowth - w.time)) : ''); });
         }
         const bounty = w.bounties.find(b => b.type === 'attack' && b.target === target.id);
@@ -243,7 +264,7 @@
       // Keep buttons mounted while clocks, health and intentions change. Replacing a
       // live panel on a timer steals focus and can discard an in-flight tap.
       const selected = this.selection;
-      const target = selected && [...w.buildings, ...w.lairs, ...w.monsters].find(e => e.id === selected.id);
+      const target = selected && [...w.buildings, ...w.lairs, ...w.monsters, ...w.skeletons, ...w.corpses, ...w.traps].find(e => e.id === selected.id);
       const key = [this.tab, JSON.stringify(selected),
         w.buildings.map(b => b.id + ':' + G.alive(b)).join(','),
         w.heroes.map(h => h.id + ':' + G.alive(h) + ':' + h.level).join(','),

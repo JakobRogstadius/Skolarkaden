@@ -1,7 +1,8 @@
 /* Optional balance probe, separate from fast regression tests.
    node dev/glantan-balance.cjs gentle 10 0 1 2
    node dev/glantan-balance.cjs --boss
-   Arguments: difficulty, seconds per answer, one or more map seeds. */
+   Arguments: difficulty, seconds per answer, one or more map seeds.
+   GLANTAN_SPECIALISTS=1 exercises the necromancer and trapper composition. */
 'use strict';
 const { runtime } = require('../tests/games/glantan/helpers.cjs');
 if (process.argv[2] === '--boss') {
@@ -37,7 +38,14 @@ const [pace = 'gentle', intervalText = '10', ...requestedSeeds] = process.argv.s
 const seconds = Number(intervalText), seeds = requestedSeeds.length ? requestedSeeds : ['0', '1', '2'];
 if (!['gentle', 'steady', 'brave'].includes(pace) || !(seconds >= 1 && seconds <= 60)) throw Error('Use gentle/steady/brave and 1–60 seconds per answer.');
 const { G, SC } = runtime(true);
-const plan = [['build', 'hall'], ['recruit', 'warrior'], ['build', 'lodge'], ['recruit', 'ranger'], ['build', 'garden'], ['recruit', 'healer'], ['build', 'tower'], ['build', 'house'], ['build', 'spire'], ['recruit', 'mage'], ['build', 'tower'], ['attack', 'nearest'], ['recruit', 'warrior'], ['recruit', 'warrior'], ['recruit', 'ranger'], ['recruit', 'healer'], ['research', 'armor'], ['research', 'boots'], ['research', 'castle2'], ['research', 'breaker'], ['research', 'marksman'], ['research', 'bloom']];
+const plan = [['build', 'hall'], ['recruit', 'warrior'], ['build', 'lodge'], ['recruit', 'ranger'], ['build', 'garden'], ['recruit', 'healer'], ['build', 'tower'], ['build', 'house'], ['build', 'spire'], ['recruit', 'mage'], ['build', 'tower'], ['attack', 'nearest'], ['recruit', 'warrior'], ['recruit', 'warrior'], ['recruit', 'ranger'], ['recruit', 'healer'], ['research', 'armor'], ['research', 'boots'], ['research', 'castle2'], ['research', 'banner'], ['research', 'marksman'], ['research', 'bloom']];
+if (process.env.GLANTAN_SPECIALISTS) {
+  plan[plan.findIndex(action => action[1] === 'marksman')][1] = 'traps';
+  const at = plan.findIndex(action => action[0] === 'recruit' && action[1] === 'mage');
+  plan.splice(at + 1, 0, ['build', 'crypt'], ['recruit', 'necromancer']);
+  // Keep the same eight-person budget, replacing one duplicate frontline fighter.
+  plan.splice(plan.findLastIndex(action => action[0] === 'recruit' && action[1] === 'warrior'), 1);
+}
 if (pace === 'brave') plan.splice(plan.findIndex(action => action[0] === 'research'), 0,
   ['build', 'house'], ['recruit', 'warrior'], ['recruit', 'healer'], ['recruit', 'mage'], ['recruit', 'ranger'],
   ['build', 'tower'], ['build', 'tower'], ['guard', 'village']);

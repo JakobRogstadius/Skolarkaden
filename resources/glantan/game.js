@@ -11,6 +11,7 @@
       const scale = G.profiles[options.pace]?.mapScale;
       if (w.width !== 36 * scale || w.height !== 28 * scale || !Array.isArray(w.terrain) || w.terrain.length !== w.width * w.height || !Array.isArray(w.explored) || w.explored.length !== w.terrain.length || !Array.isArray(w.heroes) || !Array.isArray(w.buildings) || !Array.isArray(w.lairs) || !w.buildings.some(b => b.type === 'castle' && b.hp > 0)) return null;
       if (w.heroes.some(h => !G.classes[h.classId]) || w.lairs.some(l => !G.lairTypes[l.type])) return null;
+      if (saved.pending?.type === 'research') saved.pending.id = ({ breaker: 'banner', pathfinder: 'traps' })[saved.pending.id] || saved.pending.id;
       return saved;
     } catch (_) { return null; }
   }

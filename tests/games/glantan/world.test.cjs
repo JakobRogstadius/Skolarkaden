@@ -10,6 +10,7 @@ for (const pace of ['gentle', 'steady', 'brave']) for (let seed = 0; seed < 30; 
   assert.deepEqual([a.width, a.height], sizes[pace].slice(0, 2), 'both dimensions grow by the requested percentage');
   assert.equal(a.lairs.filter(l => l.boss).length, 1, 'exactly one boss lair');
   assert.equal(a.lairs.find(l => l.boss).suggestedLevels, sizes[pace][2]);
+  assert.equal(new Set(a.lairs.map(l => l.type)).size, 3, 'a map contains three of the five enemy families');
   for (const type of [2, 4, 5]) assert(a.terrain.filter(tile => tile === type).length > 30, 'coherent water, mountain and forest obstacles');
   const entrance = G.freeNear(a, G.castle(a));
   if (seed === 0) {
