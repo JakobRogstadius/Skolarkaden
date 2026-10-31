@@ -37,7 +37,7 @@
   };
   G.addLair = function(world, site, wakeAt) {
     const tier = site.tier || 1, hp = G.lairHitPoints ? G.lairHitPoints(site, world.pace) : 100 + tier * tier * 70;
-    const lair = { id: world.nextId++, ...site, w: 2, h: 2, x: site.tx + 1, y: site.ty + 1, hp, maxHp: hp, tier, level: 1, wakeAt, awake: wakeAt <= world.time, seen: false, nextSpawn: wakeAt + 32, nextGrowth: wakeAt + G.lairTypes[site.type].interval * G.profiles[world.pace].growth, warned: false, spread: false, born: world.time };
+    const lair = { id: world.nextId++, ...site, w: 2, h: 2, x: site.tx + 1, y: site.ty + 1, hp, maxHp: hp, tier, level: 1, guardCount: site.boss ? G.profiles[world.pace].bossGuardCount : 2, nextGuardAt: world.time + 30, wakeAt, awake: wakeAt <= world.time, seen: false, nextSpawn: wakeAt + 32, nextGrowth: wakeAt + G.lairTypes[site.type].interval * G.profiles[world.pace].growth, warned: false, spread: false, born: world.time };
     world.lairs.push(lair); world.navRevision++; world.revision++;
     G.seedLairGuards(world, lair);
     return lair;
@@ -79,7 +79,6 @@
   };
   G.damage = function(world, target, amount, attacker) {
     if (world.outcome || !target || !G.alive(target) || attacker && !G.canHit(attacker, target)) return 0;
-    if (target.wakeAt !== undefined && !target.defendersRaised) G.alertLair(world, target);
     if (target.classId || target.skeleton) {
       if (target.shieldUntil > world.time) amount *= 0.65;
       if (world.research.guardian && world.heroes.some(h => G.alive(h) && h.classId === 'warrior' && G.distance(h, target) < 2.8 && G.clearLine(world, h, target))) amount *= 0.78;
@@ -87,7 +86,10 @@
     if (target.monster && world.monsters.some(m => m !== target && G.alive(m) && G.monsterTypes[m.type].ward && G.distance(m, target) < 3 && G.attackLine(world, m, target))) amount *= .75;
     const dealt = Math.min(target.hp, Math.max(0, amount));
     target.hp = Math.max(0, target.hp - amount); target.hurtAt = world.time;
-    if (target.hp > 0) return dealt;
+    if (target.hp > 0) {
+      if (target.wakeAt !== undefined && !target.defendersRaised) G.alertLair(world, target);
+      return dealt;
+    }
     if (target.classId) {
       world.fallen++; target.task = 'Vilar'; target.expedition = null; target.route = []; target.diedAt = world.time;
       G.notify(world, target.name + ' föll. Kan återkallas.', 'warn');
@@ -111,6 +113,7 @@
       if (attacker?.classId) attacker.kills++;
     } else if (target.wakeAt !== undefined) {
       world.destroyed++; world.navRevision++;
+      if (!target.boss) G.launchWave(world, target);
       G.notify(world, G.lairTypes[target.type].name + ' tystnade. Gläntan växer.', 'good');
       G.soundEvent(world, 'lair-down', target, true);
       for (const hero of world.heroes) if (G.alive(hero) && G.distance(hero, target) < 9) G.gainXp(world, hero, 25 + target.tier * 10);
@@ -166,6 +169,11 @@
       const w = this.world;
       // Additive save migration preserves heroes, purchases and paid answer streaks.
       w.skeletons ||= []; w.corpses ||= []; w.traps ||= [];
+      for (const lair of w.lairs) {
+        // Existing runs retain their original two-guard garrisons and map layout.
+        lair.guardCount ??= 2;
+        lair.nextGuardAt ??= w.time + 30;
+      }
       for (const [old, current] of [['breaker', 'banner'], ['pathfinder', 'traps']]) {
         if (w.research[old]) { w.research[current] = true; delete w.research[old]; }
         for (const group of ['warrior', 'ranger']) if (w.choices[group] === old) w.choices[group] = current;

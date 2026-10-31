@@ -10,7 +10,7 @@
   G.threat = (w, target) => (target.wakeAt !== undefined ? 35 + target.hp * 0.13 + target.tier * 12 : 15) + w.monsters.filter(m => G.alive(m) && (G.distance(m, target) < 6 || m.guard && m.lair === target.id)).reduce((n, m) => n + m.hp * 0.18 + G.monsterDamage(w, m), 0);
   G.bountyTarget = (w, bounty) => bounty.type === 'attack' ? [...w.lairs, ...w.monsters].find(t => t.id === bounty.target && G.alive(t)) : bounty;
   G.bossDemand = (w, lair) => lair.suggestedLevels * (0.25 + 0.75 * Math.min(1,
-    w.monsters.filter(m => G.alive(m) && m.guard && m.lair === lair.id).reduce((n, m) => n + m.hp, 0) / (2 * G.bossGuards[w.pace].hp)));
+    w.monsters.filter(m => G.alive(m) && m.guard && m.lair === lair.id).reduce((n, m) => n + m.hp, 0) / (lair.guardCount * G.bossGuards[w.pace].hp)));
   G.expeditionReadiness = function(w, expedition) {
     const bounty = w.bounties.find(b => b.id === expedition.bounty);
     const target = bounty && G.bountyTarget(w, bounty);

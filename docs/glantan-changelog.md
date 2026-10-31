@@ -87,3 +87,29 @@ Final paid-answer campaign probes (seeds 0–2, one correct answer per 10 second
 These are deterministic automated strategies, not universal completion times. Hard maps can require resurrection and rebuilding. Reproduce with `node dev/glantan-balance.cjs steady 10 0 1 2`, `node dev/glantan-balance.cjs brave 10 0 1 2`, or `GLANTAN_SPECIALISTS=1 node dev/glantan-balance.cjs gentle 10 0 1 2`.
 
 ![Necromancer, branching heroes, mixed monsters and visible magic](klockglantan-combat-1793437747961.jpg)
+
+## Lair waves and replenishing guardians — 2026-10-31
+
+- Lair levels 1–4 now send respectively **2 basic**, **3 basic**, **4 basic + 1 advanced**, and **5 basic + 2 advanced** monsters. Tier-three lairs add one basic monster to every wave. Family descriptions and the inspection panel show that advanced units arrive at level three.
+- Destroying an ordinary lair releases one final wave at its current level and tier. A lethal opening hit does not also release an awakening wave. Destroying the boss still wins immediately without releasing monsters. If the monster cap is full, the final wave's remaining members wait for free slots and survive save/resume.
+- Living lairs check every 30 seconds and replace missing guardians up to their initial garrison size, even while dormant. Surviving guards are neither healed nor replaced. Replacement ordinary guards use the lair's current strength; ruined lairs never replenish.
+- New games start with **5/7/9 lairs**, including the boss, and **1/2/3 boss guardians** on easy/medium/hard. Ordinary lairs retain two guards. The easy boss remains tier three. Reserve enough monster slots for all hard-mode garrisons and the two possible spreading nests.
+- Boss expedition readiness now accounts for the actual initial guardian count. The hard boss warning explains the armour, banner and group-healing preparation behind its roughly 30-level recommendation.
+- Lair inspection shows exact wave composition, current/maximum guardians, the replenishment countdown when guards are missing, and a warning about the final wave.
+- Existing saved maps and their original garrison sizes are preserved; start a new game to receive the new initial lair and boss-guardian counts. Wave and replenishment rules also apply to resumed games. Wave intervals, growth timers and per-monster difficulty stats are unchanged.
+
+Validation: **93/93 ordinary suites passed**, including 90 seeded maps, every family/tier/level wave composition, dormant and awake replenishment, no overfilling or survivor healing, destruction-wave cap handling, boss victory, and saved timers/queues. Browser checks covered 1/2/3 boss garrisons and desktop/mobile lair inspection. The six controlled boss probes passed; the hard target-level party uses armour, banners and group healing. The same 30-level hard party without those upgrades failed in an exploratory probe.
+
+The requested changes materially increase medium/hard pressure. Paid-answer campaign probes on seed 0, using the existing fixed strategy:
+
+| Difficulty | Seconds per correct answer | Outcome | Game time | Fallen heroes |
+| --- | ---: | --- | ---: | ---: |
+| Easy | 10 | Won | 14:55 | 2 |
+| Medium | 10 | Lost | 15:57 | 12 |
+| Hard | 10 | Lost | 18:08 | 17 |
+| Medium | 5 | Won | 9:10 | 1 |
+| Hard | 5 | Won | 39:24 | 32 |
+
+These are limited automated balance probes, not general win-rate estimates or required answer speeds. They supersede the earlier campaign results above for the new rules. Reproduce with `node dev/glantan-balance.cjs <gentle|steady|brave> <5|10> 0`; use `--boss` for the controlled encounters.
+
+![Level-four lair wave composition and guardian replenishment](klockglantan-lair-waves-1793470188315.jpg)

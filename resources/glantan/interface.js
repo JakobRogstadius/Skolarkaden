@@ -209,14 +209,21 @@
         if (!G.alive(target)) { this.panel.append(el('p', 'g-hero-intent', 'Här klingar det igen.')); return; }
         if (selected.kind === 'lair') {
           if (target.boss) {
-            const warning = el('p', 'g-boss-warning'); warning.append(icon('crown'), el('span', '', 'Förstör detta bo för att vinna. Farliga väktare: samla cirka ' + target.suggestedLevels + ' hjältenivåer.')); this.panel.append(warning);
+            const warning = el('p', 'g-boss-warning'); warning.append(icon('crown'), el('span', '', 'Förstör detta bo för att vinna. Farliga väktare: samla cirka ' + target.suggestedLevels + ' hjältenivåer' + (w.pace === 'brave' ? ' med rustning, fanor och gruppläkning.' : '.'))); this.panel.append(warning);
           }
           const timer = el('p', 'g-lair-timer'); this.panel.append(timer);
           this.live.push(() => { timer.textContent = !target.awake ? 'Vaknar om ' + G.clockText(Math.max(0, target.wakeAt - w.time)) : 'Nästa anfall om ' + G.clockText(Math.max(0, target.nextSpawn - w.time)); });
           const guards = el('p', 'g-subtitle'); this.panel.append(guards);
           const formation = el('p', 'g-subtitle'); this.panel.append(formation);
-          this.live.push(() => { formation.textContent = 'Anfall: ' + G.monsterTypes[spec.monster].name + (target.level >= 2 ? ' + ' : ' · efter tillväxt: + ') + G.monsterTypes[spec.support].name; });
-          this.live.push(() => { guards.textContent = w.monsters.filter(m => m.guard && m.lair === target.id && G.alive(m)).length + ' boförsvarare kvar' + (target.awake && target.level < 4 ? ' · ' + (target.type === 'spore' && !target.spread ? 'sprider sig om ' : 'växer om ') + G.clockText(Math.max(0, target.nextGrowth - w.time)) : ''); });
+          this.live.push(() => {
+            const wave = G.lairWave(target);
+            formation.textContent = 'Nivå ' + target.level + ' · anfall: ' + wave.basic + ' × ' + G.monsterTypes[spec.monster].name + (wave.advanced ? ' + ' + wave.advanced + ' × ' + G.monsterTypes[spec.support].name : ' · från nivå 3: ' + G.monsterTypes[spec.support].name);
+          });
+          this.live.push(() => {
+            const count = w.monsters.filter(m => m.guard && m.lair === target.id && G.alive(m)).length;
+            guards.textContent = count + '/' + target.guardCount + ' boförsvarare' + (count < target.guardCount ? ' · fylls på om ' + G.clockText(Math.max(0, target.nextGuardAt - w.time)) : '') + (target.awake && target.level < 4 ? ' · ' + (target.type === 'spore' && !target.spread ? 'sprider sig om ' : 'växer om ') + G.clockText(Math.max(0, target.nextGrowth - w.time)) : '');
+          });
+          if (!target.boss) this.panel.append(el('p', 'g-subtitle', 'Släpper ut ett sista anfall när boet förstörs.'));
         }
         const bounty = w.bounties.find(b => b.type === 'attack' && b.target === target.id);
         if (bounty) {

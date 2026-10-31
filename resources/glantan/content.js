@@ -5,13 +5,13 @@
   G.VERSION = 2;
   G.STEP = 0.1;
   G.POPULATION_LIMIT = 24;
-  G.MAX_MONSTERS = 84;
+  G.MAX_MONSTERS = 87; // 64 raiders + 23 guards across nine hard-mode lairs and two spreading nests.
   G.MAX_RAIDERS = 64;
   G.MAX_CORPSES = 128;
   G.profiles = {
-    gentle: { lairs: 6, mapScale: 2, firstWake: 120, wake: 105, spawn: 1.32, damage: 0.72, growth: 1.3, bossLevels: 10 },
-    steady: { lairs: 7, mapScale: 2.5, firstWake: 105, wake: 88, spawn: 1, damage: 1, growth: 1, bossLevels: 20 },
-    brave: { lairs: 8, mapScale: 3, firstWake: 90, wake: 78, spawn: 0.84, damage: 1.22, growth: 0.9, bossLevels: 30 }
+    gentle: { lairs: 5, mapScale: 2, firstWake: 120, wake: 105, spawn: 1.32, damage: 0.72, growth: 1.3, bossLevels: 10, bossGuardCount: 1 },
+    steady: { lairs: 7, mapScale: 2.5, firstWake: 105, wake: 88, spawn: 1, damage: 1, growth: 1, bossLevels: 20, bossGuardCount: 2 },
+    brave: { lairs: 9, mapScale: 3, firstWake: 90, wake: 78, spawn: 0.84, damage: 1.22, growth: 0.9, bossLevels: 30, bossGuardCount: 3 }
   };
   G.classes = {
     warrior: { name: 'Väktare', role: 'Skyddar andra i närstrid.', color: '#ecb85a', icon: 'shield', guild: 'hall', cost: 2, hp: 125, damage: 14, range: 1.1, speed: 1.5, cooldown: 1.05, courage: 1.2 },
@@ -47,11 +47,11 @@
     mastery: { name: 'Den åttonde tonen', icon: 'star', cost: 8, building: 'spire', requires: 'castle2', group: 'landmark', description: 'Unik. Klangvävare på nivå 5 får en mäktig gruppattack.' }
   };
   G.lairTypes = {
-    rust: { name: 'Skrammelbo', monster: 'rattler', support: 'mender', color: '#bd7350', icon: 'gear', description: 'Rusande skramlare. Efter uppgradering får de skrotläkare bakom fronten.', interval: 175 },
-    spore: { name: 'Sporkupa', monster: 'sporeling', support: 'broodcap', color: '#c582aa', icon: 'spore', description: 'Små fnyslingar. Uppgraderade bon skickar jättesvampar som odlar fler i strid.', interval: 205 },
-    hush: { name: 'Tystnadskvarn', monster: 'husher', support: 'binder', color: '#858fb2', icon: 'moon', description: 'Magiker på avstånd. Rotbindare låser deras mål när boet växer.', interval: 190 },
-    sky: { name: 'Vindnäste', monster: 'nightwing', support: 'siegebreaker', color: '#81b4c6', icon: 'wing', description: 'Flygare kräver avståndsattacker. Murknäckare följer efter när boet växer.', interval: 185 },
-    thorn: { name: 'Törnsnår', monster: 'thornling', support: 'bulwark', color: '#a1ab6e', icon: 'bow', description: 'Taggskyttar håller avstånd. Skalväktare skyddar dem efter uppgradering.', interval: 180 }
+    rust: { name: 'Skrammelbo', monster: 'rattler', support: 'mender', color: '#bd7350', icon: 'gear', description: 'Rusande skramlare. Från nivå 3 får de skrotläkare bakom fronten.', interval: 175 },
+    spore: { name: 'Sporkupa', monster: 'sporeling', support: 'broodcap', color: '#c582aa', icon: 'spore', description: 'Små fnyslingar. Från nivå 3 följer jättesvampar som odlar fler i strid.', interval: 205 },
+    hush: { name: 'Tystnadskvarn', monster: 'husher', support: 'binder', color: '#858fb2', icon: 'moon', description: 'Magiker på avstånd. Från nivå 3 låser rotbindare deras mål.', interval: 190 },
+    sky: { name: 'Vindnäste', monster: 'nightwing', support: 'siegebreaker', color: '#81b4c6', icon: 'wing', description: 'Flygare kräver avståndsattacker. Från nivå 3 följer murknäckare.', interval: 185 },
+    thorn: { name: 'Törnsnår', monster: 'thornling', support: 'bulwark', color: '#a1ab6e', icon: 'bow', description: 'Taggskyttar håller avstånd. Från nivå 3 skyddas de av skalväktare.', interval: 180 }
   };
   G.monsterTypes = {
     rattler: { name: 'Skramlare', role: 'Närstrid. Rusar den sista biten mot sitt mål.', hp: 39, damage: 7, speed: 1.15, range: 0.9, cooldown: 1.4, color: '#c98150', xp: 10, rush: true },
@@ -67,8 +67,9 @@
     guardian: { name: 'Klockväktare', role: 'Bossvakt med tung närstridsattack. Lämnar inte sitt bo.', hp: 230, damage: 35, speed: 1.12, range: 1.35, cooldown: 1.55, color: '#9b647e', xp: 55 }
   };
   // Guardians are present from birth. Awakening releases separate raiding parties.
-  G.lairGuards = lair => lair.boss ? ['guardian', 'guardian'] : [G.lairTypes[lair.type].monster, G.lairTypes[lair.type].monster];
-  // Balanced parties at 10/20/30 total levels can clear these fixed guardians.
+  G.lairGuards = lair => Array(lair.guardCount).fill(lair.boss ? 'guardian' : G.lairTypes[lair.type].monster);
+  G.lairWave = lair => ({ basic: lair.level + 1 + (lair.tier === 3 ? 1 : 0), advanced: Math.max(0, lair.level - 2) });
+  // Per-guardian stats; difficulty also controls their number.
   // Use dev/glantan-balance.cjs --boss when changing combat or retreat rules.
   G.bossGuards = { gentle: { hp: 230, damage: 35 }, steady: { hp: 360, damage: 43 }, brave: { hp: 500, damage: 50 } };
   G.lairHitPoints = (site, pace) => site.boss ? { gentle: 550, steady: 850, brave: 1150 }[pace] : 100 + (site.tier || 1) ** 2 * 70;

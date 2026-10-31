@@ -7,14 +7,15 @@
 const { runtime } = require('../tests/games/glantan/helpers.cjs');
 if (process.argv[2] === '--boss') {
   const { G } = runtime();
-  // Controlled open arena isolates the permanent guardians from travel, waves
-  // and research. Normal retreat, healing and expedition decisions still run.
-  for (const [pace, levels] of [['gentle', [3, 3, 2, 2]], ['gentle', [2, 1, 1, 1]], ['steady', [5, 5, 5, 5]], ['steady', [3, 3, 2, 2]], ['brave', [5, 5, 5, 5, 5, 5]], ['brave', [3, 3, 3, 2, 2, 2]]]) {
+  // Controlled arena isolates replenishing guardians from travel and raid waves.
+  // Three hard-mode guards require the ordinary late-game combat upgrades.
+  for (const [pace, levels, upgraded = false] of [['gentle', [3, 3, 2, 2]], ['gentle', [2, 1, 1, 1]], ['steady', [5, 5, 5, 5]], ['steady', [3, 3, 2, 2]], ['brave', [5, 5, 5, 5, 5, 5], true], ['brave', [3, 3, 3, 2, 2, 2], true]]) {
     const w = G.createMap('boss-probe', pace);
     w.terrain.fill(0); w.paths.fill(0); w.explored.fill(1); delete w.lairSites;
     G.addBuilding(w, 'castle', 4, 4); G.addBuilding(w, 'house', 7, 7);
     const lair = G.addLair(w, { tx: 20, ty: 14, type: 'hush', tier: 3, boss: true, suggestedLevels: G.profiles[pace].bossLevels }, 1e6);
     lair.awake = lair.defendersRaised = true; lair.nextSpawn = lair.nextGrowth = 1e6;
+    if (upgraded) Object.assign(w.research, { armor: true, banner: true, bloom: true });
     const roles = levels.length === 6 ? ['warrior', 'warrior', 'warrior', 'healer', 'healer', 'mage'] : ['warrior', 'warrior', 'healer', 'ranger'];
     const heroes = levels.map((level, i) => {
       const hero = G.addHero(w, roles[i]); hero.level = level; hero.trait = 2;
@@ -24,12 +25,12 @@ if (process.argv[2] === '--boss') {
     });
     w.bounties = [{ id: 999, type: 'attack', level: 3, target: lair.id, x: lair.x, y: lair.y, created: 0 }];
     w.expeditions = [{ id: 1000, bounty: 999, members: heroes.map(h => h.id), state: 'march', created: 0, progressAt: 0, targetHp: lair.hp, x: lair.x - 4, y: lair.y }];
-    w.monsters.forEach((monster, i) => { monster.x = lair.x - 2; monster.y = lair.y + (i ? 1.4 : -1.4); });
+    w.monsters.forEach((monster, i) => { monster.x = lair.x - 2; monster.y = lair.y + (i - (w.monsters.length - 1) / 2) * 2.8; });
     const simulation = new G.Simulation({ saved: w });
     for (let step = 0; step < 6000 && G.alive(lair); step++) simulation.update(.1);
     const combined = levels.reduce((sum, level) => sum + level, 0), atTarget = combined >= lair.suggestedLevels;
     const passed = atTarget ? !G.alive(lair) && !w.fallen : G.alive(lair) && !w.fallen;
-    console.log(JSON.stringify({ pace, combined, recommended: lair.suggestedLevels, cleared: !G.alive(lair), seconds: Math.round(w.time), fallen: w.fallen, passed }));
+    console.log(JSON.stringify({ pace, combined, upgraded, recommended: lair.suggestedLevels, cleared: !G.alive(lair), seconds: Math.round(w.time), fallen: w.fallen, passed }));
     if (!passed) process.exitCode = 1;
   }
   return;

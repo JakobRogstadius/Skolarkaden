@@ -173,7 +173,7 @@
         const score = Math.hypot(xx, yy) + obstruction * 0.8;
         if (score < bestScore) { bestScore = score; best = { tx, ty }; }
       }
-      const site = { ...best, type: w.families[i % w.families.length], tier: i < 2 ? 1 : i < 5 ? 2 : 3, boss, suggestedLevels: boss ? profile.bossLevels || { gentle: 10, steady: 20, brave: 30 }[pace] : undefined };
+      const site = { ...best, type: w.families[i % w.families.length], tier: boss || i >= 5 ? 3 : i < 2 ? 1 : 2, boss, suggestedLevels: boss ? profile.bossLevels || { gentle: 10, steady: 20, brave: 30 }[pace] : undefined };
       w.lairSites.push(site); clear(w, site.tx + 0.5, site.ty + 0.5, boss ? 5.2 : 3.1);
     }
     let reached = reachableTerrain(w);
