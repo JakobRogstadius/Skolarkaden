@@ -50,3 +50,13 @@ See [review evidence and limitations](glantan-review.md), including reproducible
 - Add an original, quiet woodland theme for soft strings and harp, with a seamless 40-second stereo loop and a gentle fade-in.
 - Keep music below exercise feedback; use the existing sound toggle and speech ducking. Pause, backgrounding and game outcomes stop the music, while resume continues the phrase.
 - Render locally and cache one music buffer per shared AudioContext, with no downloads, extra playback timers or changes to game balance and saves.
+
+## Visual clarity — 2026-10-31
+
+- Give the nine buildings distinct silhouettes and functional equipment: a fortified shield gatehouse, archery target, herb clinic, violet tuning-fork tower, mounted crossbow, sun lantern and domed bell-tree glasshouse.
+- Differentiate all four heroes with stronger outlines and equipment. Healers wear white bonnets and aprons with green medical crosses and carry medicine bags; mages wear pointed violet hats and carry luminous tuning-fork staffs.
+- Match guild and hero colours in the action buttons. Use the same healing symbol on the clinic, healer equipment and recruitment controls.
+- Increase terrain, architecture and control contrast while retaining the woodland palette; reduce the dark edge vignette.
+- Mark every enemy in red on the minimap, distinguish dormant/awake lairs with red shades, and retain the larger boss-lair diamond. Keep tall building and hero silhouettes selectable and hero labels clear of hats.
+
+Validation: all 92 ordinary suites pass. Browser checks cover the complete visual roster at desktop and 390×844 layouts, hero controls and selection on the mage's hat. [Artwork overview](klockglantan-visual-clarity-1793433554156.jpg) shows all building and hero types together in the development-only review scene.

@@ -125,14 +125,14 @@
         if (this.game.choose(action)) { this.blueprint = null; this.selection = null; }
         this.ui.questionKey = ''; this.ui.update(); return;
       }
-      const hero = [...w.heroes].filter(G.alive).sort((a, b) => G.distance(a, point) - G.distance(b, point)).find(h => Math.hypot(h.x - point.x, h.y - 0.25 - point.y) < 0.6 / Math.min(1, this.camera.zoom));
+      const hero = [...w.heroes].filter(G.alive).sort((a, b) => G.distance(a, point) - G.distance(b, point)).find(h => Math.hypot(h.x - point.x, h.y - 0.25 - point.y) < 0.6 / Math.min(1, this.camera.zoom) || Math.abs(h.x - point.x) < .28 && point.y > h.y - (h.classId === 'mage' ? 1.05 : .9) && point.y < h.y);
       if (hero) { this.ui.inspect({ kind: 'hero', id: hero.id }); return; }
       // Visible silhouettes stay clickable even when their upper pixels, or a
       // discovered lair's centre, extend into an unrevealed tile.
       const monster = w.monsters.filter(m => G.alive(m) && w.explored[G.index(w, m.x, m.y)]).sort((a, b) => b.y - a.y).find(m => Math.abs(m.x - point.x) < 0.43 * A.monsterScale(m) && point.y > m.y - (m.boss ? 1.1 : 0.65) * A.monsterScale(m) && point.y < m.y + 0.35);
       if (monster) { this.ui.inspect({ kind: 'monster', id: monster.id }); return; }
       const buildings = w.buildings.filter(b => G.footprint(b, point.x, point.y) ||
-        G.alive(b) && Math.abs(point.x - b.x) < b.w * .38 && point.y > b.y - (b.type === 'castle' ? 1.9 : b.type === 'spire' ? 1.8 : 1.4) && point.y < b.y + .4);
+        G.alive(b) && Math.abs(point.x - b.x) < b.w * .38 && point.y > b.y - (b.type === 'castle' ? 1.9 : ['spire', 'beacon'].includes(b.type) ? 1.8 : 1.4) && point.y < b.y + .4);
       const building = buildings.find(G.alive) || buildings.at(-1);
       if (building) { this.ui.inspect({ kind: 'building', id: building.id }); return; }
       const lair = w.lairs.find(b => b.seen && (G.footprint(b, point.x, point.y) || G.alive(b) && Math.abs(point.x - b.x) < 0.85 && point.y > b.y - (b.boss ? 2.15 : 1.6) && point.y < b.y + .4));
@@ -252,7 +252,7 @@
         A[type](c, value, w, time);
         const selected = this.selection?.id === value.id;
         if (G.alive(value) && (selected || value.hp < value.maxHp * 0.98)) this.drawBar(value, type === 'building' || type === 'lair' ? 29 : 8, type === 'monster' || type === 'lair' ? '#e7aa8d' : '#c7e2a6');
-        if (type === 'hero' && selected) { c.font = 'bold 12px Trebuchet MS'; c.textAlign = 'center'; c.fillStyle = '#fdf1c8'; c.strokeStyle = '#284335'; c.lineWidth = 3; c.strokeText(value.name, value.x * T, value.y * T - 48); c.fillText(value.name, value.x * T, value.y * T - 48); }
+        if (type === 'hero' && selected) { const y = value.y * T - (value.classId === 'mage' ? 66 : 57); c.font = 'bold 12px Trebuchet MS'; c.textAlign = 'center'; c.fillStyle = '#fff1ce'; c.strokeStyle = '#20372e'; c.lineWidth = 3; c.strokeText(value.name, value.x * T, y); c.fillText(value.name, value.x * T, y); }
       }
       this.drawFlags(); this.drawBlueprint(); this.drawEffects();
       if (!this.reduced) for (let i = 0; i < 14; i++) {
@@ -262,7 +262,7 @@
       }
       c.restore();
       const vignette = c.createRadialGradient(this.width / 2, this.height / 2, this.width * 0.2, this.width / 2, this.height / 2, this.width * 0.8);
-      vignette.addColorStop(0, '#19392f00'); vignette.addColorStop(1, '#19392f60'); c.fillStyle = vignette; c.fillRect(0, 0, this.width, this.height);
+      vignette.addColorStop(0, '#19392f00'); vignette.addColorStop(1, '#19392f38'); c.fillStyle = vignette; c.fillRect(0, 0, this.width, this.height);
       this.drawMinimap();
     }
     drawMinimap() {
@@ -279,10 +279,14 @@
       for (const l of w.lairs) if (G.alive(l) && l.seen) {
         if (l.boss) {
           A.polygon(c, [[l.x * sx, l.y * sy - 5], [l.x * sx + 5, l.y * sy], [l.x * sx, l.y * sy + 5], [l.x * sx - 5, l.y * sy]], '#ffe0a7');
-          mark(l, '#8b4459', 2.3);
-        } else mark(l, l.awake ? '#f1a591' : '#c3b0d8', 2.5);
+          mark(l, '#c51e30', 2.8);
+        } else {
+          mark(l, '#431e25', 3.2); mark(l, l.awake ? '#ff3545' : '#b82b3c', 2.5);
+        }
       }
-      for (const m of w.monsters) if (G.alive(m) && w.explored[G.index(w, m.x, m.y)]) mark(m, m.boss ? '#f4a9cb' : '#ef9078', m.boss ? 1.8 : 1);
+      for (const m of w.monsters) if (G.alive(m) && w.explored[G.index(w, m.x, m.y)]) {
+        const radius = m.boss ? 2 : 1.4; mark(m, '#431e25', radius + .6); mark(m, '#ff3545', radius);
+      }
       for (const h of w.heroes) if (G.alive(h)) mark(h, '#fff0bf', 1.3);
       mark(G.castle(w), '#fff1bb', 3);
       c.strokeStyle = '#fff3c9'; c.lineWidth = 1;
