@@ -29,14 +29,14 @@ function bones(w, x, y, level) {
   assert.equal(w.corpses.length, 0, 'raising consumes exactly one corpse');
   bones(w, 18, 15, 2); bones(w, 17, 16, 3);
   assert.equal(G.raiseSkeleton(w, necro), null, 'summoning has a real cooldown');
-  w.time += 3; assert(G.raiseSkeleton(w, necro)); w.time += 3;
-  assert.equal(G.raiseSkeleton(w, necro), null, 'two living skeletons per master');
-  assert.equal(w.corpses.length, 1, 'a full master leaves spare remains intact');
+  w.time += 3;
+  assert.equal(G.raiseSkeleton(w, necro), null, 'one living skeleton per master');
+  assert.equal(w.corpses.length, 2, 'a full master leaves spare remains intact');
   const other = hero(w, 'necromancer'); assert(G.raiseSkeleton(w, other), 'another master can use the remaining corpse');
   assert.equal(G.ownedSkeletons(w, other).length, 1);
   assert.equal(G.population(w), 2, 'skeletons do not consume housing');
   const kills = w.kills; G.damage(w, first, 999, monster);
-  assert.equal(w.corpses.length, 0, 'dead summoned skeletons cannot be raised recursively'); assert.equal(w.kills, kills);
+  assert.equal(w.corpses.length, 1, 'dead summoned skeletons cannot be raised recursively'); assert.equal(w.kills, kills);
   bones(w, 17, 15, 1); assert(G.raiseSkeleton(w, necro), 'a dead minion frees its slot');
   G.damage(w, necro, 999, monster);
   assert.equal(G.ownedSkeletons(w, necro).length, 0, 'fallen master releases its own summons');
@@ -165,4 +165,66 @@ for (const type of Object.keys(G.lairTypes)) for (const tier of [1, 2, 3]) {
   for (let i = 0; i < G.MAX_CORPSES + 10; i++) G.damage(w, enemy(w, lair), 1000);
   assert.equal(w.corpses.length, G.MAX_CORPSES, 'long campaigns keep a bounded, useful supply of remains');
 }
-console.log('tactics: necromancy, exclusive branches, auras, traps, flight, mixed waves, support roles, boss victory and save migration');
+{
+  const { w, lair } = arena(), healer = hero(w, 'healer'), foe = enemy(w, lair, 'rattler', 18, 15);
+  w.time = 1; foe.targetId = healer.id; healer.hurtAt = w.time;
+  G.updateHeroes(w, .1); assert(foe.hp < foe.maxHp);
+  healer.hp -= 30; const hp = healer.hp, enemyHp = foe.hp;
+  G.updateHeroes(w, .1);
+  assert.equal(healer.hp, hp, 'attacking delays healing');
+  for (let i = 0; i < 17; i++) { w.time += .1; G.updateHeroes(w, .1); }
+  assert(healer.hp > hp, 'healing becomes available on the shared cooldown');
+  assert.equal(foe.hp, enemyHp, 'healing occupies the next cast');
+  healer.hp = healer.maxHp;
+  for (let i = 0; i < 19; i++) { w.time += .1; G.updateHeroes(w, .1); }
+  assert.equal(foe.hp, enemyHp, 'healing also delays attacks');
+}
+for (const type of ['sporeling', 'rattler']) {
+  const { w, lair } = arena(), healer = hero(w, 'healer', 24, 16);
+  lair.nextGuardAt = 1e6;
+  // No castle arrows, clinic or friends; the weakest trio on the easiest setting.
+  const foes = Array.from({ length: 3 }, (_, i) => { const m = enemy(w, lair, type, 25 + i * .5, 16); m.targetId = healer.id; return m; });
+  const sim = new G.Simulation({ saved: w }); let escaped = false;
+  for (let i = 0; i < 1200 && G.alive(healer) && foes.some(G.alive); i++) {
+    sim.step(.1); if (healer.retreating) { escaped = true; break; }
+  }
+  assert(foes.filter(G.alive).length >= 2, 'a level-one healer cannot solo three basic monsters on easy');
+  if (type === 'rattler') assert(escaped || !G.alive(healer), 'the normal melee trio forces retreat');
+}
+{
+  const { w } = arena(); bones(w, 16, 15, 1); w.time = 44.8;
+  const sim = new G.Simulation({ saved: w }); sim.step(.1); assert.equal(w.corpses.length, 1);
+  sim.step(.11); assert.equal(w.corpses.length, 0, 'remains expire at 45 seconds of game time');
+  const old = bones(w, 16, 15, 2); old.diedAt = w.time - 45;
+  assert.equal(G.raiseSkeleton(w, hero(w, 'necromancer')), null, 'expired remains cannot be raised even before cleanup');
+}
+{
+  const { w, lair } = arena('hush'), master = enemy(w, lair, 'binder', 18, 15);
+  for (let i = 0; i < 6; i++) bones(w, 18, 16, i + 1);
+  const first = G.raiseEnemySkeleton(w, master); assert(first && first.raisedBy === master.id && first.rank === 1);
+  assert.equal(G.raiseEnemySkeleton(w, master), null, 'enemy raising has a cooldown');
+  for (let i = 0; i < 3; i++) { w.time += 4; assert(G.raiseEnemySkeleton(w, master)); }
+  w.time += 4; assert.equal(G.raiseEnemySkeleton(w, master), null);
+  assert.equal(G.enemySkeletons(w, master).length, 4); assert.equal(w.corpses.length, 2);
+  const before = w.corpses.length; G.damage(w, first, 999);
+  assert.equal(w.corpses.length, before, 'enemy skeletons cannot supply new corpses');
+  assert(G.raiseEnemySkeleton(w, master), 'a slain enemy minion frees its owner slot');
+  const ally = hero(w, 'necromancer', 18, 16); assert(G.raiseSkeleton(w, ally)); assert.equal(w.corpses.length, 0, 'both sides compete for the same remains');
+  const victim = hero(w, 'warrior', 18, 15), minion = G.enemySkeletons(w, master)[0];
+  Object.assign(minion, { x: 18.5, y: 15 }); master.stunnedUntil = w.time + 10;
+  const hp = victim.hp; G.updateMonsters(w, .1); assert(victim.hp < hp, 'enemy skeletons attack heroes');
+  const saved = new G.Simulation({ saved: JSON.parse(JSON.stringify(w)) });
+  assert.equal(G.enemySkeletons(saved.world, master).length, 4, 'enemy ownership survives saving');
+  G.damage(w, master, 999); assert.equal(G.enemySkeletons(w, master).length, 0, 'killing the caster releases its skeletons');
+  assert.equal(G.ownedSkeletons(w, ally).length, 1, 'friendly skeleton remains alive');
+}
+{
+  const { w } = arena(), necro = hero(w, 'necromancer'), healer = hero(w, 'healer');
+  bones(w, 17, 15, 2); const first = G.raiseSkeleton(w, necro);
+  w.skeletons.push({ ...first, id: w.nextId++, level: 4 }); healer.healCooldown = 1.8; healer.cooldown = .5;
+  const old = bones(w, 16, 15, 1); old.diedAt = -50;
+  new G.Simulation({ saved: w });
+  assert.equal(G.ownedSkeletons(w, necro).length, 1); assert.equal(G.ownedSkeletons(w, necro)[0].level, 4);
+  assert.equal(healer.cooldown, 1.8); assert(!('healCooldown' in healer)); assert.equal(w.corpses.length, 0);
+}
+console.log('tactics: summon limits, corpse expiry, shared healer cooldown, mixed waves, roles and save migration');

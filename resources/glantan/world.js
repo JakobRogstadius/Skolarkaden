@@ -212,7 +212,10 @@
   function field(world, target, cached) {
     const width = world.width, tx = Math.floor(G.clamp(target.x, 1, width - 2)), ty = Math.floor(G.clamp(target.y, 1, world.height - 2));
     const goal = ty * width + tx;
-    if (cached.fields.has(goal)) return cached.fields.get(goal);
+    if (cached.fields.has(goal)) {
+      const found = cached.fields.get(goal);
+      cached.fields.delete(goal); cached.fields.set(goal, found); return found;
+    }
     const distance = new Int32Array(cached.blocked.length).fill(-1), queue = cached.queue;
     let tail = 0;
     if (!cached.blocked[goal]) { distance[goal] = 0; queue[tail++] = goal; }
@@ -228,15 +231,23 @@
         const next = y * width + x; distance[next] = 0; queue[tail++] = next;
       }
     }
+    // Keep the same right/down/left/up tie order, without allocating coordinate
+    // pairs or calling grid helpers for every edge of a whole-map search.
+    const blocked = cached.blocked, lastRow = (world.height - 2) * width;
     for (let head = 0; head < tail; head++) {
-      const at = queue[head], x = at % width, y = Math.floor(at / width);
-      for (const [dx, dy] of directions) {
-        const xx = x + dx, yy = y + dy, next = yy * width + xx;
-        if (!G.inside(world, xx, yy) || cached.blocked[next] || distance[next] !== -1) continue;
-        distance[next] = distance[at] + 1; queue[tail++] = next;
-      }
+      const at = queue[head], x = at % width, step = distance[at] + 1;
+      let next = at + 1;
+      if (x < width - 2 && !blocked[next] && distance[next] < 0) { distance[next] = step; queue[tail++] = next; }
+      next = at + width;
+      if (at < lastRow && !blocked[next] && distance[next] < 0) { distance[next] = step; queue[tail++] = next; }
+      next = at - 1;
+      if (x > 1 && !blocked[next] && distance[next] < 0) { distance[next] = step; queue[tail++] = next; }
+      next = at - width;
+      if (at >= width * 2 && !blocked[next] && distance[next] < 0) { distance[next] = step; queue[tail++] = next; }
     }
-    if (cached.fields.size >= 24) cached.fields.delete(cached.fields.keys().next().value);
+    // Frequently used village/expedition routes survive local combat movement.
+    // 64 fields cost at most 2.3 MB on the largest map; invalidated with terrain.
+    if (cached.fields.size >= 64) cached.fields.delete(cached.fields.keys().next().value);
     cached.fields.set(goal, distance); return distance;
   }
   G.path = function(world, from, to) {
@@ -275,6 +286,10 @@
     let crossY = dy ? (sy > 0 ? y + 1 - from.y : from.y - y) / Math.abs(dy) : Infinity;
     if (!pass(x, y)) return false;
     while (x !== endX || y !== endY) {
+      // An integer target can lie exactly on a grid edge. Do not step past
+      // its column/row while the other axis is still reaching that endpoint.
+      if (x === endX) crossX = Infinity;
+      if (y === endY) crossY = Infinity;
       if (Math.abs(crossX - crossY) < 1e-9) {
         if (!pass(x + sx, y) || !pass(x, y + sy)) return false;
         x += sx; y += sy; crossX += deltaX; crossY += deltaY;

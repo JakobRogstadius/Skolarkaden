@@ -2,10 +2,27 @@
 (function(root) {
   'use strict';
   const G = root.Starlight.Glantan;
+  G.freshCorpse = (w, corpse) => w.time - corpse.diedAt < G.CORPSE_LIFETIME;
   G.ownedSkeletons = (w, hero) => w.skeletons.filter(s => s.owner === hero.id && G.alive(s));
+  G.enemySkeletons = (w, master) => w.monsters.filter(m => m.raisedBy === master.id && G.alive(m));
+  G.raiseEnemySkeleton = function(w, master) {
+    const limit = G.monsterTypes[master.type]?.raises;
+    if (!limit || !G.alive(master) || (master.raiseAt || 0) > w.time || G.enemySkeletons(w, master).length >= limit) return null;
+    const corpse = w.corpses.filter(b => G.freshCorpse(w, b) && G.distance(b, master) < 4.5 && G.clearLine(w, master, b)).sort((a, b) => G.distance(a, master) - G.distance(b, master) || a.id - b.id)[0];
+    const lair = w.lairs.find(l => l.id === master.lair);
+    if (!corpse || !lair) return null;
+    const skeleton = G.spawnMonster(w, lair, { type: 'boneservant', wave: master.wave, at: corpse });
+    if (!skeleton) return null; // Capacity must not consume the corpse or its cooldown.
+    Object.assign(skeleton, { raisedBy: master.id, rank: corpse.level, strength: 1 + (corpse.level - 1) * .2, hp: 36 + corpse.level * 16, maxHp: 36 + corpse.level * 16, attackDamage: 5 + corpse.level * 2.4, waveEngaged: true });
+    w.corpses.splice(w.corpses.indexOf(corpse), 1); master.raiseAt = w.time + 4; master.castAt = w.time;
+    G.effect(w, 'raise', corpse.x, corpse.y, { duration: 1.2, color: '#f48b86' });
+    G.effect(w, 'spell', master.x, master.y, { toX: skeleton.x, toY: skeleton.y, school: 'enemy', color: '#ed777e', radius: .6, duration: .8 });
+    G.soundEvent(w, 'mage', master); w.revision++;
+    return skeleton;
+  };
   G.raiseSkeleton = function(w, hero) {
-    if (hero.classId !== 'necromancer' || !G.alive(hero) || (hero.raiseAt || 0) > w.time || G.ownedSkeletons(w, hero).length >= 2) return null;
-    const corpse = w.corpses.filter(b => G.distance(b, hero) < 4 && G.clearLine(w, hero, b)).sort((a, b) => G.distance(a, hero) - G.distance(b, hero) || a.id - b.id)[0];
+    if (hero.classId !== 'necromancer' || !G.alive(hero) || (hero.raiseAt || 0) > w.time || G.ownedSkeletons(w, hero).length >= G.NECROMANCER_LIMIT) return null;
+    const corpse = w.corpses.filter(b => G.freshCorpse(w, b) && G.distance(b, hero) < 4 && G.clearLine(w, hero, b)).sort((a, b) => G.distance(a, hero) - G.distance(b, hero) || a.id - b.id)[0];
     if (!corpse) return null;
     const level = corpse.level, hp = 36 + level * 16, point = G.freeNear(w, corpse);
     const skeleton = { id: w.nextId++, skeleton: true, owner: hero.id, sourceType: corpse.monsterType, level, ...point, hp, maxHp: hp, cooldown: 0, route: [], routeKey: '', facing: 1, born: w.time };

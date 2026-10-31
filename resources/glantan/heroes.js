@@ -119,10 +119,10 @@
     return best;
   }
   function heal(w, hero) {
-    if (hero.classId !== 'healer' || hero.healCooldown > 0) return false;
+    if (hero.classId !== 'healer' || hero.cooldown > 0) return false;
     const patients = w.heroes.filter(h => G.alive(h) && h.hp < h.maxHp * 0.94 && G.distance(h, hero) < 4.2 && G.clearLine(w, hero, h)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
     if (!patients.length) return false;
-    hero.healCooldown = 2.1;
+    hero.cooldown = 2.1; hero.castAt = w.time;
     G.soundEvent(w, 'heal', hero);
     for (const patient of patients.slice(0, w.research.bloom ? 4 : 1)) {
       const amount = Math.min(patient.maxHp - patient.hp, 16 + hero.level * 3);
@@ -201,7 +201,7 @@
       if (w.outcome) break;
       if (!G.alive(hero)) continue;
       hero.targetId = null;
-      hero.cooldown = Math.max(0, hero.cooldown - dt); hero.healCooldown = Math.max(0, hero.healCooldown - dt);
+      hero.cooldown = Math.max(0, hero.cooldown - dt);
       const stats = G.heroStats(w, hero);
       if (w.tick % 10 === 0) {
         const explored = G.reveal(w, hero.x, hero.y, G.heroSight(w, hero));
@@ -291,7 +291,7 @@
         continue;
       }
       hero.expedition = null;
-      if (hero.classId === 'necromancer' && G.ownedSkeletons(w, hero).length < 2) {
+      if (hero.classId === 'necromancer' && G.ownedSkeletons(w, hero).length < G.NECROMANCER_LIMIT) {
         const corpse = w.corpses.filter(b => w.explored[G.index(w, b.x, b.y)] && G.distance(hero, b) < 8 && !enemies.some(m => G.alive(m) && G.distance(m, b) < 2)).sort((a, b) => G.distance(a, hero) - G.distance(b, hero))[0];
         if (corpse) { hero.task = 'Söker benrester'; G.move(w, hero, corpse, stats.speed, dt); continue; }
       }

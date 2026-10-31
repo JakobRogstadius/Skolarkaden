@@ -127,3 +127,28 @@ These are limited automated balance probes, not general win-rate estimates or re
 - Simplify the castle/population HUD and bell charge display. Replace the long game help with illustrated steps, move result statistics under **Mer**, and use **Du vann!** / **Borgen föll.** Keep restart and public-name consequences clear. No spoken UI help was added.
 
 Validation: all 93 ordinary suites pass. Browser checks cover building placement (valid and blocked), a completed four-answer upgrade and its mutually exclusive lock, necromancer slots, lair waves, illustrated help, and 390×844 / 390×500 layouts. The reduced-height view models available keyboard space; no physical touch keyboard was used. [Interface example](klockglantan-readable-ui-1793473044549.jpg).
+
+## Summons, coordinated waves and smoother movement — 2026-10-31
+
+- Limit each **Skelettmästare** to **one** living skeleton. Existing saves retain that master's strongest skeleton. Summon slots and role descriptions reflect the new limit.
+- Give healers a shared recovery timer for healing and attacks. Healing prevents an immediate attack and attacking postpones healing. A level-one healer can no longer independently heal and attack its way through the tested three-monster groups on easy.
+- Keep each mixed wave together until it encounters a target or takes damage. The slowest member leads, waits for stragglers and guides flying escorts through the same terrain passages. Once combat starts, each monster resumes its individual movement and tactics.
+- Remove unclaimed monster corpses after **45 game seconds**, including expired corpses in resumed games. Both friendly and enemy raisers consume the same finite corpse supply.
+- Give the advanced **Rotbindare** the ability to raise up to **four Bensoldater**, one every four seconds. Enemy skeletons have coral-red bones, dark scarves and small horns; friendly skeletons stay white. Enemy skeletons inherit the corpse's level, remain near their caster and collapse when it dies. Killed skeletons leave no reusable corpse.
+- Interpolate unit positions and spell animation between simulation ticks. Cache frequently used routes, reduce allocations during pathfinding, skip unchanged minimap frames and offscreen effects, and replace repeated spell blurs with layered luminous strokes.
+- Fix a line-of-sight error at exact grid edges that could stall a wave at the castle despite a clear approach.
+
+Validation: **93/93 ordinary suites passed**, including summon limits and ownership, save migration, corpse expiry, healer cooldowns in both directions, mixed ground/flying waves taking a river detour, combat release and terrain visibility. Browser inspection confirmed one friendly summon slot, four enemy summon slots, distinct skeleton artwork and visible spell effects.
+
+All six controlled boss probes pass. The medium target-level party now uses five level-four heroes, including two healers; the previous four level-five heroes with one healer did not clear the encounter after the shared cooldown change. Boss stats are unchanged. These are controlled party examples, not general win-rate estimates.
+
+CPU benchmark on the same machine, comparing `f919ced` with this release, with 24 heroes and 83 monsters:
+
+| Scene | Mean simulation tick before | After | Reduction | 95th percentile before → after |
+| --- | ---: | ---: | ---: | ---: |
+| Marching | 4.431 ms | 2.681 ms | 39% | 7.722 → 3.743 ms |
+| Battle | 5.011 ms | 3.694 ms | 26% | 7.116 → 5.155 ms |
+
+Reproduce with `node dev/glantan-performance.cjs --ref f919ced` and `node dev/glantan-performance.cjs`. Each scene discards three warm-up runs, then samples 500 ticks. The development review page also includes a six-second drawing probe. These timings measure simulation CPU work; this environment did not provide a reliable device frame-rate measurement.
+
+![Rotbindare with four red skeletons, alongside a friendly white skeleton](klockglantan-summons-2026-10-31.jpg)

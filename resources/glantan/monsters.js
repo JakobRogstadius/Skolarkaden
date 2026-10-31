@@ -166,12 +166,55 @@
     if (front && G.distance(front, monster) > 2.5) { G.moveMonster(w, monster, front, spec.speed, dt); return true; }
     return false;
   }
+  function waveFormations(w, heroes, buildings) {
+    const groups = new Map();
+    for (const m of w.monsters) if (G.alive(m) && m.wave && !m.guard && !m.raisedBy && !m.broodParent) {
+      const key = m.lair + ':' + m.wave;
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(m);
+    }
+    const formations = new Map();
+    for (const members of groups.values()) {
+      const engaged = members.some(m => m.waveEngaged || heroes.some(h => G.alive(h) && G.distance(m, h) < 5.5 && G.attackLine(w, m, h)) || buildings.some(b => G.distance(m, b) <= G.monsterTypes[m.type].range + Math.max(b.w,b.h) * .45 && G.attackLine(w, m, b)));
+      if (engaged) { for (const m of members) m.waveEngaged = true; continue; }
+      if (members.length < 2) continue;
+      // The slowest member leads. Flying escorts use the ground route until
+      // contact, so rivers and mountain passes cannot split a mixed wave.
+      const leader = members.reduce((a,b) => G.monsterSpeed(a) <= G.monsterSpeed(b) ? a : b);
+      const anchor = { x: leader.x, y: leader.y };
+      const waiting = members.some(m => m !== leader && G.distance(m, anchor) > 4);
+      const heading = leader.route?.[0] || G.castle(w), dx = heading.x - leader.x, dy = heading.y - leader.y, length = Math.hypot(dx,dy) || 1;
+      let slot = 0;
+      for (const m of members) {
+        if (m === leader) { formations.set(m.id, { leader: true, waiting }); continue; }
+        const side = (slot % 3 - 1) * .8, back = 1.1 + Math.floor(slot / 3) * .8; slot++;
+        const point = { x: anchor.x - dx/length*back - dy/length*side, y: anchor.y - dy/length*back + dx/length*side };
+        formations.set(m.id, { point: G.open(w,point.x,point.y) && G.clearLine(w,anchor,point) ? point : anchor });
+      }
+    }
+    return formations;
+  }
   G.updateMonsters = function(w, dt) {
     const castle = G.castle(w), heroes = G.allies(w), buildings = w.buildings.filter(G.alive);
+    const formations = waveFormations(w, heroes, buildings);
     for (const monster of [...w.monsters]) {
       if (w.outcome) break;
       if (!G.alive(monster) || monster.stunnedUntil > w.time) continue;
       const spec = G.monsterTypes[monster.type]; monster.cooldown = Math.max(0, monster.cooldown - dt);
+      if (monster.raisedBy) {
+        const master = w.monsters.find(m => m.id === monster.raisedBy && G.alive(m));
+        if (!master) { monster.hp = 0; continue; }
+        if (G.distance(monster, master) > 6) { monster.targetId = null; G.moveMonster(w, monster, master, spec.speed, dt); continue; }
+      }
+      const formation = formations.get(monster.id);
+      if (formation) {
+        monster.targetId = castle.id;
+        if (!formation.waiting && !(monster.rootedUntil > w.time)) {
+          const destination = formation.leader ? castle : formation.point;
+          if (G.distance(monster, destination) > .25) G.move(w, monster, destination, spec.speed * (monster.slowUntil > w.time ? .45 : 1), dt);
+        }
+        continue;
+      }
       const home = w.lairs.find(l => l.id === monster.lair && G.alive(l));
       const defending = monster.guard && home;
       const nearby = heroes.filter(h => G.alive(h) && G.distance(h, monster) < (monster.boss ? 5.7 : 5.5) && (!defending || G.distance(h, home) < 7.5)).sort((a, b) => (G.distance(a, monster) - (a.classId === 'warrior' ? 1.6 : 0)) - (G.distance(b, monster) - (b.classId === 'warrior' ? 1.6 : 0)));
@@ -182,6 +225,7 @@
       if (!target) target = buildings.filter(b => G.distance(b, monster) < 3.3).sort((a, b) => G.distance(a, monster) - G.distance(b, monster))[0] || castle;
       if (!target || !G.alive(target)) continue;
       monster.targetId = target.id;
+      if (spec.raises) G.raiseEnemySkeleton(w, monster);
       if (support(w, monster, spec, dt)) continue;
       if (spec.brood && G.distance(monster, target) < 4.5 && (monster.broodAt || 0) <= w.time) {
         monster.broodAt = w.time + 9;

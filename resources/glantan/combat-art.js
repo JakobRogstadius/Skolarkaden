@@ -3,9 +3,9 @@
   'use strict';
   const G = root.Starlight.Glantan, A = G.Art, T = A.tile;
   const { ellipse, line, polygon, round } = A, ink = '#253c39', bone = '#f0e6c8';
-  function skull(c, x, y, size = 1) {
+  function skull(c, x, y, size = 1, color = bone) {
     c.save(); c.translate(x, y); c.scale(size, size);
-    ellipse(c, 0, -2, 6, 6, bone); round(c, -4, 0, 8, 6, 2, bone);
+    ellipse(c, 0, -2, 6, 6, color); round(c, -4, 0, 8, 6, 2, color);
     for (const side of [-1, 1]) ellipse(c, side * 2.5, -2, 1.7, 2, '#294b44');
     line(c, [[-1.5, 3], [-1.5, 6]], '#567066', 1); line(c, [[1.5, 3], [1.5, 6]], '#567066', 1); c.restore();
   }
@@ -22,6 +22,7 @@
   };
   A.skeleton = function(c, unit, w, time) {
     c.save(); c.translate(unit.x * T, unit.y * T);
+    const bone = unit.monster ? '#e47770' : '#f0e6c8', accent = unit.monster ? '#782e46' : '#54c5a1';
     const walk = unit.route?.length ? Math.sin(time * 11 + unit.id) : 0;
     ellipse(c, 0, 2, 9, 3.5, '#203c365f');
     line(c, [[-3, -10], [-5 - walk * 2, -4], [-5 - walk * 2, 1]], ink, 4);
@@ -32,9 +33,10 @@
     for (const y of [-21, -17, -13]) line(c, [[-5, y - 1], [-5, y + 1], [0, y + 2], [5, y + 1], [5, y - 1]], bone, 1.8);
     line(c, [[-5, -23], [-9, -16], [-8, -10]], bone, 2.5);
     line(c, [[5, -23], [10, -17], [12, -21]], bone, 2.5);
-    line(c, [[12, -12], [12, -31]], '#b4c2ba', 2.5); line(c, [[9, -17], [15, -17]], '#a3d8bf', 2);
-    skull(c, 0, -29); polygon(c, [[-5, -24], [5, -24], [4, -20], [-5, -22]], '#54c5a1');
-    level(c, unit.level, -47); c.restore();
+    line(c, [[12, -12], [12, -31]], unit.monster ? '#f5ada1' : '#b4c2ba', 2.5); line(c, [[9, -17], [15, -17]], accent, 2);
+    skull(c, 0, -29, 1, bone); polygon(c, [[-5, -24], [5, -24], [4, -20], [-5, -22]], accent);
+    if (unit.monster) polygon(c, [[-6, -36], [-8, -42], [-2, -36], [2, -36], [8, -42], [6, -36]], accent, ink);
+    level(c, unit.monster ? unit.rank : unit.level, -53, unit.monster ? '#ffb0a3' : '#dbf4d8'); c.restore();
   };
   A.trap = function(c, trap, w) {
     c.save(); c.translate(trap.x * T, trap.y * T);
@@ -84,7 +86,7 @@
       } else if (m.type === 'binder') {
         polygon(c, [[-8, -32], [-11, -41], [-1, -35], [7, -42], [9, -31]], '#57634c', ink);
         line(c, [[13, 1], [10, -22], [18, -32], [13, -39], [8, -35]], '#c5b58b', 3);
-        ellipse(c, 13, -32, 4, 5, '#e3b5e0');
+        skull(c, 13, -32, .85, '#e47770');
         line(c, [[-11, -4], [-18, 0], [-22, -7]], '#8c9768', 2);
       } else {
         polygon(c, [[-8, -30], [0, -39], [8, -30]], '#42684b', ink);
@@ -121,14 +123,16 @@
         const f = Math.max(0, flight - .26 + i / 18 * .26), arc = Math.sin(f * Math.PI) * (life ? 22 : 8);
         trail.push([x + (tx - x) * f, y + (ty - y) * f - arc]);
       }
-      line(c, trail, '#233f4680', 11); c.shadowColor = color; c.shadowBlur = 13;
+      // Layered translucent strokes keep the bright halo without asking the
+      // canvas to blur every stroke and every particle on each animation frame.
+      line(c, trail, '#233f4680', 11);
+      line(c, trail, color + '26', 15); line(c, trail, color + '50', 10);
       line(c, trail, color, 6); line(c, trail, '#fff9e8', 2.2);
       const [headX, headY] = trail.at(-1); ellipse(c, headX, headY, soul ? 6 : 4, soul ? 4 : 4, '#fff9e5');
       for (let i = 0; i < 7; i++) {
         const f = Math.max(0, flight - i * .035), a = i * 1.9 + p * 9;
         ellipse(c, x + (tx - x) * f + Math.cos(a) * 6, y + (ty - y) * f - Math.sin(f * Math.PI) * (life ? 22 : 8) + Math.sin(a) * 6, 2.2 - i * .18, 2.2 - i * .18, color);
       }
-      c.shadowBlur = 0;
     }
     if (impact > 0) {
       const radius = Math.max(13, (e.radius || 1) * T * .68), spread = radius * (.2 + impact * .8);
