@@ -28,9 +28,8 @@
     if (options.branch) { world.choices[G.research[options.branch].group] = options.branch; world.research[options.branch] = true; }
     const entity = { id: 0, hp: 100, maxHp: 100, facing: 1, level: 1, rank: 1, route: [], ...(options.entity || {}), actionCue: null, x: 0, y: 0 };
     c.scale(2, 2); c.translate(40, kind === 'corpse' ? 32 : kind === 'trap' ? 46 : 69);
-    const monsterTop = type === 'guardian' || entity.boss ? 57 : ['nightwing', 'boneservant'].includes(type) ? 57 : ['husher', 'binder', 'mender', 'thornling'].includes(type) ? 43 : type === 'broodcap' ? 38 : 31;
     const heroHeight = world.choices[type] === 'banner' ? 72 : ['mage', 'necromancer'].includes(type) ? 64 : entity.level >= 3 ? 54 : 46;
-    const scale = kind === 'building' ? ['castle', 'spire', 'beacon'].includes(type) ? .64 : .85 : kind === 'lair' ? entity.boss ? .6 : .8 : kind === 'monster' ? 63 / ((monsterTop + 8) * A.monsterScale({ ...entity, type })) : kind === 'hero' ? 64 / heroHeight : kind === 'corpse' ? 1.7 : kind === 'trap' ? 2.2 : 1.1;
+    const scale = kind === 'building' ? ['castle', 'spire', 'beacon'].includes(type) ? .64 : .85 : kind === 'lair' ? entity.boss ? .6 : .8 : kind === 'monster' ? 63 / (8 - A.monsterBadgeY({ ...entity, type })) : kind === 'hero' ? 64 / heroHeight : kind === 'corpse' ? 1.7 : kind === 'trap' ? 2.2 : kind === 'skeleton' ? 63 / (8 - A.skeletonBadgeY) : 1.1;
     c.scale(scale, scale);
     if (kind === 'building') A.building(c, { ...entity, type, w: spec.w, h: spec.h }, world, 0);
     else if (kind === 'hero') A.hero(c, { ...entity, classId: type }, world, 0);

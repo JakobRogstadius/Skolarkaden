@@ -69,7 +69,7 @@
     c.restore();
     skull(c, 0, -29, 1, bone); polygon(c, [[-5, -24], [5, -24], [4, -20], [-5, -22]], accent);
     if (unit.monster) polygon(c, [[-6, -36], [-8, -42], [-2, -36], [2, -36], [8, -42], [6, -36]], accent, ink);
-    c.restore(); level(c, unit.monster ? unit.rank : unit.level, -53, unit.monster ? '#ffb0a3' : '#dbf4d8'); c.restore();
+    c.restore(); level(c, unit.monster ? unit.rank : unit.level, unit.monster ? A.monsterBadgeY(unit) : A.skeletonBadgeY, unit.monster ? '#ffb0a3' : '#dbf4d8'); c.restore();
   };
   A.trap = function(c, trap, w) {
     c.save(); c.translate(trap.x * T, trap.y * T);
