@@ -215,12 +215,9 @@
         c.save(); c.globalAlpha = Math.min(1, (1 - p) * 2); c.strokeStyle = c.fillStyle = e.color || '#f3dfab';
         if (e.type === 'spell') A.spell(c, e, p, this.reduced);
         else if (e.type === 'raise' || e.type === 'snare') A.ritual(c, e, p, this.reduced);
-        else if (e.type === 'bolt') {
-          const xx = x + (e.toX * T - x) * Math.min(1, p * 1.6), yy = y + (e.toY * T - y) * Math.min(1, p * 1.6) - 11;
-          A.line(c, [[xx - (e.toX * T - x) * 0.07, yy - (e.toY * T - y) * 0.07], [xx, yy]], e.color, e.heavy ? 4 : 2.5); A.ellipse(c, xx, yy, e.heavy ? 4 : 3, 3, e.color);
-        } else if (e.type === 'slash') {
-          c.lineWidth = 3; c.beginPath(); c.arc(e.toX * T, e.toY * T - 8, 13, -2 + p, 0.5 + p); c.stroke();
-        } else if (e.type === 'heal') {
+        else if (e.type === 'bolt') A.bolt(c, e, p, this.reduced);
+        else if (e.type === 'slash') A.slash(c, e, p, this.reduced);
+        else if (e.type === 'heal') {
           A.line(c, [[x - 4, y - 24 - p * 14], [x + 4, y - 24 - p * 14]], e.color, 2.5); A.line(c, [[x, y - 28 - p * 14], [x, y - 20 - p * 14]], e.color, 2.5);
         } else if (e.type === 'level') {
           c.font = 'bold 12px Trebuchet MS'; c.textAlign = 'center'; c.fillText(e.text, x, y - 44 - p * 12);
@@ -269,7 +266,7 @@
       const c = this.ctx, w = this.game.world;
       this.renderAlpha = this.game.state === 'playing' ? G.clamp(this.game.simulation.accumulator / G.STEP, 0, 1) : 1;
       this.renderDelay = (1 - this.renderAlpha) * G.STEP;
-      const time = this.reduced ? 0 : Math.max(0, w.time - this.renderDelay);
+      const time = Math.max(0, w.time - this.renderDelay);
       c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); c.fillStyle = '#294a41'; c.fillRect(0, 0, this.width, this.height);
       c.save(); c.translate(this.width / 2, this.height / 2); c.scale(this.camera.zoom, this.camera.zoom); c.translate(-this.camera.x, -this.camera.y);
       this.drawTerrain(); this.drawFog();
@@ -288,7 +285,7 @@
       this.drawSelection();
       for (const entity of entities) {
         const { type } = entity, value = this.renderUnit(entity.value);
-        A[type](c, value, w, time);
+        A[type](c, value, w, this.reduced && !['hero', 'monster', 'skeleton'].includes(type) ? 0 : time, this.reduced);
         if (G.alive(value) && !value.w) A.status(c, value, w);
         const selected = this.selection?.id === value.id;
         if (G.alive(value) && (selected || value.hp < value.maxHp * 0.98)) this.drawBar(value, type === 'building' || type === 'lair' ? 29 : 8, type === 'monster' || type === 'lair' ? '#e7aa8d' : '#c7e2a6');

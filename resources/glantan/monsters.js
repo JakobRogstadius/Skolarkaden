@@ -156,6 +156,7 @@
     const patients = w.monsters.filter(m => m !== monster && G.alive(m) && m.hp < m.maxHp * .9 && G.distance(m, monster) < 4.5 && G.attackLine(w, monster, m)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
     if (patients.length && (monster.healAt || 0) <= w.time) {
       monster.healAt = w.time + 3.4; monster.castAt = w.time;
+      G.combatCue(w, monster, patients[0], 'heal');
       for (const patient of patients.slice(0, 2)) {
         patient.hp = Math.min(patient.maxHp, patient.hp + 14 * monster.strength);
         G.effect(w, 'spell', monster.x, monster.y, { toX: patient.x, toY: patient.y, school: 'mend', color: '#ffd58a', radius: .65, duration: .8 });
@@ -233,7 +234,7 @@
         const lair = w.lairs.find(l => l.id === monster.lair);
         if (count < 3 && lair) {
           const child = G.spawnMonster(w, lair, { type: 'sporeling', wave: monster.wave, at: monster, broodParent: monster.id });
-          if (child) G.effect(w, 'raise', child.x, child.y, { duration: .9, color: '#efa2d4' });
+          if (child) { G.combatCue(w, monster, child, 'raise'); G.effect(w, 'raise', child.x, child.y, { duration: .9, color: '#efa2d4' }); }
         }
       }
       const range = spec.range + (target.w ? Math.max(target.w, target.h) * 0.45 : 0);
@@ -249,7 +250,8 @@
       else if (!inRange || !clear) G.moveMonster(w, monster, target, speed, dt);
       if (inRange && clear && monster.cooldown <= 0) {
         monster.cooldown = spec.cooldown; monster.attackAt = w.time;
-        G.effect(w, spec.spell ? 'spell' : spec.range > 2 ? 'bolt' : 'slash', monster.x, monster.y, { toX: target.x, toY: target.y, school: 'enemy', color: monster.boss ? '#e7a3d1' : '#ff8c8a', radius: spec.spell ? 1.25 : .4, duration: spec.spell ? .8 : .3 });
+        G.combatCue(w, monster, target);
+        G.effect(w, spec.spell ? 'spell' : spec.range > 2 ? 'bolt' : 'slash', monster.x, monster.y, { toX: target.x, toY: target.y, school: 'enemy', color: monster.boss ? '#e7a3d1' : '#ff8c8a', radius: spec.spell ? 1.25 : .4, duration: spec.spell ? .8 : .48, heavy: monster.boss || spec.siege || spec.ward || spec.brood, claw: spec.flying });
         if (spec.bind && !target.w && (monster.bindAt || 0) <= w.time && (target.rootGraceUntil || 0) <= w.time) {
           target.rootedUntil = Math.max(target.rootedUntil || 0, w.time + 2.2); target.rootGraceUntil = w.time + 4.5; monster.bindAt = w.time + 6.5;
           G.effect(w, 'snare', target.x, target.y, { duration: 1, color: '#c7a3e6' });

@@ -303,30 +303,35 @@
     ellipse(c, -width * 0.46, depth * 0.45, 7, 3, '#698750'); ellipse(c, width * 0.42, depth * 0.4, 5, 3, '#78915d');
     c.restore();
   };
-  A.hero = function(c, hero, w, time) {
+  A.hero = function(c, hero, w, time, reduced = false) {
     const x = hero.x * A.tile, y = hero.y * A.tile;
     c.save(); c.translate(x, y);
-    if (hero.hp <= 0) { ellipse(c, 0, 0, 8, 3, '#536a4d'); line(c, [[0, 1], [0, -9]], '#dad4aa', 2); ellipse(c, 0, -10 + Math.sin(time * 2) * 2, 3, 3, '#f7e0ad'); c.restore(); return; }
+    const idleTime = reduced ? 0 : time;
+    if (hero.hp <= 0) { ellipse(c, 0, 0, 8, 3, '#536a4d'); line(c, [[0, 1], [0, -9]], '#dad4aa', 2); ellipse(c, 0, -10 + Math.sin(idleTime * 2) * 2, 3, 3, '#f7e0ad'); c.restore(); return; }
     const path = w.choices[hero.classId], color = path === 'guardian' ? '#9dbed2' : path === 'banner' ? '#d96642' : path === 'traps' ? '#b99a59' : G.classes[hero.classId].color;
-    const walk = hero.route?.length ? Math.sin(time * 11 + hero.id) : 0, ink = '#293b39';
+    const pose = A.actionPose(hero, time, reduced), power = pose?.power || 0;
+    const walk = !reduced && !pose && hero.route?.length ? Math.sin(time * 11 + hero.id) : 0, ink = '#293b39';
     ellipse(c, 1, 2, 10, 4, '#1e342f66');
     if (hero.shieldUntil > time) { c.strokeStyle = '#bedeca90'; c.lineWidth = 2; c.beginPath(); c.ellipse(0, -10, 13, 19, 0, 0, Math.PI * 2); c.stroke(); }
+    c.save(); A.actionBody(c, hero, pose, hero.classId === 'warrior' ? 'melee' : hero.classId === 'ranger' ? 'bow' : 'cast');
     line(c, [[-3, -3], [-4 - walk * 2, 2]], '#303c35', 3.3); line(c, [[3, -3], [4 + walk * 2, 2]], '#303c35', 3.3);
     polygon(c, [[-6, -21], [6, -21], [9 + walk, -3], [-8 + walk, -3]], color, ink);
     polygon(c, [[2, -18], [7, -16], [9 + walk, -3], [2, -4]], '#18362c38');
     round(c, -5, -29, 10, 11, 4, '#f1c493', ink);
-    ellipse(c, hero.facing * 3, -24, 1.1, 1.1, '#263533');
+    ellipse(c, 3, -24, 1.1, 1.1, '#263533');
     if (hero.classId === 'warrior') {
       if (path === 'banner') {
         line(c, [[-12, 1], [-12, -57]], '#393c31', 3);
-        polygon(c, [[-11, -56], [11, -52 + Math.sin(time * 3) * 2], [6, -41], [-11, -43]], '#df7348', '#482c26');
+        polygon(c, [[-11, -56], [11, -52 + Math.sin(idleTime * 3) * 2], [6, -41], [-11, -43]], '#df7348', '#482c26');
         polygon(c, [[-4, -52], [0, -48], [-4, -44], [-8, -48]], '#ffe7a3');
       }
       round(c, -7, -33, 14, 8, [6, 6, 1, 1], '#c9d3cf', ink); line(c, [[-8, -26], [8, -26]], '#f4eed4', 2);
       polygon(c, path === 'guardian' ? [[-18, -25], [-2, -25], [-2, -8], [-10, -1], [-18, -8]] : [[-14, -21], [-3, -21], [-3, -9], [-8, -4], [-14, -9]], path === 'guardian' ? '#47738e' : '#e3a83c', ink);
       if (path === 'guardian') { line(c, [[-16, -23], [-4, -23], [-4, -9], [-10, -4], [-16, -9], [-16, -23]], '#e5f4f2', 2); line(c, [[-4, -35], [3, -35]], '#7aafca', 4); }
       line(c, [[-8, -18], [-8, -8]], '#fff1bb', 2); line(c, [[-11, -14], [-5, -14]], '#fff1bb', 1.5);
-      line(c, [[10, -3], [10, -27]], ink, 4); line(c, [[10, -8], [10, -27]], '#f0f3df', 2.5); line(c, [[6, -9], [14, -9]], '#d9aa51', 2);
+      c.save(); c.translate(8, -16); c.rotate(pose?.swing || 0); c.translate(-8, 16);
+      line(c, [[5, -20], [10, -12]], '#d6a575', 3);
+      line(c, [[10, -3], [10, -27]], ink, 4); line(c, [[10, -8], [10, -27]], '#f0f3df', 2.5); line(c, [[6, -9], [14, -9]], '#d9aa51', 2); c.restore();
     } else if (hero.classId === 'ranger') {
       if (path === 'traps') {
         round(c, -15, -23, 10, 18, 3, '#7a5636', ink);
@@ -336,11 +341,16 @@
       polygon(c, [[-8, -25], [-6, -33], [2, -37], [8, -26], [1, -29]], '#31714a', ink);
       line(c, [[1, -33], [6, -42]], '#ffe3a0', 2);
       line(c, [[-10, -9], [-11, -25], [-8, -30]], '#755030', 3);
-      c.strokeStyle = '#634029'; c.lineWidth = 3; c.beginPath(); c.arc(5, -13, 13, -1.1, 1.1); c.stroke(); line(c, [[11, -25], [11, -1]], '#fff0c2', 1.3);
-      line(c, [[6, -14], [20, -14]], '#e9d0a1', 1.5);
+      c.save(); c.translate(power * 4, 0);
+      c.strokeStyle = '#634029'; c.lineWidth = 3; c.beginPath(); c.arc(5, -13, 13, -1.1, 1.1); c.stroke();
+      line(c, [[11, -25], [11 - (pose?.draw || 0) * 8, -13], [11, -1]], '#fff0c2', 1.3);
+      if (!pose || pose.p < .25 || pose.p > .85) line(c, [[6, -14], [20, -14]], '#e9d0a1', 1.5);
       if (path === 'marksman') {
         c.strokeStyle = '#f3cf77'; c.lineWidth = 3.5; c.beginPath(); c.arc(3, -15, 19, -1.2, 1.2); c.stroke();
-        line(c, [[10, -33], [10, 3]], '#fff5ce', 1.5);
+        line(c, [[10, -33], [10 - (pose?.draw || 0) * 8, -15], [10, 3]], '#fff5ce', 1.5);
+      }
+      c.restore();
+      if (path === 'marksman') {
         for (const xx of [-13, -9, -5]) line(c, [[xx, -20], [xx - 3, -36], [xx, -33]], '#f4dd9c', 2);
       }
     } else if (hero.classId === 'healer') {
@@ -351,25 +361,32 @@
       line(c, [[-10, -12], [-10, -17], [-5, -17], [-5, -12]], '#473d32', 2);
       round(c, -14, -13, 12, 10, 2, '#fcf1d8', ink);
       line(c, [[-8, -11], [-8, -5]], '#28754d', 2); line(c, [[-11, -8], [-5, -8]], '#28754d', 2);
-      line(c, [[7, -18], [10, -12]], '#e6bb8f', 3);
+      c.save(); c.translate(power * 6, -power * 5);
+      line(c, [[7 - power * 6, -18 + power * 5], [10, -12]], '#e6bb8f', 3);
       round(c, 8, -16, 4, 5, 1, '#f6e1a2', ink); ellipse(c, 10, -8, 5, 6, '#376f47'); ellipse(c, 9, -9, 2.5, 3.5, '#bce68a');
+      A.actionGlow(c, pose, 12, -18, '#ffb4cc'); c.restore();
     } else if (hero.classId === 'necromancer') {
       polygon(c, [[-10, -3], [-9, -24], [0, -39], [9, -24], [11, -3]], '#245951', ink);
       ellipse(c, 0, -25, 5, 7, '#172e31'); line(c, [[-3, -26], [-1, -26]], '#cbffdf', 2); line(c, [[2, -26], [4, -26]], '#cbffdf', 2);
       for (const xx of [-7, 7]) ellipse(c, xx, -20, 4, 3, '#ede3c1');
       for (const yy of [-15, -10]) line(c, [[-4, yy], [0, yy + 2], [4, yy]], '#ddd8b4', 1.8);
+      c.save(); c.translate(10, -20); c.rotate(power * .45); c.translate(-10, 20);
       line(c, [[13, 0], [13, -40]], '#c9c3a4', 3);
       ellipse(c, 13, -42, 6, 6, '#e9e3c8'); round(c, 10, -41, 6, 6, 1, '#e9e3c8');
       for (const xx of [11, 15]) ellipse(c, xx, -42, 1.5, 2, '#25564e');
       ellipse(c, 13, -43, 10, 10, '#a4ffe624');
+      A.actionGlow(c, pose, 13, -42, '#93e3cb'); c.restore();
     } else {
       polygon(c, [[-8, -29], [-1, -48], [6, -40], [9, -29]], '#7151b0', '#302f4b');
       line(c, [[-9, -28], [10, -28]], '#c9adfb', 4); line(c, [[-5, -33], [7, -33]], '#f4d17b', 2);
       polygon(c, [[0, -18], [2, -14], [5, -13], [2, -11], [0, -7], [-2, -11], [-5, -13], [-2, -14]], '#ffe1a0');
+      c.save(); c.translate(10, -20); c.rotate(power * .45); c.translate(-10, 20);
       line(c, [[13, 0], [13, -34]], '#554030', 4); line(c, [[13, 0], [13, -34], [8, -37], [8, -45]], '#e4ba65', 2);
       line(c, [[13, -34], [18, -37], [18, -45]], '#e4ba65', 2);
       ellipse(c, 13, -40, 6, 6, '#d7caff50'); ellipse(c, 13, -40, 3.5, 3.5, '#e6f2ff');
+      A.actionGlow(c, pose, 13, -40, '#c5a4ff'); c.restore();
     }
+    c.restore();
     if (hero.level >= 3) { c.fillStyle = '#ffe5a3'; c.strokeStyle = ink; c.lineWidth = 2.5; c.font = 'bold 9px sans-serif'; c.textAlign = 'center'; const dots = '•'.repeat(Math.min(3, Math.floor(hero.level / 2))), y = path === 'banner' ? -64 : ['mage', 'necromancer'].includes(hero.classId) ? -55 : -46; c.strokeText(dots, 0, y); c.fillText(dots, 0, y); }
     c.restore();
   };
@@ -454,19 +471,23 @@
     c.restore();
   };
   A.monsterScale = m => ({ guardian: 1.65, husher: 1.16, sporeling: .94, broodcap: 1.6, siegebreaker: 1.5, bulwark: 1.35, mender: 1.15, binder: 1.15 }[m.type] || 1) * (1 + Math.min(.5, Math.max(0, (m.strength || 1) - 1) * .22));
-  A.monster = function(c, m, w, time) {
-    if (G.monsterTypes[m.type].skeletal) { A.skeleton(c, { ...m, monster: true }, w, time); return; }
+  A.monster = function(c, m, w, time, reduced = false) {
+    if (G.monsterTypes[m.type].skeletal) { A.skeleton(c, { ...m, monster: true }, w, time, reduced); return; }
     c.save(); c.translate(m.x * A.tile, m.y * A.tile);
     const rank = Math.max(1, m.rank || 1), scale = A.monsterScale(m), boss = m.boss || m.type === 'guardian';
-    const bob = Math.sin(time * (boss ? 3.5 : 7) + m.id) * (boss ? 0.65 : 1.5);
+    const pose = A.actionPose(m, time, reduced), power = pose?.power || 0, idleTime = reduced ? 0 : time;
+    const bob = pose ? 0 : Math.sin(idleTime * (boss ? 3.5 : 7) + m.id) * (boss ? 0.65 : 1.5);
     ellipse(c, 1, 3, 11 * scale, 4 * scale, '#29353b66');
     c.save(); c.scale(scale, scale);
-    if (A.specialMonster(c, m, bob, time)) {
+    const spec = G.monsterTypes[m.type];
+    A.actionBody(c, m, pose, spec.flying ? 'dive' : spec.spell ? 'cast' : spec.kite ? 'bow' : ['sporeling', 'broodcap'].includes(m.type) ? 'cap' : boss || spec.siege || spec.ward ? 'heavy' : 'melee');
+    if (A.specialMonster(c, m, bob, idleTime, pose)) {
       // New families share the same scale, rank badge and health conventions.
     } else if (m.type === 'rattler') {
       for (const side of [-1, 1]) line(c, [[side * 5, -8], [side * 12, -4 + bob], [side * 11, 2]], '#6d6950', 2);
       round(c, -9, -18 + bob, 18, 17, 5, '#b9895d'); round(c, -7, -23 + bob, 14, 7, 3, '#d5b378');
-      line(c, [[-12, -15 + bob], [-8, -15 + bob]], '#b8b298', 3); ellipse(c, 8, -13 + bob, 5, 5, '#b4b1a0');
+      line(c, [[-12, -15 + bob], [-8, -15 + bob]], '#b8b298', 3);
+      line(c, [[6, -16], [10 + power * 9, -15 + bob]], '#706b58', 3); ellipse(c, 8 + power * 9, -13 + bob, 5, 5, '#b4b1a0');
       ellipse(c, -3, -14 + bob, 2, 2, '#f4d590'); ellipse(c, 3, -14 + bob, 2, 2, '#f4d590');
     } else if (m.type === 'sporeling') {
       ellipse(c, 0, -8 + bob, 8, 11, '#d4bdb6'); ellipse(c, 0, -19 + bob, 13, 7, '#b67d9b');
@@ -476,8 +497,9 @@
       // Broad shoulders, hammer hands and a forked bronze crown distinguish the elite.
       for (const side of [-1, 1]) {
         polygon(c, [[side * 5, -11], [side * 11, -9], [side * 13, 3], [side * 5, 3]], '#4b5261');
+        c.save(); c.translate(side * power * 5, power * 9);
         polygon(c, [[side * 10, -28 + bob], [side * 21, -24 + bob], [side * 19, -13 + bob], [side * 12, -14 + bob]], '#95818b');
-        round(c, side * 18 - 5, -15 + bob, 10, 12, 2, '#c49a72');
+        round(c, side * 18 - 5, -15 + bob, 10, 12, 2, '#c49a72'); c.restore();
       }
       polygon(c, [[-11, -28 + bob], [11, -28 + bob], [13, -10], [0, -5], [-13, -10]], '#68647c');
       polygon(c, [[-7, -26 + bob], [0, -22 + bob], [7, -26 + bob], [5, -13], [0, -9], [-5, -13]], '#c5a277');
@@ -487,6 +509,7 @@
     } else {
       polygon(c, [[-10, 1], [-14, -19 + bob], [-7, -33 + bob], [7, -33 + bob], [14, -19 + bob], [10, 1], [4, -3], [0, 2], [-5, -2]], '#65798a');
       ellipse(c, 0, -18 + bob, 7, 11, '#afbbc2'); ellipse(c, 0, -15 + bob, 3, 6, '#425864');
+      if (pose) { line(c, [[7, -18], [14 + power * 5, -22]], '#afbbc2', 3); A.actionGlow(c, pose, 17 + power * 5, -24, '#ffa3bc'); }
     }
     if (rank >= 3 && !boss) {
       for (const side of [-1, 1]) polygon(c, [[side * 8, -21 + bob], [side * 15, -30 + bob], [side * 13, -16 + bob]], '#e1b380');

@@ -19,6 +19,28 @@ function enemy(w, lair, type = 'rattler', x = 19, y = 15) {
 function bones(w, x, y, level) {
   const b = { id: w.nextId++, x, y, level, monsterType: 'rattler', diedAt: w.time }; w.corpses.push(b); return b;
 }
+// Exercise the real attack paths, including strikes against buildings. A cue
+// must begin on a hit, retain its aim and not restart during the cooldown.
+for (const role of Object.keys(G.classes)) {
+  const { w, lair } = arena(), h = hero(w, role, 9, 9), m = enemy(w, lair, 'rattler', 10, 9);
+  w.time = 10; w.tick = 3; m.targetId = h.id;
+  assert.equal(h.actionCue, undefined, role + ' starts idle');
+  G.updateHeroes(w, .1);
+  assert(m.hp < m.maxHp, role + ' really attacked');
+  assert.equal(h.actionCue?.kind, 'attack', role + ' exposes its attack');
+  assert.equal(h.actionCue.at, 10); assert(h.actionCue.dx > .9);
+  w.time += .1; G.updateHeroes(w, .1);
+  assert.equal(h.actionCue.at, 10, role + ' does not restart the cue on cooldown');
+}
+for (const type of Object.keys(G.monsterTypes)) {
+  const { w, lair } = arena(), m = enemy(w, lair, type, 6.6, 5), castle = G.castle(w);
+  w.time = 10; G.updateMonsters(w, .1);
+  assert(castle.hp < castle.maxHp, type + ' really attacked the castle');
+  assert.equal(m.actionCue?.kind, 'attack', type + ' exposes its attack');
+  assert.equal(m.actionCue.at, 10); assert(m.actionCue.dx < -.9);
+  w.time += .1; G.updateMonsters(w, .1);
+  assert.equal(m.actionCue.at, 10, type + ' does not restart the cue on cooldown');
+}
 {
   const { w, lair } = arena(), necro = hero(w, 'necromancer');
   const monster = enemy(w, lair); monster.rank = 4;
@@ -58,6 +80,7 @@ function bones(w, x, y, level) {
   assert.equal(necro.healing, healing, 'no healing from damage that was never dealt');
   Object.assign(own, { x: 18.5, y: 15 }); victim.hp = victim.maxHp;
   G.updateSkeletons(w, .1); assert(victim.hp < victim.maxHp, 'raised skeleton fights nearby ground enemies');
+  assert.equal(own.actionCue?.kind, 'attack', 'friendly skeleton exposes its real attack');
   assert.equal(own.level, 2, 'summons keep the source level');
 }
 for (const [chosen, excluded, guild] of [['banner', 'guardian', 'hall'], ['guardian', 'banner', 'hall'], ['marksman', 'traps', 'lodge'], ['traps', 'marksman', 'lodge']]) {

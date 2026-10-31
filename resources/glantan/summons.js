@@ -15,6 +15,7 @@
     if (!skeleton) return null; // Capacity must not consume the corpse or its cooldown.
     Object.assign(skeleton, { raisedBy: master.id, rank: corpse.level, strength: 1 + (corpse.level - 1) * .2, hp: 36 + corpse.level * 16, maxHp: 36 + corpse.level * 16, attackDamage: 5 + corpse.level * 2.4, waveEngaged: true });
     w.corpses.splice(w.corpses.indexOf(corpse), 1); master.raiseAt = w.time + 4; master.castAt = w.time;
+    G.combatCue(w, master, corpse, 'raise');
     G.effect(w, 'raise', corpse.x, corpse.y, { duration: 1.2, color: '#f48b86' });
     G.effect(w, 'spell', master.x, master.y, { toX: skeleton.x, toY: skeleton.y, school: 'enemy', color: '#ed777e', radius: .6, duration: .8 });
     G.soundEvent(w, 'mage', master); w.revision++;
@@ -27,6 +28,7 @@
     const level = corpse.level, hp = 36 + level * 16, point = G.freeNear(w, corpse);
     const skeleton = { id: w.nextId++, skeleton: true, owner: hero.id, sourceType: corpse.monsterType, level, ...point, hp, maxHp: hp, cooldown: 0, route: [], routeKey: '', facing: 1, born: w.time };
     w.corpses.splice(w.corpses.indexOf(corpse), 1); w.skeletons.push(skeleton); hero.raiseAt = w.time + 3;
+    G.combatCue(w, hero, corpse, 'raise');
     G.effect(w, 'raise', corpse.x, corpse.y, { duration: 1.2, color: '#b6ffe2' });
     G.soundEvent(w, 'recruit', skeleton); w.revision++;
     return skeleton;
@@ -64,7 +66,8 @@
         if (G.distance(skeleton, target) > range || !G.attackLine(w, skeleton, target)) G.move(w, skeleton, target, speed, dt);
         else if (skeleton.cooldown <= 0) {
           skeleton.cooldown = 1.3; skeleton.attackAt = w.time; owner.contributedAt = w.time;
-          G.effect(w, 'slash', skeleton.x, skeleton.y, { toX: target.x, toY: target.y, color: '#ddf4c7', duration: .3 });
+          G.combatCue(w, skeleton, target);
+          G.effect(w, 'slash', skeleton.x, skeleton.y, { toX: target.x, toY: target.y, color: '#ddf4c7', duration: .48 });
           // Credit belongs to the master, but the melee targeting check belongs to the skeleton.
           G.damage(w, target, (5 + skeleton.level * 2.4) * G.offenseBoost(w, skeleton), owner);
           G.soundEvent(w, 'warrior', skeleton);
