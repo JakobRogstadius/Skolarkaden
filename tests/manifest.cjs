@@ -40,6 +40,7 @@ for(const area of ['city','food','garden','hive','paint','dinosaur','marshmallow
 }
 game('ficklampan','game',[...homeworkApp,...gameSources.ficklampan]);
 game('bubblefish','logic');
+game('bubblefish','layouts',[...gameSources.bubblefish,'tests/helpers/sweeps/bubblefish-layouts.cjs']);
 game('bubblefish','app',[...homeworkApp,...gameSources.bubblefish]);
 game('city','waves');game('food','waves');game('garden','balance');game('hive','rendering');game('studio','drawing');
 for(const area of ['chess','reversi','klossar'])game(area,'renderer',[...gameSources[area],...resource(area+'-renderer.js',area+'.css'),...(area==='klossar'?resource('klossar-creatures.js','fonts/'):[])]);
@@ -55,7 +56,7 @@ for(const area of ['dinosaur','home','eggs','marshmallows'])game(area,'app',[...
 for(const area of ['reversi','chess','klossar','trassel','glantan','studio'])game(area,'app',[...homeworkApp,...gameSources[area],...(['klossar','trassel'].includes(area)?resource('klossar-speech.js'):[]),...(area==='trassel'?resource('trassel-renderer.js','trassel.css'):[])]);
 for(const [name,area,helper]of[
  ['paint-labels','paint','paint-labels'],['dinosaur-labels','dinosaur','dinosaur-labels'],['home-rounds','home','home-rounds'],
- ['beehive-rounds','hive','beehive-rounds'],['reversi-matches','reversi','reversi-matches'],['klossar','klossar','klossar'],['garden-balance','garden',null]
+ ['beehive-rounds','hive','beehive-rounds'],['reversi-matches','reversi','reversi-matches'],['klossar','klossar','klossar'],['garden-balance','garden',null],['bubblefish-layouts','bubblefish','bubblefish-layouts']
 ])add(`extended/${name}.test.cjs`,[area],[...gameSources[area],...(helper?['tests/helpers/sweeps/'+helper+'.cjs']:[])],{extended:true});
 for(const [file,areas,sources]of[
  ['people',['people'],resource('people.js')],
