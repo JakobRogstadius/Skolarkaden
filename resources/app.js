@@ -35,9 +35,9 @@ $('arena').addEventListener('click',e=>{
 },{capture:true});
 const playViewport=new SC.PlayViewport(),navigation=new SC.GameNavigation({onBack:confirmGameBack});
 let resumeAfterBack=false;
-const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet',reversi:'Reversi',chess:'Schack',klossar:'Klossar',trassel:'Trassel',bubblefish:'Bubbelfisken',glantan:'Klockgläntan',studio:'Målarateljén'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer],home:[SC.HomeGame,SC.HomeRenderer],reversi:[SC.ReversiGame,SC.ReversiRenderer],chess:[SC.ChessGame,SC.ChessRenderer],klossar:[SC.KlossarGame,SC.KlossarRenderer],trassel:[SC.TrasselGame,SC.TrasselRenderer],bubblefish:[SC.BubblefishGame,SC.BubblefishRenderer],glantan:[SC.GlantanGame,SC.GlantanRenderer],studio:[SC.StudioGame,SC.StudioRenderer]};
+const names={city:'Meteorregn',food:'Laga mat',garden:'Odla blommor',hive:'Bikupan',paint:'Färgballonger',dinosaur:'Hungrig dinosaurie',marshmallows:'Marshmallows',eggs:'Äggröra',home:'Städa hemmet',reversi:'Reversi',chess:'Schack',klossar:'Klossar',trassel:'Trassel',ficklampan:'Ficklampan',bubblefish:'Bubbelfisken',glantan:'Klockgläntan',studio:'Målarateljén'},classes={city:[SC.CityGame,SC.CityRenderer],food:[SC.FoodTruckGame,SC.FoodTruckRenderer],garden:[SC.GardenGame,SC.GardenRenderer],hive:[SC.BeehiveGame,SC.BeehiveRenderer],paint:[SC.PaintGame,SC.PaintRenderer],dinosaur:[SC.DinosaurGame,SC.DinosaurRenderer],marshmallows:[SC.MarshmallowGame,SC.MarshmallowRenderer],eggs:[SC.EggGame,SC.EggRenderer],home:[SC.HomeGame,SC.HomeRenderer],reversi:[SC.ReversiGame,SC.ReversiRenderer],chess:[SC.ChessGame,SC.ChessRenderer],klossar:[SC.KlossarGame,SC.KlossarRenderer],trassel:[SC.TrasselGame,SC.TrasselRenderer],ficklampan:[SC.FicklampanGame,SC.FicklampanRenderer],bubblefish:[SC.BubblefishGame,SC.BubblefishRenderer],glantan:[SC.GlantanGame,SC.GlantanRenderer],studio:[SC.StudioGame,SC.StudioRenderer]};
 const isTileGame=()=>['klossar','trassel'].includes(kind);
-const isDirectGame=()=>isTileGame()||kind==='bubblefish';
+const isDirectGame=()=>isTileGame()||['bubblefish','ficklampan'].includes(kind);
 const isBoardGame=()=>['reversi','chess'].includes(kind);
 const highscores=new SC.Highscores({getSelection:()=>scoreSelection(),games:Object.fromEntries(Object.entries(names).filter(([id])=>id!=='studio'))});
 const isQuestionGame=()=>isBoardGame()||kind==='studio'||kind==='glantan';
@@ -85,13 +85,14 @@ function menuUpdate(){
     chess:'Välj ett drag genom att svara på dess uppgift. Sätt datorns kung schackmatt.',
     klossar:'Klicka på en fri kloss och dess matchande svar. Para ihop alla klossar för att tömma brädet.',
     trassel:'Dra linjer mellan uppgifter och svar som hör ihop. Linjer får inte korsa varandra eller väggar.',
+    ficklampan:'Lys med muspekaren eller dra med fingret. Välj två föremål som hör ihop.',
     bubblefish:'Styr med piltangenter eller håll och dra. Fånga en uppgift och dess rätta svar för att fylla på liv.',
     glantan:'Svara på frågor. Bygg en by. Skydda borgen och förstör bossboet.',
     studio:'Svara på uppgifter för att fylla på färg. Byt verktyg fritt och måla i din egen takt, utan poäng.'
   }[kind];
   $('pace').closest('.setup-field').hidden=kind==='studio';$('leaderboard-open').hidden=kind==='studio';
   $('keyboard').hidden=clickOnly||mode!=='bopomofo';
-  [...$('pace').options].forEach((o,i)=>o.textContent=['Lätt','Medel','Svår'][i]+(isTileGame()?' · '+(kind==='trassel'?[4,6,8]:[20,30,40])[i]+' par':''));
+  [...$('pace').options].forEach((o,i)=>o.textContent=['Lätt','Medel','Svår'][i]+(isTileGame()||kind==='ficklampan'?' · '+(kind==='ficklampan'?[8,12,16]:kind==='trassel'?[4,6,8]:[20,30,40])[i]+' par':''));
 }
 $('lesson').addEventListener('change',()=>{rememberedLessons.set($('exercise-group').value,$('lesson').value);$('language').value=SC.modes[$('lesson').value].lang;menuUpdate();});$('input-kind').addEventListener('change',menuUpdate);
 $('exercise-group').addEventListener('change',()=>{
@@ -169,7 +170,7 @@ function onGameEvent(e){
   if(e.type==='end'){
     highscores.finish(e.score);
     input.setEnabled(false);$('pause').disabled=true;$('end-overlay').hidden=false;$('pause-overlay').hidden=true;
-    $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Trädgården är klar.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!',eggs:'Skeppet är säkrat!',home:'Skönt att vara klar!',klossar:'Alla klossar är borta!',trassel:'Trasslet är löst!',glantan:'Du vann!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'Alla plantor vissnade.',hive:'Honungen räckte inte.',eggs:'Rymdkrypen tog över.',glantan:'Borgen föll.',bubblefish:'Dags att vila fenorna.'}[kind]);
+    $('result-title').textContent=e.won?({city:'Staden är räddad.',food:'Vilken god kväll!',garden:'Trädgården är klar.',hive:'Bina klarar vintern!',paint:'Vilket färgkalas!',dinosaur:'Mätt och belåten!',marshmallows:'God morgon!',eggs:'Skeppet är säkrat!',home:'Skönt att vara klar!',klossar:'Alla klossar är borta!',trassel:'Trasslet är löst!',ficklampan:'Alla par är hittade!',glantan:'Du vann!'}[kind]):({city:'Staden behöver vila.',food:'Köket stänger för idag.',garden:'Alla plantor vissnade.',hive:'Honungen räckte inte.',eggs:'Rymdkrypen tog över.',glantan:'Borgen föll.',bubblefish:'Dags att vila fenorna.'}[kind]);
     if(isBoardGame())$('result-title').textContent=(e.draw?(kind==='chess'?'Remi!':'Oavgjort!'):e.won?'Du vann!':'Datorn vann.')+' '+(kind==='chess'?SC.ChessScoring.resultText(e.resultScore):SC.formatGameScore(kind,e.score))+'–'+(kind==='chess'?SC.ChessScoring.resultText(e.botScore):SC.formatGameScore(kind,e.botScore))+(kind==='chess'?' · '+e.reason:'');
     $('result-game').textContent=names[kind];$('result-context').textContent=SC.modes[game.mode].name+' · '+{gentle:'Lätt',steady:'Medel',brave:'Svår'}[game.pace];
     $('chess-result-breakdown').hidden=kind!=='chess';$('chess-result-breakdown').textContent=kind==='chess'?SC.ChessScoring.summary(e.scoreParts):'';
@@ -230,7 +231,7 @@ $('start').addEventListener('click',start);$('again').addEventListener('click',(
 root.addEventListener('blur',pause);document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();renderGlantanAudio();renderBubblefishAudio();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]'))pause();});
 function renderTargets(){
   // Canvas labels are primary. Keep a compact alternative for assistive technology.
-  const hints=['klossar','trassel','chess','bubblefish'].includes(kind)?new Set():SC.pinyinHints(game),text=game.getTargets().map(t=>(kind==='home'?SC.homeTaskTypes[t.type].name+': ':'')+(hints.has(t)?[t.item.hint,t.item.label,t.item.translation].filter(Boolean).join(' · '):t.item.label)).join(', ');
+  const hints=['klossar','trassel','chess','bubblefish','ficklampan'].includes(kind)?new Set():SC.pinyinHints(game),text=game.getTargets().map(t=>(kind==='home'?SC.homeTaskTypes[t.type].name+': ':'')+(hints.has(t)?[t.item.hint,t.item.label,t.item.translation].filter(Boolean).join(' · '):t.item.label)).join(', ');
   if(text!==lastTargetKey){lastTargetKey=text;$('targets').textContent=text;}
 }
 function renderUi(){
@@ -252,7 +253,7 @@ function renderUi(){
   else if(kind==='hive'){objective=Math.min(100,Math.floor(game.honey/game.honeyGoal*100))+'% 🍯';secondary=game.season()+' · '+Math.ceil(game.timeLeft())+' s ❄';value=game.honey/game.honeyGoal*100;}
   else if(kind==='marshmallows'||kind==='eggs'){objective='';secondary='';value=0;}
   else if(isBoardGame()){objective=game.turns+' drag';secondary=kind==='chess'?(game.phase==='end'?game.reason:'Du spelar vit'):'Datorn: '+SC.formatGameScore(kind,game.botScore);value=0;}
-  else if(isTileGame()){objective=game.hits+' / '+game.total+' par';secondary=SC.klossarClock(game.elapsed);value=game.hits/game.total*100;}
+  else if(isTileGame()||kind==='ficklampan'){objective=game.hits+' / '+game.total+' par';secondary=SC.klossarClock(game.elapsed);value=game.hits/game.total*100;}
   else if(kind==='bubblefish'){objective='';secondary='';value=game.life;}
   else if(kind==='glantan'){const w=game.world,G=SC.Glantan;objective=G.population(w)+' / '+G.capacity(w)+' invånare';secondary='Mål: bossboet · '+Math.ceil(G.castle(w).hp/G.castle(w).maxHp*100)+' % borg';value=G.castle(w).hp/G.castle(w).maxHp*100;}
   else if(kind==='home'){objective=Math.min(game.cleaned,game.total)+' / '+game.total;secondary='';value=Math.min(100,game.cleaned/game.total*100);}
