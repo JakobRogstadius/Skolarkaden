@@ -165,7 +165,10 @@
     }
     c.restore();
   }
-  A.building = function(c, b, w, time) {
+  A.houseSmoke = function(c, time) {
+    for (let i = 0; i < 3; i++) ellipse(c, 22 + Math.sin(time + i) * 3, -55 - (time * 7 + i * 12) % 25, 3 + i, 3 + i, '#f5ebd34a');
+  };
+  A.building = function(c, b, w, time, staticOnly = false) {
     const t = A.tile, x = b.x * t, y = b.y * t, ink = '#304039';
     c.save(); c.translate(x, y);
     if (b.hp <= 0) {
@@ -198,7 +201,7 @@
       c.save(); c.translate(0, -19); roof(c, 64, 26, '#b55438'); c.restore();
       round(c, -8, -2, 16, 22, [7, 7, 0, 0], '#624730', ink); ellipse(c, 4, 11, 1.4, 1.4, '#ffe1a4');
       for (const xx of [-21, 21]) { window(c, xx, -7, 10); round(c, xx - 7, 9, 14, 5, 1, '#547c44'); }
-      for (let i = 0; i < 3; i++) ellipse(c, 22 + Math.sin(time + i) * 3, -55 - (time * 7 + i * 12) % 25, 3 + i, 3 + i, '#f5ebd34a');
+      if (!staticOnly) A.houseSmoke(c,time);
     } else if (b.type === 'hall') {
       // A fortified gatehouse, not another cottage: battlements and a broad shield.
       round(c, -29, -30, 58, 52, 2, '#c9c5ad', ink);
@@ -303,17 +306,26 @@
     ellipse(c, -width * 0.46, depth * 0.45, 7, 3, '#698750'); ellipse(c, width * 0.42, depth * 0.4, 5, 3, '#78915d');
     c.restore();
   };
-  A.hero = function(c, hero, w, time, reduced = false) {
+  A.hero = function(c, hero, w, time, reduced = false, cache = null) {
     const x = hero.x * A.tile, y = hero.y * A.tile;
     c.save(); c.translate(x, y);
     const idleTime = reduced ? 0 : time;
     if (hero.hp <= 0) { ellipse(c, 0, 0, 8, 3, '#536a4d'); line(c, [[0, 1], [0, -9]], '#dad4aa', 2); ellipse(c, 0, -10 + Math.sin(idleTime * 2) * 2, 3, 3, '#f7e0ad'); c.restore(); return; }
-    const path = w.choices[hero.classId], color = path === 'guardian' ? '#9dbed2' : path === 'banner' ? '#d96642' : path === 'traps' ? '#b99a59' : G.classes[hero.classId].color;
-    const pose = A.actionPose(hero, time, reduced), power = pose?.power || 0;
-    const walk = !reduced && !pose && hero.route?.length ? Math.sin(time * 11 + hero.id) : 0, ink = '#293b39';
+    const path = w.choices[hero.classId], ink = '#293b39';
+    const pose = A.actionPose(hero, time, reduced);
     ellipse(c, 1, 2, 10, 4, '#1e342f66');
     if (hero.shieldUntil > time) { c.strokeStyle = '#bedeca90'; c.lineWidth = 2; c.beginPath(); c.ellipse(0, -10, 13, 19, 0, 0, Math.PI * 2); c.stroke(); }
     c.save(); A.actionBody(c, hero, pose, hero.classId === 'warrior' ? 'melee' : hero.classId === 'ranger' ? 'bow' : 'cast');
+    if (cache) cache.body(c, 'hero', hero, w, time, reduced, pose);
+    else A.heroBody(c, hero, w, time, reduced, pose);
+    c.restore();
+    if (hero.level >= 3) { c.fillStyle = '#ffe5a3'; c.strokeStyle = ink; c.lineWidth = 2.5; c.font = 'bold 9px sans-serif'; c.textAlign = 'center'; const dots = '•'.repeat(Math.min(3, Math.floor(hero.level / 2))), y = path === 'banner' ? -64 : ['mage', 'necromancer'].includes(hero.classId) ? -55 : -46; c.strokeText(dots, 0, y); c.fillText(dots, 0, y); }
+    c.restore();
+  };
+  A.heroBody = function(c, hero, w, time, reduced, pose) {
+    const idleTime = reduced ? 0 : time, path = w.choices[hero.classId], ink = '#293b39';
+    const color = path === 'guardian' ? '#9dbed2' : path === 'banner' ? '#d96642' : path === 'traps' ? '#b99a59' : G.classes[hero.classId].color;
+    const power = pose?.power || 0, walk = hero.artWalk ?? (!reduced && !pose && hero.route?.length ? Math.sin(time * 11 + hero.id) : 0);
     line(c, [[-3, -3], [-4 - walk * 2, 2]], '#303c35', 3.3); line(c, [[3, -3], [4 + walk * 2, 2]], '#303c35', 3.3);
     polygon(c, [[-6, -21], [6, -21], [9 + walk, -3], [-8 + walk, -3]], color, ink);
     polygon(c, [[2, -18], [7, -16], [9 + walk, -3], [2, -4]], '#18362c38');
@@ -322,7 +334,7 @@
     if (hero.classId === 'warrior') {
       if (path === 'banner') {
         line(c, [[-12, 1], [-12, -57]], '#393c31', 3);
-        polygon(c, [[-11, -56], [11, -52 + Math.sin(idleTime * 3) * 2], [6, -41], [-11, -43]], '#df7348', '#482c26');
+        polygon(c, [[-11, -56], [11, -52 + (hero.artBanner ?? Math.sin(idleTime * 3)) * 2], [6, -41], [-11, -43]], '#df7348', '#482c26');
         polygon(c, [[-4, -52], [0, -48], [-4, -44], [-8, -48]], '#ffe7a3');
       }
       round(c, -7, -33, 14, 8, [6, 6, 1, 1], '#c9d3cf', ink); line(c, [[-8, -26], [8, -26]], '#f4eed4', 2);
@@ -386,9 +398,6 @@
       ellipse(c, 13, -40, 6, 6, '#d7caff50'); ellipse(c, 13, -40, 3.5, 3.5, '#e6f2ff');
       A.actionGlow(c, pose, 13, -40, '#c5a4ff'); c.restore();
     }
-    c.restore();
-    if (hero.level >= 3) { c.fillStyle = '#ffe5a3'; c.strokeStyle = ink; c.lineWidth = 2.5; c.font = 'bold 9px sans-serif'; c.textAlign = 'center'; const dots = '•'.repeat(Math.min(3, Math.floor(hero.level / 2))), y = path === 'banner' ? -64 : ['mage', 'necromancer'].includes(hero.classId) ? -55 : -46; c.strokeText(dots, 0, y); c.fillText(dots, 0, y); }
-    c.restore();
   };
   A.lair = function(c, lair, w, time) {
     c.save(); c.translate(lair.x * A.tile, lair.y * A.tile);
@@ -484,8 +493,8 @@
     return (originalY + raisedY) / 2;
   };
   A.skeletonBadgeY = -58;
-  A.monster = function(c, m, w, time, reduced = false) {
-    if (G.monsterTypes[m.type].skeletal) { A.skeleton(c, { ...m, monster: true }, w, time, reduced); return; }
+  A.monster = function(c, m, w, time, reduced = false, cache = null) {
+    if (G.monsterTypes[m.type].skeletal) { A.skeleton(c, Object.assign(Object.create(m), { monster: true }), w, time, reduced, cache); return; }
     c.save(); c.translate(m.x * A.tile, m.y * A.tile);
     const rank = Math.max(1, m.rank || 1), scale = A.monsterScale(m), boss = m.boss || m.type === 'guardian';
     const pose = A.actionPose(m, time, reduced), power = pose?.power || 0, idleTime = reduced ? 0 : time;
@@ -494,6 +503,20 @@
     c.save(); c.scale(scale, scale);
     const spec = G.monsterTypes[m.type];
     A.actionBody(c, m, pose, spec.flying ? 'dive' : spec.spell ? 'cast' : spec.kite ? 'bow' : ['sporeling', 'broodcap'].includes(m.type) ? 'cap' : boss || spec.siege || spec.ward ? 'heavy' : 'melee');
+    if (cache) cache.body(c, 'monster', m, w, time, reduced, pose, scale);
+    else A.monsterBody(c, m, w, time, reduced, pose);
+    c.restore();
+    const badgeY = A.monsterBadgeY(m);
+    round(c, boss ? -17 : -10, badgeY, boss ? 34 : 20, 15, 4, boss ? '#542e46' : rank >= 3 ? '#75413c' : '#3b4944');
+    c.fillStyle = '#ffe8c4'; c.font = 'bold 10px sans-serif'; c.textAlign = 'center'; c.fillText(String(rank), boss ? 7 : 0, badgeY + 11);
+    if (boss) line(c, [[-12, badgeY + 5], [-10, badgeY + 10], [-7, badgeY + 4], [-4, badgeY + 10], [-2, badgeY + 5]], '#f2c582', 1.2);
+    if (m.stunnedUntil > time) { c.fillStyle = '#ffe7ab'; c.font = '15px serif'; c.fillText('✧', 0, badgeY - 4 + bob); }
+    c.restore();
+  };
+  A.monsterBody = function(c, m, w, time, reduced, pose) {
+    const rank = Math.max(1, m.rank || 1), boss = m.boss || m.type === 'guardian';
+    const idleTime = reduced ? 0 : time, power = pose?.power || 0;
+    const bob = m.artBob ?? (pose ? 0 : Math.sin(idleTime * (boss ? 3.5 : 7) + m.id) * (boss ? .65 : 1.5));
     if (A.specialMonster(c, m, bob, idleTime, pose)) {
       // New families share the same scale, rank badge and health conventions.
     } else if (m.type === 'rattler') {
@@ -528,12 +551,5 @@
       for (const side of [-1, 1]) polygon(c, [[side * 8, -21 + bob], [side * 15, -30 + bob], [side * 13, -16 + bob]], '#e1b380');
       line(c, [[-7, -5], [0, -2], [7, -5]], '#e7bd82', 2);
     }
-    c.restore();
-    const badgeY = A.monsterBadgeY(m);
-    round(c, boss ? -17 : -10, badgeY, boss ? 34 : 20, 15, 4, boss ? '#542e46' : rank >= 3 ? '#75413c' : '#3b4944');
-    c.fillStyle = '#ffe8c4'; c.font = 'bold 10px sans-serif'; c.textAlign = 'center'; c.fillText(String(rank), boss ? 7 : 0, badgeY + 11);
-    if (boss) line(c, [[-12, badgeY + 5], [-10, badgeY + 10], [-7, badgeY + 4], [-4, badgeY + 10], [-2, badgeY + 5]], '#f2c582', 1.2);
-    if (m.stunnedUntil > time) { c.fillStyle = '#ffe7ab'; c.font = '15px serif'; c.fillText('✧', 0, badgeY - 4 + bob); }
-    c.restore();
   };
 })(globalThis);

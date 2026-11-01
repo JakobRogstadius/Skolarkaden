@@ -1,0 +1,120 @@
+{
+  "date": "2026-11-01",
+  "baseline": "4e8d3bb74708c7d696cc421eae9432ffb4ba9578",
+  "scenario": {
+    "heroes": 24,
+    "monsters": 83,
+    "cssPixels": [
+      1005,
+      738
+    ],
+    "measuredDrawsPerScene": 180,
+    "discardedDrawsPerScene": 60,
+    "drawsPerCallback": 12,
+    "browserDifficulty": "gentle",
+    "browserSeed": "moss-koppar",
+    "simulationDifficulty": "brave"
+  },
+  "notes": [
+    "Canvas draw-call time measured in a cloud browser. Browser/compositor presentation FPS is not measured; animation callbacks are throttled near one second.",
+    "Simulation measured separately in Node: 500 ticks per scene, after three warm-up runs.",
+    "Each browser run starts from a fresh page and the same seed. The 2x-device result includes the production canvas pixel budget."
+  ],
+  "before": {
+    "standard": {
+      "battle": {
+        "mean": 11.731,
+        "p95": 104.3,
+        "max": 115.2
+      },
+      "pan": {
+        "mean": 7.568,
+        "p95": 46.8,
+        "max": 115.7
+      }
+    },
+    "highDensity": {
+      "battle": {
+        "mean": 26.016,
+        "p95": 263.3,
+        "max": 322.9
+      },
+      "pan": {
+        "mean": 14.259,
+        "p95": 53.8,
+        "max": 307.3
+      }
+    },
+    "simulation": {
+      "march": {
+        "mean": 2.653,
+        "p95": 3.646,
+        "max": 8.69
+      },
+      "battle": {
+        "mean": 3.811,
+        "p95": 5.075,
+        "max": 8.652
+      }
+    }
+  },
+  "after": {
+    "simulation": {
+      "march": {
+        "mean": 2.538,
+        "p95": 3.568,
+        "max": 9.81
+      },
+      "battle": {
+        "mean": 2.241,
+        "p95": 3.396,
+        "max": 7.027
+      }
+    },
+    "highDensity": {
+      "pixelSize": [
+        1429,
+        1050
+      ],
+      "renderDpr": 1.422114019262988,
+      "battle": {
+        "mean": 3.297,
+        "p95": 3.5,
+        "max": 75.5
+      },
+      "pan": {
+        "mean": 13.052,
+        "p95": 50.5,
+        "max": 188.5
+      },
+      "spriteBytes": 29292220,
+      "terrainBytes": 32440320
+    },
+    "standard": {
+      "pixelSize": [
+        1005,
+        738
+      ],
+      "renderDpr": 1,
+      "battle": {
+        "mean": 1.454,
+        "p95": 2.5,
+        "max": 3.4
+      },
+      "pan": {
+        "mean": 3.472,
+        "p95": 30.3,
+        "max": 54
+      },
+      "spriteBytes": 14733000,
+      "terrainBytes": 32440320
+    }
+  },
+  "validation": {
+    "ordinarySuites": 94,
+    "passed": 94,
+    "exactReplays": 6,
+    "ticksPerReplay": 600,
+    "bossProbes": 6
+  }
+}

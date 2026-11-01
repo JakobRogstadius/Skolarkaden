@@ -87,6 +87,14 @@
   G.xpFor = level => 18 + level * level * 9;
   G.clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   G.distance = (a, b) => { const dx = a.x - b.x, dy = a.y - b.y; return Math.sqrt(dx * dx + dy * dy); };
+  G.distanceSquared = (a, b) => { const dx = a.x - b.x, dy = a.y - b.y; return dx * dx + dy * dy; };
+  // Stable single-pass selection: equal scores keep the original list order.
+  // Infinity excludes a candidate without allocating and sorting a new list.
+  G.best = (items, score) => {
+    let best, lowest = Infinity;
+    for (const item of items) { const value = score(item); if (value < lowest) { lowest = value; best = item; } }
+    return best;
+  };
   G.alive = entity => entity.hp > 0;
   G.clockText = seconds => Math.floor(seconds / 60) + ':' + String(Math.floor(seconds % 60)).padStart(2, '0');
 })(globalThis);

@@ -10,7 +10,8 @@
       canvas.hidden = true;
       this.node = make('section', 'g-scene'); this.stage = make('div', 'g-stage');
       this.canvas = make('canvas', 'g-world'); this.canvas.tabIndex = 0; this.canvas.setAttribute('aria-label', 'Klockgläntans karta. Dra för att flytta, rulla för att zooma. Piltangenter flyttar kartan.');
-      this.ctx = this.canvas.getContext('2d'); this.stage.append(this.canvas);
+      this.ctx = this.canvas.getContext('2d', { alpha: false }); this.stage.append(this.canvas);
+      this.vignette = make('div', 'g-vignette'); this.vignette.setAttribute('aria-hidden', 'true'); this.stage.append(this.vignette);
       this.toast = make('button', 'g-toast'); this.toast.type = 'button'; this.toast.setAttribute('aria-live', 'polite'); this.stage.append(this.toast);
       this.toast.onclick = () => { const notice = this.game.world.notices.at(-1); if (Number.isFinite(notice?.x)) this.focus(notice); };
       this.controls = make('div', 'g-map-controls');
@@ -32,10 +33,15 @@
       this.goal.onclick = () => { const boss = this.game.world.lairs.find(l => l.boss && l.seen); if (boss) { this.focus(boss); this.ui.inspect({ kind: 'lair', id: boss.id }); } else document.getElementById('help-open').click(); };
       this.status.append(castleHealth, population, this.goal); canvas.parentElement.querySelector('.hud').insertBefore(this.status, document.getElementById('pause'));
       this.terrainChunks = new Map();
-      this.previousPositions = new Map();
+      this.terrainBytes = 0; this.sprites = new G.SpriteCache();
+      this.entities = []; this.entityPool = []; this.renderUnits = new WeakMap();
+      this.previousPositions = new WeakMap();
       game.simulation.beforeStep = w => {
-        this.previousPositions.clear();
-        for (const units of [w.heroes, w.skeletons, w.monsters]) for (const unit of units) if (G.alive(unit)) this.previousPositions.set(unit.id, { x: unit.x, y: unit.y });
+        for (const units of [w.heroes, w.skeletons, w.monsters]) for (const unit of units) if (G.alive(unit)) {
+          let position = this.previousPositions.get(unit);
+          if (!position) { position = {}; this.previousPositions.set(unit, position); }
+          position.x = unit.x; position.y = unit.y;
+        }
       };
       // Fog only needs a few texels per tile, rather than a second full world image.
       this.fog = document.createElement('canvas'); this.fog.width = game.world.width * 4; this.fog.height = game.world.height * 4;
@@ -46,7 +52,9 @@
       this.last = 0; this.uiAt = 0;
       const frame = now => {
         const dt = this.last ? Math.min(0.15, (now - this.last) / 1000) : 0; this.last = now;
-        game.update(dt); this.draw();
+        game.update(dt);
+        const idleKey = game.state === 'playing' ? null : [game.state, game.world.tick, game.world.revision, this.camera.x, this.camera.y, this.camera.zoom, this.selection?.id, this.hover?.x, this.hover?.y, this.blueprint, this.width, this.height].join(':');
+        if (idleKey === null || idleKey !== this.idleDrawKey) { this.draw(); this.idleDrawKey = idleKey; }
         if (now - this.uiAt > 180) { this.ui.update(); this.updateOverlay(); this.uiAt = now; }
         this.raf = root.requestAnimationFrame(frame);
       };
@@ -121,8 +129,16 @@
     }
     resize() {
       const box = this.stage.getBoundingClientRect(); if (!box.width || !box.height) return;
-      this.width = box.width; this.height = box.height; this.dpr = Math.min(2, root.devicePixelRatio || 1);
+      this.width = box.width; this.height = box.height;
+      // Spend extra pixels on small high-density screens, not unlimited desktop
+      // oversampling. Never go below one pixel per CSS pixel; DOM text stays native.
+      this.dpr = Math.min(2, root.devicePixelRatio || 1, Math.max(1, Math.sqrt(1500000 / (this.width * this.height))));
       this.canvas.width = Math.round(this.width * this.dpr); this.canvas.height = Math.round(this.height * this.dpr);
+      if (this.backdrop) this.backdrop.width = this.backdrop.height = 0;
+      this.backdrop = document.createElement('canvas'); this.backdrop.width = this.canvas.width; this.backdrop.height = this.canvas.height; this.backdropKey = null;
+      // Let the compositor retain this static overlay instead of blending a
+      // full-screen translucent bitmap into the game canvas every frame.
+      this.vignette.style.background = 'radial-gradient(circle ' + this.width * .8 + 'px at center, #19392f00 25%, #19392f38 100%)';
       if (!this.initialSize) { this.camera.zoom = G.clamp(Math.min(this.width / 780, this.height / 590), 0.42, 1.05); this.initialSize = true; }
       this.clampCamera(); this.draw();
     }
@@ -162,6 +178,7 @@
     }
     drawTerrain() {
       const w = this.game.world, view = this.viewBounds(), chunkSize = 12;
+      if (!this.terrainChunks.size) this.terrainBytes = 0;
       const scale = this.camera.zoom < 0.65 ? 0.5 : 1, used = new Set();
       for (let cy = Math.floor(view.y0 / chunkSize); cy < Math.ceil(view.y1 / chunkSize); cy++) {
         for (let cx = Math.floor(view.x0 / chunkSize); cx < Math.ceil(view.x1 / chunkSize); cx++) {
@@ -173,13 +190,19 @@
             const region = { x: Math.max(0, x - 2), y: Math.max(0, y - 2), width: width + 4, height: height + 4, scale };
             region.width = Math.min(w.width, x + width + 2) - region.x; region.height = Math.min(w.height, y + height + 2) - region.y;
             const canvas = document.createElement('canvas'); A.terrain(canvas, w, region);
-            chunk = { canvas, x: region.x, y: region.y }; this.terrainChunks.set(key, chunk);
+            chunk = { canvas, x: region.x, y: region.y, bytes: canvas.width * canvas.height * 4 }; this.terrainBytes += chunk.bytes;
           }
+          this.terrainChunks.delete(key); this.terrainChunks.set(key, chunk);
           this.ctx.drawImage(chunk.canvas, (x - chunk.x) * T * scale, (y - chunk.y) * T * scale, width * T * scale, height * T * scale, x * T, y * T, width * T, height * T);
         }
       }
-      // Keep one viewport only: visiting a large map never accumulates giant bitmaps.
-      for (const [key, chunk] of this.terrainChunks) if (!used.has(key)) { chunk.canvas.width = chunk.canvas.height = 0; this.terrainChunks.delete(key); }
+      // Retain recently visited chunks, but never an unbounded world bitmap.
+      // Current-view chunks stay pinned until their draw has completed.
+      for (const [key, chunk] of this.terrainChunks) {
+        if (this.terrainBytes <= 32 * 1024 * 1024) break;
+        if (used.has(key)) continue;
+        this.terrainBytes -= chunk.bytes; chunk.canvas.width = chunk.canvas.height = 0; this.terrainChunks.delete(key);
+      }
     }
     drawFog() {
       const w = this.game.world;
@@ -195,6 +218,25 @@
       const width = entity.boss ? entity.w ? 62 : 36 : entity.w ? 44 : 23;
       A.round(c, x - width / 2 - 1, y, width + 2, 5, 2, '#24423ed9');
       A.round(c, x - width / 2, y + 1, Math.max(0, width * entity.hp / entity.maxHp), 3, 1, color);
+    }
+    drawBackdrop() {
+      const w = this.game.world, key = [this.camera.x,this.camera.y,this.camera.zoom,w.fogRevision,w.navRevision].join(':');
+      const paint = c => {
+        const main = this.ctx; c.save();
+        c.setTransform(this.dpr,0,0,this.dpr,0,0); c.fillStyle = '#294a41'; c.fillRect(0,0,this.width,this.height);
+        c.translate(this.width/2,this.height/2); c.scale(this.camera.zoom,this.camera.zoom); c.translate(-this.camera.x,-this.camera.y);
+        this.ctx = c;
+        try { this.drawTerrain(); this.drawFog(); c.drawImage(this.fog,0,0,w.width*T,w.height*T); }
+        finally { this.ctx = main; c.restore(); }
+      };
+      // While panning, draw the retained chunks directly. Building and copying a
+      // viewport image that will be invalid next frame only adds pixel work.
+      if (key !== this.viewKey) { this.viewKey = key; paint(this.ctx); return; }
+      if (key !== this.backdropKey) {
+        paint(this.backdrop.getContext('2d', { alpha:false }));
+        this.backdropKey = key;
+      }
+      this.ctx.drawImage(this.backdrop,0,0,this.width,this.height);
     }
     drawFlags() {
       const c = this.ctx, w = this.game.world;
@@ -267,25 +309,26 @@
       this.renderAlpha = this.game.state === 'playing' ? G.clamp(this.game.simulation.accumulator / G.STEP, 0, 1) : 1;
       this.renderDelay = (1 - this.renderAlpha) * G.STEP;
       const time = Math.max(0, w.time - this.renderDelay);
-      c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); c.fillStyle = '#294a41'; c.fillRect(0, 0, this.width, this.height);
+      this.sprites.scale = this.camera.zoom * this.dpr;
+      this.sprites.beginFrame();
+      c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); this.drawBackdrop();
       c.save(); c.translate(this.width / 2, this.height / 2); c.scale(this.camera.zoom, this.camera.zoom); c.translate(-this.camera.x, -this.camera.y);
-      this.drawTerrain(); this.drawFog();
-      c.imageSmoothingEnabled = true; c.drawImage(this.fog, 0, 0, w.width * T, w.height * T);
       const view = this.viewBounds(3);
       const visible = entity => entity.x >= view.x0 && entity.x <= view.x1 && entity.y >= view.y0 && entity.y <= view.y1;
       for (const corpse of w.corpses) if (visible(corpse) && w.explored[G.index(w, corpse.x, corpse.y)]) A.corpse(c, corpse);
       for (const trap of w.traps) if (visible(trap)) A.trap(c, trap, w);
-      const entities = [
-        ...w.buildings.map(value => ({ type: 'building', value })),
-        ...w.lairs.filter(l => l.seen).map(value => ({ type: 'lair', value })),
-        ...w.heroes.map(value => ({ type: 'hero', value })),
-        ...w.skeletons.filter(G.alive).map(value => ({ type: 'skeleton', value })),
-        ...w.monsters.filter(m => G.alive(m) && w.explored[G.index(w, m.x, m.y)]).map(value => ({ type: 'monster', value }))
-      ].filter(e => visible(e.value)).sort((a, b) => a.value.y - b.value.y);
+      const entities = this.entities; entities.length = 0;
+      for (const [type, list] of [['building',w.buildings],['lair',w.lairs],['hero',w.heroes],['skeleton',w.skeletons],['monster',w.monsters]]) for (const value of list) {
+        if (!visible(value) || type === 'lair' && !value.seen || ['skeleton','monster'].includes(type) && !G.alive(value) || type === 'monster' && !w.explored[G.index(w,value.x,value.y)]) continue;
+        const entry = this.entityPool[entities.length] || (this.entityPool[entities.length] = {});
+        entry.type = type; entry.value = value; entities.push(entry);
+      }
+      entities.sort((a,b)=>a.value.y-b.value.y);
       this.drawSelection();
       for (const entity of entities) {
         const { type } = entity, value = this.renderUnit(entity.value);
-        A[type](c, value, w, this.reduced && !['hero', 'monster', 'skeleton'].includes(type) ? 0 : time, this.reduced);
+        if (type === 'building') this.sprites.building(c, value, w, this.reduced ? 0 : time);
+        else A[type](c, value, w, this.reduced && !['hero', 'monster', 'skeleton'].includes(type) ? 0 : time, this.reduced, this.sprites);
         if (G.alive(value) && !value.w) A.status(c, value, w);
         const selected = this.selection?.id === value.id;
         if (G.alive(value) && (selected || value.hp < value.maxHp * 0.98)) this.drawBar(value, type === 'building' || type === 'lair' ? 29 : 8, type === 'monster' || type === 'lair' ? '#e7aa8d' : '#c7e2a6');
@@ -301,14 +344,15 @@
         if (w.explored[G.index(w, x / T, y / T)]) A.ellipse(c, x, y, 1.8, 1.8, '#ffe6a890');
       }
       c.restore();
-      const vignette = c.createRadialGradient(this.width / 2, this.height / 2, this.width * 0.2, this.width / 2, this.height / 2, this.width * 0.8);
-      vignette.addColorStop(0, '#19392f00'); vignette.addColorStop(1, '#19392f38'); c.fillStyle = vignette; c.fillRect(0, 0, this.width, this.height);
       this.drawMinimap();
     }
     renderUnit(unit) {
-      const previous = this.previousPositions.get(unit.id);
+      const previous = this.previousPositions.get(unit);
       if (!previous || this.renderAlpha === 1 || G.distance(previous, unit) > 3) return unit;
-      return { ...unit, x: previous.x + (unit.x - previous.x) * this.renderAlpha, y: previous.y + (unit.y - previous.y) * this.renderAlpha };
+      let rendered = this.renderUnits.get(unit);
+      if (!rendered) { rendered = Object.create(unit); this.renderUnits.set(unit, rendered); }
+      rendered.x = previous.x + (unit.x - previous.x) * this.renderAlpha; rendered.y = previous.y + (unit.y - previous.y) * this.renderAlpha;
+      return rendered;
     }
     drawMinimap() {
       const w = this.game.world, c = this.minimap.getContext('2d'), sx = this.minimap.width / w.width, sy = this.minimap.height / w.height;
@@ -359,6 +403,8 @@
       this.game.soundscape?.destroy();
       for (const chunk of this.terrainChunks.values()) chunk.canvas.width = chunk.canvas.height = 0;
       this.terrainChunks.clear(); this.fog.width = this.fog.height = 0;
+      this.sprites.clear();
+      this.backdrop.width = this.backdrop.height = 0;
       root.cancelAnimationFrame(this.raf); this.resizeObserver.disconnect(); this.listeners.forEach(off => off()); this.game.save(); this.status.remove(); this.node.remove(); this.original.hidden = false;
     }
   }

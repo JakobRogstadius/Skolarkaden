@@ -1,11 +1,24 @@
 // Optional audit-only preview. The distributed app still opens directly as a file.
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path');
+const {execFileSync}=require('node:child_process');
 const root=path.resolve(__dirname,'..');
 http.createServer((req,res)=>{
   const url=new URL(req.url,'http://terminal.local');
+  const historical=url.pathname.match(/^\/audit-source\/([a-f0-9]{7,40})\/(resources\/(?:[a-zA-Z0-9_-]+\/)*[\w.-]+)$/);
+  if(historical){
+    try{const data=execFileSync('git',['show',historical[1]+':'+historical[2]],{cwd:root,maxBuffer:8*1024*1024});res.setHeader('Content-Type',historical[2].endsWith('.js')?'text/javascript':historical[2].endsWith('.css')?'text/css':'application/octet-stream');res.end(data);}
+    catch{res.writeHead(404).end();}return;
+  }
   if(url.pathname==='/audit-glantan.html'){
     res.setHeader('Content-Type','text/html');res.setHeader('Cache-Control','no-store');
-    res.end(fs.readFileSync(path.join(root,'index.html'),'utf8').replace(/(<script defer src="resources\/app\.js(?:\?[^"]*)?"><\/script>)/,'<script defer src="/glantan-fixture.js"></script>$1'));return;
+    const ref=url.searchParams.get('ref');
+    if(ref&&!/^[a-f0-9]{7,40}$/.test(ref)){res.writeHead(400).end();return;}
+    try{
+      let html=ref?execFileSync('git',['show',ref+':index.html'],{cwd:root,encoding:'utf8'}):fs.readFileSync(path.join(root,'index.html'),'utf8');
+      html=html.replace(/(<script defer src="resources\/app\.js(?:\?[^"]*)?"><\/script>)/,'<script defer src="/glantan-fixture.js"></script>$1');
+      if(ref)html=html.replace(/((?:src|href)=")resources\//g,'$1/audit-source/'+ref+'/resources/');
+      res.end(html);
+    }catch{res.writeHead(404).end();}return;
   }
   if(url.pathname==='/glantan-fixture.js'){res.setHeader('Content-Type','text/javascript');res.end(fs.readFileSync(path.join(__dirname,'glantan-fixture.js')));return;}
   if(url.pathname==='/audit-glantan-viewport.html'){

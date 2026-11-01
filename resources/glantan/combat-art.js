@@ -50,12 +50,18 @@
     line(c, [[-9, 4], [8, -1]], bone, 2); line(c, [[-8, -1], [9, 4]], bone, 2);
     skull(c, 0, -3, .75); level(c, corpse.level, 9, '#e9ddc2'); c.restore();
   };
-  A.skeleton = function(c, unit, w, time, reduced = false) {
+  A.skeleton = function(c, unit, w, time, reduced = false, cache = null) {
     c.save(); c.translate(unit.x * T, unit.y * T);
-    const bone = unit.monster ? '#e47770' : '#f0e6c8', accent = unit.monster ? '#782e46' : '#54c5a1';
-    const pose = A.actionPose(unit, time, reduced), walk = !reduced && !pose && unit.route?.length ? Math.sin(time * 11 + unit.id) : 0;
+    const pose = A.actionPose(unit, time, reduced);
     ellipse(c, 0, 2, 9, 3.5, '#203c365f');
     c.save(); A.actionBody(c, unit, pose, 'melee');
+    if (cache) cache.body(c, 'skeleton', unit, w, time, reduced, pose);
+    else A.skeletonBody(c, unit, w, time, reduced, pose);
+    c.restore(); level(c, unit.monster ? unit.rank : unit.level, unit.monster ? A.monsterBadgeY(unit) : A.skeletonBadgeY, unit.monster ? '#ffb0a3' : '#dbf4d8'); c.restore();
+  };
+  A.skeletonBody = function(c, unit, w, time, reduced, pose) {
+    const bone = unit.monster ? '#e47770' : '#f0e6c8', accent = unit.monster ? '#782e46' : '#54c5a1';
+    const walk = unit.artWalk ?? (!reduced && !pose && unit.route?.length ? Math.sin(time * 11 + unit.id) : 0);
     line(c, [[-3, -10], [-5 - walk * 2, -4], [-5 - walk * 2, 1]], ink, 4);
     line(c, [[3, -10], [5 + walk * 2, -4], [5 + walk * 2, 1]], ink, 4);
     line(c, [[-3, -10], [-5 - walk * 2, -4], [-5 - walk * 2, 1]], bone, 2);
@@ -69,7 +75,6 @@
     c.restore();
     skull(c, 0, -29, 1, bone); polygon(c, [[-5, -24], [5, -24], [4, -20], [-5, -22]], accent);
     if (unit.monster) polygon(c, [[-6, -36], [-8, -42], [-2, -36], [2, -36], [8, -42], [6, -36]], accent, ink);
-    c.restore(); level(c, unit.monster ? unit.rank : unit.level, unit.monster ? A.monsterBadgeY(unit) : A.skeletonBadgeY, unit.monster ? '#ffb0a3' : '#dbf4d8'); c.restore();
   };
   A.trap = function(c, trap, w) {
     c.save(); c.translate(trap.x * T, trap.y * T);
@@ -84,7 +89,7 @@
     const color = G.monsterTypes[m.type].color, power = pose?.power || 0;
     if (m.type === 'nightwing') {
       c.save(); c.translate(0, -27 + bob);
-      const wing = Math.sin(time * 11 + m.id) * 7 + power * 15, span = 28 - power * 9;
+      const wing = (m.artWing ?? Math.sin(time * 11 + m.id) * 7) + power * 15, span = 28 - power * 9;
       for (const side of [-1, 1]) {
         polygon(c, [[side * 4, 0], [side * span, -15 + wing], [side * (span - 3), 5 + wing], [side * 17, 0], [side * 10, 9]], '#37596f', '#243b4a');
         line(c, [[side * 4, 0], [side * span, -15 + wing], [side * 17, 0]], '#9bcce1', 1.5);

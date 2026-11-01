@@ -69,6 +69,26 @@ for (const mode of Object.keys(SC.modes).filter(m => m !== 'homework')) {
 console.log('adapter: streaks, realtime, bell, pause, exercise-aware saves and all exercise families');
 
 {
+  const { SC, G, context } = runtime(true), jobs = new Map(); let serial = 0, writes = 0;
+  context.requestIdleCallback = callback => { jobs.set(++serial,callback); return serial; };
+  context.cancelIdleCallback = id => jobs.delete(id);
+  const write = context.localStorage.setItem;
+  context.localStorage.setItem = (key,value) => { writes++; write(key,value); };
+  const game = new SC.GlantanGame(); game.start({mode:'swedish',items:[{label:'sol',answer:'sol'}],fresh:true,seed:'idle-save'});
+  const initial = writes;
+  game.scheduleSave(); game.scheduleSave();
+  assert.equal(jobs.size,1,'autosaves coalesce until an idle slot'); assert.equal(writes,initial);
+  game.pause(); assert.equal(jobs.size,0,'pause flushes and cancels the pending autosave'); assert.equal(writes,initial+1);
+  game.resume(); game.choose({type:'research',id:'castle2'});
+  while (game.progress < G.actionCost(game.world,game.pending)-1) game.answer({text:'sol'});
+  const before = writes; game.answer({text:'sol'});
+  assert.equal(writes,before+1,'a completed answer and purchase make one durable save');
+  game.scheduleSave(); game.world.outcome = 'won'; game.clearSave();
+  assert.equal(jobs.size,0,'an ended game cannot be recreated by a deferred save');
+  assert.equal(context.localStorage.getItem('skolarkaden-klockglantan-v2'),null);
+}
+
+{
   const { SC, G, context } = runtime(true);
   const options = { mode: 'swedish', items: [{ label: 'sol', answer: 'sol' }] };
   const original = new SC.GlantanGame(); original.start({ ...options, fresh: true, seed: 'legacy-branches' });

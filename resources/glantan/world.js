@@ -36,9 +36,9 @@
     let count = 0;
     for (let yy = Math.max(0, Math.floor(y - radius)); yy <= Math.min(world.height - 1, Math.ceil(y + radius)); yy++) {
       for (let xx = Math.max(0, Math.floor(x - radius)); xx <= Math.min(world.width - 1, Math.ceil(x + radius)); xx++) {
-        if (Math.hypot(xx + 0.5 - x, yy + 0.5 - y) > radius) continue;
         const i = yy * world.width + xx;
-        if (!world.explored[i]) { world.explored[i] = 1; count++; }
+        if (world.explored[i] || Math.hypot(xx + 0.5 - x, yy + 0.5 - y) > radius) continue;
+        world.explored[i] = 1; count++;
       }
     }
     for (const lair of world.lairs) if (!lair.seen) {
