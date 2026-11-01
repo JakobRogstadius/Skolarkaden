@@ -32,9 +32,94 @@ test('All 1,470 pairs support both directions, every accepted alternative and ha
       for(const answer of [task.answer,...task.aliases])for(const source of ['text','speech']){
         assert(SC.matches(answer,task,mode,task.answerLang,source),mode+' '+task.label+' → '+answer);
         assert(SC.matches('  '+answer.toUpperCase().replace(/ /g,'   ')+'! ',task,mode,task.answerLang,source));
+        if(source==='speech')assert.deepEqual(Array.from(SC.tokenizeSpeech(answer,{lesson:mode,language:task.answerLang,candidates:[task]})),[answer],mode+' splits spoken answer '+answer);
       }
       assert(!SC.matches('xyzzy',task,mode));
       if(!SC.isTranslation(mode))assert(!SC.matches(task.label,task,mode),'copying synonym/opposite prompt '+task.label);
+    }
+  }
+});
+test('Direct accepted answers are reversible and consistent across levels in each dictionary family',()=>{
+  const prompts=new Map(),key=(family,lang,label)=>[family,lang,SC.normalize(label)].join('|');
+  for(const mode of modes){
+    const family=SC.isTranslation(mode)?'translation':mode.replace(/-\d+$/,'');
+    for(const task of SC.modes[mode].items){
+      const promptLang=SC.isTranslation(mode)?(task.answerLang==='sv-SE'?'en-US':'sv-SE'):task.answerLang;
+      const k=key(family,promptLang,task.label),entry={mode,task,family,promptLang};
+      if(!prompts.has(k))prompts.set(k,[]);prompts.get(k).push(entry);
+    }
+  }
+  let reverseChecks=0;
+  for(const entries of prompts.values()){
+    const answerKeys=({task})=>[...new Set([task.answer,...task.aliases].map(a=>SC.pairAnswerKey(a,task.answerLang)))].sort();
+    for(const entry of entries){
+      const {mode,task,family}=entry;
+      assert.deepEqual(answerKeys(entry),answerKeys(entries[0]),mode+' changes the meanings of '+task.label);
+      for(const answer of [task.answer,...task.aliases])for(const reverse of prompts.get(key(family,task.answerLang,answer))||[]){
+        for(const source of ['text','speech'])assert(SC.matches(task.label,reverse.task,reverse.mode,reverse.task.answerLang,source),mode+' accepts '+task.label+' → '+answer+' but '+reverse.mode+' rejects the reverse');
+        reverseChecks++;
+      }
+    }
+  }
+  assert(reverseChecks>3000,'the reverse audit must include alternatives that are prompts at other levels');
+  console.log('  '+reverseChecks+' direct reverse relationships checked.');
+});
+test('Reviewed omissions and distinct word senses work without transitive synonym expansion',()=>{
+  const cases=[
+    ['swedish-opposites','tjock',['smal','mager'],['fet']],
+    ['swedish-opposites-2','stolt',['skamsen','ödmjuk','blygsam'],['högfärdig']],
+    ['swedish-opposites-3','tillgång',['skuld','brist'],['resurs']],
+    ['swedish-opposites-4','syntetisk',['analytisk','naturlig'],['konstgjord']],
+    ['swedish-synonyms','springa',['löpa','spricka','glipa'],['stanna']],
+    ['swedish-synonyms','kvick',['snabb','rolig','vitsig'],['trög']],
+    ['swedish-synonyms-2','klar',['tydlig','färdig','genomskinlig'],['oklar']],
+    ['swedish-synonyms-3','styrka',['bekräfta','kraft','bestyrka'],['svaghet']],
+    ['swedish-synonyms-4','reservation',['förbehåll','bokning'],['avbokning']],
+    ['english-opposites','hard',['soft','easy','gentle'],['firm']],
+    ['english-opposites-2','dense',['sparse','intelligent'],['thick']],
+    ['english-opposites-3','fair',['unfair','dark','foul'],['just']],
+    ['english-opposites-4','synthetic',['analytic','natural'],['artificial']],
+    ['english-synonyms','gift',['present','talent','donation'],['current']],
+    ['english-synonyms','present',['gift','current','introduce'],['talent']],
+    ['english-synonyms-2','curious',['inquisitive','odd','strange'],['uninterested']],
+    ['english-synonyms-3','objective',['unbiased','goal','target'],['biased']],
+    ['english-synonyms-4','fortuitous',['accidental','lucky','serendipitous'],['deliberate']],
+    ['english-synonyms-4','accidental',['fortuitous','unintentional'],['fortunate']],
+    ['translation-sv-en-1','pencil',['penna','blyertspenna'],['kulspetspenna','quill']],
+    ['translation-sv-en-1','bed',['säng','bädd','rabatt','flodbädd'],['discount']],
+    ['translation-sv-en-2','springa',['run','crack','gap'],['walk']],
+    ['translation-sv-en-2','play',['leka','spel','pjäs'],['spelare']],
+    ['translation-sv-en-2','ledsen',['sad','sorry','upset'],['happy']],
+    ['translation-sv-en-3','berg',['mountain','rock'],['stonehenge']],
+    ['translation-sv-en-3','question',['fråga','ifrågasätta','frågeställning'],['svar']],
+    ['translation-sv-en-4','apply',['ansöka','tillämpa','gälla','applicera'],['ansökan']],
+    ['translation-sv-en-4','ansöka',['apply','apply for'],['use']],
+    ['translation-sv-en-4','rest',['vila','resten','återstod'],['rastlös']],
+    ['translation-sv-en-4','return',['återvända','lämna tillbaka','avkastning'],['avgång']],
+    ['translation-sv-en-4','boende',['accommodation','housing','resident'],['homeless']],
+    ['translation-sv-en-4','regular',['regelbunden','regelbundet','regelbundna','ordinarie'],['oregelbunden']],
+    ['translation-sv-en-5','application',['ansökan','tillämpning','program','app'],['applicera']],
+    ['translation-sv-en-5','right',['rättighet','höger','rätt','korrekt'],['vänster']],
+    ['translation-sv-en-5','implement',['genomföra','redskap','verktyg','tillämpa'],['implementation']],
+    ['translation-sv-en-5','anställd',['employee','employed','staff member'],['employer']],
+    ['translation-sv-en-6','claim',['påstående','krav','anspråk','hävda'],['bevis']],
+    ['translation-sv-en-6','förutsättning',['prerequisite','condition','assumption','premise'],['conclusion']],
+    ['translation-sv-en-6','likely',['trolig','troligt','troliga','sannolikt'],['osannolik']],
+    ['translation-sv-en-6','omständighet',['circumstance','condition'],['consequence']],
+    ['translation-sv-en-7','qualify',['nyansera','kvalificera sig','göra behörig'],['diskvalificera']],
+    ['translation-sv-en-7','nyansera',['qualify','add nuance to'],['be eligible']],
+    ['translation-sv-en-7','prompt',['föranleda','uppmaning','snabb','sufflera'],['långsam']],
+    ['translation-sv-en-7','accountability',['ansvarsskyldighet','ansvar'],['ansvarslöshet']],
+    ['translation-sv-en-8','treacherous',['förrädisk','försåtlig','svekfull'],['trogen']],
+    ['translation-sv-en-8','förbehåll',['caveat','reservation','proviso','qualification'],['certainty']],
+    ['translation-sv-en-8','conscientious',['samvetsgrann','samvetsgrant','samvetsgranna','noggrann'],['vårdslös']],
+    ['translation-sv-en-8','frikänna',['exonerate','acquit','absolve','clear'],['convict']]
+  ];
+  for(const [mode,label,accepted,rejected] of cases){
+    const task=item(mode,label);assert(task,mode+' missing '+label);
+    for(const source of ['text','speech']){
+      for(const answer of accepted)assert(SC.matches(answer,task,mode,task.answerLang,source),mode+' '+label+' rejects '+answer);
+      for(const answer of rejected)assert(!SC.matches(answer,task,mode,task.answerLang,source),mode+' '+label+' incorrectly accepts '+answer);
     }
   }
 });
