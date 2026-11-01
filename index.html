@@ -58,7 +58,65 @@
 <label class="game-card klossar-card"><input type="radio" name="game" value="klossar"><span class="card-art" aria-hidden="true"><svg viewBox="0 0 110 90" width="110" height="90"><rect x="8" y="47" width="34" height="34" rx="5" fill="#a1af8f"/><rect x="8" y="41" width="34" height="34" rx="5" fill="#ede2bf"/><rect x="45" y="47" width="34" height="34" rx="5" fill="#a1af8f"/><rect x="45" y="41" width="34" height="34" rx="5" fill="#ede2bf"/><rect x="28" y="16" width="34" height="39" rx="5" fill="#9da682"/><rect x="28" y="10" width="34" height="39" rx="5" fill="#fff3cf"/><text x="45" y="36" text-anchor="middle" font-family="Georgia,serif" font-size="28" fill="#355d4e">A</text><text x="62" y="66" text-anchor="middle" font-family="Georgia,serif" font-size="27" fill="#355d4e">a</text><path d="M85 18v14m-7-7h14M93 40v8m-4-4h8" stroke="#a1edc4" stroke-width="3" stroke-linecap="round"/></svg></span><span class="card-title">Klossar</span></label>
 
 
-<label class="game-card ficklampan-card"><input type="radio" name="game" value="ficklampan"><span class="card-art" aria-hidden="true"><svg viewBox="0 0 120 90"><rect x="3" y="4" width="114" height="82" rx="12" fill="#17282d"/><path d="m46 55 47-45 13 60-57-4" fill="#f2d992" opacity=".75"/><path d="m19 67 23-20 15 18-24 20Z" fill="#73a7ad"/><path d="m41 48 8-7 17 20-9 8Z" fill="#b7d5cc"/><path d="m75 26 8 2 4 16-12 2Z" fill="#bb7951"/><path d="m87 53 16-3 2 12-16 3Z" fill="#599c6e"/><circle cx="92" cy="23" r="3" fill="#f8e8a9"/></svg></span><span class="card-title">Ficklampan</span></label>
+<label class="game-card ficklampan-card"><input type="radio" name="game" value="ficklampan"><span class="card-art" aria-hidden="true"><svg viewBox="0 0 120 90" width="120" height="90">
+  <defs>
+    <linearGradient id="fm-menu-night" x2="1" y2="1">
+      <stop stop-color="#142737"/><stop offset="1" stop-color="#102b2b"/>
+    </linearGradient>
+    <linearGradient id="fm-menu-beam" gradientUnits="userSpaceOnUse" x1="48" y1="58" x2="90" y2="22">
+      <stop stop-color="#ffe8a4" stop-opacity=".6"/><stop offset="1" stop-color="#ffe8a4" stop-opacity=".06"/>
+    </linearGradient>
+    <radialGradient id="fm-menu-halo">
+      <stop offset=".7" stop-color="#f9dc8d" stop-opacity=".26"/><stop offset="1" stop-color="#f9dc8d" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="fm-menu-light" cx=".42" cy=".4" r=".7">
+      <stop stop-color="#98ad7c"/><stop offset="1" stop-color="#41685c"/>
+    </radialGradient>
+    <clipPath id="fm-menu-edge"><rect x="4" y="4" width="112" height="82" rx="14"/></clipPath>
+    <clipPath id="fm-menu-reveal"><circle cx="83" cy="33" r="29"/></clipPath>
+    <path id="fm-menu-star" d="m0-7 2 5h5L3 1l1 5-4-3-4 3 1-5-4-3h5Z"/>
+  </defs>
+  <g clip-path="url(#fm-menu-edge)">
+    <rect x="4" y="4" width="112" height="82" rx="14" fill="url(#fm-menu-night)"/>
+    <path d="M10 86V24m0 21L23 33m-13 4L4 32M23 86V13m0 20 13-13m-13 5L12 16" fill="none" stroke="#2b3b42" stroke-width="4" stroke-linecap="round"/>
+    <path d="M53 73V17h61v56M55 60h59M55 74h59" fill="none" stroke="#2e3e42" stroke-width="4"/>
+    <rect x="35" y="12" width="15" height="19" rx="2" transform="rotate(-8 42 21)" fill="#1c2c36" stroke="#36434a" stroke-width="2"/>
+    <path d="M5 79q27-13 54-3t57-5v15H5Z" fill="#101f29"/>
+    <path d="m43 51 27-46q31-6 45 40L53 65Z" fill="url(#fm-menu-beam)"/>
+    <circle cx="83" cy="33" r="35" fill="url(#fm-menu-halo)"/>
+    <g clip-path="url(#fm-menu-reveal)">
+      <circle cx="83" cy="33" r="29" fill="url(#fm-menu-light)"/>
+      <path d="M55 17h59M55 60h59M58 14v54m53-54v54" fill="none" stroke="#6e7959" stroke-width="3"/>
+      <path d="M100 65q0-13 9-19m-6 10q-8-7-10-2m12-3q-1-8 5-11" fill="none" stroke="#aac887" stroke-width="3" stroke-linecap="round"/>
+      <g transform="translate(71 34) rotate(-10)">
+        <rect x="-12" y="-14" width="24" height="30" rx="3" fill="#36574f"/>
+        <rect x="-11" y="-15" width="22" height="28" rx="3" fill="#f2c696"/>
+        <rect x="-8" y="-12" width="16" height="22" rx="1" fill="#a55c49"/>
+        <use href="#fm-menu-star" fill="#ffe9ab"/>
+      </g>
+      <g transform="translate(96 41) rotate(9)">
+        <rect x="-12" y="-14" width="24" height="30" rx="3" fill="#36574f"/>
+        <rect x="-11" y="-15" width="22" height="28" rx="3" fill="#e1e5b9"/>
+        <rect x="-8" y="-12" width="16" height="22" rx="1" fill="#386c70"/>
+        <use href="#fm-menu-star" fill="#ffe9ab"/>
+      </g>
+      <path d="M92 12v6m-3-3h6" stroke="#fff0b7" stroke-width="2" stroke-linecap="round"/>
+    </g>
+    <circle cx="83" cy="33" r="29" fill="none" stroke="#f3dda1" stroke-opacity=".38" stroke-width="1.2"/>
+  </g>
+  <g transform="translate(36 67) rotate(-38)" stroke-linejoin="round">
+    <path d="M-24-3q-10-3-9 4t10 3" fill="none" stroke="#66868b" stroke-width="2.5"/>
+    <rect x="-25" y="-7" width="28" height="14" rx="4" fill="#d99549" stroke="#283d42" stroke-width="1.5"/>
+    <path d="M-22-5H0v4h-22" fill="#f6cd85"/>
+    <path d="M-17 0v5m5-5v5m5-5v5" stroke="#a66d3e" stroke-width="2"/>
+    <rect x="-7" y="-8" width="8" height="3" rx="1.5" fill="#a6ced0"/>
+    <path d="M1-7 10-12h7v24h-7L1 7Z" fill="#6c999e" stroke="#283d42" stroke-width="1.5"/>
+    <path d="m3-6 8-4h5v4H3Z" fill="#bdd9d1"/>
+    <ellipse cx="17" rx="4" ry="12" fill="#36545c"/>
+    <ellipse cx="18" rx="2.5" ry="9" fill="#fff2c2"/>
+    <path d="M19-6v12" stroke="#fffbea" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+</svg></span><span class="card-title">Ficklampan</span></label>
 <label class="game-card trassel-card"><input type="radio" name="game" value="trassel"><span class="card-art" aria-hidden="true"><svg viewBox="0 0 120 90"><path d="m30 8 17 10v20L30 48 13 38V18Zm35 0 17 10v20L65 48 48 38V18Zm-18 32 17 10v20L47 80 30 70V50Zm35 0 17 10v20L82 80 65 70V50Z" fill="#eee2c5" stroke="#ab9e7b"/><path d="M30 28h35l17 32" fill="none" stroke="#4088ce" stroke-width="5" stroke-linecap="round"/><circle cx="30" cy="28" r="7" fill="#e64b4b"/><circle cx="82" cy="60" r="7" fill="#4088ce"/></svg></span><span class="card-title">Trassel</span></label>
 <label class="game-card studio-card"><input type="radio" name="game" value="studio"><span class="card-art" aria-hidden="true"><svg viewBox="0 0 120 90" fill="none"><path d="M25 84 43 7h33l19 77M33 67h55" stroke="#c99b62" stroke-width="7" stroke-linecap="round"/><rect x="22" y="15" width="78" height="54" rx="2" fill="#fff9e9"/><path d="M27 61 48 38 64 54 82 32 95 60" fill="#83b88c"/><circle cx="79" cy="30" r="9" fill="#f4cf45"/><path d="M52 50q9-19 21-10" stroke="#4088ce" stroke-width="7" stroke-linecap="round"/><path d="m12 52 12-31" stroke="#dca96d" stroke-width="5"/><path d="m11 51-4 13q11 3 12-10" fill="#e64b4b"/></svg></span><span class="card-title">Målarateljén</span></label>
 </div>
