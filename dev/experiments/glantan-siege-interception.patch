@@ -1,0 +1,38 @@
+diff --git a/resources/glantan/content.js b/resources/glantan/content.js
+--- a/resources/glantan/content.js
++++ b/resources/glantan/content.js
+@@ -65,7 +65,7 @@
+     mender: { name: 'Skrotläkare', role: 'Läker andra monster. Svag om frontlinjen faller.', hp: 78, damage: 4, speed: 1.05, range: 3.5, cooldown: 2, color: '#f2bd88', xp: 22, medic: true, spell: true },
+     binder: { name: 'Rotbindare', role: 'Binder hjältar med rötter och väcker högst fyra röda skelett ur benrester. Skeletten faller när rotbindaren besegras.', hp: 82, damage: 4, speed: 1, range: 4.3, cooldown: 2.4, color: '#c6a3da', xp: 24, bind: true, spell: true, raises: 4 },
+     boneservant: { name: 'Bensoldat', role: 'Rött fiendeskelett. Strider i närkamp och följer sin rotbindare. Lämnar inga nya benrester.', hp: 52, damage: 7.4, speed: 1.85, range: 1.05, cooldown: 1.3, color: '#e47770', xp: 4, skeletal: true },
+-    siegebreaker: { name: 'Murknäckare', role: 'Tung belägrare. Prioriterar byggnader framför hjältar.', hp: 165, damage: 23, speed: .78, range: 1.35, cooldown: 2.5, color: '#b79869', xp: 28, siege: true },
++    siegebreaker: { name: 'Murknäckare', role: 'Tung belägrare. Närstridskämpar stoppar den; slår svagt tillbaka och behöver följe som röjer vägen.', hp: 165, damage: 23, speed: .78, range: 1.35, cooldown: 2.5, color: '#b79869', xp: 28, siege: true, retaliation: .35 },
+     broodcap: { name: 'Jättesporsvamp', role: 'Odlar upp till tre levande fnyslingar när den slåss.', hp: 145, damage: 10, speed: .8, range: 1.4, cooldown: 2, color: '#c880b5', xp: 28, brood: true },
+     bulwark: { name: 'Skalväktare', role: 'Skyddar andra monster i närheten från 25 % av skadan.', hp: 145, damage: 10, speed: .85, range: 1.2, cooldown: 1.8, color: '#9fae80', xp: 26, ward: true },
+     guardian: { name: 'Klockväktare', role: 'Bossvakt med tung närstridsattack. Lämnar inte sitt bo.', hp: 230, damage: 35, speed: 1.12, range: 1.35, cooldown: 1.55, color: '#9b647e', xp: 55 }
+diff --git a/resources/glantan/monsters.js b/resources/glantan/monsters.js
+--- a/resources/glantan/monsters.js
++++ b/resources/glantan/monsters.js
+@@ -227,7 +227,12 @@
+       });
+       if (defending && (!target || G.distance(monster, home) > 7)) { patrol(w, monster, home, dt); continue; }
+       if (!target && w.time < monster.raidAt && home) continue;
+-      if (spec.siege) target = G.best(buildings, b => G.alive(b) ? G.distance(b,monster) : Infinity);
++      if (spec.siege) {
++        // A frontline fighter can intercept a siege engine. Its escorts must
++        // clear the blocker before the engine can resume breaking buildings.
++        const blocker = G.best(heroes, h => G.alive(h) && G.distanceSquared(h, monster) < 1.6 * 1.6 && G.attackLine(w, monster, h) ? G.distanceSquared(h, monster) : Infinity);
++        target = blocker || G.best(buildings, b => G.alive(b) ? G.distance(b,monster) : Infinity);
++      }
+       if (!target) target = G.best(buildings, b => { const d = G.distance(b,monster); return d < 3.3 ? d : Infinity; }) || castle;
+       if (!target || !G.alive(target)) continue;
+       monster.targetId = target.id;
+@@ -263,7 +268,7 @@
+           G.effect(w, 'snare', target.x, target.y, { duration: 1, color: '#c7a3e6' });
+         }
+         G.soundEvent?.(w, monster.boss ? 'guardian' : spec.spell ? 'mage' : 'monster', monster);
+-        G.damage(w, target, G.monsterDamage(w, monster), monster);
++        G.damage(w, target, G.monsterDamage(w, monster) * (spec.siege && !target.w ? (spec.retaliation ?? .35) : 1), monster);
+         if (monster.type === 'husher') for (const friend of heroes) if (friend !== target && G.alive(friend) && G.distance(friend, target) < 1.25 && G.attackLine(w, target, friend)) G.damage(w, friend, G.monsterDamage(w, monster) * .35, monster);
+       }
+     }

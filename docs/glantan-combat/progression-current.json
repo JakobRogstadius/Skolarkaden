@@ -1,0 +1,134 @@
+{
+  "note": "Current progression combines128rerun sky/siege cases with512original cases whose combat paths do not involve siege. No refitting of composition/counts.",
+  "rows": [
+    {
+      "level": 1,
+      "rank": 1,
+      "n": 40,
+      "win": 26,
+      "loss": 10,
+      "timeout": 4
+    },
+    {
+      "level": 1,
+      "rank": 3,
+      "n": 40,
+      "win": 2,
+      "loss": 32,
+      "timeout": 6
+    },
+    {
+      "level": 1,
+      "rank": 5,
+      "n": 40,
+      "win": 0,
+      "loss": 38,
+      "timeout": 2
+    },
+    {
+      "level": 1,
+      "rank": 6,
+      "n": 40,
+      "win": 0,
+      "loss": 40,
+      "timeout": 0
+    },
+    {
+      "level": 3,
+      "rank": 1,
+      "n": 40,
+      "win": 36,
+      "loss": 4,
+      "timeout": 0
+    },
+    {
+      "level": 3,
+      "rank": 3,
+      "n": 40,
+      "win": 12,
+      "loss": 23,
+      "timeout": 5
+    },
+    {
+      "level": 3,
+      "rank": 5,
+      "n": 40,
+      "win": 2,
+      "loss": 32,
+      "timeout": 6
+    },
+    {
+      "level": 3,
+      "rank": 6,
+      "n": 40,
+      "win": 1,
+      "loss": 33,
+      "timeout": 6
+    },
+    {
+      "level": 5,
+      "rank": 1,
+      "n": 40,
+      "win": 38,
+      "loss": 2,
+      "timeout": 0
+    },
+    {
+      "level": 5,
+      "rank": 3,
+      "n": 40,
+      "win": 29,
+      "loss": 9,
+      "timeout": 2
+    },
+    {
+      "level": 5,
+      "rank": 5,
+      "n": 40,
+      "win": 7,
+      "loss": 26,
+      "timeout": 7
+    },
+    {
+      "level": 5,
+      "rank": 6,
+      "n": 40,
+      "win": 6,
+      "loss": 29,
+      "timeout": 5
+    },
+    {
+      "level": 8,
+      "rank": 1,
+      "n": 40,
+      "win": 40,
+      "loss": 0,
+      "timeout": 0
+    },
+    {
+      "level": 8,
+      "rank": 3,
+      "n": 40,
+      "win": 36,
+      "loss": 4,
+      "timeout": 0
+    },
+    {
+      "level": 8,
+      "rank": 5,
+      "n": 40,
+      "win": 29,
+      "loss": 9,
+      "timeout": 2
+    },
+    {
+      "level": 8,
+      "rank": 6,
+      "n": 40,
+      "win": 22,
+      "loss": 13,
+      "timeout": 5
+    }
+  ],
+  "monotonic": true
+}

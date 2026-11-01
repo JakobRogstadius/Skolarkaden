@@ -1,0 +1,366 @@
+{
+  "baseline": "28ba8b8a447182e495ae869777539f4d6abe363d",
+  "datasets": [
+    {
+      "name": "baseline-core",
+      "file": "data/baseline-core.json.gz",
+      "cases": 5130,
+      "ref": "28ba8b8",
+      "rawSha256": "49cf73eb0d669f38ec55b76f7a84f73da75c60ea881673518aecc769daf59598",
+      "bytes": 233723
+    },
+    {
+      "name": "baseline-developed",
+      "file": "data/baseline-developed.json.gz",
+      "cases": 1890,
+      "ref": "28ba8b8",
+      "rawSha256": "e1ba96dede03387bd8c8fcb79b5f3e40a3d1ac77de1aa6e22a3cefc8de984f20",
+      "bytes": 78909
+    },
+    {
+      "name": "baseline-hero-validation",
+      "file": "data/baseline-hero-validation.json.gz",
+      "cases": 1400,
+      "ref": "28ba8b8",
+      "rawSha256": "03b4371d76d04bceacba00bad28451217b0aa20a5894941bb76fbb05bf851d0d",
+      "bytes": 39431
+    },
+    {
+      "name": "baseline-levels",
+      "file": "data/baseline-levels.json.gz",
+      "cases": 2880,
+      "ref": "28ba8b8",
+      "rawSha256": "cf66d50118c976e6a699dd04f241f4b7aeb658ac1cfb9d31f0f7569632f0a25a",
+      "bytes": 115942
+    },
+    {
+      "name": "enemy-baseline",
+      "file": "data/enemy-baseline.json.gz",
+      "cases": 2916,
+      "ref": "28ba8b8",
+      "rawSha256": "6873cd070bee5ecbd29702d6ca13eac1c19b63af29c316f918e10f246749f204",
+      "bytes": 165871
+    },
+    {
+      "name": "enemy-confirmation-300",
+      "file": "data/enemy-confirmation-300.json.gz",
+      "cases": 1800,
+      "ref": "28ba8b8",
+      "rawSha256": "2435c61670c03d471b5b100cf5a93e875a0951b42784c6a87637fc2bdd6836bf",
+      "bytes": 58990
+    },
+    {
+      "name": "enemy-expanded",
+      "file": "data/enemy-expanded.json.gz",
+      "cases": 1944,
+      "ref": "28ba8b8",
+      "rawSha256": "5243f7cb1aa6dddcb510cd3ac554d022903ece320d2bb5738753fd3a62eb6f0e",
+      "bytes": 113029
+    },
+    {
+      "name": "enemy-expanded-validation",
+      "file": "data/enemy-expanded-validation.json.gz",
+      "cases": 900,
+      "ref": "28ba8b8",
+      "rawSha256": "42638e185cec27c3dd8d2eacadb8c1f082b870ab3bfeae3d08ccff277399717c",
+      "bytes": 33834
+    },
+    {
+      "name": "enemy-natural-brood-validation",
+      "file": "data/enemy-natural-brood-validation.json.gz",
+      "cases": 300,
+      "ref": "28ba8b8",
+      "rawSha256": "ea84cfd3f7302158384c0e90f8ce85de8689b3541a742d03e23b0a52211e233f",
+      "bytes": 10273
+    },
+    {
+      "name": "enemy-roles",
+      "file": "data/enemy-roles.json.gz",
+      "cases": 1800,
+      "ref": "28ba8b8",
+      "rawSha256": "7073dc14b6a0befeeb66c6ff187da9307290e23fdd94e7312f7f1f0b2ab7cd6d",
+      "bytes": 98672
+    },
+    {
+      "name": "enemy-roles-extra",
+      "file": "data/enemy-roles-extra.json.gz",
+      "cases": 1170,
+      "ref": "28ba8b8",
+      "rawSha256": "c4cc2f5a0d56a562c71e13ba6fc3a035bc9f2950e8c7755a0fd263daa9510946",
+      "bytes": 60324
+    },
+    {
+      "name": "enemy-roles-validation",
+      "file": "data/enemy-roles-validation.json.gz",
+      "cases": 1800,
+      "ref": "28ba8b8",
+      "rawSha256": "57cf65171924896d5d7c0a66c118ea4c93b4db4cfd38778cce98e3a53fe805d9",
+      "bytes": 51711
+    },
+    {
+      "name": "enemy-siege-escort-baseline",
+      "file": "data/enemy-siege-escort-baseline.json.gz",
+      "cases": 1782,
+      "ref": "28ba8b8",
+      "rawSha256": "d8d4655211bebfe7c49071823934b0ebec45b631c3c820012cb6ef3d26ac08a7",
+      "bytes": 68485
+    },
+    {
+      "name": "enemy-siege-escort-candidate",
+      "file": "data/enemy-siege-escort-candidate.json.gz",
+      "cases": 1782,
+      "ref": "working-tree",
+      "rawSha256": "804f479a7c08f25e8bedb0836b0d96364c3540a7f5ae377ae5373b7f7a0eac7a",
+      "bytes": 69420
+    },
+    {
+      "name": "enemy-siege-final-hp90",
+      "file": "data/enemy-siege-final-hp90.json.gz",
+      "cases": 300,
+      "ref": "working-tree",
+      "rawSha256": "160296159c4e09325ff65ff2f9f25b462507055eb84af83ce64afc82cc541660",
+      "bytes": 13407
+    },
+    {
+      "name": "enemy-siege-final-interception",
+      "file": "data/enemy-siege-final-interception.json.gz",
+      "cases": 300,
+      "ref": "working-tree",
+      "rawSha256": "6e5f940f1d3f04399b5b744d4ec6238648de4d654c066dda45bb7938489b8f9d",
+      "bytes": 12380
+    },
+    {
+      "name": "enemy-siege-final-original",
+      "file": "data/enemy-siege-final-original.json.gz",
+      "cases": 300,
+      "ref": "28ba8b8",
+      "rawSha256": "b52994525b42263ba5ef6fedfaa30e7c267ccc549bbbc34ba81d5118c94d2177",
+      "bytes": 10562
+    },
+    {
+      "name": "enemy-siege-focused",
+      "file": "data/enemy-siege-focused.json.gz",
+      "cases": 270,
+      "ref": "28ba8b8",
+      "rawSha256": "883473076f5c671e2e2264e422764697180620ee1c5c23fa24d7996f09aa43b0",
+      "bytes": 17023
+    },
+    {
+      "name": "enemy-siege-numeric-control",
+      "file": "data/enemy-siege-numeric-control.json.gz",
+      "cases": 540,
+      "ref": "working-tree",
+      "rawSha256": "d7df047cf3abe8e02a8813afb98eed31e0ab50e0048b534fe0c1d32f4724298f",
+      "bytes": 25237
+    },
+    {
+      "name": "enemy-siege-numeric-hp110",
+      "file": "data/enemy-siege-numeric-hp110.json.gz",
+      "cases": 540,
+      "ref": "working-tree",
+      "rawSha256": "22759216d916e96e2fe0b4cd675830f5f468d30ad93fb379788f1512e9c07ad1",
+      "bytes": 25618
+    },
+    {
+      "name": "enemy-siege-numeric-hp90",
+      "file": "data/enemy-siege-numeric-hp90.json.gz",
+      "cases": 540,
+      "ref": "working-tree",
+      "rawSha256": "7bd61cc6474d83f284526cc9c6cbc9c8db0c9f74a3563f04735946193195f0eb",
+      "bytes": 25613
+    },
+    {
+      "name": "enemy-siege-raid-baseline",
+      "file": "data/enemy-siege-raid-baseline.json.gz",
+      "cases": 576,
+      "ref": "28ba8b8",
+      "rawSha256": "27d2cd9fa50bf269f6ba6d97affcc272b4f582b7240ceac27f5183f91ad2593d",
+      "bytes": 17984
+    },
+    {
+      "name": "enemy-siege-raid-candidate",
+      "file": "data/enemy-siege-raid-candidate.json.gz",
+      "cases": 576,
+      "ref": "working-tree",
+      "rawSha256": "a89f03cc21433cf88642280983afb65c205f02e3d534bdbee31c6a2965b6ca50",
+      "bytes": 19007
+    },
+    {
+      "name": "enemy-siege-validation",
+      "file": "data/enemy-siege-validation.json.gz",
+      "cases": 300,
+      "ref": "28ba8b8",
+      "rawSha256": "ca12eb011ea46b259ba9697d1f0579be0a956fa1c9947e81411bb160f8d28a55",
+      "bytes": 11114
+    },
+    {
+      "name": "enemy-validation",
+      "file": "data/enemy-validation.json.gz",
+      "cases": 1500,
+      "ref": "28ba8b8",
+      "rawSha256": "92c7fa66812f2546d7ef561fe48d7b8ee8be86a17af187306c4bde8b7ea19308",
+      "bytes": 45821
+    },
+    {
+      "name": "hero-counter-validation",
+      "file": "data/hero-counter-validation.json.gz",
+      "cases": 700,
+      "ref": "28ba8b8",
+      "rawSha256": "4b557a7f1b57e1e8b8f4d496020c6c1a17123f8eaff3dd0859902b85c6cb8220",
+      "bytes": 14805
+    },
+    {
+      "name": "hero-guardian-validation",
+      "file": "data/hero-guardian-validation.json.gz",
+      "cases": 300,
+      "ref": "28ba8b8",
+      "rawSha256": "c4eec1e8e5f3f38a2a43f33dd1e4982f605ddc90126ae594bd9100702a476be5",
+      "bytes": 6808
+    },
+    {
+      "name": "hush-sweep-0",
+      "file": "data/hush-sweep-0.json.gz",
+      "cases": 1080,
+      "ref": "working-tree",
+      "variant": {
+        "healingMultiplier": 1
+      },
+      "rawSha256": "4dd3468cb6beaca5c212ecacb1d3fb40e24fcef9695da43761ec074ceae72613",
+      "bytes": 39857
+    },
+    {
+      "name": "hush-sweep-1",
+      "file": "data/hush-sweep-1.json.gz",
+      "cases": 1080,
+      "ref": "working-tree",
+      "variant": {
+        "healingMultiplier": 0.75
+      },
+      "rawSha256": "4dd3468cb6beaca5c212ecacb1d3fb40e24fcef9695da43761ec074ceae72613",
+      "bytes": 40470
+    },
+    {
+      "name": "hush-sweep-2",
+      "file": "data/hush-sweep-2.json.gz",
+      "cases": 1080,
+      "ref": "working-tree",
+      "variant": {
+        "healingMultiplier": 0.5
+      },
+      "rawSha256": "4dd3468cb6beaca5c212ecacb1d3fb40e24fcef9695da43761ec074ceae72613",
+      "bytes": 40451
+    },
+    {
+      "name": "hush-sweep-3",
+      "file": "data/hush-sweep-3.json.gz",
+      "cases": 1080,
+      "ref": "working-tree",
+      "variant": {
+        "healingMultiplier": 0.25
+      },
+      "rawSha256": "4dd3468cb6beaca5c212ecacb1d3fb40e24fcef9695da43761ec074ceae72613",
+      "bytes": 40364
+    },
+    {
+      "name": "hush-validation-after",
+      "file": "data/hush-validation-after.json.gz",
+      "cases": 1000,
+      "ref": "working-tree",
+      "rawSha256": "a3b552115e619739ba8734d1586c950a9dab52478f20f57d004f7efdf58baaf4",
+      "bytes": 27012
+    },
+    {
+      "name": "hush-validation-before",
+      "file": "data/hush-validation-before.json.gz",
+      "cases": 1000,
+      "ref": "28ba8b8",
+      "rawSha256": "808ff6af80612377ae84f4cd369520557743f6ff96956771400d330986f95013",
+      "bytes": 26020
+    },
+    {
+      "name": "pilot",
+      "file": "data/pilot.json.gz",
+      "cases": 576,
+      "ref": "28ba8b8",
+      "rawSha256": "63d8e0a5527333fe8e3e64c7e6a4ad96897875716e57ed3c99a3fc762838f3aa",
+      "bytes": 28734
+    },
+    {
+      "name": "progression-after",
+      "file": "data/progression-after.json.gz",
+      "cases": 640,
+      "ref": "working-tree",
+      "rawSha256": "5d2fb4cb923521a5da711095f6d30c284c5280ca2512a3a80f19ca4409e6c432",
+      "bytes": 33220
+    },
+    {
+      "name": "progression-baseline",
+      "file": "data/progression-baseline.json.gz",
+      "cases": 640,
+      "ref": "28ba8b8",
+      "rawSha256": "dc45dae913f09295cc38aab820084de0746e77d030bcc7d6af9f4be8384b135c",
+      "bytes": 32959
+    },
+    {
+      "name": "ranger-partner-validation",
+      "file": "data/ranger-partner-validation.json.gz",
+      "cases": 900,
+      "ref": "28ba8b8",
+      "rawSha256": "a1ffe68d1bb11c155a037f0be2c20ddc5960d9dbfcd2363eedfcf93bcd3fecad",
+      "bytes": 22266
+    },
+    {
+      "name": "rush-sweep-0",
+      "file": "data/rush-sweep-0.json.gz",
+      "cases": 504,
+      "ref": "working-tree",
+      "variant": {
+        "rushSpeed": 1.7,
+        "rushDuration": 0.8
+      },
+      "rawSha256": "7f4a46f94d6139b5c50a3b5c7e5b2badf6a16194c9311e43dc06e59d9a363fbf",
+      "bytes": 17729
+    },
+    {
+      "name": "rush-sweep-1",
+      "file": "data/rush-sweep-1.json.gz",
+      "cases": 504,
+      "ref": "working-tree",
+      "variant": {
+        "rushSpeed": 2.4,
+        "rushDuration": 1
+      },
+      "rawSha256": "7f4a46f94d6139b5c50a3b5c7e5b2badf6a16194c9311e43dc06e59d9a363fbf",
+      "bytes": 17981
+    },
+    {
+      "name": "rush-sweep-2",
+      "file": "data/rush-sweep-2.json.gz",
+      "cases": 504,
+      "ref": "working-tree",
+      "variant": {
+        "rushSpeed": 3,
+        "rushDuration": 1.2
+      },
+      "rawSha256": "7f4a46f94d6139b5c50a3b5c7e5b2badf6a16194c9311e43dc06e59d9a363fbf",
+      "bytes": 18373
+    },
+    {
+      "name": "siege-production-validation",
+      "file": "data/siege-production-validation.json.gz",
+      "cases": 300,
+      "ref": "working-tree",
+      "rawSha256": "24cc927bdeef58f0cf8062680db3211c7f1da90a1030f539489b8d79a98d623a",
+      "bytes": 11158
+    },
+    {
+      "name": "siege-regression-after",
+      "file": "data/siege-regression-after.json.gz",
+      "cases": 908,
+      "ref": "working-tree",
+      "rawSha256": "fe085e05026687873ba9383030f55eda7ffa7ce1e8841c3890f890aac86b2eaa",
+      "bytes": 37480
+    }
+  ],
+  "totalArenas": 46032
+}

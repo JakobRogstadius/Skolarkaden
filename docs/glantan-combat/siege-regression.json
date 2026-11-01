@@ -1,0 +1,78 @@
+{
+  "note": "Hero outcomes in the original objective-pressure proxy controls. The same 908 input cases use current source; no acceptance selection from these results.",
+  "sourceSha256": "06b9058a5874335a97a9b5f053dbf7a9edfbc0a55955fb5d90608f60fb803d47",
+  "rows": [
+    {
+      "source": "baseline-core",
+      "family": "siegebreaker",
+      "n": 270,
+      "before": {
+        "win": 187,
+        "loss": 83,
+        "timeout": 0,
+        "castleDamage": 630.7567407407408
+      },
+      "after": {
+        "win": 234,
+        "loss": 31,
+        "timeout": 5,
+        "castleDamage": 168.45511111111108
+      },
+      "changedOutcomes": 54
+    },
+    {
+      "source": "baseline-core",
+      "family": "sky",
+      "n": 270,
+      "before": {
+        "win": 194,
+        "loss": 70,
+        "timeout": 6,
+        "castleDamage": 327.7842962962963
+      },
+      "after": {
+        "win": 197,
+        "loss": 66,
+        "timeout": 7,
+        "castleDamage": 171.4002962962963
+      },
+      "changedOutcomes": 12
+    },
+    {
+      "source": "baseline-levels",
+      "family": "siegebreaker",
+      "n": 240,
+      "before": {
+        "win": 158,
+        "loss": 82,
+        "timeout": 0,
+        "castleDamage": 701.1068333333332
+      },
+      "after": {
+        "win": 210,
+        "loss": 24,
+        "timeout": 6,
+        "castleDamage": 162.88799999999998
+      },
+      "changedOutcomes": 60
+    },
+    {
+      "source": "progression-baseline",
+      "family": "sky",
+      "n": 128,
+      "before": {
+        "win": 65,
+        "loss": 63,
+        "timeout": 0,
+        "castleDamage": 439.24156250000004
+      },
+      "after": {
+        "win": 67,
+        "loss": 61,
+        "timeout": 0,
+        "castleDamage": 266.99625000000003
+      },
+      "changedOutcomes": 14
+    }
+  ]
+}

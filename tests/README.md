@@ -26,6 +26,12 @@ change. If CI is added, use `test:all` as the merge check; default `npm test` ma
 correctly select nothing on a clean main checkout. `--area` is a focused manual
 selection, not a replacement for checking dependencies of the actual diff.
 
+Klockgläntan's large combat matrices are separate, opt-in development studies.
+See [the combat protocol](../docs/glantan-combat-protocol.md) for actual-engine
+arenas, paired-seed validation, campaign comparisons and replaying the committed
+evidence. `node dev/glantan-combat.cjs --self-test` checks the experiment runner;
+the normal game regressions do not rerun tens of thousands of balance trials.
+
 `--help` lists areas and options. Tests run serially, report individual timings,
 and fail the command on an assertion, crash or 120-second per-suite timeout.
 

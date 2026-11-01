@@ -1,0 +1,135 @@
+diff --git a/resources/glantan/combat-art.js b/resources/glantan/combat-art.js
+index 18c1f78..86c628f 100644
+--- a/resources/glantan/combat-art.js
++++ b/resources/glantan/combat-art.js
+@@ -265,6 +265,15 @@
+       ring(c, x, y, 15, '#e9d79c', 2);
+       for (const side of [-1, 1]) line(c, [[x + side * 14, y], [x + side * 6, y - 18], [x - side * 9, y - 4]], '#f4dfab', 1.8);
+     }
++    if ((unit.classId || unit.skeleton) && unit.hushedUntil > w.time) {
++      const x = unit.x * T + 13, y = unit.y * T - 34;
++      ellipse(c, x, y, 8, 8, '#514963e8');
++      ring(c, x, y, 8, '#b29acb', 1.5);
++      line(c, [[x - 4, y], [x + 4, y]], '#d9cbe7', 1.8);
++      line(c, [[x, y - 4], [x, y + 4]], '#d9cbe7', 1.8);
++      line(c, [[x - 5, y + 5], [x + 5, y - 5]], '#61566f', 2.5);
++      line(c, [[x - 5, y + 5], [x + 5, y - 5]], '#e1d3ec', 1.4);
++    }
+     if (unit.classId === 'warrior' && (w.research.banner || w.research.guardian)) ring(c, unit.x * T, unit.y * T + 1, 14, w.research.banner ? '#f5b563' : '#c4e7ff', 1.5);
+   };
+ })(globalThis);
+diff --git a/resources/glantan/content.js b/resources/glantan/content.js
+index 6b95303..e9edf24 100644
+--- a/resources/glantan/content.js
++++ b/resources/glantan/content.js
+@@ -59,7 +59,7 @@
+   G.monsterTypes = {
+     rattler: { name: 'Skramlare', role: 'Närstrid. Rusar den sista biten mot sitt mål.', hp: 39, damage: 7, speed: 1.15, range: 0.9, cooldown: 1.4, color: '#c98150', xp: 10, rush: true },
+     sporeling: { name: 'Fnysling', role: 'Snabb, svag närstridskämpe. Farlig i grupp.', hp: 28, damage: 5, speed: 1.35, range: 1, cooldown: 1.5, color: '#cc88b1', xp: 8 },
+-    husher: { name: 'Tystätare', role: 'Avståndsmagiker. Viker undan från närstrid.', hp: 60, damage: 8, speed: 1, range: 4.1, cooldown: 2.4, color: '#929cbb', xp: 16, spell: true, kite: true },
++    husher: { name: 'Tystätare', role: 'Avståndsmagiker. Försvagar läkande magi med 25 % i tre sekunder. Viker undan från närstrid.', hp: 60, damage: 8, speed: 1, range: 4.1, cooldown: 2.4, color: '#929cbb', xp: 16, spell: true, kite: true, healingMultiplier: .75 },
+     nightwing: { name: 'Nattvinge', role: 'Flyger över hinder. Kan inte träffas av väktare, skelett eller markfällor.', hp: 34, damage: 6, speed: 1.5, range: 1.2, cooldown: 1.7, color: '#9dc9df', xp: 12, flying: true },
+     thornling: { name: 'Taggskytt', role: 'Rörlig skytt. Backar när hjältar kommer nära.', hp: 34, damage: 8, speed: 1.25, range: 3.6, cooldown: 1.6, color: '#bdd084', xp: 12, kite: true },
+     mender: { name: 'Skrotläkare', role: 'Läker andra monster. Svag om frontlinjen faller.', hp: 78, damage: 4, speed: 1.05, range: 3.5, cooldown: 2, color: '#f2bd88', xp: 22, medic: true, spell: true },
+diff --git a/resources/glantan/engine.js b/resources/glantan/engine.js
+index 1750824..547178a 100644
+--- a/resources/glantan/engine.js
++++ b/resources/glantan/engine.js
+@@ -7,6 +7,7 @@
+   G.canHit = (attacker, target) => !(G.flying(target) && (attacker.classId === 'warrior' || attacker.skeleton || G.monsterTypes[attacker.type]?.skeletal));
+   G.attackLine = (w, from, to) => G.flying(from) || G.flying(to) ? G.inside(w, from.x, from.y) && G.inside(w, to.x, to.y) : G.clearLine(w, from, to);
+   G.offenseBoost = (w, unit) => w.research.banner && w.heroes.some(h => G.alive(h) && h.classId === 'warrior' && G.distance(h, unit) < 4 && G.clearLine(w, h, unit)) ? 1.25 : 1;
++  G.healingAmount = (w, target, amount) => Math.min(target.maxHp - target.hp, amount * (target.hushedUntil > w.time ? G.monsterTypes.husher.healingMultiplier : 1));
+   G.resolveOutcome = w => {
+     if (w.outcome) return w.outcome;
+     if (G.castle(w)?.hp <= 0) w.outcome = 'lost';
+@@ -108,6 +109,7 @@
+     if (target.monster && world.monsters.some(m => m !== target && G.alive(m) && G.monsterTypes[m.type].ward && G.distance(m, target) < 3 && G.attackLine(world, m, target))) amount *= .75;
+     const dealt = Math.min(target.hp, Math.max(0, amount));
+     target.hp = Math.max(0, target.hp - amount); target.hurtAt = world.time;
++    if (dealt > 0 && attacker?.monster && attacker.type === 'husher' && (target.classId || target.skeleton)) target.hushedUntil = world.time + 3;
+     if (target.monster && dealt > 0) target.waveEngaged = true;
+     if (target.hp > 0) {
+       if (target.wakeAt !== undefined && !target.defendersRaised) G.alertLair(world, target);
+diff --git a/resources/glantan/heroes.js b/resources/glantan/heroes.js
+index 705c2cb..f7073aa 100644
+--- a/resources/glantan/heroes.js
++++ b/resources/glantan/heroes.js
+@@ -125,7 +125,7 @@
+     G.useAbility(w, hero, patients[0], 'heal', 2.1); hero.castAt = w.time;
+     G.soundEvent(w, 'heal', hero);
+     for (const patient of patients.slice(0, w.research.bloom ? 4 : 1)) {
+-      const amount = Math.min(patient.maxHp - patient.hp, 16 + hero.level * 3);
++      const amount = G.healingAmount(w, patient, 16 + hero.level * 3);
+       patient.hp += amount; hero.healing += amount; w.stats.healed += amount;
+       hero.contributedAt = w.time;
+       if (w.research.ward) patient.shieldUntil = w.time + 4;
+diff --git a/resources/glantan/summons.js b/resources/glantan/summons.js
+index 1f1b04f..183664e 100644
+--- a/resources/glantan/summons.js
++++ b/resources/glantan/summons.js
+@@ -39,7 +39,7 @@
+     if (drained <= 0) return;
+     const amount = Math.min(16 + hero.level, drained * .45);
+     for (const friend of [hero, ...G.ownedSkeletons(w, hero)]) {
+-      const healed = Math.min(friend.maxHp - friend.hp, amount);
++      const healed = G.healingAmount(w, friend, amount);
+       if (healed <= 0) continue;
+       friend.hp += healed; hero.healing += healed; w.stats.healed += healed;
+       G.effect(w, 'spell', target.x, target.y, { toX: friend.x, toY: friend.y, school: 'drain', color: '#b6ffe2', radius: .4, duration: .95 });
+diff --git a/tests/games/glantan/tactics.test.cjs b/tests/games/glantan/tactics.test.cjs
+index 190af58..4597797 100644
+--- a/tests/games/glantan/tactics.test.cjs
++++ b/tests/games/glantan/tactics.test.cjs
+@@ -344,4 +344,51 @@ for (const type of ['sporeling', 'rattler']) {
+   assert.equal(G.ownedSkeletons(w, necro).length, 1); assert.equal(G.ownedSkeletons(w, necro)[0].level, 4);
+   assert.equal(healer.cooldown, 1.8); assert(!('healCooldown' in healer)); assert.equal(w.corpses.length, 0);
+ }
++{
++  const { w, lair } = arena(), medic = hero(w, 'healer', 16, 15), patient = hero(w, 'warrior', 16.5, 15), husher = enemy(w, lair, 'husher', 20, 15);
++  w.time = 1; G.updateMonsters(w, .1);
++  assert.equal(patient.hushedUntil, 4, 'a real Husher hit marks the damaged hero');
++  assert(patient.hp < patient.maxHp, 'the Husher attack still deals damage');
++  patient.hp = 10; medic.hp = 10; medic.cooldown = 0; w.time = 1.1;
++  const healedBefore = patient.hp; G.updateHeroes(w, .1);
++  assert.equal(patient.hp - healedBefore, 14.25, 'the healer cast applies the 25% reduction');
++  assert(medic.healing > 0, 'healing remains a usable action while the recipient is hushed');
++  assert.equal(patient.hushedUntil, 4, 'being healed does not clear the status early');
++}
++{
++  const { w, lair } = arena(), necro = hero(w, 'necromancer', 16, 15), husher = enemy(w, lair, 'husher', 20, 15);
++  w.time = 1; G.updateMonsters(w, .1);
++  assert.equal(necro.hushedUntil, 4, 'a Husher can mark a necromancer through its real attack');
++  necro.hp = 20;
++  const victim = enemy(w, lair, 'rattler', 20, 17); victim.hp = victim.maxHp;
++  const before = necro.hp; G.necromancerStrike(w, necro, victim, 20);
++  assert.equal(necro.hp - before, 6.75, 'hush reduces the necromancer life-drain heal by 25%');
++  assert.equal(necro.hushedUntil, 4);
++}
++{
++  const { w, lair } = arena(), fighter = hero(w, 'warrior', 9, 9), husher = enemy(w, lair, 'husher', 13, 9);
++  w.time = 1; G.updateMonsters(w, .1); assert(fighter.hushedUntil > w.time);
++  husher.hp = 0;
++  const target = enemy(w, lair, 'rattler', 10.1, 9), hp = target.hp;
++  w.time = 1.2; G.updateHeroes(w, .1);
++  assert(target.hp < hp, 'a hushed warrior can still attack');
++  const before = { x: fighter.x, y: fighter.y };
++  w.time = 1.8; G.move(w, fighter, { x: 12, y: 11 }, 2, .2);
++  assert(G.distance(fighter, before) > 0, 'a hushed warrior can still move');
++}
++{
++  const { w, lair } = arena(), patient = hero(w, 'warrior'), husher = enemy(w, lair, 'husher', 20, 15);
++  patient.hp = 2; w.time = 1; G.damage(w, patient, 1, husher);
++  assert.equal(patient.hushedUntil, 4);
++  assert.equal(G.healingAmount(w, patient, 100), 75);
++  w.time = 2; G.damage(w, patient, 1, husher);
++  assert.equal(patient.hushedUntil, 5, 'a later hit refreshes the duration');
++  assert.equal(G.healingAmount(w, patient, 100), 75, 'repeated hits never stack the reduction');
++  const loaded = new G.Simulation({ saved: JSON.parse(JSON.stringify(w)) }).world;
++  assert.equal(loaded.heroes[0].hushedUntil, 5, 'save/load retains the status end time');
++  assert.equal(G.healingAmount(loaded, loaded.heroes[0], 100), 75, 'the loaded status still reduces healing');
++  loaded.time = 5;
++  assert.equal(G.healingAmount(loaded, loaded.heroes[0], 100), 100, 'healing returns to full at the three-second expiry');
++  assert.equal(G.healingAmount(loaded, { hp: 0, maxHp: 200 }, 40), 40, 'unhushed healing remains unchanged');
++}
+ console.log('tactics: exclusive movement/actions, shared ability cooldowns, summons, traps, mixed waves and save migration');

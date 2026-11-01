@@ -1,0 +1,1841 @@
+{
+  "definition": {
+    "heroLevel": 3,
+    "monsterRank": 3,
+    "minAchievedThreatRatio": 0.85,
+    "maxAchievedThreatRatio": 1.15,
+    "strongMonsterWinRate": 0.75,
+    "weakMonsterWinRate": 0.25,
+    "victory": "hero loss; timeouts are separate",
+    "note": "Pure and mixed marginal evidence are separate. Mixed team success alone does not establish the individual unit threshold; research and seed count are recorded."
+  },
+  "fixedInitialThreat": {
+    "rattler": 0.75,
+    "sporeling": 0.5,
+    "husher": 1.25,
+    "nightwing": 0.75,
+    "thornling": 0.9,
+    "mender": 1.4,
+    "binder": 2.2,
+    "boneservant": 0.85,
+    "siegebreaker": 2,
+    "broodcap": 2.5,
+    "bulwark": 2,
+    "guardian": 4
+  },
+  "byMonster": [
+    {
+      "type": "rattler",
+      "nearOnePureContexts": 36,
+      "bestPure": {
+        "source": "baseline-core.json",
+        "id": "rattler/L3/1/healer",
+        "fingerprint": "{\"heroes\":[{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3}],\"monsters\":[{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "rattler",
+        "heroTypes": [
+          "healer"
+        ],
+        "heroCount": 4,
+        "monsterCount": 15,
+        "achievedRatio": 1.015066,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 3,
+        "heroWins": 0,
+        "timeouts": 3,
+        "stage": "discovery",
+        "monsterWinRate": 0.5,
+        "timeoutRate": 0.5,
+        "monsterWinWilson95": [
+          0.187616,
+          0.812384
+        ]
+      },
+      "worstPure": {
+        "source": "baseline-core.json",
+        "id": "rattler/L3/1/ranger",
+        "fingerprint": "{\"heroes\":[{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3}],\"monsters\":[{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "rattler",
+        "heroTypes": [
+          "ranger"
+        ],
+        "heroCount": 6,
+        "monsterCount": 15,
+        "achievedRatio": 1.015066,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "meetsStrongThreshold": false,
+      "meetsWeakThreshold": true,
+      "meetsBothAgainstDifferentHeroTypes": false,
+      "strong": null,
+      "weak": {
+        "source": "baseline-core.json",
+        "id": "rattler/L3/1/ranger",
+        "fingerprint": "{\"heroes\":[{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3}],\"monsters\":[{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3},{\"type\":\"rattler\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "rattler",
+        "heroTypes": [
+          "ranger"
+        ],
+        "heroCount": 6,
+        "monsterCount": 15,
+        "achievedRatio": 1.015066,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "strongestMixedMarginalNearOne": null,
+      "strongestMixedMarginalAnyTestedBand": null
+    },
+    {
+      "type": "sporeling",
+      "nearOnePureContexts": 39,
+      "bestPure": {
+        "source": "baseline-core.json",
+        "id": "sporeling/L3/1/healer",
+        "fingerprint": "{\"heroes\":[{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3}],\"monsters\":[{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "sporeling",
+        "heroTypes": [
+          "healer"
+        ],
+        "heroCount": 4,
+        "monsterCount": 22,
+        "achievedRatio": 0.992509,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "worstPure": {
+        "source": "baseline-core.json",
+        "id": "sporeling/L3/1/warrior",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3}],\"monsters\":[{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "sporeling",
+        "heroTypes": [
+          "warrior"
+        ],
+        "heroCount": 6,
+        "monsterCount": 22,
+        "achievedRatio": 0.992509,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "meetsStrongThreshold": true,
+      "meetsWeakThreshold": true,
+      "meetsBothAgainstDifferentHeroTypes": true,
+      "strong": {
+        "source": "baseline-core.json",
+        "id": "sporeling/L3/1/healer",
+        "fingerprint": "{\"heroes\":[{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3}],\"monsters\":[{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "sporeling",
+        "heroTypes": [
+          "healer"
+        ],
+        "heroCount": 4,
+        "monsterCount": 22,
+        "achievedRatio": 0.992509,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "weak": {
+        "source": "baseline-core.json",
+        "id": "sporeling/L3/1/warrior",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3}],\"monsters\":[{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3},{\"type\":\"sporeling\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "sporeling",
+        "heroTypes": [
+          "warrior"
+        ],
+        "heroCount": 6,
+        "monsterCount": 22,
+        "achievedRatio": 0.992509,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "strongestMixedMarginalNearOne": null,
+      "strongestMixedMarginalAnyTestedBand": null
+    },
+    {
+      "type": "husher",
+      "nearOnePureContexts": 43,
+      "bestPure": {
+        "source": "baseline-core.json",
+        "id": "husher/L3/1/mage",
+        "fingerprint": "{\"heroes\":[{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3}],\"monsters\":[{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "husher",
+        "heroTypes": [
+          "mage"
+        ],
+        "heroCount": 4,
+        "monsterCount": 9,
+        "achievedRatio": 1.015066,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "worstPure": {
+        "source": "baseline-core.json",
+        "id": "husher/L3/1/warrior",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3}],\"monsters\":[{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "husher",
+        "heroTypes": [
+          "warrior"
+        ],
+        "heroCount": 6,
+        "monsterCount": 9,
+        "achievedRatio": 1.015066,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "meetsStrongThreshold": true,
+      "meetsWeakThreshold": true,
+      "meetsBothAgainstDifferentHeroTypes": true,
+      "strong": {
+        "source": "baseline-core.json",
+        "id": "husher/L3/1/mage",
+        "fingerprint": "{\"heroes\":[{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3}],\"monsters\":[{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "husher",
+        "heroTypes": [
+          "mage"
+        ],
+        "heroCount": 4,
+        "monsterCount": 9,
+        "achievedRatio": 1.015066,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "weak": {
+        "source": "enemy-confirmation-300.json",
+        "id": "husher+bulwark/fresh/support0.15/necromancy/x2/1/pureA",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3}],\"monsters\":[{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3},{\"type\":\"husher\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "husher",
+        "heroTypes": [
+          "healer",
+          "mage",
+          "necromancer",
+          "warrior"
+        ],
+        "heroCount": 8,
+        "monsterCount": 17,
+        "achievedRatio": 1.045826,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 300,
+        "monsterWins": 36,
+        "heroWins": 262,
+        "timeouts": 2,
+        "stage": "validation",
+        "monsterWinRate": 0.12,
+        "timeoutRate": 0.006667,
+        "monsterWinWilson95": [
+          0.087951,
+          0.161658
+        ]
+      },
+      "strongestMixedMarginalNearOne": {
+        "source": "enemy-roles.json",
+        "id": "husher+bulwark/fresh/support0.15/ranged/x1/1",
+        "type": "husher",
+        "partner": "bulwark",
+        "heroComposition": "ranged",
+        "achievedRatio": 1.028601,
+        "nearOne": true,
+        "monsterWins": 6,
+        "n": 6,
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.833333,
+        "deltaOverBestPure": 0,
+        "stage": "discovery"
+      },
+      "strongestMixedMarginalAnyTestedBand": {
+        "source": "enemy-baseline.json",
+        "id": "husher+binder/balanced/x1/1.3",
+        "type": "husher",
+        "partner": "binder",
+        "heroComposition": "balanced",
+        "achievedRatio": 1.288457,
+        "nearOne": false,
+        "monsterWins": 6,
+        "n": 6,
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 1,
+        "deltaOverBestPure": 0,
+        "stage": "discovery"
+      }
+    },
+    {
+      "type": "nightwing",
+      "nearOnePureContexts": 33,
+      "bestPure": {
+        "source": "baseline-core.json",
+        "id": "nightwing/L3/1/warrior",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3}],\"monsters\":[{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "nightwing",
+        "heroTypes": [
+          "warrior"
+        ],
+        "heroCount": 6,
+        "monsterCount": 15,
+        "achievedRatio": 1.015066,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "worstPure": {
+        "source": "baseline-core.json",
+        "id": "nightwing/L3/1/mage",
+        "fingerprint": "{\"heroes\":[{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3}],\"monsters\":[{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "nightwing",
+        "heroTypes": [
+          "mage"
+        ],
+        "heroCount": 4,
+        "monsterCount": 15,
+        "achievedRatio": 1.015066,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "meetsStrongThreshold": true,
+      "meetsWeakThreshold": true,
+      "meetsBothAgainstDifferentHeroTypes": true,
+      "strong": {
+        "source": "baseline-core.json",
+        "id": "nightwing/L3/1/warrior",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3}],\"monsters\":[{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "nightwing",
+        "heroTypes": [
+          "warrior"
+        ],
+        "heroCount": 6,
+        "monsterCount": 15,
+        "achievedRatio": 1.015066,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "weak": {
+        "source": "baseline-core.json",
+        "id": "nightwing/L3/1/mage",
+        "fingerprint": "{\"heroes\":[{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3}],\"monsters\":[{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3},{\"type\":\"nightwing\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "nightwing",
+        "heroTypes": [
+          "mage"
+        ],
+        "heroCount": 4,
+        "monsterCount": 15,
+        "achievedRatio": 1.015066,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "strongestMixedMarginalNearOne": null,
+      "strongestMixedMarginalAnyTestedBand": null
+    },
+    {
+      "type": "thornling",
+      "nearOnePureContexts": 26,
+      "bestPure": {
+        "source": "baseline-core.json",
+        "id": "thornling/L3/1/ranger",
+        "fingerprint": "{\"heroes\":[{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3}],\"monsters\":[{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "thornling",
+        "heroTypes": [
+          "ranger"
+        ],
+        "heroCount": 6,
+        "monsterCount": 12,
+        "achievedRatio": 0.974464,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "worstPure": {
+        "source": "enemy-validation.json",
+        "id": "thornling+bulwark/necromancy/x2/1/pureA",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3}],\"monsters\":[{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "thornling",
+        "heroTypes": [
+          "healer",
+          "mage",
+          "necromancer",
+          "warrior"
+        ],
+        "heroCount": 8,
+        "monsterCount": 23,
+        "achievedRatio": 1.018757,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 100,
+        "monsterWins": 27,
+        "heroWins": 73,
+        "timeouts": 0,
+        "stage": "validation",
+        "monsterWinRate": 0.27,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.192696,
+          0.364321
+        ]
+      },
+      "meetsStrongThreshold": true,
+      "meetsWeakThreshold": false,
+      "meetsBothAgainstDifferentHeroTypes": false,
+      "strong": {
+        "source": "baseline-core.json",
+        "id": "thornling/L3/1/ranger",
+        "fingerprint": "{\"heroes\":[{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3}],\"monsters\":[{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3},{\"type\":\"thornling\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "thornling",
+        "heroTypes": [
+          "ranger"
+        ],
+        "heroCount": 6,
+        "monsterCount": 12,
+        "achievedRatio": 0.974464,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "weak": null,
+      "strongestMixedMarginalNearOne": {
+        "source": "enemy-roles-validation.json",
+        "id": "binder+thornling/fresh/support0.15/ranged/x2/1",
+        "type": "thornling",
+        "partner": "binder",
+        "heroComposition": "ranged",
+        "achievedRatio": 0.996118,
+        "nearOne": true,
+        "monsterWins": 88,
+        "n": 100,
+        "monsterWinRate": 0.88,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.88,
+        "deltaOverBestPure": 0.16,
+        "stage": "validation"
+      },
+      "strongestMixedMarginalAnyTestedBand": {
+        "source": "enemy-roles-validation.json",
+        "id": "binder+thornling/fresh/support0.15/ranged/x2/1",
+        "type": "thornling",
+        "partner": "binder",
+        "heroComposition": "ranged",
+        "achievedRatio": 0.996118,
+        "nearOne": true,
+        "monsterWins": 88,
+        "n": 100,
+        "monsterWinRate": 0.88,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.88,
+        "deltaOverBestPure": 0.16,
+        "stage": "validation"
+      }
+    },
+    {
+      "type": "mender",
+      "nearOnePureContexts": 78,
+      "bestPure": {
+        "source": "baseline-core.json",
+        "id": "mender/L3/1/ranger+mage",
+        "fingerprint": "{\"heroes\":[{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3}],\"monsters\":[{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "mender",
+        "heroTypes": [
+          "mage",
+          "ranger"
+        ],
+        "heroCount": 5,
+        "monsterCount": 8,
+        "achievedRatio": 1.010555,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "worstPure": {
+        "source": "enemy-siege-validation.json",
+        "id": "siegebreaker+mender/fresh/support0.1/necromancy/x2/1/pureB",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3}],\"monsters\":[{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3}],\"research\":[],\"mode\":\"objective\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "mender",
+        "heroTypes": [
+          "healer",
+          "mage",
+          "necromancer",
+          "warrior"
+        ],
+        "heroCount": 8,
+        "monsterCount": 15,
+        "achievedRatio": 1.033522,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "objective",
+        "n": 100,
+        "monsterWins": 0,
+        "heroWins": 1,
+        "timeouts": 99,
+        "stage": "validation",
+        "monsterWinRate": 0,
+        "timeoutRate": 0.99,
+        "monsterWinWilson95": [
+          0,
+          0.036993
+        ]
+      },
+      "meetsStrongThreshold": true,
+      "meetsWeakThreshold": true,
+      "meetsBothAgainstDifferentHeroTypes": true,
+      "strong": {
+        "source": "baseline-core.json",
+        "id": "mender/L3/1/ranger+mage",
+        "fingerprint": "{\"heroes\":[{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3}],\"monsters\":[{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "mender",
+        "heroTypes": [
+          "mage",
+          "ranger"
+        ],
+        "heroCount": 5,
+        "monsterCount": 8,
+        "achievedRatio": 1.010555,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "weak": {
+        "source": "enemy-siege-validation.json",
+        "id": "siegebreaker+mender/fresh/support0.1/necromancy/x2/1/pureB",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3}],\"monsters\":[{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3},{\"type\":\"mender\",\"rank\":3}],\"research\":[],\"mode\":\"objective\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "mender",
+        "heroTypes": [
+          "healer",
+          "mage",
+          "necromancer",
+          "warrior"
+        ],
+        "heroCount": 8,
+        "monsterCount": 15,
+        "achievedRatio": 1.033522,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "objective",
+        "n": 100,
+        "monsterWins": 0,
+        "heroWins": 1,
+        "timeouts": 99,
+        "stage": "validation",
+        "monsterWinRate": 0,
+        "timeoutRate": 0.99,
+        "monsterWinWilson95": [
+          0,
+          0.036993
+        ]
+      },
+      "strongestMixedMarginalNearOne": {
+        "source": "enemy-expanded.json",
+        "id": "boneservant+mender/balanced/x2/1",
+        "type": "mender",
+        "partner": "boneservant",
+        "heroComposition": "balanced",
+        "achievedRatio": 0.990705,
+        "nearOne": true,
+        "monsterWins": 5,
+        "n": 6,
+        "monsterWinRate": 0.833333,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.333333,
+        "deltaOverBestPure": 0.333333,
+        "stage": "discovery"
+      },
+      "strongestMixedMarginalAnyTestedBand": {
+        "source": "enemy-expanded-validation.json",
+        "id": "siegebreaker+mender/necromancy/x1/1.3",
+        "type": "mender",
+        "partner": "siegebreaker",
+        "heroComposition": "necromancy",
+        "achievedRatio": 1.279599,
+        "nearOne": false,
+        "monsterWins": 87,
+        "n": 100,
+        "monsterWinRate": 0.87,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.06,
+        "deltaOverBestPure": 0.06,
+        "stage": "validation"
+      }
+    },
+    {
+      "type": "binder",
+      "nearOnePureContexts": 40,
+      "bestPure": {
+        "source": "enemy-validation.json",
+        "id": "husher+binder/necromancy/x2/1/pureB",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3}],\"monsters\":[{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "binder",
+        "heroTypes": [
+          "healer",
+          "mage",
+          "necromancer",
+          "warrior"
+        ],
+        "heroCount": 8,
+        "monsterCount": 10,
+        "achievedRatio": 1.082737,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 100,
+        "monsterWins": 0,
+        "heroWins": 100,
+        "timeouts": 0,
+        "stage": "validation",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.036993
+        ]
+      },
+      "worstPure": {
+        "source": "enemy-validation.json",
+        "id": "husher+binder/necromancy/x2/1/pureB",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3}],\"monsters\":[{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "binder",
+        "heroTypes": [
+          "healer",
+          "mage",
+          "necromancer",
+          "warrior"
+        ],
+        "heroCount": 8,
+        "monsterCount": 10,
+        "achievedRatio": 1.082737,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 100,
+        "monsterWins": 0,
+        "heroWins": 100,
+        "timeouts": 0,
+        "stage": "validation",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.036993
+        ]
+      },
+      "meetsStrongThreshold": false,
+      "meetsWeakThreshold": true,
+      "meetsBothAgainstDifferentHeroTypes": false,
+      "strong": null,
+      "weak": {
+        "source": "enemy-validation.json",
+        "id": "husher+binder/necromancy/x2/1/pureB",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3}],\"monsters\":[{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3},{\"type\":\"binder\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "binder",
+        "heroTypes": [
+          "healer",
+          "mage",
+          "necromancer",
+          "warrior"
+        ],
+        "heroCount": 8,
+        "monsterCount": 10,
+        "achievedRatio": 1.082737,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 100,
+        "monsterWins": 0,
+        "heroWins": 100,
+        "timeouts": 0,
+        "stage": "validation",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.036993
+        ]
+      },
+      "strongestMixedMarginalNearOne": {
+        "source": "enemy-roles-validation.json",
+        "id": "binder+thornling/fresh/support0.15/ranged/x2/1",
+        "type": "binder",
+        "partner": "thornling",
+        "heroComposition": "ranged",
+        "achievedRatio": 0.996118,
+        "nearOne": true,
+        "monsterWins": 88,
+        "n": 100,
+        "monsterWinRate": 0.88,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.16,
+        "deltaOverBestPure": 0.16,
+        "stage": "validation"
+      },
+      "strongestMixedMarginalAnyTestedBand": {
+        "source": "enemy-roles-validation.json",
+        "id": "binder+thornling/fresh/support0.15/ranged/x2/1",
+        "type": "binder",
+        "partner": "thornling",
+        "heroComposition": "ranged",
+        "achievedRatio": 0.996118,
+        "nearOne": true,
+        "monsterWins": 88,
+        "n": 100,
+        "monsterWinRate": 0.88,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.16,
+        "deltaOverBestPure": 0.16,
+        "stage": "validation"
+      }
+    },
+    {
+      "type": "boneservant",
+      "nearOnePureContexts": 43,
+      "bestPure": {
+        "source": "baseline-core.json",
+        "id": "boneservant/L3/1/healer",
+        "fingerprint": "{\"heroes\":[{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3}],\"monsters\":[{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "boneservant",
+        "heroTypes": [
+          "healer"
+        ],
+        "heroCount": 4,
+        "monsterCount": 13,
+        "achievedRatio": 0.997021,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "worstPure": {
+        "source": "baseline-core.json",
+        "id": "boneservant/L3/1/warrior+mage",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3}],\"monsters\":[{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "boneservant",
+        "heroTypes": [
+          "mage",
+          "warrior"
+        ],
+        "heroCount": 5,
+        "monsterCount": 13,
+        "achievedRatio": 0.997021,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "meetsStrongThreshold": true,
+      "meetsWeakThreshold": true,
+      "meetsBothAgainstDifferentHeroTypes": true,
+      "strong": {
+        "source": "baseline-core.json",
+        "id": "boneservant/L3/1/healer",
+        "fingerprint": "{\"heroes\":[{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3}],\"monsters\":[{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "boneservant",
+        "heroTypes": [
+          "healer"
+        ],
+        "heroCount": 4,
+        "monsterCount": 13,
+        "achievedRatio": 0.997021,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "weak": {
+        "source": "baseline-core.json",
+        "id": "boneservant/L3/1/warrior+mage",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3}],\"monsters\":[{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3},{\"type\":\"boneservant\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "boneservant",
+        "heroTypes": [
+          "mage",
+          "warrior"
+        ],
+        "heroCount": 5,
+        "monsterCount": 13,
+        "achievedRatio": 0.997021,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "strongestMixedMarginalNearOne": {
+        "source": "enemy-expanded.json",
+        "id": "boneservant+mender/balanced/x1/1",
+        "type": "boneservant",
+        "partner": "mender",
+        "heroComposition": "balanced",
+        "achievedRatio": 1.006946,
+        "nearOne": true,
+        "monsterWins": 5,
+        "n": 6,
+        "monsterWinRate": 0.833333,
+        "timeoutRate": 0.166667,
+        "marginalWinDeltaOverPartner": 0.833333,
+        "deltaOverBestPure": 0,
+        "stage": "discovery"
+      },
+      "strongestMixedMarginalAnyTestedBand": {
+        "source": "enemy-expanded-validation.json",
+        "id": "boneservant+mender/necromancy/x2/1.3",
+        "type": "boneservant",
+        "partner": "mender",
+        "heroComposition": "necromancy",
+        "achievedRatio": 1.289442,
+        "nearOne": false,
+        "monsterWins": 87,
+        "n": 100,
+        "monsterWinRate": 0.87,
+        "timeoutRate": 0.11,
+        "marginalWinDeltaOverPartner": 0.86,
+        "deltaOverBestPure": 0.08,
+        "stage": "validation"
+      }
+    },
+    {
+      "type": "siegebreaker",
+      "nearOnePureContexts": 52,
+      "bestPure": {
+        "source": "baseline-core.json",
+        "id": "siegebreaker/L3/1/healer",
+        "fingerprint": "{\"heroes\":[{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3}],\"monsters\":[{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3}],\"research\":[],\"mode\":\"objective\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "siegebreaker",
+        "heroTypes": [
+          "healer"
+        ],
+        "heroCount": 4,
+        "monsterCount": 6,
+        "achievedRatio": 1.082737,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "objective",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "worstPure": {
+        "source": "baseline-core.json",
+        "id": "siegebreaker/L3/1/warrior",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3}],\"monsters\":[{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3}],\"research\":[],\"mode\":\"objective\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "siegebreaker",
+        "heroTypes": [
+          "warrior"
+        ],
+        "heroCount": 6,
+        "monsterCount": 6,
+        "achievedRatio": 1.082737,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "objective",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "meetsStrongThreshold": true,
+      "meetsWeakThreshold": true,
+      "meetsBothAgainstDifferentHeroTypes": true,
+      "strong": {
+        "source": "baseline-core.json",
+        "id": "siegebreaker/L3/1/healer",
+        "fingerprint": "{\"heroes\":[{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3}],\"monsters\":[{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3}],\"research\":[],\"mode\":\"objective\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "siegebreaker",
+        "heroTypes": [
+          "healer"
+        ],
+        "heroCount": 4,
+        "monsterCount": 6,
+        "achievedRatio": 1.082737,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "objective",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "weak": {
+        "source": "enemy-roles-validation.json",
+        "id": "siegebreaker+bulwark/fresh/support0.15/balanced/x2/1/pureA",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3}],\"monsters\":[{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3},{\"type\":\"siegebreaker\",\"rank\":3}],\"research\":[],\"mode\":\"objective\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "siegebreaker",
+        "heroTypes": [
+          "healer",
+          "mage",
+          "ranger",
+          "warrior"
+        ],
+        "heroCount": 8,
+        "monsterCount": 9,
+        "achievedRatio": 0.974464,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "objective",
+        "n": 100,
+        "monsterWins": 18,
+        "heroWins": 82,
+        "timeouts": 0,
+        "stage": "validation",
+        "monsterWinRate": 0.18,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.117002,
+          0.266674
+        ]
+      },
+      "strongestMixedMarginalNearOne": null,
+      "strongestMixedMarginalAnyTestedBand": {
+        "source": "enemy-expanded-validation.json",
+        "id": "siegebreaker+mender/necromancy/x1/1.3",
+        "type": "siegebreaker",
+        "partner": "mender",
+        "heroComposition": "necromancy",
+        "achievedRatio": 1.279599,
+        "nearOne": false,
+        "monsterWins": 87,
+        "n": 100,
+        "monsterWinRate": 0.87,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.64,
+        "deltaOverBestPure": 0.06,
+        "stage": "validation"
+      }
+    },
+    {
+      "type": "broodcap",
+      "nearOnePureContexts": 48,
+      "bestPure": {
+        "source": "baseline-core.json",
+        "id": "broodcap/L3/1/healer",
+        "fingerprint": "{\"heroes\":[{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"healer\",\"level\":3}],\"monsters\":[{\"type\":\"broodcap\",\"rank\":3},{\"type\":\"broodcap\",\"rank\":3},{\"type\":\"broodcap\",\"rank\":3},{\"type\":\"broodcap\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "broodcap",
+        "heroTypes": [
+          "healer"
+        ],
+        "heroCount": 4,
+        "monsterCount": 4,
+        "achievedRatio": 0.902281,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 1,
+        "heroWins": 0,
+        "timeouts": 5,
+        "stage": "discovery",
+        "monsterWinRate": 0.166667,
+        "timeoutRate": 0.833333,
+        "monsterWinWilson95": [
+          0.030053,
+          0.563503
+        ]
+      },
+      "worstPure": {
+        "source": "baseline-core.json",
+        "id": "broodcap/L3/1/warrior",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3}],\"monsters\":[{\"type\":\"broodcap\",\"rank\":3},{\"type\":\"broodcap\",\"rank\":3},{\"type\":\"broodcap\",\"rank\":3},{\"type\":\"broodcap\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "broodcap",
+        "heroTypes": [
+          "warrior"
+        ],
+        "heroCount": 6,
+        "monsterCount": 4,
+        "achievedRatio": 0.902281,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "meetsStrongThreshold": false,
+      "meetsWeakThreshold": true,
+      "meetsBothAgainstDifferentHeroTypes": false,
+      "strong": null,
+      "weak": {
+        "source": "baseline-core.json",
+        "id": "broodcap/L3/1/warrior",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3}],\"monsters\":[{\"type\":\"broodcap\",\"rank\":3},{\"type\":\"broodcap\",\"rank\":3},{\"type\":\"broodcap\",\"rank\":3},{\"type\":\"broodcap\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "broodcap",
+        "heroTypes": [
+          "warrior"
+        ],
+        "heroCount": 6,
+        "monsterCount": 4,
+        "achievedRatio": 0.902281,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "strongestMixedMarginalNearOne": null,
+      "strongestMixedMarginalAnyTestedBand": {
+        "source": "enemy-baseline.json",
+        "id": "binder+broodcap/ranged/x1/1.3",
+        "type": "broodcap",
+        "partner": "binder",
+        "heroComposition": "ranged",
+        "achievedRatio": 1.288457,
+        "nearOne": false,
+        "monsterWins": 5,
+        "n": 6,
+        "monsterWinRate": 0.833333,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.833333,
+        "deltaOverBestPure": 0.666667,
+        "stage": "discovery"
+      }
+    },
+    {
+      "type": "bulwark",
+      "nearOnePureContexts": 83,
+      "bestPure": {
+        "source": "baseline-core.json",
+        "id": "bulwark/L3/1/necromancer",
+        "fingerprint": "{\"heroes\":[{\"type\":\"necromancer\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"necromancer\",\"level\":3}],\"monsters\":[{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "bulwark",
+        "heroTypes": [
+          "necromancer"
+        ],
+        "heroCount": 4,
+        "monsterCount": 6,
+        "achievedRatio": 1.082737,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 5,
+        "heroWins": 1,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0.833333,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.436497,
+          0.969947
+        ]
+      },
+      "worstPure": {
+        "source": "enemy-validation.json",
+        "id": "thornling+bulwark/necromancy/x2/1/pureB",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3}],\"monsters\":[{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "bulwark",
+        "heroTypes": [
+          "healer",
+          "mage",
+          "necromancer",
+          "warrior"
+        ],
+        "heroCount": 8,
+        "monsterCount": 10,
+        "achievedRatio": 0.984307,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 100,
+        "monsterWins": 0,
+        "heroWins": 100,
+        "timeouts": 0,
+        "stage": "validation",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.036993
+        ]
+      },
+      "meetsStrongThreshold": true,
+      "meetsWeakThreshold": true,
+      "meetsBothAgainstDifferentHeroTypes": true,
+      "strong": {
+        "source": "baseline-core.json",
+        "id": "bulwark/L3/1/necromancer",
+        "fingerprint": "{\"heroes\":[{\"type\":\"necromancer\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"necromancer\",\"level\":3}],\"monsters\":[{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "bulwark",
+        "heroTypes": [
+          "necromancer"
+        ],
+        "heroCount": 4,
+        "monsterCount": 6,
+        "achievedRatio": 1.082737,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 5,
+        "heroWins": 1,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0.833333,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.436497,
+          0.969947
+        ]
+      },
+      "weak": {
+        "source": "enemy-confirmation-300.json",
+        "id": "husher+bulwark/fresh/support0.15/necromancy/x2/1/pureB",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"healer\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"necromancer\",\"level\":3}],\"monsters\":[{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3},{\"type\":\"bulwark\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "bulwark",
+        "heroTypes": [
+          "healer",
+          "mage",
+          "necromancer",
+          "warrior"
+        ],
+        "heroCount": 8,
+        "monsterCount": 11,
+        "achievedRatio": 1.082737,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 300,
+        "monsterWins": 1,
+        "heroWins": 298,
+        "timeouts": 1,
+        "stage": "validation",
+        "monsterWinRate": 0.003333,
+        "timeoutRate": 0.003333,
+        "monsterWinWilson95": [
+          0.000589,
+          0.018637
+        ]
+      },
+      "strongestMixedMarginalNearOne": {
+        "source": "enemy-baseline.json",
+        "id": "thornling+bulwark/balanced/x1/1",
+        "type": "bulwark",
+        "partner": "thornling",
+        "heroComposition": "balanced",
+        "achievedRatio": 1.017773,
+        "nearOne": true,
+        "monsterWins": 6,
+        "n": 6,
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.166667,
+        "deltaOverBestPure": 0.166667,
+        "stage": "discovery"
+      },
+      "strongestMixedMarginalAnyTestedBand": {
+        "source": "enemy-baseline.json",
+        "id": "thornling+bulwark/balanced/x1/1",
+        "type": "bulwark",
+        "partner": "thornling",
+        "heroComposition": "balanced",
+        "achievedRatio": 1.017773,
+        "nearOne": true,
+        "monsterWins": 6,
+        "n": 6,
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.166667,
+        "deltaOverBestPure": 0.166667,
+        "stage": "discovery"
+      }
+    },
+    {
+      "type": "guardian",
+      "nearOnePureContexts": 42,
+      "bestPure": {
+        "source": "baseline-core.json",
+        "id": "guardian/L3/1/warrior",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3}],\"monsters\":[{\"type\":\"guardian\",\"rank\":3},{\"type\":\"guardian\",\"rank\":3},{\"type\":\"guardian\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "guardian",
+        "heroTypes": [
+          "warrior"
+        ],
+        "heroCount": 6,
+        "monsterCount": 3,
+        "achievedRatio": 1.082737,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 6,
+        "heroWins": 0,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 1,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.609666,
+          1
+        ]
+      },
+      "worstPure": {
+        "source": "baseline-developed.json",
+        "id": "developed/guardian/L3/1/warrior+ranger",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3}],\"monsters\":[{\"type\":\"guardian\",\"rank\":3},{\"type\":\"guardian\",\"rank\":3},{\"type\":\"guardian\",\"rank\":3}],\"research\":[\"armor\",\"boots\",\"marksman\",\"banner\",\"bloom\",\"echo\"],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "guardian",
+        "heroTypes": [
+          "ranger",
+          "warrior"
+        ],
+        "heroCount": 6,
+        "monsterCount": 3,
+        "achievedRatio": 1.082737,
+        "research": [
+          "armor",
+          "boots",
+          "marksman",
+          "banner",
+          "bloom",
+          "echo"
+        ],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "meetsStrongThreshold": true,
+      "meetsWeakThreshold": true,
+      "meetsBothAgainstDifferentHeroTypes": true,
+      "strong": {
+        "source": "enemy-validation.json",
+        "id": "guardian+bulwark/ranged/x2/1/pureA",
+        "fingerprint": "{\"heroes\":[{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"mage\",\"level\":3},{\"type\":\"mage\",\"level\":3}],\"monsters\":[{\"type\":\"guardian\",\"rank\":3},{\"type\":\"guardian\",\"rank\":3},{\"type\":\"guardian\",\"rank\":3},{\"type\":\"guardian\",\"rank\":3},{\"type\":\"guardian\",\"rank\":3}],\"research\":[],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "guardian",
+        "heroTypes": [
+          "mage",
+          "ranger"
+        ],
+        "heroCount": 8,
+        "monsterCount": 5,
+        "achievedRatio": 1.082737,
+        "research": [],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 100,
+        "monsterWins": 96,
+        "heroWins": 4,
+        "timeouts": 0,
+        "stage": "validation",
+        "monsterWinRate": 0.96,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0.901629,
+          0.984337
+        ]
+      },
+      "weak": {
+        "source": "baseline-developed.json",
+        "id": "developed/guardian/L3/1/warrior+ranger",
+        "fingerprint": "{\"heroes\":[{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"warrior\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3},{\"type\":\"ranger\",\"level\":3}],\"monsters\":[{\"type\":\"guardian\",\"rank\":3},{\"type\":\"guardian\",\"rank\":3},{\"type\":\"guardian\",\"rank\":3}],\"research\":[\"armor\",\"boots\",\"marksman\",\"banner\",\"bloom\",\"echo\"],\"mode\":\"field\",\"difficulty\":\"steady\",\"corpses\":[],\"skeletons\":[],\"waves\":[],\"reinforcements\":[]}",
+        "type": "guardian",
+        "heroTypes": [
+          "ranger",
+          "warrior"
+        ],
+        "heroCount": 6,
+        "monsterCount": 3,
+        "achievedRatio": 1.082737,
+        "research": [
+          "armor",
+          "boots",
+          "marksman",
+          "banner",
+          "bloom",
+          "echo"
+        ],
+        "preexistingCorpses": 0,
+        "preexistingSummons": 0,
+        "mode": "field",
+        "n": 6,
+        "monsterWins": 0,
+        "heroWins": 6,
+        "timeouts": 0,
+        "stage": "discovery",
+        "monsterWinRate": 0,
+        "timeoutRate": 0,
+        "monsterWinWilson95": [
+          0,
+          0.390334
+        ]
+      },
+      "strongestMixedMarginalNearOne": {
+        "source": "enemy-validation.json",
+        "id": "guardian+bulwark/ranged/x2/1",
+        "type": "guardian",
+        "partner": "bulwark",
+        "heroComposition": "ranged",
+        "achievedRatio": 0.974464,
+        "nearOne": true,
+        "monsterWins": 82,
+        "n": 100,
+        "monsterWinRate": 0.82,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.78,
+        "deltaOverBestPure": -0.14,
+        "stage": "validation"
+      },
+      "strongestMixedMarginalAnyTestedBand": {
+        "source": "enemy-validation.json",
+        "id": "guardian+bulwark/ranged/x2/1",
+        "type": "guardian",
+        "partner": "bulwark",
+        "heroComposition": "ranged",
+        "achievedRatio": 0.974464,
+        "nearOne": true,
+        "monsterWins": 82,
+        "n": 100,
+        "monsterWinRate": 0.82,
+        "timeoutRate": 0,
+        "marginalWinDeltaOverPartner": 0.78,
+        "deltaOverBestPure": -0.14,
+        "stage": "validation"
+      }
+    }
+  ],
+  "missingPureStrong": [
+    "rattler",
+    "binder",
+    "broodcap"
+  ],
+  "missingPureWeak": [
+    "thornling"
+  ],
+  "supersededDiscoveryContexts": [
+    {
+      "source": "enemy-baseline.json",
+      "id": "husher+binder/ranged/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "husher+binder/necromancy/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "husher+binder/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "nightwing+siegebreaker/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "thornling+bulwark/ranged/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "thornling+bulwark/necromancy/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "thornling+bulwark/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "boneservant+binder/ranged/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "boneservant+binder/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "guardian+mender/ranged/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "guardian+bulwark/ranged/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "guardian+bulwark/ranged/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "guardian+bulwark/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "binder+broodcap/ranged/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-baseline.json",
+      "id": "binder+broodcap/necromancy/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-expanded.json",
+      "id": "nightwing+bulwark/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-expanded.json",
+      "id": "siegebreaker+mender/necromancy/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-expanded.json",
+      "id": "siegebreaker+mender/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-expanded.json",
+      "id": "siegebreaker+bulwark/balanced/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-expanded.json",
+      "id": "siegebreaker+bulwark/balanced/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-expanded.json",
+      "id": "boneservant+bulwark/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-validation.json",
+      "id": "husher+binder/necromancy/x2/1/pureA",
+      "n": 100
+    },
+    {
+      "source": "enemy-roles.json",
+      "id": "husher+bulwark/fresh/support0.15/necromancy/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles.json",
+      "id": "husher+bulwark/fresh/support0.15/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles.json",
+      "id": "binder+thornling/fresh/support0.15/ranged/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles.json",
+      "id": "binder+thornling/fresh/support0.15/ranged/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles.json",
+      "id": "binder+thornling/fresh/support0.3/ranged/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles.json",
+      "id": "binder+thornling/fresh/support0.3/ranged/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles.json",
+      "id": "binder+thornling/fresh/support0.15/necromancy/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles.json",
+      "id": "binder+thornling/fresh/support0.15/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles.json",
+      "id": "binder+thornling/fresh/support0.3/necromancy/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles.json",
+      "id": "binder+thornling/fresh/support0.3/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles-extra.json",
+      "id": "boneservant+bulwark/fresh/support0.15/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles-extra.json",
+      "id": "boneservant+bulwark/fresh/support0.3/necromancy/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles-extra.json",
+      "id": "siegebreaker+bulwark/fresh/support0.15/balanced/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles-extra.json",
+      "id": "siegebreaker+bulwark/fresh/support0.15/balanced/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles-extra.json",
+      "id": "siegebreaker+bulwark/fresh/support0.3/balanced/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles-extra.json",
+      "id": "siegebreaker+bulwark/fresh/support0.3/balanced/x2/1/pureB",
+      "n": 6
+    },
+    {
+      "source": "enemy-roles-validation.json",
+      "id": "husher+bulwark/fresh/support0.15/necromancy/x2/1/pureA",
+      "n": 100
+    },
+    {
+      "source": "enemy-roles-validation.json",
+      "id": "husher+bulwark/fresh/support0.15/necromancy/x2/1/pureB",
+      "n": 100
+    },
+    {
+      "source": "enemy-siege-focused.json",
+      "id": "siegebreaker+mender/fresh/support0.1/necromancy/x2/1/pureA",
+      "n": 6
+    },
+    {
+      "source": "enemy-siege-focused.json",
+      "id": "siegebreaker+mender/fresh/support0.1/necromancy/x2/1/pureB",
+      "n": 6
+    }
+  ],
+  "fullAudit": "enemy-unit-audit-all.json.gz",
+  "pureContextCount": 563
+}

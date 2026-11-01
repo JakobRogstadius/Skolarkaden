@@ -1,0 +1,13 @@
+--- a/resources/glantan/monsters.js
++++ b/resources/glantan/monsters.js
+@@ -247,8 +247,8 @@
+       const range = spec.range + (target.w ? Math.max(target.w, target.h) * 0.45 : 0);
+       const inRange = G.distance(monster, target) <= range;
+       const clear = G.attackLine(w, monster, target), distance = G.distance(monster, target);
+-      if (spec.rush && distance > 2 && distance < 5 && (monster.rushAt || 0) <= w.time) { monster.rushUntil = w.time + .8; monster.rushAt = w.time + 6; }
+-      const speed = spec.speed * (monster.slowUntil > w.time ? .45 : 1) * (monster.rushUntil > w.time ? 1.7 : 1);
++      if (spec.rush && distance > 2 && distance < 5 && (monster.rushAt || 0) <= w.time) { monster.rushUntil = w.time + (spec.rushDuration ?? .8); monster.rushAt = w.time + 6; }
++      const speed = spec.speed * (monster.slowUntil > w.time ? .45 : 1) * (monster.rushUntil > w.time ? (spec.rushSpeed ?? 1.7) : 1);
+       if (spec.kite && !target.w && distance < 1.8 && (monster.kiteAt || 0) <= w.time) {
+         const away = { x: monster.x + (monster.x - target.x) / Math.max(.1, distance) * 2, y: monster.y + (monster.y - target.y) / Math.max(.1, distance) * 2 };
+         if (G.open(w, away.x, away.y)) { monster.kiteGoal = away; monster.kiteUntil = w.time + .9; monster.kiteAt = w.time + 3; }
