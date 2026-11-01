@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict');
 const {load,rng}=require('../../helpers/runtime.cjs');
-const SC=load(['data','language-exercises-data','language-exercises','homework','input','game','klossar','bubblefish/game','bubblefish/sound']);
+const SC=load(['data','language-exercises-data','language-exercises','homework','input','game','klossar','bubblefish/layout','bubblefish/game','bubblefish/sound']);
 function fresh(options={}){const events=[],g=new SC.BubblefishGame({random:rng(19),onEvent:e=>events.push(e)});g.start({mode:'math-addition',...options});g.nextHazard=g.nextBalls=g.nextPickup=Infinity;g.events=events;return g;}
 function hold(g){g.collectQuestion(g.questions[0]);return g.held;}
 function answer(g,label){return g.bubble({...g.held.pair,answer:label},'answer',g.fish.x,g.fish.y);}
@@ -48,11 +48,11 @@ function obstacle(g,kind,extra={}){return {kind,x:g.fish.x,y:g.fish.y,baseY:g.fi
   assert(chinese.isCorrect(chinese.held.pair.chinese.translation));
   const math=fresh({mode:'math-simple-multiplication'});assert(math.questions.every(q=>q.item.diagram));hold(math);assert(math.isCorrect(String(math.held.pair.problem.answer)));
 }
-// Every clean half-bar answer cycle has a catchable correct arrival, including
+// A due correct answer has a catchable half-bar arrival, including
 // late runs and portrait/landscape viewports. A spawn beyond death is not enough.
 for(const pace of ['gentle','steady','brave'])for(const [width,height] of [[360,640],[1000,620],[850,320]])for(const elapsed of [0,300,900,1800]){
   const g=fresh({pace});g.resize(width,height);g.fish.x=g.limits().left+g.radius();hold(g);g.life=50;g.elapsed=elapsed;g.distance=elapsed?1800:0;
-  g.nextAnswer=g.distance+4;g.correctAt=2;g.nextHazard=g.nextBalls=g.nextPickup=Infinity;
+  g.nextAnswer=g.distance+4;g.correctAt=0;g.nextHazard=g.nextBalls=g.nextPickup=Infinity;
   let reachable=false;
   for(let i=0;i<1800&&g.state==='playing';i++){
     g.update(1/30);
@@ -106,7 +106,11 @@ for(const pointer of [false,true]){
   // Exercise the real scheduler across the full introduction sequence, keeping
   // the fish alive and removing question corridors that deliberately block hazards.
   for(const seed of [7,19,51]){
-    const g=fresh();g.random=rng(seed);g.questions=[];g.makeQuestionWave=()=>{};g.collide=()=>{};
+    const g=fresh();g.random=rng(seed);g.questions=[];g.makeQuestionWave=()=>{};
+    // Isolate introduction scheduling from navigation (replayed in layouts.test.cjs).
+    g.layout.section=kind=>{g.introduced.add(kind);return true;};
+    g.layout.balls=()=>{g.introduced.add('balls');return true;};
+    g.layout.place=()=>true;
     g.nextHazard=32;g.nextBalls=8;g.nextPickup=100;
     const first=new Map();
     while(g.distance<1800){

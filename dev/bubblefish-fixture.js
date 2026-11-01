@@ -10,7 +10,7 @@ function loadScene(name){
   renderer=new SC.BubblefishRenderer($('canvas'),game);renderer.resize();
   game.nextHazard=game.nextBalls=game.nextPickup=Infinity;game.state='paused';game.clock=25;
   const w=game.width,h=game.height,u=game.unit(),f=game.fish;f.x=w*.25;f.y=h*.44;
-  if(name!=='start'){
+  if(name!=='start'&&name!=='layout'){
     game.state='playing';game.collectQuestion(game.questions[1]);game.state='paused';
     if(game.held){game.held.x=f.x-95*u;game.held.y=f.y-18*u;}
     game.answers=[game.bubble({...game.held.pair,answer:game.held.pair.answer},'answer',w*.7,h*.38)];
@@ -30,6 +30,14 @@ function loadScene(name){
   if(name==='armor'){game.active.armor=8;game.obstacles=[{kind:'wall',x:w*.56,y:h*.5,w:56*u,gapY:h*.7,gap:h*.25,r:22*u,phase:1,age:0},{kind:'rock',x:w*.83,y:f.y,r:40*u,phase:0,age:0}];}
   if(name==='ink')game.ink=[{x:w*.48,y:h*.42,r:70*u,age:1.2,duration:5.2,seed:2}];
   if(name==='pairs')for(let i=0;i<35;i++){const pair=game.makePair();game.collected.push({question:pair.problem,answer:{label:pair.answer},age:3,x:f.x,y:f.y,id:i});} 
+  if(name==='layout'){
+    game.questions=[];game.layout=new SC.BubblefishLayout(game);game.elapsed=120;game.distance=1600;game.nextQuestion=Infinity;game.makeQuestionWave=()=>{};
+    game.spawnHazard($('layout-kind').value);game.spawnBalls();
+    const section=game.layout.sections.at(-1);lastEvent=section?.name||'Ingen fri väg';
+    game.state='playing';game.life=10000;
+    for(const p of section?.points||[]){if(p.time>26.7)break;const dt=p.time-game.clock;if(dt>1e-8){game.steer(0,p.control);game.update(dt);}}
+    game.pause();
+  }
   game.life=67;game.points=725;game.refreshScore();renderer.draw();$('run').textContent='Spela';paintStatus();
 }
 function paintStatus(){
@@ -40,6 +48,7 @@ function paintStatus(){
 for(const button of document.querySelectorAll('[data-scene]'))button.addEventListener('click',()=>{sounds.unlock();loadScene(button.dataset.scene);});
 for(const button of document.querySelectorAll('[data-size]'))button.addEventListener('click',()=>{const [w,h]=button.dataset.size.split(',');$('arena').style.width=w+'px';$('arena').style.height=h+'px';renderer.resize();loadScene(scene);});
 $('exercise').addEventListener('change',()=>loadScene(scene));
+$('layout-kind').addEventListener('change',()=>loadScene('layout'));
 $('run').addEventListener('click',()=>{sounds.unlock();if(game.state==='paused')game.resume();else if(game.state==='playing')game.pause();else loadScene(scene);$('run').textContent=game.state==='playing'?'Pausa':'Spela';paintStatus();});
 $('sound').addEventListener('click',()=>{muted=!muted;$('sound').textContent=muted?'Ljud av':'Ljud på';paintStatus();});
 globalThis.addEventListener('blur',()=>{if(game?.state==='playing'){game.pause();$('run').textContent='Spela';paintStatus();}});
