@@ -50,7 +50,7 @@ function obstacle(g,kind,extra={}){return {kind,x:g.fish.x,y:g.fish.y,baseY:g.fi
 }
 // Every clean half-bar answer cycle has a catchable correct arrival, including
 // late runs and portrait/landscape viewports. A spawn beyond death is not enough.
-for(const pace of ['gentle','steady','brave'])for(const [width,height] of [[360,640],[1000,620],[850,320]])for(const elapsed of [0,900]){
+for(const pace of ['gentle','steady','brave'])for(const [width,height] of [[360,640],[1000,620],[850,320]])for(const elapsed of [0,300,900,1800]){
   const g=fresh({pace});g.resize(width,height);g.fish.x=g.limits().left+g.radius();hold(g);g.life=50;g.elapsed=elapsed;g.distance=elapsed?1800:0;
   g.nextAnswer=g.distance+4;g.correctAt=2;g.nextHazard=g.nextBalls=g.nextPickup=Infinity;
   let reachable=false;
@@ -69,10 +69,68 @@ for(const pace of ['gentle','steady','brave'])for(const [width,height] of [[360,
   g.update(2);g.collectBoost({kind:'growth'});assert.equal(g.active.growth,8);assert(g.active.armor<7);
   g.life=65;g.collectBoost({kind:'refill'});assert.equal(g.life,90);g.collectBoost({kind:'refill'});assert.equal(g.life,100);
   g.life=.001;g.update(.1);assert.equal(g.state,'lost');assert.equal(g.events.filter(e=>e.type==='end').length,1);g.update(10);assert.equal(g.events.filter(e=>e.type==='end').length,1);
-  g.start();assert.equal(g.lastStage,0);assert.equal(g.pickupSerial,0);assert.equal(g.hits,0);
+  g.start();assert.equal(g.introduced.size,0);assert.equal(g.pickupSerial,0);assert.equal(g.hits,0);
+}
+// The speed keeps rising in every difficulty; the same travel drains the same life.
+for(const pace of ['gentle','steady','brave']){
+  const g=fresh({pace}),start=g.speed();let previous=start;
+  for(const seconds of [60,150,300,600,900,1800]){g.elapsed=seconds;assert(g.speed()>previous);previous=g.speed();}
+  g.elapsed=300;assert.equal(g.speed(),start*3);g.elapsed=600;assert.equal(g.speed(),start*5);
+}
+for(const pointer of [false,true]){
+  const left=fresh(),right=fresh();
+  for(const [g,direction] of [[left,-1],[right,1]]){
+    g.fish.x=500;g.questions=[];g.nextQuestion=Infinity;
+    if(pointer)g.moveTo(500+direction*1000,g.fish.y);else g.steer(direction,0);
+    g.update(.3);
+  }
+  assert(Math.abs((500-left.fish.x)/(right.fish.x-500)-1.2)<1e-9,'backwards is 20% faster for both inputs');
+  assert.equal(left.distance,right.distance);assert.equal(left.life,right.life);
+}
+{
+  const schedule=SC.bubblefishProgression;
+  assert(schedule.every((s,i)=>i===0||s.at>schedule[i-1].at),'one ordered introduction schedule');
+  for(const s of schedule.filter(s=>s.after))assert(schedule.find(p=>p.kind===s.after).at<s.at);
+  // Check every pickup immediately before and at its threshold, prioritising
+  // that new effect over previously introduced ones.
+  for(const stage of schedule.filter(s=>s.type==='pickup')){
+    const g=fresh();for(const s of schedule)if(s!==stage)g.introduced.add(s.kind);
+    g.distance=stage.at-.01;g.spawnPickup();assert(!g.pickups.some(p=>p.kind===stage.kind));
+    g.distance=stage.at;g.spawnPickup();assert.equal(g.pickups.at(-1).kind,stage.kind);
+  }
+  const g=fresh();g.distance=2000;
+  for(let i=0;i<12;i++)g.spawnPickup();
+  assert(g.pickups.every(p=>p.kind==='refill'),'counter boosts require their hazard to actually spawn');
+  g.introduced.add('rock');g.spawnPickup();assert.equal(g.pickups.at(-1).kind,'armor');
+  g.introduced.add('predator');g.spawnPickup();assert.equal(g.pickups.at(-1).kind,'growth');
+  // Exercise the real scheduler across the full introduction sequence, keeping
+  // the fish alive and removing question corridors that deliberately block hazards.
+  for(const seed of [7,19,51]){
+    const g=fresh();g.random=rng(seed);g.questions=[];g.makeQuestionWave=()=>{};g.collide=()=>{};
+    g.nextHazard=32;g.nextBalls=8;g.nextPickup=100;
+    const first=new Map();
+    while(g.distance<1800){
+      g.life=100;g.update(.1);
+      for(const kind of g.introduced)if(!first.has(kind))first.set(kind,g.distance);
+    }
+    for(const s of schedule){assert(first.has(s.kind),`${s.kind} introduced, seed ${seed}`);assert(first.get(s.kind)>=s.at,`${s.kind} respects minimum distance`);}
+    const hazards=schedule.filter(s=>s.type==='hazard');
+    assert(hazards.every((s,i)=>i===0||first.get(s.kind)>first.get(hazards[i-1].kind)),'hazards introduced in order');
+    for(const s of schedule.filter(s=>s.after))assert(first.get(s.kind)>first.get(s.after));
+  }
+  const blocked=fresh(),attempts=[];blocked.distance=1700;blocked.nextHazard=0;
+  blocked.spawnHazard=kind=>{attempts.push(kind);return false;};
+  blocked.step(.01);blocked.distance=blocked.nextHazard;blocked.step(.01);
+  assert.deepEqual(attempts,['rock','rock'],'retry a blocked introduction instead of skipping it');
+  assert(!blocked.introduced.has('rock'));
+}
+{
+  const g=fresh();g.elapsed=12000;g.questions=[];
+  g.obstacles=[obstacle(g,'rock',{x:g.fish.x+100})];g.update(.05);
+  assert(g.stun>0,'very fast obstacles cannot tunnel through the fish between collision checks');
 }
 for(const kind of ['pick','pop','correct','wrong','hit','ball','growth','armor','smash','gulp','ink','refill','agility','magnet','senses','danger','end']){
   const pcm=SC.synthesizeBubblefishSound(kind);assert(pcm.length>100);assert.equal(pcm[0],0);assert.equal(pcm.at(-1),0);
   assert(pcm.every(n=>Number.isFinite(n)&&Math.abs(n)<=1));assert(pcm.some(n=>Math.abs(n)>.01));
 }
-console.log('PASS Bubbelfisken: life, matching alternatives, spins, armor/walls, growth, ink drift, answer deadlines, effects, sound and restart.');
+console.log('PASS Bubbelfisken: life, matching, collisions, boosts, ink, answer deadlines, staged progression, speed ramp, backward steering, sound and restart.');

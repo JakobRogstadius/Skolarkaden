@@ -3,13 +3,30 @@
 'use strict';
 const SC=root.Starlight,clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
 const profiles=Object.freeze({
-  gentle:{speed:7.5,ceiling:15,range:330,hazards:38,answers:20},
-  steady:{speed:9,ceiling:18,range:310,hazards:32,answers:18},
-  brave:{speed:10.5,ceiling:20,range:290,hazards:27,answers:17}
+  gentle:{speed:7.5,range:330,hazards:38,answers:20},
+  steady:{speed:9,range:310,hazards:32,answers:18},
+  brave:{speed:10.5,range:290,hazards:27,answers:17}
 });
 const boosts=Object.freeze({agility:8,growth:8,armor:8,magnet:8,senses:10});
-const stages=Object.freeze([{at:0,kind:'rock'},{at:90,kind:'urchin'},{at:230,kind:'predator'},
-  {at:390,kind:'current'},{at:560,kind:'wall'},{at:740,kind:'bird'},{at:940,kind:'octopus'}]);
+// Minimum forward distance in metres. Effects follow the things they help with;
+// a blocked hazard introduction is retried before introducing the next hazard.
+const progression=Object.freeze([
+  {at:8,kind:'balls',type:'bonus'},
+  {at:32,kind:'rock',type:'hazard'},
+  {at:100,kind:'refill',type:'pickup'},
+  {at:160,kind:'urchin',type:'hazard'},
+  {at:240,kind:'armor',type:'pickup',after:'rock'},
+  {at:320,kind:'magnet',type:'pickup',after:'balls'},
+  {at:420,kind:'predator',type:'hazard'},
+  {at:520,kind:'growth',type:'pickup',after:'predator'},
+  {at:680,kind:'current',type:'hazard'},
+  {at:800,kind:'agility',type:'pickup',after:'current'},
+  {at:960,kind:'wall',type:'hazard'},
+  {at:1120,kind:'senses',type:'pickup',after:'wall'},
+  {at:1320,kind:'bird',type:'hazard'},
+  {at:1580,kind:'octopus',type:'hazard'}
+].map(Object.freeze));
+const stages=progression.filter(s=>s.type==='hazard'),pickupStages=progression.filter(s=>s.type==='pickup');
 const normal=text=>String(text??'').normalize('NFC').trim().toLocaleLowerCase('sv-SE');
 function circleRect(x,y,r,rect){return Math.hypot(x-clamp(x,rect.x,rect.x+rect.w),y-clamp(y,rect.y,rect.y+rect.h))<r;}
 class BubblefishGame{
@@ -23,14 +40,14 @@ class BubblefishGame{
     this.state='menu';this.audio?.stop();this.queue.clear();
     Object.assign(this,{clock:0,elapsed:0,distance:0,score:0,points:0,hits:0,shots:0,mistakes:0,streak:0,life:100,
       held:null,questions:[],answers:[],obstacles:[],balls:[],pickups:[],effects:[],ink:[],collected:[],warnings:[],
-      active:{},sequence:0,pickupSerial:0,lastStage:0,stun:0,gulp:0,smash:0,keys:{x:0,y:0},target:null,lowAlarm:0});
+      active:{},sequence:0,pickupSerial:0,introduced:new Set(),stun:0,gulp:0,smash:0,keys:{x:0,y:0},target:null,lowAlarm:0});
   }
   start({mode='letters',pace='gentle',lang='sv-SE',items=null}={}){
     this.menu();this.mode=mode;this.pace=pace;this.lang=lang;this.uppercase=false;this.chineseDisplay='pinyin';
     this.profile=profiles[pace]||profiles.gentle;this.items=SC.beginPractice(this,items);
     if(!this.items?.length)throw new Error('Övningen saknar uppgifter.');
     this.bag=[];this.state='playing';this.fish={x:this.width*.24,y:this.height*.48,vx:0,vy:0};
-    this.nextQuestion=0;this.nextAnswer=Infinity;this.nextHazard=32;this.nextBalls=8;this.nextPickup=75;
+    this.nextQuestion=0;this.nextAnswer=Infinity;this.nextHazard=stages[0].at;this.nextBalls=progression[0].at;this.nextPickup=pickupStages[0].at;
     this.waveNumber=0;this.answerNumber=0;this.makeQuestionWave(true);this.emit('start');
   }
   resize(width,height){
@@ -53,7 +70,8 @@ class BubblefishGame{
   unit(){return clamp(Math.min(this.width/700,this.height/480),.72,1.12);}
   limits(){const u=this.unit();return {top:76*u,bottom:this.height-60*u,left:27*u,right:this.width-Math.max(66*u,this.width*.15)};}
   pixelsPerMetre(){return this.width/64;}
-  speed(){return this.profile.speed+(this.profile.ceiling-this.profile.speed)*(1-Math.exp(-this.elapsed/155));}
+  // Three times starting speed after five minutes, five times after ten; no plateau.
+  speed(){return this.profile.speed*(1+this.elapsed/150);}
   progress(){return clamp(this.distance/1800,0,1);}
   radius(){return this.unit()*18*(this.has('growth')?1.78:1);}
   has(kind){return (this.active[kind]||0)>0;}
@@ -136,11 +154,11 @@ class BubblefishGame{
   }
   answerY(x,r){
     const l=this.limits(),margin=r+8*this.unit(),low=l.top+margin,high=l.bottom-margin;
-    const candidates=Array.from({length:9},(_,i)=>low+(high-low)*(i+.5)/9);
+    const candidates=[clamp(this.fish.y,low,high),...Array.from({length:9},(_,i)=>low+(high-low)*(i+.5)/9)];
     // Project all known hazards along a route from the fish to the answer.
     // The chosen corridor is also reserved against newly generated obstacles.
     const duration=(x-this.fish.x)/(this.speed()*this.pixelsPerMetre());
-    const feasible=candidates.filter(y=>Math.abs(y-this.fish.y)<this.steeringSpeed()*Math.max(.3,duration-.5));
+    const feasible=candidates.filter(y=>Math.abs(y-this.fish.y)<=this.steeringSpeed()*Math.max(0,duration-.5));
     const score=y=>{
       let risk=0;
       for(let n=0;n<=12;n++){
@@ -257,27 +275,37 @@ class BubblefishGame{
       const lowO=o.y-(o.amplitude||0)-o.r,highO=o.y+(o.amplitude||0)+o.r+(o.vy||0)*travel;
       return lowO<high&&highO>low;
     });
-    if(blocked)return;
-    this.obstacles.push(o);
+    if(blocked)return false;
+    this.obstacles.push(o);this.introduced.add(kind);return true;
   }
   spawnBalls(){
     const l=this.limits(),u=this.unit(),y=l.top+24*u+this.random()*(l.bottom-l.top-48*u);
     for(let i=0;i<5;i++)this.balls.push({x:this.width+(15+i*19)*u,y:y+Math.sin(i*.75)*14*u,r:5*u});
+    this.introduced.add('balls');
   }
   spawnPickup(){
-    const available=['agility','refill','magnet','senses',...(this.distance>190?['growth']:[]),...(this.distance>360?['armor']:[])];
-    // Rotate through the unlocked effects so an unlucky run does not hide a boost.
-    const kind=available[this.pickupSerial++%available.length],l=this.limits(),r=23*this.unit();
+    const available=pickupStages.filter(s=>this.distance>=s.at&&(!s.after||this.introduced.has(s.after)));
+    if(!available.length)return;
+    // Show newly unlocked effects first, then rotate through the available set.
+    const stage=available.find(s=>!this.introduced.has(s.kind))||available[this.pickupSerial++%available.length];
+    const kind=stage.kind,l=this.limits(),r=23*this.unit();
     this.pickups.push({kind,x:this.width+r,y:l.top+40+this.random()*Math.max(1,l.bottom-l.top-80),r,phase:this.random()*6.28});
+    this.introduced.add(kind);
   }
   refreshScore(){this.score=Math.floor(this.distance)+this.points;}
   update(dt){
     if(!Number.isFinite(dt)||dt<=0||this.state!=='playing')return;
-    // Fixed maximum substep prevents tunnelling, also under a delayed frame.
-    for(let remaining=dt;remaining>1e-8&&this.state==='playing';){const step=Math.min(1/60,remaining);this.step(step);remaining-=step;}
+    // Shorter collision steps at late-run speeds prevent crossing objects in one frame.
+    for(let remaining=dt;remaining>1e-8&&this.state==='playing';){
+      // Use the maximum possible agility and the normal radius so boosts and
+      // steering never change the integration schedule or distance/life consumption.
+      const relativeSpeed=this.speed()*this.pixelsPerMetre()*1.7+Math.max(210,this.height*.66)*1.65*1.2;
+      const step=Math.min(1/60,this.unit()*18*.6/relativeSpeed,remaining);this.step(step);remaining-=step;
+    }
   }
   step(dt){
-    this.elapsed+=dt;this.clock+=dt;const metres=this.speed()*dt,pixels=metres*this.pixelsPerMetre(),u=this.unit();
+    const previousSpeed=this.speed();this.elapsed+=dt;this.clock+=dt;
+    const metres=(previousSpeed+this.speed())*.5*dt,pixels=metres*this.pixelsPerMetre(),u=this.unit();
     this.distance+=metres;this.life=Math.max(0,this.life-metres/this.profile.range*100);
     if(this.life<=0){this.state='lost';this.clearInput();this.refreshScore();this.sound('end');this.emit('end',{won:false,score:this.score,hits:this.hits,shots:this.shots,elapsed:this.elapsed});return;}
     const wasStunned=this.stun>0;this.stun=Math.max(0,this.stun-dt);this.gulp=Math.max(0,this.gulp-dt);this.smash=Math.max(0,this.smash-dt);
@@ -285,7 +313,7 @@ class BubblefishGame{
     let dx=this.keys.x,dy=this.keys.y;
     if(this.target){dx=this.target.x-this.fish.x;dy=this.target.y-this.fish.y;const d=Math.hypot(dx,dy);if(d<2){dx=dy=0;}else{const speed=Math.min(this.steeringSpeed(),d*7);dx=dx/d*speed/this.steeringSpeed();dy=dy/d*speed/this.steeringSpeed();}}
     const length=Math.max(1,Math.hypot(dx,dy)),speed=this.steeringSpeed(),blend=1-Math.exp(-dt*11*this.agility());
-    this.fish.vx+=(dx/length*speed-this.fish.vx)*blend;this.fish.vy+=(dy/length*speed-this.fish.vy)*blend;
+    this.fish.vx+=(dx/length*speed*(dx<0?1.2:1)-this.fish.vx)*blend;this.fish.vy+=(dy/length*speed-this.fish.vy)*blend;
     this.fish.x+=this.fish.vx*dt;this.fish.y+=this.fish.vy*dt;
     for(const o of this.obstacles){
       o.age+=dt;o.x+=this.velocity(o)*dt;
@@ -327,15 +355,16 @@ class BubblefishGame{
     }
     if(this.distance>=this.nextHazard){
       const available=stages.filter(s=>this.distance>=s.at);let stage=available[Math.floor(this.random()*available.length)];
-      if((this.lastStage||0)<available.length){this.lastStage=available.length;stage=available.at(-1);}
-      this.spawnHazard(stage.kind);this.nextHazard=this.distance+this.profile.hazards*(1-.34*this.progress())*(.85+this.random()*.3);
+      stage=available.find(s=>!this.introduced.has(s.kind))||stage;
+      const spawned=this.spawnHazard(stage.kind);
+      this.nextHazard=this.distance+(spawned?this.profile.hazards*(1-.34*this.progress())*(.85+this.random()*.3):8);
     }
     if(this.distance>=this.nextBalls){this.spawnBalls();this.nextBalls=this.distance+23+this.random()*17;}
-    if(this.distance>=this.nextPickup){this.pickupSerial??=0;this.spawnPickup();this.nextPickup=this.distance+65+this.random()*28;}
+    if(this.distance>=this.nextPickup){this.spawnPickup();this.nextPickup=this.distance+65+this.random()*28;}
     this.warnings=this.has('senses')?this.obstacles.filter(o=>o.kind!=='current'&&(o.x>this.width-35*u||o.x<0||o.y<65*u)).map(o=>({x:clamp(o.x,20,this.width-20),y:clamp(o.y,82*u,this.height-72*u),direction:o.y<65*u?'down':o.x<0?'right':'left'})):[];
     this.lowAlarm-=dt;if(this.life<20&&this.lowAlarm<=0){this.sound('danger');this.lowAlarm=3;}
     this.refreshScore();
   }
 }
-Object.assign(SC,{BubblefishGame,bubblefishProfiles:profiles,bubblefishBoosts:boosts,bubblefishStages:stages});
+Object.assign(SC,{BubblefishGame,bubblefishProfiles:profiles,bubblefishBoosts:boosts,bubblefishProgression:progression});
 })(globalThis);

@@ -268,7 +268,7 @@ Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övnin
 
 ## Så svarar du
 
-- **Bubbelfisken:** styr med piltangenter/WASD eller håll och dra. Fånga en frågebubbla och sedan rätt svar; undvik fel svar och faror. Textfält och mikrofon används inte.
+- **Bubbelfisken:** följ muspekaren utan att klicka, styr med piltangenter/WASD eller dra på pekskärmen. Fånga en frågebubbla och sedan rätt svar; undvik fel svar och faror. Textfält och mikrofon används inte.
 - **Klossar:** klicka eller tryck på två fria klossar. Textfält och mikrofon används inte.
 
 - **Tangentbord:** skriv ett svar och tryck Enter. Enstaka bokstäver och bopomofo skickas direkt. Pågående IME-inmatning väntar tills tecknet är färdigt.
