@@ -93,12 +93,12 @@
       const cost = G.actionCost(this.world, this.pending);
       if (this.progress < cost) G.soundEvent(this.world, 'correct', null, true);
       if (this.progress >= cost) {
-        this.targets = []; this.queue.clear(); this.completePurchase();
+        this.targets = []; this.queue.clear(); this.completePurchase(false);
         if (this.pending) G.soundEvent(this.world, 'correct', null, true);
       } else this.nextQuestion();
       this.revision++; this.emit('hit', { entry, points: 0 }); this.emit('glantan-ready'); this.save();
     }
-    completePurchase() {
+    completePurchase(save = true) {
       const action = this.pending, result = G.purchase(this.world, action);
       if (!result.ok && G.temporaryObstruction(action, result.reason)) {
         this.feedback = ''; this.feedbackUntil = Infinity; return;
@@ -106,7 +106,7 @@
       this.pending = null; this.progress = 0; this.targets = []; this.queue.clear();
       if (result.ok) { this.feedback = '✓'; this.feedbackUntil = this.clock + 2; this.emit('glantan-purchase', { action, entity: result.entity }); }
       else G.notify(this.world, result.reason, 'warn');
-      this.revision++; this.emit('glantan-ready'); this.save();
+      this.revision++; this.emit('glantan-ready'); if (save) this.save();
     }
     ringBell() {
       if (this.state !== 'playing' || !G.ringBell(this.world)) return false;
@@ -120,12 +120,23 @@
     resume() { if (this.state === 'paused') { this.state = 'playing'; this.emit('glantan-ready'); this.emit('resume'); } }
     menu() { this.save(); this.state = 'menu'; this.soundscape?.stop(); this.queue.clear(); }
     save() {
+      this.cancelScheduledSave();
       try {
         if (!this.world || this.world.outcome) return;
         root.localStorage?.setItem(SAVE_KEY, JSON.stringify({ world: this.world, practiceKey: this.practiceKey, uppercase: this.uppercase, mode: this.mode, pace: this.pace, lang: this.lang, items: this.items, shots: this.shots, hits: this.hits, streak: this.streak, bestStreak: this.bestStreak, pending: this.pending, progress: this.progress, target: this.targets[0] || null, heldTarget: this.heldTarget, questionSerial: this.questionSerial }));
       } catch (_) { /* Storage may be unavailable; gameplay remains functional. */ }
     }
-    clearSave() { try { root.localStorage?.removeItem(SAVE_KEY); } catch (_) {} }
+    cancelScheduledSave() {
+      if (this.saveJob == null) return;
+      if (root.cancelIdleCallback) root.cancelIdleCallback(this.saveJob); else root.clearTimeout(this.saveJob);
+      this.saveJob = null;
+    }
+    scheduleSave() {
+      if (this.saveJob != null) return;
+      const write = () => { this.saveJob = null; this.save(); };
+      this.saveJob = root.requestIdleCallback ? root.requestIdleCallback(write, { timeout: 1000 }) : root.setTimeout(write, 0);
+    }
+    clearSave() { this.cancelScheduledSave(); try { root.localStorage?.removeItem(SAVE_KEY); } catch (_) {} }
     update(dt) {
       if (this.state !== 'playing') return;
       this.simulation.update(dt); this.clock = this.elapsed = this.world.time; this.score = this.world.score;
@@ -142,7 +153,7 @@
       }
       if (this.canAnswer() && this.queue.length) { const entry = this.queue.take(); if (entry) this.answer(entry); }
       else if (!this.pending) this.queue.clear();
-      if (this.clock - this.lastSave >= 5) { this.save(); this.lastSave = this.clock; }
+      if (this.clock - this.lastSave >= 5) { this.scheduleSave(); this.lastSave = this.clock; }
     }
   }
   SC.GlantanGame = GlantanGame;

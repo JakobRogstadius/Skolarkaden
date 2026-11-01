@@ -153,7 +153,7 @@
   };
   function support(w, monster, spec, dt) {
     if (!spec.medic) return false;
-    const patients = w.monsters.filter(m => m !== monster && G.alive(m) && m.hp < m.maxHp * .9 && G.distance(m, monster) < 4.5 && G.attackLine(w, monster, m)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
+    const patients = (monster.healAt || 0) <= w.time ? w.monsters.filter(m => m !== monster && G.alive(m) && m.hp < m.maxHp * .9 && G.distance(m, monster) < 4.5 && G.attackLine(w, monster, m)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp) : [];
     if (patients.length && (monster.healAt || 0) <= w.time) {
       monster.healAt = w.time + 3.4; monster.castAt = w.time;
       G.combatCue(w, monster, patients[0], 'heal');
@@ -163,7 +163,8 @@
       }
       G.soundEvent(w, 'heal', monster); return true;
     }
-    const front = w.monsters.filter(m => m !== monster && G.alive(m) && m.lair === monster.lair && m.wave === monster.wave && !G.monsterTypes[m.type].medic && !m.guard).sort((a, b) => G.distance(a, G.castle(w)) - G.distance(b, G.castle(w)))[0];
+    const castle = G.castle(w);
+    const front = G.best(w.monsters, m => m !== monster && G.alive(m) && m.lair === monster.lair && m.wave === monster.wave && !G.monsterTypes[m.type].medic && !m.guard ? G.distance(m,castle) : Infinity);
     if (front && G.distance(front, monster) > 2.5) { G.moveMonster(w, monster, front, spec.speed, dt); return true; }
     return false;
   }
@@ -218,12 +219,15 @@
       }
       const home = w.lairs.find(l => l.id === monster.lair && G.alive(l));
       const defending = monster.guard && home;
-      const nearby = heroes.filter(h => G.alive(h) && G.distance(h, monster) < (monster.boss ? 5.7 : 5.5) && (!defending || G.distance(h, home) < 7.5)).sort((a, b) => (G.distance(a, monster) - (a.classId === 'warrior' ? 1.6 : 0)) - (G.distance(b, monster) - (b.classId === 'warrior' ? 1.6 : 0)));
-      let target = nearby[0];
+      let target = G.best(heroes, h => {
+        if (!G.alive(h)) return Infinity;
+        const d = G.distanceSquared(h,monster);
+        return d < (monster.boss ? 5.7*5.7 : 30.25) && (!defending || G.distanceSquared(h,home) < 56.25) ? Math.sqrt(d) - (h.classId === 'warrior' ? 1.6 : 0) : Infinity;
+      });
       if (defending && (!target || G.distance(monster, home) > 7)) { patrol(w, monster, home, dt); continue; }
       if (!target && w.time < monster.raidAt && home) continue;
-      if (spec.siege) target = buildings.filter(G.alive).sort((a, b) => G.distance(a, monster) - G.distance(b, monster))[0];
-      if (!target) target = buildings.filter(b => G.distance(b, monster) < 3.3).sort((a, b) => G.distance(a, monster) - G.distance(b, monster))[0] || castle;
+      if (spec.siege) target = G.best(buildings, b => G.alive(b) ? G.distance(b,monster) : Infinity);
+      if (!target) target = G.best(buildings, b => { const d = G.distance(b,monster); return d < 3.3 ? d : Infinity; }) || castle;
       if (!target || !G.alive(target)) continue;
       monster.targetId = target.id;
       if (spec.raises) G.raiseEnemySkeleton(w, monster);

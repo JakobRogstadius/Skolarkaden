@@ -233,11 +233,19 @@
       // A paid village guard or an assembling party still hears the castle alarm.
       const canIntercept = !expedition || expedition.state === 'gather' || bounty?.type === 'defend' || w.bellUntil > w.time;
       const emergency = canIntercept && G.distance(hero, castle) < 14
-        ? enemies.filter(m => G.alive(m) && G.canHit(hero, m)).filter(m => m.targetId === castle.id && G.distance(m, castle) < 8 || G.distance(m, castle) < 4 || buildings.has(m.targetId) && G.distance(m, castle) < 9).sort((a, b) => (a.targetId === castle.id ? -100 : G.distance(a, castle)) - (b.targetId === castle.id ? -100 : G.distance(b, castle)))[0] : null;
-      const nearbyAllies = new Set(G.allies(w).filter(h => G.distance(hero, h) < 5.5).map(h => h.id));
+        ? G.best(enemies, m => {
+          if (!G.alive(m) || !G.canHit(hero,m)) return Infinity;
+          const d = G.distanceSquared(m,castle);
+          return m.targetId === castle.id && d < 64 || d < 16 || buildings.has(m.targetId) && d < 81 ? m.targetId === castle.id ? -100 : d : Infinity;
+        }) : null;
+      const nearbyAllies = !emergency && guarding ? new Set(G.allies(w).filter(h => G.distanceSquared(hero,h) < 30.25).map(h => h.id)) : null;
       // The home radius limits unsolicited pursuit, never local self-defence or
       // helping a friend after an expedition's objective has disappeared.
-      let target = emergency || enemies.filter(m => G.alive(m) && G.canHit(hero, m)).filter(m => G.distance(hero, m) < (hero.classId === 'warrior' ? 5 : 5.5) && (!guarding || G.distance(m, castle) < 8 || nearbyAllies.has(m.targetId))).sort((a, b) => G.distance(hero, a) - G.distance(hero, b))[0];
+      let target = emergency || G.best(enemies, m => {
+        if (!G.alive(m) || !G.canHit(hero,m)) return Infinity;
+        const d = G.distanceSquared(hero,m);
+        return d < (hero.classId === 'warrior' ? 25 : 30.25) && (!guarding || G.distanceSquared(m,castle) < 64 || nearbyAllies.has(m.targetId)) ? d : Infinity;
+      });
       if (target) {
         hero.targetId = target.id;
         const distance = G.distance(hero, target);

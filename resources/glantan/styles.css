@@ -18,6 +18,7 @@ body:has(#play[data-game=glantan]:not([hidden])) .masthead{margin-bottom:12px}
 .g-scene{position:absolute;inset:68px 0 0;display:grid;grid-template-columns:320px minmax(0,1fr);min-height:0;color:#253e32;font-size:15px}
 .g-stage{grid-column:2;grid-row:1;position:relative;overflow:hidden;min-height:0;min-width:0;background:#34564a}
 .g-world{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.g-vignette{position:absolute;inset:0;pointer-events:none;transform:translateZ(0)}
 .g-sidebar{grid-column:1;grid-row:1;display:flex;flex-direction:column;min-width:0;min-height:0;background:#f0ead7;border-right:1px solid #a9b092;box-shadow:4px 0 18px #233b3020}
 .g-sidebar button{font-family:inherit;color:#253e32}
 .g-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));flex:none;border-bottom:1px solid #bdc5a8;padding:5px 5px 0;gap:2px;background:#e1e4cb}

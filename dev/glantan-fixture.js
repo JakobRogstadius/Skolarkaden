@@ -2,7 +2,8 @@
 (function () {
   'use strict';
   const SC = window.Starlight, Base = SC.GlantanGame, originalFetch = window.fetch;
-  let game, renderer, frozen = false;
+  const nativePixelRatio = window.devicePixelRatio;
+  let game, renderer, initialHome, frozen = false;
   const Renderer = SC.GlantanRenderer;
   SC.GlantanRenderer = class extends Renderer { constructor(...args) { super(...args); renderer = this; } };
   // Exercise result/replay without writing synthetic scores to the live service.
@@ -13,10 +14,10 @@
   SC.GlantanGame = class extends Base {
     constructor(options) { super(options); game = this; }
     update(dt) { if (!frozen) super.update(dt); }
-    start(options) { super.start({ ...options, fresh: true, seed: options.seed || 'moss-koppar' }); }
+    start(options) { super.start({ ...options, fresh: true, seed: options.seed || 'moss-koppar' }); initialHome = { ...SC.Glantan.castle(this.world) }; }
   };
   function showVisualRoster() {
-    const G = SC.Glantan, w = game.world, home = { ...G.castle(w) };
+    const G = SC.Glantan, w = game.world, home = initialHome;
     frozen = true; w.buildings = []; w.heroes = []; w.skeletons = []; w.corpses = []; w.traps = []; w.effects = []; w.notices = [];
     for (let y = Math.floor(home.y) - 7; y <= home.y + 9; y++) for (let x = Math.floor(home.x) - 8; x <= home.x + 8; x++) {
       w.terrain[G.index(w, x, y)] = 0; w.paths[G.index(w, x, y)] = 0;
@@ -36,7 +37,7 @@
     renderer.focus({ x: home.x, y: home.y + 1 }); renderer.ui.panelKey = ''; renderer.ui.update();
   }
   function showCombat() {
-    const G = SC.Glantan, w = game.world, home = { ...G.castle(w) }, x = Math.floor(home.x), y = Math.floor(home.y);
+    const G = SC.Glantan, w = game.world, home = initialHome, x = Math.floor(home.x), y = Math.floor(home.y);
     frozen = true; w.outcome = null; w.monsters = []; w.lairs = []; w.buildings = []; w.heroes = []; w.skeletons = []; w.corpses = []; w.traps = []; w.bounties = []; w.expeditions = []; w.effects = []; w.notices = [];
     w.research = { castle2: true, banner: true, traps: true }; w.choices = { warrior: 'banner', ranger: 'traps' };
     for (let yy = y - 10; yy <= y + 10; yy++) for (let xx = x - 10; xx <= x + 10; xx++) {
@@ -112,6 +113,40 @@
       output.textContent = 'Grafik: ' + (1000/mean(frames)).toFixed(1) + ' fps · bild p95 ' + frames[Math.floor(frames.length*.95)].toFixed(1) + ' ms · ritning ' + mean(draw).toFixed(2) + ' ms · 24 trollformler';
     };
   }
+  async function frameProbe(output) {
+    showCombat();
+    const G = SC.Glantan, w = game.world, home = G.castle(w), types = Object.keys(G.monsterTypes);
+    while (w.heroes.length < 24) G.addHero(w, Object.keys(G.classes)[w.heroes.length % 5]);
+    while (w.monsters.length < 83) if (!G.spawnMonster(w, w.lairs[0], { type: types[w.monsters.length % types.length], guard: true })) break;
+    const units = [...w.heroes, ...w.monsters];
+    units.forEach((u,i) => { u.x = home.x + 1 + i % 14 * .8; u.y = home.y - 7 + Math.floor(i / 14) * 1.05; u.route = [{ x: u.x + 1, y: u.y }]; });
+    renderer.camera.zoom = Math.min(.8, renderer.width / 850, renderer.height / 650);
+    renderer.focus({ x: home.x + 5, y: home.y - 2 });
+    const origin = { ...renderer.camera }, results = [], originalDraw = renderer.draw;
+    renderer.draw = () => {}; // Probe owns draws; the normal loop must not add hidden work.
+    const summary = a => { a.sort((a,b)=>a-b); return { mean: +(a.reduce((n,x)=>n+x,0)/a.length).toFixed(3), p95: +a[Math.floor(a.length*.95)].toFixed(3), max: +a.at(-1).toFixed(3) }; };
+    try {
+      for (const scene of ['battle', 'pan']) {
+        const draw = [], frames = []; let last = 0;
+        for (let i = 0; i < 240; i++) {
+          if (i % 12 === 0) { await new Promise(requestAnimationFrame); const now = performance.now(); if (last) frames.push(now-last); last = now; output.textContent = scene + ' ' + i + '/240'; }
+          w.time = 100 + i / 60; w.tick = Math.floor(w.time * 10);
+          for (const [j,u] of units.entries()) u.actionCue = { at: w.time - (i % 60) / 60, kind: j % 5 === 0 ? 'heal' : 'attack', dx: j % 2 ? -1 : 1, dy: .2 };
+          renderer.camera.x = origin.x + (scene === 'pan' ? Math.sin(i / 239 * Math.PI * 4) * 900 : 0); renderer.clampCamera();
+          const start = performance.now(); originalDraw.call(renderer); if (i >= 60) draw.push(performance.now()-start);
+        }
+        const ui = [], save = [], serialize = [];
+        for (let i=0;i<20;i++) {
+          let at=performance.now(); renderer.ui.update(); ui.push(performance.now()-at);
+          at=performance.now(); JSON.stringify(w); serialize.push(performance.now()-at);
+          at=performance.now(); game.save(); save.push(performance.now()-at);
+        }
+        results.push({scene, draw:summary(draw), ui:summary(ui), save:summary(save), serialize:summary(serialize), callbackInterval:summary(frames), cacheBytes:renderer.sprites?.bytes, terrainBytes:renderer.terrainBytes});
+      }
+      const result = { size:[renderer.canvas.width,renderer.canvas.height], dpr:renderer.dpr, heroes:w.heroes.length, monsters:w.monsters.length, results };
+      output.textContent = JSON.stringify(result); console.log('Klockgläntan frame probe', result);
+    } finally { renderer.draw = originalDraw; Object.assign(renderer.camera, origin); }
+  }
   function showAttackRoster() {
     const G = SC.Glantan, A = G.Art, panel = document.createElement('div'), controls = document.createElement('div'), canvas = document.createElement('canvas');
     panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Alla anfallsanimationer');
@@ -127,9 +162,11 @@
     canvas.width = 1200; canvas.height = Math.ceil(roster.length / 6) * 180;
     canvas.style.cssText = 'display:block;max-width:100%;height:auto;margin:auto';
     canvas.setAttribute('role', 'img'); canvas.setAttribute('aria-label', 'Fem hjälteklasser, vänligt skelett, tolv monstertyper och fyra hjältevägar');
-    const c = canvas.getContext('2d'); let playing = false, age = .27, facing = 1, reduced = false, last = performance.now();
+    const c = canvas.getContext('2d'), sprites = G.SpriteCache ? new G.SpriteCache() : null; if (sprites) sprites.scale = 2;
+    let playing = false, age = .27, facing = 1, reduced = false, cached = true, last = performance.now();
     const world = { ...game.world, time: 2 };
     function draw() {
+      sprites?.beginFrame();
       c.fillStyle = '#142f30'; c.fillRect(0, 0, canvas.width, canvas.height);
       roster.forEach((row, i) => {
         const left = i % 6 * 200, top = Math.floor(i / 6) * 180, scale = row.kind === 'monster' ? .82 : 1.1;
@@ -141,7 +178,7 @@
           const target = { x: facing, y: .2 };
           if (attacking) G.combatCue(w, unit, target);
           c.save(); c.translate(left + (attacking ? 137 : 48), top + 142); c.scale(scale, scale);
-          A[row.kind](c, unit, w, 2 + age, reduced);
+          A[row.kind](c, unit, w, 2 + age, reduced, cached ? sprites : null);
           if (attacking && age < .48) {
             const magic = ['mage', 'healer', 'necromancer'].includes(row.type) || G.monsterTypes[row.type]?.spell;
             const ranged = row.type === 'ranger' || row.type === 'thornling';
@@ -159,7 +196,8 @@
       ['Återgång', () => { playing = false; age = .52; }],
       ['Vänd', () => { facing *= -1; }],
       ['Minskad rörelse', () => { reduced = !reduced; }],
-      ['Stäng', () => panel.remove()]
+      ['Byt ritmetod', () => { cached = !cached; title.textContent = (cached ? 'Spritebilder' : 'Direkt ritning') + ' · vila / anfall'; }],
+      ['Stäng', () => { sprites?.clear(); panel.remove(); }]
     ]) { const button = document.createElement('button'); button.textContent = label; button.onclick = () => { action(); draw(); }; controls.append(button); }
     panel.append(controls, canvas); document.body.append(panel); draw();
     function frame(now) {
@@ -182,6 +220,18 @@
     performanceOutput.setAttribute('aria-label', 'Grafikprestanda'); performanceButton.textContent = 'Mät grafik';
     performanceButton.onclick = () => { if (game?.state === 'playing') renderProbe(performanceOutput); };
     bar.append(performanceButton, performanceOutput);
+    const fullProbe = document.createElement('button'); fullProbe.textContent = 'Mät hela bilden';
+    fullProbe.onclick = async () => {
+      if (game?.state !== 'playing') return;
+      fullProbe.disabled = true; Object.defineProperty(window,'devicePixelRatio',{value:nativePixelRatio,configurable:true}); renderer.resize();
+      try { await frameProbe(performanceOutput); } finally { fullProbe.disabled = false; }
+    }; bar.append(fullProbe);
+    const denseProbe = document.createElement('button'); denseProbe.textContent = 'Mät 2× pixlar';
+    denseProbe.onclick = async () => {
+      if (game?.state !== 'playing') return;
+      denseProbe.disabled = true; Object.defineProperty(window,'devicePixelRatio',{value:2,configurable:true}); renderer.resize();
+      try { await frameProbe(performanceOutput); } finally { denseProbe.disabled = false; }
+    }; bar.append(denseProbe);
     const attacks = document.createElement('button'); attacks.textContent = 'Alla anfall'; attacks.onclick = () => { if (game?.state === 'playing') showAttackRoster(); }; bar.append(attacks);
     const audio = document.createElement('output'); audio.setAttribute('aria-label', 'Ljudstatus'); bar.append(audio);
     const meter = setInterval(() => {

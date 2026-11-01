@@ -182,3 +182,33 @@ Validation: **93/93 ordinary suites passed**. Browser checks cover all monster t
 Validation: **93/93 ordinary suites passed**. Browser inspection compares idle and attacking poses for the complete unit roster. This adjustment changes label placement only; it makes no frame-rate claim.
 
 ![Level indicators with the requested midpoint spacing](klockglantan-level-midpoints-2026-10-31.jpg)
+
+## Reuse artwork and reduce frame work — 2026-11-01
+
+- Render unit bodies from shared, immutable animation sheets instead of rebuilding their vector illustrations every frame. Retain continuous movement, facing, lunges, spell effects, status indicators and the requested level-label positions. Use 12 attack frames and eight walking/idle frames; keep distinct upgrade paths and reduced-motion poses.
+- Cache static building bodies while keeping house smoke and castle animation live. Reuse a composed terrain/fog image while the view is stationary; draw retained terrain chunks directly while panning. Let the browser compositor retain the static vignette. Skip unchanged paused-game frames.
+- Bound sprite storage to 64 MiB and retained terrain to 32 MiB plus the active viewport. Release discarded bitmap storage, reuse interpolation objects, and reject offscreen entities before sorting them.
+- Limit extra canvas pixels on large high-density screens to approximately 1.5 million, without dropping below one physical pixel per CSS pixel. Small screens retain up to 2× density; UI text and controls keep native display sharpness. This deliberately trades excess map resolution for frame time.
+- Replace repeated target filtering/sorting with stable single-pass selection and squared-distance checks. Skip redundant fog-distance work and healer searches while their ability is cooling down. Combat rules and target priority are preserved.
+- Schedule periodic saves in an idle slot, coalesce pending writes, and avoid saving a completed purchase twice. Answers, pause and exit still save immediately; ending a game cancels queued writes.
+
+Validation: **94/94 ordinary suites passed**, including bounded sprite reuse and eviction, interpolation ownership and save flushing/cancellation. Browser inspection covers the complete attack roster in both directions and reduced motion, and a live mixed-unit battle. Six 60-second simulation replays (marching and battle on each difficulty) matched the previous version's complete world JSON after every tick. All six controlled boss-party probes pass.
+
+Measured against `4e8d3bb`, with 24 heroes and 83 monsters:
+
+| Work | Mean before → after | 95th percentile before → after |
+| --- | ---: | ---: |
+| Normal-density battle drawing | 11.731 → 1.454 ms | 104.3 → 2.5 ms |
+| Normal-density panning drawing | 7.568 → 3.472 ms | 46.8 → 30.3 ms |
+| High-density battle drawing | 26.016 → 3.297 ms | 263.3 → 3.5 ms |
+| High-density panning drawing | 14.259 → 13.052 ms | 53.8 → 50.5 ms |
+| Battle simulation tick | 3.811 → 2.241 ms | 5.075 → 3.396 ms |
+| Marching simulation tick | 2.653 → 2.538 ms | 3.646 → 3.568 ms |
+
+These are CPU timings, not measured display FPS. The cloud browser throttles animation callbacks near one second, so the drawing probe issues 12 draws per callback and measures 180 draws after 60 warm-up draws. Every comparison starts from a fresh page with the same seed and a 1005 × 738 CSS-pixel map. The high-density comparison includes the resolution budget: 2010 × 1476 physical pixels before, 1429 × 1050 after. Browser composition/presentation is outside the timed drawing calls. Rapid panning still has occasional stalls, especially at high density; this is not a claim of sustained 60 FPS on every device.
+
+Simulation timings use `node dev/glantan-performance.cjs --ref 4e8d3bb` and `node dev/glantan-performance.cjs`, sampling 500 ticks per scene after warm-up. The browser's save calls generally remained below 1 ms on average, so saving received scheduling fixes rather than a storage-system rewrite. [Machine-readable measurements](glantan-performance-2026-11-01.json) record the timings and limits.
+
+The development review page now has repeatable full-scene drawing probes at normal and high pixel density. It can load historical production assets with `?game=glantan&ref=4e8d3bb`. Probe controls are absent from the published game.
+
+![Cached artwork in a mixed-unit battle](klockglantan-performance-2026-11-01.jpg)
