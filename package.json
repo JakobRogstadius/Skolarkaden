@@ -2,7 +2,7 @@
   "name": "skolarkaden",
   "version": "1.0.0",
   "private": true,
-  "description": "Sexton fristående lärspel på svenska med text, tal och pekskärm.",
+  "description": "Sjutton fristående lärspel på svenska med text, tal och pekskärm.",
   "license": "BSD-2-Clause",
   "scripts": {
     "assets": "node dev/version-assets.cjs",

@@ -8,7 +8,7 @@ All grafik ritas med geometriska former. Ljudeffekterna syntetiseras lokalt, och
 
 Alla språkövningar finns i [language-exercises.json](language-exercises.json).
 
-Välj först övningsgrupp och sedan övning/nivå i de två kopplade menyerna ovanför spelen. Grupperna kommer i ordningen Matematik, Bokstäver, Svenska, English, Svenska–engelska och Kinesiska. Addition är förvald och ett slumpat spel markeras vid varje sidladdning. Spelsvårigheten väljs separat. Spelen delas in i **Svara snabbt** och **Tid att fundera**, där den senare gruppen innehåller Reversi, Schack, Klossar, Trassel och Målarateljén. Spelkorten visas i fem kolumner på större skärmar, tre på mellanstora och två på smala skärmar, med plats för två rader titeltext. Spelkorten kan väljas med mus, pekskärm eller tangentbord.
+Välj först övningsgrupp och sedan övning/nivå i de två kopplade menyerna ovanför spelen. Grupperna kommer i ordningen Matematik, Bokstäver, Svenska, English, Svenska–engelska och Kinesiska. Addition är förvald och ett slumpat spel markeras vid varje sidladdning. Spelsvårigheten väljs separat. Spelen delas in i **Svara snabbt** och **Tid att fundera**, där den senare gruppen innehåller Reversi, Schack, Klossar, Trassel, Ficklampan och Målarateljén. Spelkorten visas i fem kolumner på större skärmar, tre på mellanstora och två på smala skärmar, med plats för två rader titeltext. Spelkorten kan väljas med mus, pekskärm eller tangentbord.
 
 Ordövningarna omfattar svenska och engelska synonymer och motsatser i fyra nivåer vardera: 50 ordpar på nivå 1 och 60 på nivåerna 2–4. Översättning svenska–engelska har åtta nivåer: 50 ordpar på nivåerna 1–3 och 80 på nivåerna 4–8. De högsta nivåerna innehåller avancerat vuxenordförråd. Totalt finns 1 470 ordpar. Varje ordpar har två huvudord och separata listor med godkända alternativa svar i båda riktningarna. Uppgiften visar bara huvudordet. Ett svar visas med mindre text efter tio sekunder. För översättning väljer du svarsspråk med **Översätt till**, även med tangentbord. Konstruktion och underhåll beskrivs i [dev/word-pairs.md](dev/word-pairs.md).
 
@@ -261,6 +261,7 @@ Varje slutförd skötselåtgärd ger 10 poäng. Flera åtgärder av samma typ i 
 | Reversi | Välj föreslagna drag med dina svar och vinn flest brickor. |
 | Schack | Välj föreslagna drag med dina svar och sätt datorn schackmatt. |
 | Klossar | Para ihop och ta bort alla klossar i mahjong-patiens. |
+| [Ficklampan](docs/ficklampan.md) | Utforska fem illustrerade miljöer med en ficklampa och samla matchande par. |
 | Trassel | Koppla ihop uppgifter och svar på ett hexagonbräde utan korsande linjer. |
 | Målarateljén | Måla fritt och rama in dina bilder, helt utan poäng. |
 

@@ -21,6 +21,7 @@ const gameSources={
  chess:[...board,...resource('reversi.js','chess-rules.js','chess-engine.js','chess-scoring.js','chess.js')],
  klossar:[...board,...resource('klossar.js')],
  trassel:[...board,...resource('klossar.js','trassel-engine.js','trassel-layouts.js','trassel.js')],
+ ficklampan:[...board,...resource('klossar.js'),'resources/ficklampan/'],
  bubblefish:[...board,...resource('klossar.js'),'resources/bubblefish/'],
  glantan:[...input,'resources/glantan/'],
  studio:[...board,...resource('voice.js','studio.js','studio-renderer.js')]
@@ -37,6 +38,7 @@ for(const area of ['city','food','garden','hive','paint','dinosaur','marshmallow
  const sweep={paint:'paint-labels',dinosaur:'dinosaur-labels',home:'home-rounds',hive:'beehive-rounds',reversi:'reversi-matches',klossar:'klossar'}[area];
  game(area,'logic',[...gameSources[area],...(sweep?['tests/helpers/sweeps/'+sweep+'.cjs']:[])]);
 }
+game('ficklampan','game',[...homeworkApp,...gameSources.ficklampan]);
 game('bubblefish','logic');
 game('bubblefish','app',[...homeworkApp,...gameSources.bubblefish]);
 game('city','waves');game('food','waves');game('garden','balance');game('hive','rendering');game('studio','drawing');

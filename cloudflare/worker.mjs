@@ -6,7 +6,7 @@
 // Bump only the affected game's version when its scoring/rules change.
 // Home stays on v1 during its initial tuning, by the owner's decision.
 // Chess keeps v2 for the ranked-choice scoring change at the owner's request.
-const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1',reversi:'v1',chess:'v2',klossar:'v1',trassel:'v1',bubblefish:'v1',glantan:'v1'});
+const versions=Object.freeze({city:'v2',food:'v2',garden:'v2',hive:'v2',paint:'v2',dinosaur:'v2',marshmallows:'v2',eggs:'v2',home:'v1',reversi:'v1',chess:'v2',klossar:'v1',trassel:'v1',bubblefish:'v1',ficklampan:'v1',glantan:'v1'});
 const mathExercises=Object.freeze(['math-addition','math-diagrams','math-addition-subtraction','math-simple-equations','math-large-numbers','math-simple-multiplication','math-multiplication','math-multiplication-division','math-equations']);
 const languageExercises=Object.freeze([
   ...['swedish-opposites','swedish-synonyms','english-opposites','english-synonyms'].flatMap(id=>[id,...[2,3,4].map(level=>id+'-'+level)]),
@@ -72,7 +72,7 @@ function isBannedName(value){
   return fragments.some(fragment=>joined.includes(fragment)) ||
     normalized.split(/[^a-z]+/).some(token=>words.has(token)) || words.has(joined);
 }
-const scoreCaps=Object.freeze({chess:1000000,trassel:20000});
+const scoreCaps=Object.freeze({chess:1000000,trassel:20000,ficklampan:20000});
 root.SkolarkadenHighscorePolicy=Object.freeze({versions,mathExercises,languageExercises,isBannedName,scoreCaps});
 })(globalThis);
 
@@ -81,7 +81,7 @@ root.SkolarkadenHighscorePolicy=Object.freeze({versions,mathExercises,languageEx
 // (also add-score-settings.sql if settings_json is absent);
 // new databases use schema.sql. No browser API key is used.
 const ALLOWED_ORIGIN = 'https://jakobrogstadius.github.io';
-const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home', 'reversi', 'chess', 'klossar', 'trassel', 'bubblefish', 'glantan']);
+const GAMES = new Set(['city', 'food', 'garden', 'hive', 'paint', 'dinosaur', 'marshmallows', 'eggs', 'home', 'reversi', 'chess', 'klossar', 'trassel', 'ficklampan', 'bubblefish', 'glantan']);
 const { mathExercises, languageExercises } = globalThis.SkolarkadenHighscorePolicy;
 const LESSONS = new Set(['letters', 'swedish', 'swedishLong', 'english', 'englishLong',
   'bopomofo', 'chinese', 'chineseTrad2', 'chineseTrad3', 'chineseTrad4',
@@ -109,7 +109,7 @@ function settingsFor(body, board) {
   for (const [key, value] of Object.entries(settings)) if (raw[key] !== undefined && raw[key] !== value) throw new Error('invalid_settings');
   for (const key of ['input_mode', 'spoken_language', 'exercise_language']) {
     const value = raw[key] ?? null;
-    if (value !== null && !(key === 'input_mode' ? ['keyboard', 'voice', ...(['klossar', 'trassel', 'bubblefish'].includes(game) ? ['click'] : [])].includes(value) : LANGUAGES.has(value))) throw new Error('invalid_settings');
+    if (value !== null && !(key === 'input_mode' ? ['keyboard', 'voice', ...(['klossar', 'trassel', 'ficklampan', 'bubblefish'].includes(game) ? ['click'] : [])].includes(value) : LANGUAGES.has(value))) throw new Error('invalid_settings');
     settings[key] = value;
   }
   for (const key of ['uppercase', 'sound_enabled', 'reduced_motion']) {
