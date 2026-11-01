@@ -9,7 +9,8 @@ const {read} = require('../helpers/runtime.cjs');
   for (const {game, version, input, values} of [
     {game:'chess', version:'v2', input:'keyboard', values:[0,490,3240]},
     {game:'klossar', version:'v1', input:'click', values:[5000,5000,5000]},
-    {game:'trassel', version:'v1', input:'click', values:[5000,5000,5000]}
+    {game:'trassel', version:'v1', input:'click', values:[5000,5000,5000]},
+    {game:'bubblefish', version:'v1', input:'click', values:[1200,1200,1200]}
   ]) {
     const db = new DatabaseSync(':memory:'); db.exec(read('cloudflare/schema.sql'));
     const DB = {prepare(sql) {

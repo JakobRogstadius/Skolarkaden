@@ -23,7 +23,7 @@ context.SpeechRecognition=class{start(){recognitions.push(this);this.onstart?.()
 const scripts=[...html.matchAll(/<script defer src="([^"]+)"/g)].map(m=>m[1].split(/[?#]/)[0]);
 const instances = {};
 const constructors = {city:'City', food:'FoodTruck', garden:'Garden', hive:'Beehive', paint:'Paint',
-  dinosaur:'Dinosaur', marshmallows:'Marshmallow', eggs:'Egg', home:'Home', reversi:'Reversi', chess:'Chess', klossar:'Klossar', trassel:'Trassel', glantan:'Glantan', studio:'Studio'};
+  dinosaur:'Dinosaur', marshmallows:'Marshmallow', eggs:'Egg', home:'Home', reversi:'Reversi', chess:'Chess', klossar:'Klossar', trassel:'Trassel', bubblefish:'Bubblefish', glantan:'Glantan', studio:'Studio'};
 for (const script of scripts) {
   assert(fs.existsSync(path.join(base, script)), script + ' missing');
   if (script === 'resources/app.js') {

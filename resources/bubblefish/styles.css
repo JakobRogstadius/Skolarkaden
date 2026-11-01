@@ -1,0 +1,24 @@
+.arena.bubblefish{height:clamp(440px,76vh,820px);background:#438ea6;isolation:isolate}
+.arena.bubblefish>#canvas{touch-action:none;cursor:crosshair}
+.bubblefish .hud{z-index:2;min-height:0;padding:13px 18px;background:linear-gradient(#153b4f55,transparent);align-items:flex-start}
+.bubblefish .hud #game-title,.bubblefish .hud #objective,.bubblefish .hud #secondary{display:none}
+.bubblefish .hud .score-value{font-size:25px;color:#fff0ad;text-shadow:0 1px 3px #355e70}
+.bubblefish .hud #best{display:block;color:#eef4dc;font-size:9px;letter-spacing:.6px;text-shadow:0 1px 3px #355e70}
+.bubblefish .hud-objective{position:absolute;left:50%;top:16px;transform:translateX(-50%);width:clamp(90px,23%,190px);min-width:0}
+.bubblefish .hud-objective::before{content:'♥';position:absolute;left:-22px;top:-2px;color:#fff1ba;font-size:20px;text-shadow:0 1px 2px #477386}
+.bubblefish #progress{display:block;margin:0;height:13px;border:2px solid #d8ece0;background:#25536f80;border-radius:10px;accent-color:#f0d17c}
+.bubblefish #progress::-webkit-progress-bar{background:#25536f80}
+.bubblefish #progress::-webkit-progress-value{background:linear-gradient(90deg,#e6bc73,#f4e3a0);border-radius:6px}
+.bubblefish #progress::-moz-progress-bar{background:#f0d17c;border-radius:6px}
+.bubblefish #pause{background:#275c7066;border-color:#e7f5df66;color:#f6f4d8;min-width:38px;min-height:38px}
+.arena.bubblefish>.bubblefish-ink{position:absolute;inset:0;pointer-events:none;z-index:4;width:100%;height:100%}
+.bubblefish .overlay{z-index:8}
+.bubblefish-language{position:absolute;left:12px;bottom:61px;display:flex;gap:4px;z-index:3}
+.bubblefish-language button{font-size:11px;padding:4px 7px;min-height:28px;background:#214d65b0;border-color:#b8d8d9;color:#edf3db}
+.bubblefish-language button[aria-pressed=true]{background:#d6e9dd;color:#24485b}
+.bubblefish-card svg{max-width:100%;max-height:100%}
+body.playing.mobile-play .arena.bubblefish .hud{padding:10px;min-height:0}
+body.playing.mobile-play .bubblefish .hud-objective{top:14px;width:27%;min-width:0}
+body.playing.mobile-play .bubblefish .hud .score-value{font-size:21px}
+body.playing.mobile-play .bubblefish .hud #best{font-size:8px;letter-spacing:0}
+@media(max-width:420px){.bubblefish .hud-objective{left:57%;width:26%}.bubblefish .hud-objective::before{left:-17px;font-size:16px}.bubblefish #progress{height:12px}.bubblefish .hud{padding:12px}.bubblefish .hud #best{max-width:90px}.bubblefish-language button{font-size:10px}}

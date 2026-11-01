@@ -1,6 +1,6 @@
 # Skolarkaden
 
-Femton lärspel för tangentbord, mikrofon eller klick. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
+Sexton lärspel för tangentbord, mikrofon eller pekskärm. Träna bokstäver, läsning, uttal och enkel matematik på svenska, engelska och mandarin.
 
 **Öppna `index.html` i Chrome.** Behåll `resources` bredvid HTML-filen. Ingen installation, byggprocess eller webbserver behövs. Om du laddar ned projektet som ZIP: packa upp hela filen först.
 
@@ -257,6 +257,7 @@ Varje slutförd skötselåtgärd ger 10 poäng. Flera åtgärder av samma typ i 
 | Marshmallows | Ta in gyllene marshmallows innan solen går upp. |
 | Äggröra | Bränn spruckna rymdägg och rymdkryp för att skydda besättningen. |
 | Städa hemmet | Städa 40 hushållsuppgifter och gör sedan klart det sista tillsammans. |
+| [Bubbelfisken](docs/bubbelfisken.md) | Simma genom ett levande rev, fånga fråge–svar-par för att fylla på liv och samla bonusar. |
 | Reversi | Välj föreslagna drag med dina svar och vinn flest brickor. |
 | Schack | Välj föreslagna drag med dina svar och sätt datorn schackmatt. |
 | Klossar | Para ihop och ta bort alla klossar i mahjong-patiens. |
@@ -267,6 +268,7 @@ Alla övningar kan användas i alla spel. Att byta spel ändrar inte vald övnin
 
 ## Så svarar du
 
+- **Bubbelfisken:** styr med piltangenter/WASD eller håll och dra. Fånga en frågebubbla och sedan rätt svar; undvik fel svar och faror. Textfält och mikrofon används inte.
 - **Klossar:** klicka eller tryck på två fria klossar. Textfält och mikrofon används inte.
 
 - **Tangentbord:** skriv ett svar och tryck Enter. Enstaka bokstäver och bopomofo skickas direkt. Pågående IME-inmatning väntar tills tecknet är färdigt.

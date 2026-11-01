@@ -27,7 +27,7 @@ const windowListeners=new Map(),history={state:null,replaceState(s){this.state=s
     if(file==='resources/app.js'){
       const SC=ctx.Starlight;
       SC.GameSounds=class{unlock(){}play(){}stopCampfire(){}campfire(){}close(){}};
-      for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home','Reversi','Chess','Klossar','Trassel','Glantan','Studio']){
+      for(const name of ['City','FoodTruck','Garden','Beehive','Paint','Dinosaur','Marshmallow','Egg','Home','Reversi','Chess','Klossar','Trassel','Bubblefish','Glantan','Studio']){
         const Game=SC[name+'Game'];SC[name+'Game']=class extends Game{constructor(options){super(options);currentGame=this;}};
         SC[name+'Renderer']=class{constructor(canvas,game){this.game=game;}resize(){this.game.resize?.(1000,700);}destroy(){}scoreEvent(){}};
       }
