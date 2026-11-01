@@ -5,14 +5,14 @@
   const { ellipse, line, polygon, round } = A, ink = '#253c39', bone = '#f0e6c8';
   A.actionPose = function(unit, time, reduced = false) {
     const cue = unit.actionCue, age = cue && time - cue.at;
-    if (!cue || unit.hp <= 0 || age < 0 || age >= .62) return null;
-    const p = reduced ? .4 : age / .62, power = Math.sin(p * Math.PI);
+    if (!cue || unit.hp <= 0 || age < 0 || age >= G.ACTION_DURATION) return null;
+    const p = reduced ? .4 : age / G.ACTION_DURATION, power = Math.sin(p * Math.PI);
     return { ...cue, p, power, reduced, swing: power * 1.8, draw: Math.max(0, 1 - p / .35) };
   };
   A.actionBody = function(c, unit, pose, style) {
     if (pose && !pose.reduced) {
-      const reach = style === 'cast' || style === 'bow' ? -4 : style === 'heavy' ? 12 : 8;
-      c.translate(pose.dx * reach * pose.power, (pose.dy * reach * .65 + (style === 'dive' ? 9 : style === 'cap' ? -6 : 0)) * pose.power);
+      const reach = style === 'work' ? 0 : style === 'cast' || style === 'bow' ? -4 : style === 'heavy' ? 12 : 8;
+      c.translate(pose.dx * reach * pose.power, (pose.dy * reach * .65 + (style === 'work' ? 8 : style === 'dive' ? 9 : style === 'cap' ? -6 : 0)) * pose.power);
       c.rotate(pose.dx * pose.power * (style === 'heavy' ? .16 : .09));
       if (style === 'cap') c.scale(1 + pose.power * .16, 1 - pose.power * .12);
     }
@@ -86,7 +86,7 @@
   };
   A.skeletonBody = function(c, unit, w, time, reduced, pose) {
     const bone = unit.monster ? '#e47770' : '#f0e6c8', accent = unit.monster ? '#782e46' : '#54c5a1';
-    const walk = unit.artWalk ?? (!reduced && !pose && unit.route?.length ? Math.sin(time * 11 + unit.id) : 0);
+    const walk = unit.artWalk ?? (!reduced && !pose && time - (unit.movedAt ?? -1) < .2 ? Math.sin(time * 11 + unit.id) : 0);
     line(c, [[-3, -10], [-5 - walk * 2, -4], [-5 - walk * 2, 1]], ink, 4);
     line(c, [[3, -10], [5 + walk * 2, -4], [5 + walk * 2, 1]], ink, 4);
     line(c, [[-3, -10], [-5 - walk * 2, -4], [-5 - walk * 2, 1]], bone, 2);

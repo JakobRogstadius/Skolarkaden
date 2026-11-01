@@ -76,14 +76,17 @@
       return button;
     }
     buildPanel() {
-      const w = this.game.world, grid = el('div', 'g-action-grid'), entries = Object.entries(G.buildings);
+      const w = this.game.world, grid = el('div', 'g-action-grid g-build-grid'), entries = Object.entries(G.buildings);
       const guilds = new Set(Object.values(G.classes).map(role => role.guild));
       if (!w.buildings.some(b => G.alive(b) && guilds.has(b.type))) entries.sort((a, b) => (a[0] === 'hall' ? -2 : a[0] === 'lodge' ? -1 : 0) - (b[0] === 'hall' ? -2 : b[0] === 'lodge' ? -1 : 0));
       for (const [id, spec] of entries) {
         if (!spec.cost || spec.group) continue;
         const count = w.buildings.filter(b => b.type === id && G.alive(b)).length;
         const button = this.action({ type: 'build', id }, { spec, done: count >= spec.limit });
-        if (id === 'house') button.append(U.symbols(['people', 'plus'], 'Fyra nya platser'), el('span', 'g-capacity-bonus', '4'));
+        if (id === 'house') {
+          const capacity = U.symbols(['people', 'plus'], 'Fyra nya platser');
+          capacity.append(el('span', 'g-capacity-bonus', '4')); button.append(capacity);
+        }
         if (id === 'tower') button.append(U.symbols(['bow'], 'Skjuter på monster'));
         grid.append(button);
       }

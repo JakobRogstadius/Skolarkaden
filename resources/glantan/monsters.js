@@ -142,7 +142,7 @@
     if (monster.boss && w.time - (monster.hurtAt ?? -100) > 12) monster.hp = Math.min(monster.maxHp, monster.hp + monster.maxHp * 0.015 * dt);
   }
   G.moveMonster = function(w, monster, destination, speed, dt) {
-    if (monster.rootedUntil > w.time) return;
+    if (monster.rootedUntil > w.time || monster.stunnedUntil > w.time || G.acting(w, monster)) return;
     if (!G.flying(monster)) return G.move(w, monster, destination, speed, dt);
     const dx = destination.x - monster.x, dy = destination.y - monster.y, distance = Math.hypot(dx, dy);
     if (!distance) return;
@@ -153,10 +153,10 @@
   };
   function support(w, monster, spec, dt) {
     if (!spec.medic) return false;
-    const patients = (monster.healAt || 0) <= w.time ? w.monsters.filter(m => m !== monster && G.alive(m) && m.hp < m.maxHp * .9 && G.distance(m, monster) < 4.5 && G.attackLine(w, monster, m)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp) : [];
-    if (patients.length && (monster.healAt || 0) <= w.time) {
+    const patients = G.abilityReady(w, monster) && (monster.healAt || 0) <= w.time ? w.monsters.filter(m => m !== monster && G.alive(m) && m.hp < m.maxHp * .9 && G.distance(m, monster) < 4.5 && G.attackLine(w, monster, m)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp) : [];
+    if (patients.length) {
       monster.healAt = w.time + 3.4; monster.castAt = w.time;
-      G.combatCue(w, monster, patients[0], 'heal');
+      G.useAbility(w, monster, patients[0], 'heal');
       for (const patient of patients.slice(0, 2)) {
         patient.hp = Math.min(patient.maxHp, patient.hp + 14 * monster.strength);
         G.effect(w, 'spell', monster.x, monster.y, { toX: patient.x, toY: patient.y, school: 'mend', color: '#ffd58a', radius: .65, duration: .8 }, monster);
@@ -203,6 +203,7 @@
       if (w.outcome) break;
       if (!G.alive(monster) || monster.stunnedUntil > w.time) continue;
       const spec = G.monsterTypes[monster.type]; monster.cooldown = Math.max(0, monster.cooldown - dt);
+      if (G.acting(w, monster)) continue;
       if (monster.raisedBy) {
         const master = w.monsters.find(m => m.id === monster.raisedBy && G.alive(m));
         if (!master) { monster.hp = 0; continue; }
@@ -230,15 +231,17 @@
       if (!target) target = G.best(buildings, b => { const d = G.distance(b,monster); return d < 3.3 ? d : Infinity; }) || castle;
       if (!target || !G.alive(target)) continue;
       monster.targetId = target.id;
-      if (spec.raises) G.raiseEnemySkeleton(w, monster);
+      if (spec.raises && G.raiseEnemySkeleton(w, monster)) continue;
       if (support(w, monster, spec, dt)) continue;
-      if (spec.brood && G.distance(monster, target) < 4.5 && (monster.broodAt || 0) <= w.time) {
-        monster.broodAt = w.time + 9;
+      if (spec.brood && G.abilityReady(w, monster) && G.distance(monster, target) < 4.5 && (monster.broodAt || 0) <= w.time) {
         const count = w.monsters.filter(m => G.alive(m) && m.broodParent === monster.id).length;
         const lair = w.lairs.find(l => l.id === monster.lair);
         if (count < 3 && lair) {
           const child = G.spawnMonster(w, lair, { type: 'sporeling', wave: monster.wave, at: monster, broodParent: monster.id });
-          if (child) { G.combatCue(w, monster, child, 'raise'); G.effect(w, 'raise', child.x, child.y, { duration: .9, color: '#efa2d4' }); }
+          if (child) {
+            monster.broodAt = w.time + 9; G.useAbility(w, monster, child, 'raise');
+            G.effect(w, 'raise', child.x, child.y, { duration: .9, color: '#efa2d4' }); continue;
+          }
         }
       }
       const range = spec.range + (target.w ? Math.max(target.w, target.h) * 0.45 : 0);
@@ -250,11 +253,10 @@
         const away = { x: monster.x + (monster.x - target.x) / Math.max(.1, distance) * 2, y: monster.y + (monster.y - target.y) / Math.max(.1, distance) * 2 };
         if (G.open(w, away.x, away.y)) { monster.kiteGoal = away; monster.kiteUntil = w.time + .9; monster.kiteAt = w.time + 3; }
       }
-      if (monster.kiteUntil > w.time) G.moveMonster(w, monster, monster.kiteGoal, speed, dt);
-      else if (!inRange || !clear) G.moveMonster(w, monster, target, speed, dt);
-      if (inRange && clear && monster.cooldown <= 0) {
-        monster.cooldown = spec.cooldown; monster.attackAt = w.time;
-        G.combatCue(w, monster, target);
+      if (monster.kiteUntil > w.time) { G.moveMonster(w, monster, monster.kiteGoal, speed, dt); continue; }
+      if (!inRange || !clear) { G.moveMonster(w, monster, target, speed, dt); continue; }
+      if (G.useAbility(w, monster, target)) {
+        monster.attackAt = w.time;
         G.effect(w, spec.spell ? 'spell' : spec.range > 2 ? 'bolt' : 'slash', monster.x, monster.y, { toX: target.x, toY: target.y, school: 'enemy', color: monster.boss ? '#e7a3d1' : '#ff8c8a', radius: spec.spell ? 1.25 : .4, duration: spec.spell ? .8 : .48, heavy: monster.boss || spec.siege || spec.ward || spec.brood, claw: spec.flying }, monster);
         if (spec.bind && !target.w && (monster.bindAt || 0) <= w.time && (target.rootGraceUntil || 0) <= w.time) {
           target.rootedUntil = Math.max(target.rootedUntil || 0, w.time + 2.2); target.rootGraceUntil = w.time + 4.5; monster.bindAt = w.time + 6.5;

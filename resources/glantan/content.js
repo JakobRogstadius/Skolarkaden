@@ -4,6 +4,7 @@
   const G = root.Starlight.Glantan = {};
   G.VERSION = 2;
   G.STEP = 0.1;
+  G.ACTION_DURATION = .4;
   G.POPULATION_LIMIT = 24;
   G.MAX_MONSTERS = 87; // 64 raiders + 23 guards across nine hard-mode lairs and two spreading nests.
   G.MAX_RAIDERS = 64;

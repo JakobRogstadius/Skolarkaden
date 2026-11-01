@@ -19,12 +19,14 @@
   }
   G.trapSites = routeSites;
   G.rangerTrapWork = function(w, hero, speed, dt, nearbyOnly = false) {
-    if (hero.classId !== 'ranger' || !w.research.traps || hero.retreating) return false;
+    if (hero.classId !== 'ranger' || !w.research.traps || hero.retreating || G.acting(w, hero) || hero.stunnedUntil > w.time) return false;
     const owned = w.traps.filter(t => t.owner === hero.id);
     const abandoned = owned.filter(t => !w.lairs.some(l => l.id === t.lair && G.alive(l))).sort((a, b) => G.distance(hero, a) - G.distance(hero, b))[0];
     if (abandoned && (!nearbyOnly || G.distance(hero, abandoned) < 3)) {
       hero.task = 'Hämtar fällor';
-      if (G.distance(hero, abandoned) < .65) { w.traps.splice(w.traps.indexOf(abandoned), 1); w.revision++; }
+      if (G.distance(hero, abandoned) < .65) {
+        if (G.useAbility(w, hero, abandoned, 'trap')) { w.traps.splice(w.traps.indexOf(abandoned), 1); w.revision++; }
+      }
       else G.move(w, hero, abandoned, speed, dt);
       return true;
     }
@@ -48,7 +50,7 @@
     if (!G.open(w, goal.x, goal.y) || w.traps.some(t => G.distance(t, goal) < 1.15)) { hero.trapGoal = null; return false; }
     hero.task = 'Lägger fällor';
     if (G.distance(hero, goal) > .5) G.move(w, hero, goal, speed, dt);
-    else {
+    else if (G.useAbility(w, hero, goal, 'trap')) {
       w.traps.push({ id: w.nextId++, owner: hero.id, lair: goal.lair, x: goal.x, y: goal.y, level: hero.level, progress: goal.progress, born: w.time });
       hero.trapGoal = null; hero.trapAt = w.time + 5; hero.trapPlanAt = 0; w.revision++;
       G.soundEvent(w, 'build', hero);
