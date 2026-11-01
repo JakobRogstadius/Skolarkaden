@@ -7,10 +7,10 @@ keeps its own small light and outline until the next choice. Collected pairs
 sit along the bottom of the view, with no separate panel.
 
 The five environments rotate without repeating until all have been played:
-Nattmuseet, Skogsbyn, Djuphavsstaden, Månbasen and Dinosauriedalen. Each has 32
+Nattmuseet, Skogsbyn, Djuphavsstaden, Rymdhangaren and Dinosauriedalen. Each has 32
 hand-mapped surfaces. Unused and collected surfaces show their original
 illustrations. Light emitters reveal only their small local glow in the dark.
-The moonbase uses a technical science-fiction style with human astronauts;
+The space hangar uses a technical science-fiction style with a human engineer;
 the dinosaur valley uses naturalistic prehistoric scenery.
 
 Easy, medium and hard use 8, 12 and 16 pairs. Each pair gives 25 points. The
@@ -32,18 +32,17 @@ are rendered separately at device resolution. Long exercises enlarge the world
 and wrap text instead of making labels unreadable.
 
 The artwork in `resources/ficklampan/images/` was generated with the built-in
-image-generation tool and encoded as WebP at quality 88. The two new prompts
-were, in substance:
+image-generation tool. Museum, forest and underwater images use WebP quality 88;
+the new space hangar and redrawn dinosaur valley use quality 90 at 1536 × 1024. The
+new asset names prevent browsers from retaining the previous pictures in cache.
+See [artwork prompts](ficklampan-artwork.md) for the two redraws.
 
-- Moonbase: preserve the dense multilevel cutaway and answer-panel positions,
-  replace fantasy animals and brass/wood interiors with human astronauts,
-  engineered lunar laboratories, hydroponics, rover maintenance, navigation
-  screens, airlocks and crew quarters. Fill the panels with diagrams and
-  telemetry graphics, with no readable text and small local light emitters.
-- Dinosaur valley: a detailed naturalistic prehistoric landscape with dinosaurs,
-  ferns, waterfalls, caves and a distant volcano. Spread decorated planar rock
-  faces and bark through the scene for answers to cover. Use leaf imprints,
-  mineral veins and fossils rather than blank spaces or human signs.
+The space hangar has one continuous floor, a spacecraft under maintenance and a
+clear route to the rear pressure door. Answers cover console displays, cabinet
+fronts, technical drawings and cargo panels. Small fixtures and indicators
+provide ambient light. The dinosaur valley has one continuous river,
+four separate animals and layered rock faces. Answers cover rock and bark
+textures, leaving the animals visible. It has no artificial ambient glow.
 
 Run `npm test -- --area=ficklampan` for focused checks and `npm run test:all`
 before merging. The Cloudflare score API must use the regenerated
