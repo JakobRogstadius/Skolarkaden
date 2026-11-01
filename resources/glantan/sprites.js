@@ -51,9 +51,9 @@
       // and expensive copy-on-write snapshots when a source canvas changes.
       // Warm at most two new strips per displayed frame; use the vector body
       // temporarily for the rest, so a new army does not stall to build atlases.
-      if (!this.entries.has(key) && this.builds >= 2) { A[kind + 'Body'](c,unit,w,time,reduced,pose); return; }
+      if (!this.entries.has(key) && this.builds >= 2) { A[kind + 'Body'](c,unit,w,time,reduced,pose); return pose?.power || 0; }
       const [x,y,width,height] = bounds, fw = Math.ceil(width * resolution), fh = Math.ceil(height * resolution), columns = Math.min(4,count);
-      if (fw * fh * count * 4 > this.limit) { A[kind + 'Body'](c,unit,w,time,reduced,pose); return; }
+      if (fw * fh * count * 4 > this.limit) { A[kind + 'Body'](c,unit,w,time,reduced,pose); return pose?.power || 0; }
       const entry = this.image(key, fw * columns, fh * Math.ceil(count / columns), context => {
         this.builds = (this.builds || 0) + 1;
         for (let i=0;i<count;i++) {
@@ -71,6 +71,7 @@
         }
       });
       c.drawImage(entry.canvas, frame % columns * fw, Math.floor(frame / columns) * fh, fw, fh,...bounds);
+      return pose ? Math.sin((reduced ? .4 : (frame + .5) / ATTACK_FRAMES) * Math.PI) : 0;
     }
     building(c, b, w, time) {
       // The castle's moving bell and flag remain continuous. All other building

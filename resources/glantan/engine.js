@@ -24,8 +24,12 @@
     world.notices = world.notices.slice(-4);
     world.revision++;
   };
-  G.effect = function(world, type, x, y, extra = {}) {
-    world.effects.push({ type, x, y, age: 0, duration: 0.7, ...extra });
+  G.effect = function(world, type, x, y, extra = {}, caster = null) {
+    const effect = { type, x, y, age: 0, duration: 0.7, ...extra };
+    // Keep only presentation data, so an in-flight spell still has a source if
+    // its caster dies or leaves the viewport before the effect finishes.
+    if (type === 'spell' && caster) effect.caster = { id: caster.id, classId: caster.classId, type: caster.type, strength: caster.strength, facing: caster.facing, actionCue: caster.actionCue };
+    world.effects.push(effect);
     if (world.effects.length > 100) world.effects.shift();
   };
   // Keep the direction of the actual action, even if its target dies or moves.

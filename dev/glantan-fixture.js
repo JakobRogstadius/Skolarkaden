@@ -69,7 +69,8 @@
     w.effects = [];
     for (const [role, target, school, color] of [['mage', w.monsters[1], 'arcane', '#c5a4ff'], ['necromancer', w.monsters[4], 'soul', '#93e3cb'], ['healer', w.heroes[0], 'life', '#c3ff9c']]) {
       const h = w.heroes.find(h => h.classId === role);
-      G.effect(w, 'spell', h.x, h.y, { toX: target.x, toY: target.y, school, color, radius: 1.5, duration: .8, age: .38 });
+      G.combatCue(w, h, target, role === 'healer' ? 'heal' : 'attack'); h.actionCue.at = w.time - .38;
+      G.effect(w, 'spell', h.x, h.y, { toX: target.x, toY: target.y, school, color, radius: 1.5, duration: .8, age: .38 }, h);
     }
     w.monsters[4].rootedUntil = w.time + 2.8;
     w.explored.fill(1); w.fogRevision++; w.revision++; w.navRevision++;
@@ -178,12 +179,12 @@
           const target = { x: facing, y: .2 };
           if (attacking) G.combatCue(w, unit, target);
           c.save(); c.translate(left + (attacking ? 137 : 48), top + 142); c.scale(scale, scale);
-          A[row.kind](c, unit, w, 2 + age, reduced, cached ? sprites : null);
+          const origin = A[row.kind](c, unit, w, 2 + age, reduced, cached ? sprites : null);
           if (attacking && age < .48) {
             const magic = ['mage', 'healer', 'necromancer'].includes(row.type) || G.monsterTypes[row.type]?.spell;
             const ranged = row.type === 'ranger' || row.type === 'thornling';
             const effect = { x: 0, y: 0, toX: target.x, toY: target.y, color: row.kind === 'monster' ? '#ff8c8a' : G.classes[row.type]?.color || '#ddf4c7', radius: .4, school: row.type === 'necromancer' ? 'soul' : 'arcane', heavy: ['guardian', 'siegebreaker', 'broodcap', 'bulwark'].includes(row.type), claw: row.type === 'nightwing' };
-            A[magic ? 'spell' : ranged ? 'bolt' : 'slash'](c, effect, age / (magic ? .8 : .48), reduced);
+            A[magic ? 'spell' : ranged ? 'bolt' : 'slash'](c, effect, age / (magic ? .8 : .48), reduced, origin);
           }
           c.restore();
         }

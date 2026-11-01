@@ -212,3 +212,13 @@ Simulation timings use `node dev/glantan-performance.cjs --ref 4e8d3bb` and `nod
 The development review page now has repeatable full-scene drawing probes at normal and high pixel density. It can load historical production assets with `?game=glantan&ref=4e8d3bb`. Probe controls are absent from the published game.
 
 ![Cached artwork in a mixed-unit battle](klockglantan-performance-2026-11-01.jpg)
+
+## Spells launch from the caster's staff — 2026-11-01
+
+- Attach outgoing spells to the glowing staff tip for Klangvävare, Skelettmästare, Skrotläkare and Rotbindare. Örtvårdare and Tystätare cast from their glowing hand.
+- Follow the actual cached animation frame, body lean, facing direction, monster scale and interpolated movement. Keep ground runes at the caster's feet, and retain an origin for spells whose caster disappears before the effect finishes.
+- Apply the same attachment to healing and enemy summoning spells, including reduced-motion rendering. Damage, cooldowns and targets are unchanged.
+
+Validation: renderer, tactics, adapter and asset suites pass. Browser review covers spell launches, mirrored casting, reduced motion and a live mixed-unit battle.
+
+![Spell origins on staffs and casting hands, shown in reduced-motion mode](klockglantan-staff-spells-2026-11-01.jpg)

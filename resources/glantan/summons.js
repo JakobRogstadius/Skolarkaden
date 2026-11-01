@@ -17,7 +17,7 @@
     w.corpses.splice(w.corpses.indexOf(corpse), 1); master.raiseAt = w.time + 4; master.castAt = w.time;
     G.combatCue(w, master, corpse, 'raise');
     G.effect(w, 'raise', corpse.x, corpse.y, { duration: 1.2, color: '#f48b86' });
-    G.effect(w, 'spell', master.x, master.y, { toX: skeleton.x, toY: skeleton.y, school: 'enemy', color: '#ed777e', radius: .6, duration: .8 });
+    G.effect(w, 'spell', master.x, master.y, { toX: skeleton.x, toY: skeleton.y, school: 'enemy', color: '#ed777e', radius: .6, duration: .8 }, master);
     G.soundEvent(w, 'mage', master); w.revision++;
     return skeleton;
   };
