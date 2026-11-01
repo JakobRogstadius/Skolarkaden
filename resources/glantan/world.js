@@ -300,7 +300,7 @@
     return true;
   };
   G.move = function(world, unit, destination, speed, dt) {
-    if (unit.rootedUntil > world.time) return;
+    if (unit.rootedUntil > world.time || unit.stunnedUntil > world.time || G.acting(world, unit)) return;
     const key = Math.floor(destination.x) + ':' + Math.floor(destination.y) + ':' + world.navRevision;
     if (unit.routeKey !== key || !unit.route?.length && G.distance(unit, destination) > 0.2 && (unit.repathAt || 0) < world.time) {
       unit.route = G.path(world, unit, destination); unit.routeKey = key; unit.repathAt = world.time + 2;

@@ -19,6 +19,11 @@ function enemy(w, lair, type = 'rattler', x = 19, y = 15) {
 function bones(w, x, y, level) {
   const b = { id: w.nextId++, x, y, level, monsterType: 'rattler', diedAt: w.time }; w.corpses.push(b); return b;
 }
+// Isolated ability tests advance the clock without running autonomous AI.
+function elapse(w, seconds) {
+  w.time += seconds;
+  for (const unit of [...w.heroes, ...w.monsters, ...w.skeletons]) unit.cooldown = Math.max(0, unit.cooldown - seconds);
+}
 // Exercise the real attack paths, including strikes against buildings. A cue
 // must begin on a hit, retain its aim and not restart during the cooldown.
 for (const role of Object.keys(G.classes)) {
@@ -29,17 +34,103 @@ for (const role of Object.keys(G.classes)) {
   assert(m.hp < m.maxHp, role + ' really attacked');
   assert.equal(h.actionCue?.kind, 'attack', role + ' exposes its attack');
   assert.equal(h.actionCue.at, 10); assert(h.actionCue.dx > .9);
+  const position = { x: h.x, y: h.y };
   w.time += .1; G.updateHeroes(w, .1);
   assert.equal(h.actionCue.at, 10, role + ' does not restart the cue on cooldown');
+  G.move(w, h, { x: 12, y: 11 }, 2, .1);
+  assert.equal(G.distance(h, position), 0, role + ' stands still throughout the action');
+  w.time += .4; G.move(w, h, { x: 12, y: 11 }, 2, .1);
+  assert(G.distance(h, position) > 0, role + ' can walk during remaining cooldown');
+  h.cooldown = 0;
+  assert(!G.useAbility(w, h, m), role + ' cannot act in a step already spent walking');
 }
 for (const type of Object.keys(G.monsterTypes)) {
   const { w, lair } = arena(), m = enemy(w, lair, type, 6.6, 5), castle = G.castle(w);
+  m.broodAt = 100; // Test its strike here; spawning is a separate action below.
   w.time = 10; G.updateMonsters(w, .1);
   assert(castle.hp < castle.maxHp, type + ' really attacked the castle');
   assert.equal(m.actionCue?.kind, 'attack', type + ' exposes its attack');
   assert.equal(m.actionCue.at, 10); assert(m.actionCue.dx < -.9);
+  const position = { x: m.x, y: m.y };
   w.time += .1; G.updateMonsters(w, .1);
   assert.equal(m.actionCue.at, 10, type + ' does not restart the cue on cooldown');
+  G.moveMonster(w, m, { x: 10, y: 9 }, 2, .1);
+  assert.equal(G.distance(m, position), 0, type + ' stands still throughout the action');
+  w.time += .4; G.moveMonster(w, m, { x: 10, y: 9 }, 2, .1);
+  assert(G.distance(m, position) > 0, type + ' can move after its action finishes');
+  m.cooldown = 0;
+  assert(!G.useAbility(w, m, castle), type + ' cannot attack in its movement step');
+}
+{
+  const { w, lair } = arena(), master = hero(w, 'necromancer'), foe = enemy(w, lair, 'rattler', 18, 15);
+  foe.targetId = master.id; bones(w, 17, 15, 2);
+  const start = { x: master.x, y: master.y }, hp = foe.hp;
+  G.updateHeroes(w, .1);
+  assert.equal(master.actionCue.kind, 'raise'); assert.equal(foe.hp, hp, 'raising replaces this attack');
+  assert.equal(G.distance(master, start), 0, 'raising replaces movement too');
+  elapse(w, .5); G.updateHeroes(w, .1);
+  assert.equal(foe.hp, hp, 'attack waits for the summoning action cooldown');
+  elapse(w, 1.5); G.updateHeroes(w, .1); assert(foe.hp < hp);
+  w.skeletons[0].hp = 0; master.raiseAt = 0; bones(w, 17, 15, 2);
+  assert.equal(G.raiseSkeleton(w, master), null, 'attacking also delays an otherwise ready summon');
+  const saved = new G.Simulation({ saved: JSON.parse(JSON.stringify(w)) }).world;
+  assert.equal(G.raiseSkeleton(saved, saved.heroes[0]), null, 'loading cannot bypass the shared cooldown');
+}
+{
+  const { w, lair } = arena(), victim = hero(w, 'warrior'), master = enemy(w, lair, 'binder', 18, 15);
+  bones(w, 18, 16, 2); const hp = victim.hp;
+  G.updateMonsters(w, .1);
+  assert.equal(master.actionCue.kind, 'raise'); assert.equal(victim.hp, hp, 'enemy raising replaces its binding attack');
+  elapse(w, .5); G.updateMonsters(w, .1);
+  assert.equal(master.actionCue.kind, 'raise', 'enemy attacks share the summoning cooldown');
+  elapse(w, 2); G.updateMonsters(w, .1); assert.equal(master.actionCue.kind, 'attack');
+  master.raiseAt = 0; bones(w, 18, 16, 2);
+  assert.equal(G.raiseEnemySkeleton(w, master), null, 'enemy summoning also waits after attacking');
+}
+{
+  const { w, lair } = arena(), victim = hero(w, 'warrior'), medic = enemy(w, lair, 'mender', 18, 15), patient = enemy(w, lair, 'rattler', 19, 15);
+  patient.stunnedUntil = 100;
+  G.updateMonsters(w, .1); assert.equal(medic.actionCue.kind, 'attack');
+  patient.hp -= 25; const wounded = patient.hp;
+  elapse(w, .5); G.updateMonsters(w, .1); assert.equal(patient.hp, wounded, 'enemy healing cannot bypass attack cooldown');
+  elapse(w, 1.5); const hp = victim.hp; G.updateMonsters(w, .1);
+  assert(patient.hp > wounded); assert.equal(medic.actionCue.kind, 'heal'); assert.equal(victim.hp, hp);
+  elapse(w, .5); G.updateMonsters(w, .1);
+  assert.equal(victim.hp, hp, 'enemy attacks cannot bypass healing cooldown');
+}
+{
+  const { w, lair } = arena(), giant = enemy(w, lair, 'broodcap', 6.6, 5), castle = G.castle(w);
+  G.updateMonsters(w, .1);
+  assert.equal(giant.actionCue.kind, 'raise'); assert.equal(castle.hp, castle.maxHp, 'brood spawning replaces a strike');
+  const child = w.monsters.find(m => m.broodParent === giant.id); assert(child); child.hp = 0;
+  elapse(w, .5); G.updateMonsters(w, .1); assert.equal(castle.hp, castle.maxHp);
+  elapse(w, 1.5); G.updateMonsters(w, .1); assert(castle.hp < castle.maxHp);
+  giant.broodAt = 0; elapse(w, .5); G.updateMonsters(w, .1);
+  assert.equal(w.monsters.filter(m => m.broodParent === giant.id).length, 1, 'striking delays the next otherwise ready brood');
+}
+{
+  const { w, lair } = arena(), ranger = hero(w, 'ranger'); w.research.traps = true;
+  const goal = G.trapSites(w, lair)[0]; Object.assign(ranger, { x: goal.x, y: goal.y, trapGoal: { ...goal, lair: lair.id } });
+  G.rangerTrapWork(w, ranger, 2, .1); assert.equal(w.traps.length, 1); assert.equal(ranger.actionCue.kind, 'trap');
+  const foe = enemy(w, lair, 'rattler', ranger.x + 2, ranger.y), hp = foe.hp;
+  elapse(w, .5); G.updateHeroes(w, .1); assert.equal(foe.hp, hp, 'placing a trap delays shooting');
+  elapse(w, 1); G.updateHeroes(w, .1); assert(foe.hp < hp);
+  lair.hp = foe.hp = 0; elapse(w, .5); G.rangerTrapWork(w, ranger, 2, .1);
+  assert.equal(w.traps.length, 1, 'shooting delays retrieving a trap');
+  elapse(w, 1); G.rangerTrapWork(w, ranger, 2, .1);
+  assert.equal(w.traps.length, 0); assert.equal(ranger.actionCue.kind, 'trap');
+}
+{
+  const { w, lair } = arena(), healer = hero(w, 'healer'), friend = hero(w, 'warrior', 16.1, 15);
+  friend.hp -= 50; friend.cooldown = 10; G.updateHeroes(w, .1);
+  const position = { x: healer.x, y: healer.y };
+  assert.equal(healer.actionCue.kind, 'heal'); G.separateHeroes(w, .1);
+  assert.equal(G.distance(healer, position), 0, 'body separation moves the idle ally instead of the caster');
+  const foe = enemy(w, lair, 'rattler', 18, 15); foe.targetId = friend.id;
+  healer.hp = 1; healer.hurtAt = w.time;
+  elapse(w, .1); G.updateHeroes(w, .1);
+  assert(healer.retreating && !G.acting(w, healer), 'urgent retreat cancels the action before walking');
+  assert(healer.cooldown > 0, 'cancelling the animation never refunds the cooldown');
 }
 {
   const { w, lair } = arena(), necro = hero(w, 'necromancer');
@@ -51,7 +142,7 @@ for (const type of Object.keys(G.monsterTypes)) {
   assert.equal(w.corpses.length, 0, 'raising consumes exactly one corpse');
   bones(w, 18, 15, 2); bones(w, 17, 16, 3);
   assert.equal(G.raiseSkeleton(w, necro), null, 'summoning has a real cooldown');
-  w.time += 3;
+  elapse(w, 3);
   assert.equal(G.raiseSkeleton(w, necro), null, 'one living skeleton per master');
   assert.equal(w.corpses.length, 2, 'a full master leaves spare remains intact');
   const other = hero(w, 'necromancer'); assert(G.raiseSkeleton(w, other), 'another master can use the remaining corpse');
@@ -81,6 +172,9 @@ for (const type of Object.keys(G.monsterTypes)) {
   Object.assign(own, { x: 18.5, y: 15 }); victim.hp = victim.maxHp;
   G.updateSkeletons(w, .1); assert(victim.hp < victim.maxHp, 'raised skeleton fights nearby ground enemies');
   assert.equal(own.actionCue?.kind, 'attack', 'friendly skeleton exposes its real attack');
+  const position = { x: own.x, y: own.y };
+  necro.retreating = true; elapse(w, .1); G.updateSkeletons(w, .1);
+  assert.equal(G.distance(own, position), 0, 'a friendly skeleton finishes its attack before following its master');
   assert.equal(own.level, 2, 'summons keep the source level');
 }
 for (const [chosen, excluded, guild] of [['banner', 'guardian', 'hall'], ['guardian', 'banner', 'hall'], ['marksman', 'traps', 'lodge'], ['traps', 'marksman', 'lodge']]) {
@@ -103,7 +197,7 @@ for (const [chosen, excluded, guild] of [['banner', 'guardian', 'hall'], ['guard
   const { w, lair } = arena(), ranger = hero(w, 'ranger', 16, 10); ranger.level = 3; w.research.traps = true;
   const sites = G.trapSites(w, lair); assert(sites.length > 3);
   assert(sites.every(s => s.progress >= .3 && s.progress <= .7 && G.open(w, s.x, s.y)));
-  for (let i = 0; i < 1500; i++) { w.time += .1; G.rangerTrapWork(w, ranger, 2, .1); }
+  for (let i = 0; i < 1500; i++) { elapse(w, .1); G.rangerTrapWork(w, ranger, 2, .1); }
   assert.equal(w.traps.length, 4, 'ranger walks out and lays exactly four traps');
   assert(w.traps.every(t => t.owner === ranger.id && t.lair === lair.id && t.level === ranger.level && t.progress >= .3 && t.progress <= .7));
   const trap = w.traps[0], flying = enemy(w, lair, 'nightwing', trap.x, trap.y);
@@ -116,7 +210,7 @@ for (const [chosen, excluded, guild] of [['banner', 'guardian', 'hall'], ['guard
   w.time += 3; G.moveMonster(w, caught, { x: x + 5, y: caught.y }, 2, .5); assert(caught.x > x, 'immobilization expires');
   w.monsters = []; lair.hp = 0; w.navRevision++;
   const start = { x: ranger.x, y: ranger.y };
-  for (let i = 0; i < 600 && w.traps.length; i++) { w.time += .1; G.rangerTrapWork(w, ranger, 2, .1); }
+  for (let i = 0; i < 600 && w.traps.length; i++) { elapse(w, .1); G.rangerTrapWork(w, ranger, 2, .1); }
   assert.equal(w.traps.length, 0, 'obsolete traps are physically retrieved after the lair is destroyed');
   assert(G.distance(start, ranger) > .5);
 }
@@ -157,7 +251,7 @@ for (const type of Object.keys(G.lairTypes)) for (const tier of [1, 2, 3]) {
   const siege = enemy(w, lair, 'siegebreaker', 17, 15); G.updateMonsters(w, .1);
   assert(w.buildings.some(b => b.id === siege.targetId), 'siege monster ignores a closer hero to attack a building');
   const giant = enemy(w, lair, 'broodcap', 17, 15);
-  for (let i = 0; i < 6; i++) { w.time += 10; G.updateMonsters(w, .1); victim.hp = victim.maxHp; }
+  for (let i = 0; i < 6; i++) { elapse(w, 10); G.updateMonsters(w, .1); victim.hp = victim.maxHp; }
   assert.equal(w.monsters.filter(m => G.alive(m) && m.broodParent === giant.id).length, 3, 'brood growth is useful but bounded');
   const shield = enemy(w, lair, 'bulwark', 20, 15); patient.x = 20.5; patient.hp = 100;
   G.damage(w, patient, 20, victim); assert.equal(patient.hp, 85, 'armoured escort protects nearby allies');
@@ -226,8 +320,8 @@ for (const type of ['sporeling', 'rattler']) {
   for (let i = 0; i < 6; i++) bones(w, 18, 16, i + 1);
   const first = G.raiseEnemySkeleton(w, master); assert(first && first.raisedBy === master.id && first.rank === 1);
   assert.equal(G.raiseEnemySkeleton(w, master), null, 'enemy raising has a cooldown');
-  for (let i = 0; i < 3; i++) { w.time += 4; assert(G.raiseEnemySkeleton(w, master)); }
-  w.time += 4; assert.equal(G.raiseEnemySkeleton(w, master), null);
+  for (let i = 0; i < 3; i++) { elapse(w, 4); assert(G.raiseEnemySkeleton(w, master)); }
+  elapse(w, 4); assert.equal(G.raiseEnemySkeleton(w, master), null);
   assert.equal(G.enemySkeletons(w, master).length, 4); assert.equal(w.corpses.length, 2);
   const before = w.corpses.length; G.damage(w, first, 999);
   assert.equal(w.corpses.length, before, 'enemy skeletons cannot supply new corpses');
@@ -250,4 +344,4 @@ for (const type of ['sporeling', 'rattler']) {
   assert.equal(G.ownedSkeletons(w, necro).length, 1); assert.equal(G.ownedSkeletons(w, necro)[0].level, 4);
   assert.equal(healer.cooldown, 1.8); assert(!('healCooldown' in healer)); assert.equal(w.corpses.length, 0);
 }
-console.log('tactics: summon limits, corpse expiry, shared healer cooldown, mixed waves, roles and save migration');
+console.log('tactics: exclusive movement/actions, shared ability cooldowns, summons, traps, mixed waves and save migration');

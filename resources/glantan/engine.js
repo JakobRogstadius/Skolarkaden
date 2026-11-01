@@ -32,8 +32,19 @@
     world.effects.push(effect);
     if (world.effects.length > 100) world.effects.shift();
   };
-  // Keep the direction of the actual action, even if its target dies or moves.
-  // This is presentation state only; it never delays damage or changes a route.
+  G.acting = (w, unit) => !!unit.actionCue && w.time < unit.actionCue.at + G.ACTION_DURATION;
+  G.abilityReady = (w, unit) => G.alive(unit) && !(unit.cooldown > 0) && !G.acting(w, unit) && !(unit.stunnedUntil > w.time) && unit.movedAt !== w.time;
+  // Every active ability spends the same action slot. Special abilities may
+  // also have a longer recharge, but cannot bypass the unit's normal cadence.
+  G.useAbility = function(w, unit, target, kind = 'attack', cooldown = null) {
+    if (!G.abilityReady(w, unit)) return false;
+    const cadence = (unit.classId ? G.classes[unit.classId] : G.monsterTypes[unit.type])?.cooldown || 1.3;
+    unit.cooldown = Math.max(cadence, cooldown || 0);
+    G.combatCue(w, unit, target, kind);
+    return true;
+  };
+  // Retain the action's direction for its stationary animation, even when the
+  // target dies or moves. Routes remain available once the action finishes.
   G.combatCue = function(w, unit, target, kind = 'attack') {
     const dx = target.x - unit.x, dy = target.y - unit.y, length = Math.hypot(dx, dy);
     unit.actionCue = { at: w.time, kind, dx: length ? dx / length : unit.facing || 1, dy: length ? dy / length : 0 };

@@ -7,7 +7,7 @@
   G.enemySkeletons = (w, master) => w.monsters.filter(m => m.raisedBy === master.id && G.alive(m));
   G.raiseEnemySkeleton = function(w, master) {
     const limit = G.monsterTypes[master.type]?.raises;
-    if (!limit || !G.alive(master) || (master.raiseAt || 0) > w.time || G.enemySkeletons(w, master).length >= limit) return null;
+    if (!limit || !G.abilityReady(w, master) || (master.raiseAt || 0) > w.time || G.enemySkeletons(w, master).length >= limit) return null;
     const corpse = w.corpses.filter(b => G.freshCorpse(w, b) && G.distance(b, master) < 4.5 && G.clearLine(w, master, b)).sort((a, b) => G.distance(a, master) - G.distance(b, master) || a.id - b.id)[0];
     const lair = w.lairs.find(l => l.id === master.lair);
     if (!corpse || !lair) return null;
@@ -15,20 +15,20 @@
     if (!skeleton) return null; // Capacity must not consume the corpse or its cooldown.
     Object.assign(skeleton, { raisedBy: master.id, rank: corpse.level, strength: 1 + (corpse.level - 1) * .2, hp: 36 + corpse.level * 16, maxHp: 36 + corpse.level * 16, attackDamage: 5 + corpse.level * 2.4, waveEngaged: true });
     w.corpses.splice(w.corpses.indexOf(corpse), 1); master.raiseAt = w.time + 4; master.castAt = w.time;
-    G.combatCue(w, master, corpse, 'raise');
+    G.useAbility(w, master, corpse, 'raise');
     G.effect(w, 'raise', corpse.x, corpse.y, { duration: 1.2, color: '#f48b86' });
     G.effect(w, 'spell', master.x, master.y, { toX: skeleton.x, toY: skeleton.y, school: 'enemy', color: '#ed777e', radius: .6, duration: .8 }, master);
     G.soundEvent(w, 'mage', master); w.revision++;
     return skeleton;
   };
   G.raiseSkeleton = function(w, hero) {
-    if (hero.classId !== 'necromancer' || !G.alive(hero) || (hero.raiseAt || 0) > w.time || G.ownedSkeletons(w, hero).length >= G.NECROMANCER_LIMIT) return null;
+    if (hero.classId !== 'necromancer' || !G.abilityReady(w, hero) || (hero.raiseAt || 0) > w.time || G.ownedSkeletons(w, hero).length >= G.NECROMANCER_LIMIT) return null;
     const corpse = w.corpses.filter(b => G.freshCorpse(w, b) && G.distance(b, hero) < 4 && G.clearLine(w, hero, b)).sort((a, b) => G.distance(a, hero) - G.distance(b, hero) || a.id - b.id)[0];
     if (!corpse) return null;
     const level = corpse.level, hp = 36 + level * 16, point = G.freeNear(w, corpse);
     const skeleton = { id: w.nextId++, skeleton: true, owner: hero.id, sourceType: corpse.monsterType, level, ...point, hp, maxHp: hp, cooldown: 0, route: [], routeKey: '', facing: 1, born: w.time };
     w.corpses.splice(w.corpses.indexOf(corpse), 1); w.skeletons.push(skeleton); hero.raiseAt = w.time + 3;
-    G.combatCue(w, hero, corpse, 'raise');
+    G.useAbility(w, hero, corpse, 'raise');
     G.effect(w, 'raise', corpse.x, corpse.y, { duration: 1.2, color: '#b6ffe2' });
     G.soundEvent(w, 'recruit', skeleton); w.revision++;
     return skeleton;
@@ -52,6 +52,7 @@
       if (!owner) { skeleton.hp = 0; continue; }
       if (!G.alive(skeleton)) continue;
       skeleton.cooldown = Math.max(0, skeleton.cooldown - dt);
+      if (G.acting(w, skeleton) || skeleton.stunnedUntil > w.time) continue;
       const enemies = w.monsters.filter(m => G.alive(m) && G.canHit(skeleton, m) && G.distance(m, owner) < 6);
       enemies.sort((a, b) => (a.id === owner.targetId ? -10 : G.distance(a, skeleton)) - (b.id === owner.targetId ? -10 : G.distance(b, skeleton)));
       const buildingTarget = w.lairs.find(l => l.id === owner.targetId && G.alive(l));
@@ -64,9 +65,8 @@
         skeleton.targetId = target.id;
         const range = 1.05 + (target.w ? .8 : 0);
         if (G.distance(skeleton, target) > range || !G.attackLine(w, skeleton, target)) G.move(w, skeleton, target, speed, dt);
-        else if (skeleton.cooldown <= 0) {
-          skeleton.cooldown = 1.3; skeleton.attackAt = w.time; owner.contributedAt = w.time;
-          G.combatCue(w, skeleton, target);
+        else if (G.useAbility(w, skeleton, target)) {
+          skeleton.attackAt = w.time; owner.contributedAt = w.time;
           G.effect(w, 'slash', skeleton.x, skeleton.y, { toX: target.x, toY: target.y, color: '#ddf4c7', duration: .48 });
           // Credit belongs to the master, but the melee targeting check belongs to the skeleton.
           G.damage(w, target, (5 + skeleton.level * 2.4) * G.offenseBoost(w, skeleton), owner);

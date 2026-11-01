@@ -222,3 +222,14 @@ The development review page now has repeatable full-scene drawing probes at norm
 Validation: renderer, tactics, adapter and asset suites pass. Browser review covers spell launches, mirrored casting, reduced motion and a live mixed-unit battle.
 
 ![Spell origins on staffs and casting hands, shown in reduced-motion mode](klockglantan-staff-spells-2026-11-01.jpg)
+
+## Compact building choices and one action at a time — 2026-11-01
+
+- Reduce building-card height from 154 to 118 CSS pixels and grid gaps from 9 to 6 pixels. Retain the artwork and label sizes; place housing capacity and tower-role symbols in the upper corner instead of reserving another row.
+- Give heroes, monsters and friendly skeletons mutually exclusive movement and ability actions. Attacks, healing, raising skeletons, brood spawning and trap placement/retrieval spend the unit's shared cooldown. Longer special-ability recharges still apply, so extra abilities cannot increase the unit's action rate. Passive auras and effects attached to an attack remain part of that attack's existing rules.
+- Keep units stationary during their 0.4-second action animation, including flyers and ally body separation. Walking is allowed during the remaining cooldown. An urgent hero retreat cancels the animation before moving, without refunding the cooldown.
+- Animate trap handling separately from shooting, and use actual movement to animate walking instead of a retained path.
+
+Validation: eight relevant suites pass (tactics, movement, simulation, encounters, adapter, renderer, app and assets). Regression checks cover every hero and monster type, friendly skeletons, shared cooldowns in both directions, trap recovery, interrupted retreat and save/resume. All six controlled boss-party probes pass: recommended 10/20/30-level parties clear without losses, while the smaller comparison parties withdraw safely. Browser checks cover desktop and 390-pixel building panels, selection after scrolling, live combat, mirrored animations and reduced motion.
+
+![Compact building choices](klockglantan-compact-buildings-2026-11-01.jpg)

@@ -56,7 +56,11 @@ body:has(#play[data-game=glantan]:not([hidden])) .masthead{margin-bottom:12px}
 .g-building-picture>.g-portrait-small{position:absolute;right:0;bottom:-1px;background:#e1e9cf;border:1px solid #a2b28d;border-radius:50%}
 .g-symbols{display:inline-flex;align-items:center;justify-content:center;gap:5px;color:#496343}
 .g-action-grid>.g-action>.g-symbols{gap:2px}
-.g-capacity-bonus{position:absolute;bottom:9px;right:20px;font-weight:bold}
+.g-action-grid.g-build-grid{gap:6px}
+.g-action-grid.g-build-grid .g-action{min-height:118px;padding:6px;gap:2px}
+.g-build-grid>.g-action>.g-symbols{position:absolute;left:7px;top:9px;gap:1px}
+.g-build-grid>.g-action>.g-symbols svg{width:17px;height:17px}
+.g-capacity-bonus{font-weight:bold}
 .g-upgrade-picture{display:flex;align-items:center;justify-content:center;flex-direction:column;min-width:52px}
 .g-upgrade-picture .g-symbols svg{width:17px;height:17px}
 .g-action:not(.g-action-grid .g-action)>.g-upgrade-picture>.g-portrait{width:50px;height:50px}

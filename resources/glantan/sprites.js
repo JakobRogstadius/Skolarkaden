@@ -38,7 +38,7 @@
     body(c, kind, unit, w, time, reduced, pose, scale = 1) {
       const type = unit.classId || unit.type || 'skeleton', branch = w.choices[unit.classId] || '';
       const boss = unit.boss || type === 'guardian';
-      const walking = kind !== 'monster' && !!unit.route?.length, bannerUnit = type === 'warrior' && branch === 'banner';
+      const walking = kind !== 'monster' && time - (unit.movedAt ?? -1) < .2, bannerUnit = type === 'warrior' && branch === 'banner';
       const moving = !reduced && (kind === 'monster' || walking || bannerUnit);
       const rate = walking || type === 'nightwing' ? 11 : bannerUnit ? 3 : boss ? 3.5 : 7;
       const phase = ((time * rate + unit.id) % (Math.PI * 2)) / (Math.PI * 2);

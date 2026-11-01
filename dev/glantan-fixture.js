@@ -62,15 +62,18 @@
     const binder = w.monsters.find(m => m.type === 'binder');
     for (let i = 0; i < 4; i++) {
       w.corpses.push({ id: w.nextId++, x: binder.x + 1, y: binder.y, level: 2, monsterType: 'rattler', diedAt: w.time });
-      binder.raiseAt = 0; const s = G.raiseEnemySkeleton(w, binder); s.x = x + 7.5 + (i % 2) * .9; s.y = y + 2.5 + Math.floor(i / 2) * 1.3;
+      // Populate a frozen review scene, without waiting between its four casts.
+      binder.raiseAt = binder.cooldown = 0; binder.actionCue = null;
+      const s = G.raiseEnemySkeleton(w, binder); s.x = x + 7.5 + (i % 2) * .9; s.y = y + 2.5 + Math.floor(i / 2) * 1.3;
     }
     for (const [dx, dy] of [[1, 3.2], [2.2, 4.4], [3.4, 5.4]]) w.traps.push({ id: w.nextId++, x: x + dx, y: y + dy, owner: w.heroes[1].id, lair: lair.id, level: 3 });
     w.corpses.push({ id: w.nextId++, x: x + 1.5, y: y - 2, level: 3, monsterType: 'rattler', diedAt: w.time });
     w.effects = [];
     for (const [role, target, school, color] of [['mage', w.monsters[1], 'arcane', '#c5a4ff'], ['necromancer', w.monsters[4], 'soul', '#93e3cb'], ['healer', w.heroes[0], 'life', '#c3ff9c']]) {
       const h = w.heroes.find(h => h.classId === role);
-      G.combatCue(w, h, target, role === 'healer' ? 'heal' : 'attack'); h.actionCue.at = w.time - .38;
-      G.effect(w, 'spell', h.x, h.y, { toX: target.x, toY: target.y, school, color, radius: 1.5, duration: .8, age: .38 }, h);
+      const age = G.ACTION_DURATION * .45;
+      G.combatCue(w, h, target, role === 'healer' ? 'heal' : 'attack'); h.actionCue.at = w.time - age;
+      G.effect(w, 'spell', h.x, h.y, { toX: target.x, toY: target.y, school, color, radius: 1.5, duration: .8, age }, h);
     }
     w.monsters[4].rootedUntil = w.time + 2.8;
     w.explored.fill(1); w.fogRevision++; w.revision++; w.navRevision++;
@@ -158,13 +161,14 @@
       ...Object.entries(G.classes).map(([type, spec]) => ({ kind: 'hero', type, label: spec.name })),
       { kind: 'skeleton', label: 'Vänligt skelett' },
       ...Object.entries(G.monsterTypes).map(([type, spec]) => ({ kind: 'monster', type, label: spec.name })),
-      ...['banner', 'guardian', 'marksman', 'traps'].map(branch => ({ kind: 'hero', type: G.research[branch].group, branch, label: G.research[branch].name }))
+      ...['banner', 'guardian', 'marksman', 'traps'].map(branch => ({ kind: 'hero', type: G.research[branch].group, branch, label: G.research[branch].name })),
+      { kind: 'hero', type: 'ranger', branch: 'traps', action: 'trap', label: 'Lägger fälla' }
     ];
     canvas.width = 1200; canvas.height = Math.ceil(roster.length / 6) * 180;
     canvas.style.cssText = 'display:block;max-width:100%;height:auto;margin:auto';
     canvas.setAttribute('role', 'img'); canvas.setAttribute('aria-label', 'Fem hjälteklasser, vänligt skelett, tolv monstertyper och fyra hjältevägar');
     const c = canvas.getContext('2d'), sprites = G.SpriteCache ? new G.SpriteCache() : null; if (sprites) sprites.scale = 2;
-    let playing = false, age = .27, facing = 1, reduced = false, cached = true, last = performance.now();
+    let playing = false, age = G.ACTION_DURATION * .45, facing = 1, reduced = false, cached = true, last = performance.now();
     const world = { ...game.world, time: 2 };
     function draw() {
       sprites?.beginFrame();
@@ -177,10 +181,10 @@
         for (const attacking of [false, true]) {
           const unit = { id: 1, x: 0, y: 0, hp: 100, maxHp: 100, level: 2, rank: 2, strength: 1, facing, route: [], classId: row.kind === 'hero' ? row.type : undefined, type: row.type, monster: row.kind === 'monster' };
           const target = { x: facing, y: .2 };
-          if (attacking) G.combatCue(w, unit, target);
+          if (attacking) G.combatCue(w, unit, target, row.action || 'attack');
           c.save(); c.translate(left + (attacking ? 137 : 48), top + 142); c.scale(scale, scale);
           const origin = A[row.kind](c, unit, w, 2 + age, reduced, cached ? sprites : null);
-          if (attacking && age < .48) {
+          if (attacking && row.action !== 'trap' && age < .48) {
             const magic = ['mage', 'healer', 'necromancer'].includes(row.type) || G.monsterTypes[row.type]?.spell;
             const ranged = row.type === 'ranger' || row.type === 'thornling';
             const effect = { x: 0, y: 0, toX: target.x, toY: target.y, color: row.kind === 'monster' ? '#ff8c8a' : G.classes[row.type]?.color || '#ddf4c7', radius: .4, school: row.type === 'necromancer' ? 'soul' : 'arcane', heavy: ['guardian', 'siegebreaker', 'broodcap', 'bulwark'].includes(row.type), claw: row.type === 'nightwing' };
@@ -193,8 +197,8 @@
     for (const [label, action] of [
       ['Spela animationer', () => { playing = !playing; last = performance.now(); }],
       ['Start', () => { playing = false; age = .04; }],
-      ['Träff', () => { playing = false; age = .27; }],
-      ['Återgång', () => { playing = false; age = .52; }],
+      ['Träff', () => { playing = false; age = G.ACTION_DURATION * .45; }],
+      ['Återgång', () => { playing = false; age = G.ACTION_DURATION * .85; }],
       ['Vänd', () => { facing *= -1; }],
       ['Minskad rörelse', () => { reduced = !reduced; }],
       ['Byt ritmetod', () => { cached = !cached; title.textContent = (cached ? 'Spritebilder' : 'Direkt ritning') + ' · vila / anfall'; }],

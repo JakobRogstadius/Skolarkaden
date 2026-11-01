@@ -315,7 +315,7 @@
     const pose = A.actionPose(hero, time, reduced);
     ellipse(c, 1, 2, 10, 4, '#1e342f66');
     if (hero.shieldUntil > time) { c.strokeStyle = '#bedeca90'; c.lineWidth = 2; c.beginPath(); c.ellipse(0, -10, 13, 19, 0, 0, Math.PI * 2); c.stroke(); }
-    c.save(); A.actionBody(c, hero, pose, hero.classId === 'warrior' ? 'melee' : hero.classId === 'ranger' ? 'bow' : 'cast');
+    c.save(); A.actionBody(c, hero, pose, pose?.kind === 'trap' ? 'work' : hero.classId === 'warrior' ? 'melee' : hero.classId === 'ranger' ? 'bow' : 'cast');
     let bodyPower = pose?.power || 0;
     if (cache) bodyPower = cache.body(c, 'hero', hero, w, time, reduced, pose);
     else A.heroBody(c, hero, w, time, reduced, pose);
@@ -327,7 +327,7 @@
   A.heroBody = function(c, hero, w, time, reduced, pose) {
     const idleTime = reduced ? 0 : time, path = w.choices[hero.classId], ink = '#293b39';
     const color = path === 'guardian' ? '#9dbed2' : path === 'banner' ? '#d96642' : path === 'traps' ? '#b99a59' : G.classes[hero.classId].color;
-    const power = pose?.power || 0, walk = hero.artWalk ?? (!reduced && !pose && hero.route?.length ? Math.sin(time * 11 + hero.id) : 0);
+    const power = pose?.power || 0, walk = hero.artWalk ?? (!reduced && !pose && time - (hero.movedAt ?? -1) < .2 ? Math.sin(time * 11 + hero.id) : 0);
     line(c, [[-3, -3], [-4 - walk * 2, 2]], '#303c35', 3.3); line(c, [[3, -3], [4 + walk * 2, 2]], '#303c35', 3.3);
     polygon(c, [[-6, -21], [6, -21], [9 + walk, -3], [-8 + walk, -3]], color, ink);
     polygon(c, [[2, -18], [7, -16], [9 + walk, -3], [2, -4]], '#18362c38');
@@ -355,17 +355,23 @@
       polygon(c, [[-8, -25], [-6, -33], [2, -37], [8, -26], [1, -29]], '#31714a', ink);
       line(c, [[1, -33], [6, -42]], '#ffe3a0', 2);
       line(c, [[-10, -9], [-11, -25], [-8, -30]], '#755030', 3);
-      c.save(); c.translate(power * 4, 0);
-      c.strokeStyle = '#634029'; c.lineWidth = 3; c.beginPath(); c.arc(5, -13, 13, -1.1, 1.1); c.stroke();
-      line(c, [[11, -25], [11 - (pose?.draw || 0) * 8, -13], [11, -1]], '#fff0c2', 1.3);
-      if (!pose || pose.p < .25 || pose.p > .85) line(c, [[6, -14], [20, -14]], '#e9d0a1', 1.5);
-      if (path === 'marksman') {
-        c.strokeStyle = '#f3cf77'; c.lineWidth = 3.5; c.beginPath(); c.arc(3, -15, 19, -1.2, 1.2); c.stroke();
-        line(c, [[10, -33], [10 - (pose?.draw || 0) * 8, -15], [10, 3]], '#fff5ce', 1.5);
-      }
-      c.restore();
-      if (path === 'marksman') {
-        for (const xx of [-13, -9, -5]) line(c, [[xx, -20], [xx - 3, -36], [xx, -33]], '#f4dd9c', 2);
+      if (pose?.kind === 'trap') {
+        line(c, [[6, -20], [12, -12], [14, -5]], '#e6bb8f', 3);
+        ellipse(c, 14, -4, 7, 4, '#d6d6bd', ink); ellipse(c, 14, -4, 4, 2, '#415044');
+        for (const xx of [10, 14, 18]) line(c, [[xx, -7], [xx, -3]], '#ffe5ae', 1.5);
+      } else {
+        c.save(); c.translate(power * 4, 0);
+        c.strokeStyle = '#634029'; c.lineWidth = 3; c.beginPath(); c.arc(5, -13, 13, -1.1, 1.1); c.stroke();
+        line(c, [[11, -25], [11 - (pose?.draw || 0) * 8, -13], [11, -1]], '#fff0c2', 1.3);
+        if (!pose || pose.p < .25 || pose.p > .85) line(c, [[6, -14], [20, -14]], '#e9d0a1', 1.5);
+        if (path === 'marksman') {
+          c.strokeStyle = '#f3cf77'; c.lineWidth = 3.5; c.beginPath(); c.arc(3, -15, 19, -1.2, 1.2); c.stroke();
+          line(c, [[10, -33], [10 - (pose?.draw || 0) * 8, -15], [10, 3]], '#fff5ce', 1.5);
+        }
+        c.restore();
+        if (path === 'marksman') {
+          for (const xx of [-13, -9, -5]) line(c, [[xx, -20], [xx - 3, -36], [xx, -33]], '#f4dd9c', 2);
+        }
       }
     } else if (hero.classId === 'healer') {
       // White bonnet/apron and a green medical cross, separated from the mage's violet robe.
