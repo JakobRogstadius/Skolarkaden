@@ -316,11 +316,13 @@
     ellipse(c, 1, 2, 10, 4, '#1e342f66');
     if (hero.shieldUntil > time) { c.strokeStyle = '#bedeca90'; c.lineWidth = 2; c.beginPath(); c.ellipse(0, -10, 13, 19, 0, 0, Math.PI * 2); c.stroke(); }
     c.save(); A.actionBody(c, hero, pose, hero.classId === 'warrior' ? 'melee' : hero.classId === 'ranger' ? 'bow' : 'cast');
-    if (cache) cache.body(c, 'hero', hero, w, time, reduced, pose);
+    let bodyPower = pose?.power || 0;
+    if (cache) bodyPower = cache.body(c, 'hero', hero, w, time, reduced, pose);
     else A.heroBody(c, hero, w, time, reduced, pose);
     c.restore();
     if (hero.level >= 3) { c.fillStyle = '#ffe5a3'; c.strokeStyle = ink; c.lineWidth = 2.5; c.font = 'bold 9px sans-serif'; c.textAlign = 'center'; const dots = '•'.repeat(Math.min(3, Math.floor(hero.level / 2))), y = path === 'banner' ? -64 : ['mage', 'necromancer'].includes(hero.classId) ? -55 : -46; c.strokeText(dots, 0, y); c.fillText(dots, 0, y); }
     c.restore();
+    return A.castOrigin(hero, pose, bodyPower);
   };
   A.heroBody = function(c, hero, w, time, reduced, pose) {
     const idleTime = reduced ? 0 : time, path = w.choices[hero.classId], ink = '#293b39';
@@ -503,7 +505,8 @@
     c.save(); c.scale(scale, scale);
     const spec = G.monsterTypes[m.type];
     A.actionBody(c, m, pose, spec.flying ? 'dive' : spec.spell ? 'cast' : spec.kite ? 'bow' : ['sporeling', 'broodcap'].includes(m.type) ? 'cap' : boss || spec.siege || spec.ward ? 'heavy' : 'melee');
-    if (cache) cache.body(c, 'monster', m, w, time, reduced, pose, scale);
+    let bodyPower = power;
+    if (cache) bodyPower = cache.body(c, 'monster', m, w, time, reduced, pose, scale);
     else A.monsterBody(c, m, w, time, reduced, pose);
     c.restore();
     const badgeY = A.monsterBadgeY(m);
@@ -512,6 +515,7 @@
     if (boss) line(c, [[-12, badgeY + 5], [-10, badgeY + 10], [-7, badgeY + 4], [-4, badgeY + 10], [-2, badgeY + 5]], '#f2c582', 1.2);
     if (m.stunnedUntil > time) { c.fillStyle = '#ffe7ab'; c.font = '15px serif'; c.fillText('✧', 0, badgeY - 4 + bob); }
     c.restore();
+    return spec.spell ? A.castOrigin(m, pose, bodyPower) : null;
   };
   A.monsterBody = function(c, m, w, time, reduced, pose) {
     const rank = Math.max(1, m.rank || 1), boss = m.boss || m.type === 'guardian';

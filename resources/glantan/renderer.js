@@ -35,6 +35,7 @@
       this.terrainChunks = new Map();
       this.terrainBytes = 0; this.sprites = new G.SpriteCache();
       this.entities = []; this.entityPool = []; this.renderUnits = new WeakMap();
+      this.castOrigins = new Map();
       this.previousPositions = new WeakMap();
       game.simulation.beforeStep = w => {
         for (const units of [w.heroes, w.skeletons, w.monsters]) for (const unit of units) if (G.alive(unit)) {
@@ -255,7 +256,14 @@
         if (Math.max(e.x, e.toX ?? e.x) + padding < view.x0 || Math.min(e.x, e.toX ?? e.x) - padding > view.x1 || Math.max(e.y, e.toY ?? e.y) + padding < view.y0 || Math.min(e.y, e.toY ?? e.y) - padding > view.y1) continue;
         const p = Math.max(0, e.age - this.renderDelay) / e.duration, x = e.x * T, y = e.y * T;
         c.save(); c.globalAlpha = Math.min(1, (1 - p) * 2); c.strokeStyle = c.fillStyle = e.color || '#f3dfab';
-        if (e.type === 'spell') A.spell(c, e, p, this.reduced);
+        if (e.type === 'spell') {
+          let origin = e.caster && this.castOrigins.get(e.caster.id);
+          if (!origin && e.caster) {
+            const caster = { ...e.caster, x:e.x, y:e.y };
+            origin = A.castOrigin(caster, A.actionPose(caster, Math.max(0,w.time-this.renderDelay), this.reduced));
+          }
+          A.spell(c, e, p, this.reduced, origin);
+        }
         else if (e.type === 'raise' || e.type === 'snare') A.ritual(c, e, p, this.reduced);
         else if (e.type === 'bolt') A.bolt(c, e, p, this.reduced);
         else if (e.type === 'slash') A.slash(c, e, p, this.reduced);
@@ -311,6 +319,7 @@
       const time = Math.max(0, w.time - this.renderDelay);
       this.sprites.scale = this.camera.zoom * this.dpr;
       this.sprites.beginFrame();
+      this.castOrigins.clear();
       c.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); this.drawBackdrop();
       c.save(); c.translate(this.width / 2, this.height / 2); c.scale(this.camera.zoom, this.camera.zoom); c.translate(-this.camera.x, -this.camera.y);
       const view = this.viewBounds(3);
@@ -328,7 +337,10 @@
       for (const entity of entities) {
         const { type } = entity, value = this.renderUnit(entity.value);
         if (type === 'building') this.sprites.building(c, value, w, this.reduced ? 0 : time);
-        else A[type](c, value, w, this.reduced && !['hero', 'monster', 'skeleton'].includes(type) ? 0 : time, this.reduced, this.sprites);
+        else {
+          const origin = A[type](c, value, w, this.reduced && !['hero', 'monster', 'skeleton'].includes(type) ? 0 : time, this.reduced, this.sprites);
+          if (origin) this.castOrigins.set(value.id, origin);
+        }
         if (G.alive(value) && !value.w) A.status(c, value, w);
         const selected = this.selection?.id === value.id;
         if (G.alive(value) && (selected || value.hp < value.maxHp * 0.98)) this.drawBar(value, type === 'building' || type === 'lair' ? 29 : 8, type === 'monster' || type === 'lair' ? '#e7aa8d' : '#c7e2a6');

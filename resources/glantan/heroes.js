@@ -133,7 +133,7 @@
       const learning = Math.min(amount * 0.13, Math.max(0, 30 + w.destroyed * 20 - (hero.supportXp || 0)));
       hero.supportXp = (hero.supportXp || 0) + learning; G.gainXp(w, hero, learning);
       G.effect(w, 'heal', patient.x, patient.y, { color: '#b1e6b1', duration: 0.7 });
-      G.effect(w, 'spell', hero.x, hero.y, { toX: patient.x, toY: patient.y, school: 'life', color: '#c3ff9c', radius: .65, duration: .7 });
+      G.effect(w, 'spell', hero.x, hero.y, { toX: patient.x, toY: patient.y, school: 'life', color: '#c3ff9c', radius: .65, duration: .7 }, hero);
     }
     hero.task = 'Läker vänner'; return true;
   }
@@ -145,7 +145,7 @@
     const mastery = hero.classId === 'mage' && w.research.mastery && hero.level >= 5 && (hero.masteryAt || 0) < w.time;
     if (mastery) { damage *= 3; hero.masteryAt = w.time + 8; G.effect(w, 'bell', target.x, target.y, { duration: 1.3, color: '#cfbcff' }); }
     const magic = ['mage', 'healer', 'necromancer'].includes(hero.classId);
-    G.effect(w, magic ? 'spell' : hero.classId === 'warrior' ? 'slash' : 'bolt', hero.x, hero.y, { toX: target.x, toY: target.y, school: hero.classId === 'necromancer' ? 'soul' : 'arcane', color: G.classes[hero.classId].color, radius: hero.classId === 'necromancer' ? 1.7 : mastery ? 2.6 : 1.5, duration: magic ? .8 : .48, heavy: hero.classId === 'ranger' && w.research.marksman });
+    G.effect(w, magic ? 'spell' : hero.classId === 'warrior' ? 'slash' : 'bolt', hero.x, hero.y, { toX: target.x, toY: target.y, school: hero.classId === 'necromancer' ? 'soul' : 'arcane', color: G.classes[hero.classId].color, radius: hero.classId === 'necromancer' ? 1.7 : mastery ? 2.6 : 1.5, duration: magic ? .8 : .48, heavy: hero.classId === 'ranger' && w.research.marksman }, hero);
     G.soundEvent(w, magic ? 'mage' : hero.classId, hero);
     if (hero.classId === 'necromancer') G.necromancerStrike(w, hero, target, damage);
     else G.damage(w, target, damage, hero);

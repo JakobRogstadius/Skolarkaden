@@ -159,7 +159,7 @@
       G.combatCue(w, monster, patients[0], 'heal');
       for (const patient of patients.slice(0, 2)) {
         patient.hp = Math.min(patient.maxHp, patient.hp + 14 * monster.strength);
-        G.effect(w, 'spell', monster.x, monster.y, { toX: patient.x, toY: patient.y, school: 'mend', color: '#ffd58a', radius: .65, duration: .8 });
+        G.effect(w, 'spell', monster.x, monster.y, { toX: patient.x, toY: patient.y, school: 'mend', color: '#ffd58a', radius: .65, duration: .8 }, monster);
       }
       G.soundEvent(w, 'heal', monster); return true;
     }
@@ -255,7 +255,7 @@
       if (inRange && clear && monster.cooldown <= 0) {
         monster.cooldown = spec.cooldown; monster.attackAt = w.time;
         G.combatCue(w, monster, target);
-        G.effect(w, spec.spell ? 'spell' : spec.range > 2 ? 'bolt' : 'slash', monster.x, monster.y, { toX: target.x, toY: target.y, school: 'enemy', color: monster.boss ? '#e7a3d1' : '#ff8c8a', radius: spec.spell ? 1.25 : .4, duration: spec.spell ? .8 : .48, heavy: monster.boss || spec.siege || spec.ward || spec.brood, claw: spec.flying });
+        G.effect(w, spec.spell ? 'spell' : spec.range > 2 ? 'bolt' : 'slash', monster.x, monster.y, { toX: target.x, toY: target.y, school: 'enemy', color: monster.boss ? '#e7a3d1' : '#ff8c8a', radius: spec.spell ? 1.25 : .4, duration: spec.spell ? .8 : .48, heavy: monster.boss || spec.siege || spec.ward || spec.brood, claw: spec.flying }, monster);
         if (spec.bind && !target.w && (monster.bindAt || 0) <= w.time && (target.rootGraceUntil || 0) <= w.time) {
           target.rootedUntil = Math.max(target.rootedUntil || 0, w.time + 2.2); target.rootGraceUntil = w.time + 4.5; monster.bindAt = w.time + 6.5;
           G.effect(w, 'snare', target.x, target.y, { duration: 1, color: '#c7a3e6' });

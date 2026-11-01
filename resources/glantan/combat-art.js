@@ -18,6 +18,31 @@
     }
     c.scale(pose && Math.abs(pose.dx) > .05 ? (pose.dx < 0 ? -1 : 1) : unit.facing || 1, 1);
   };
+  A.castOrigin = function(unit, pose, bodyPower = pose?.power || 0) {
+    // Match the glowing staff tip / casting hand in heroBody and monsterBody.
+    // The weapon uses the sampled sprite pose; the body keeps its continuous
+    // turn and lean. Return world pixels, before the camera transform.
+    const type = unit.classId || unit.type, power = bodyPower;
+    let x, y, pivotX = 0, pivotY = 0, turn = 0;
+    if (type === 'mage' || type === 'necromancer') { x = 13; y = type === 'mage' ? -40 : -42; pivotX = 10; pivotY = -20; turn = power * .45; }
+    else if (type === 'mender') { x = 13; y = -35; pivotX = 8; pivotY = -18; turn = power * .45; }
+    else if (type === 'binder') { x = 13; y = -32; pivotX = 10; pivotY = -22; turn = power * .5; }
+    else if (type === 'healer') { x = 12 + power * 6; y = -18 - power * 5; }
+    else if (type === 'husher') { x = 17 + power * 5; y = -24; }
+    else return null;
+    if (turn) {
+      const dx = x - pivotX, dy = y - pivotY, cos = Math.cos(turn), sin = Math.sin(turn);
+      x = pivotX + dx * cos - dy * sin; y = pivotY + dx * sin + dy * cos;
+    }
+    x *= pose && Math.abs(pose.dx) > .05 ? (pose.dx < 0 ? -1 : 1) : unit.facing || 1;
+    if (pose && !pose.reduced) {
+      const cos = Math.cos(pose.dx * pose.power * .09), sin = Math.sin(pose.dx * pose.power * .09), xx = x;
+      x = x * cos - y * sin - pose.dx * 4 * pose.power;
+      y = xx * sin + y * cos - pose.dy * 2.6 * pose.power;
+    }
+    const scale = unit.classId ? 1 : A.monsterScale(unit), groundX = unit.x * T, groundY = unit.y * T;
+    return { x: groundX + x * scale, y: groundY + y * scale, groundX, groundY };
+  };
   A.actionGlow = function(c, pose, x, y, color) {
     if (!pose) return;
     if (pose.kind === 'heal') color = '#c9ff9e';
@@ -172,8 +197,9 @@
     polygon(c, [[6, 0], [-3, -4], [-1, 0], [-3, 4]], '#fff5d4', ink);
     line(c, [[-16, -4], [-12, 0], [-16, 4]], color, 2); c.restore();
   };
-  A.spell = function(c, e, p, reduced) {
-    const x = e.x * T, y = e.y * T - 22, tx = e.toX * T, ty = e.toY * T - 12;
+  A.spell = function(c, e, p, reduced, origin = null) {
+    const x = origin?.x ?? e.x * T, y = origin?.y ?? e.y * T - 22, tx = e.toX * T, ty = e.toY * T - 12;
+    const groundX = origin?.groundX ?? e.x * T, groundY = origin?.groundY ?? e.y * T;
     const color = e.color || '#c5a4ff', life = ['life', 'mend', 'drain'].includes(e.school), soul = ['soul', 'drain'].includes(e.school);
     const flight = Math.min(1, p / .55), impact = G.clamp((p - .4) / .6, 0, 1);
     c.save();
@@ -184,10 +210,10 @@
     }
     // Ground runes anchor the cast; a bright core keeps it readable on grass.
     c.globalAlpha *= 1 - p * .7;
-    ring(c, x, y + 22, 16 + p * 6, color, 2);
+    ring(c, groundX, groundY, 16 + p * 6, color, 2);
     for (let i = 0; i < 4; i++) {
       const a = i * Math.PI / 2 + p;
-      line(c, [[x + Math.cos(a) * 21, y + 22 + Math.sin(a) * 12], [x + Math.cos(a) * 26, y + 22 + Math.sin(a) * 15]], color, 2);
+      line(c, [[groundX + Math.cos(a) * 21, groundY + Math.sin(a) * 12], [groundX + Math.cos(a) * 26, groundY + Math.sin(a) * 15]], color, 2);
     }
     c.globalAlpha = Math.min(1, (1 - p) * 3);
     if (flight < 1 || p < .68) {
