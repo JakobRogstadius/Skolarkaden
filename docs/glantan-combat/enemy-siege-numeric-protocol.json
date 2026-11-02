@@ -1,0 +1,48 @@
+{
+  "assay": "siege-numeric-raid-discovery",
+  "originalInput": "enemy-siege-focused-cases.json",
+  "preserved": [
+    "heroes",
+    "monsters",
+    "seeds",
+    "layout",
+    "spacing",
+    "distance",
+    "mirror",
+    "research",
+    "threat budget"
+  ],
+  "newControls": {
+    "castleShots": true,
+    "endOnPartyDeath": false,
+    "deadlines": [
+      50,
+      75
+    ]
+  },
+  "variants": [
+    {
+      "id": "control",
+      "hp": 165,
+      "damage": 23,
+      "hpTimesBuildingDamage": 3795
+    },
+    {
+      "id": "hp110",
+      "hp": 110,
+      "damage": 34.5,
+      "hpTimesBuildingDamage": 3795
+    },
+    {
+      "id": "hp90",
+      "hp": 90,
+      "damage": 42,
+      "hpTimesBuildingDamage": 3780
+    }
+  ],
+  "runtime": "Existing interception candidate retained; stats are changed only in memory via harness configure. All runs jobs1; no source mutation.",
+  "caseInput": "/workspace/scratch/23d09e66c6fe/experiments/enemy-siege-numeric-cases.json",
+  "caseSha256": "1572617b9b5415b1eadb8516c8912531ee8323f5cfb2997858ce04a5ae23e9fe",
+  "casesPerVariant": 540,
+  "qualification": "A selected positive partner effect must be confirmed on100fresh seeds together with a fair weakness/counter context. If both predefined variants fail, stop and report unmet."
+}

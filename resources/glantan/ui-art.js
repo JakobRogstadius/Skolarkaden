@@ -16,7 +16,7 @@
   const monsters = {
     rattler: ['sword', 'Rusande närstrid'], sporeling: ['people', 'Anfaller i grupp'], husher: ['chime', 'Anfaller med magi'],
     nightwing: ['wing', 'Flyger'], thornling: ['bow', 'Skjuter och backar'], mender: ['heal', 'Läker monster'],
-    binder: ['skull', 'Väcker skelett · binder hjältar'], boneservant: ['sword', 'Fiendeskelett'], siegebreaker: ['hammer', 'Anfaller byggnader'], broodcap: ['spore', 'Skapar fler svampar'],
+    binder: ['skull', 'Väcker skelett · binder hjältar'], boneservant: ['sword', 'Fiendeskelett'], siegebreaker: ['hammer', 'Krossar hus · stoppas i närstrid'], broodcap: ['spore', 'Skapar fler svampar'],
     bulwark: ['shield', 'Skyddar monster'], guardian: ['crown', 'Stark bossvakt']
   };
   function portrait(w, kind, type, options = {}) {

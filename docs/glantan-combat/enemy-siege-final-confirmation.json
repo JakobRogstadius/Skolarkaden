@@ -1,0 +1,401 @@
+{
+  "assay": "defended-castle-numeric-final-confirmation",
+  "stage": "heldout100-fresh-seeds",
+  "deadline": 75,
+  "controls": {
+    "castleShots": true,
+    "endOnPartyDeath": false,
+    "rank": 3,
+    "heroLevel": 3,
+    "freshSeedOffset": 120000
+  },
+  "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-siege-final-confirmation-cases.json",
+  "inputSha256": "a080bc6e85c6a18ba924d25a2abd1a4d9cbd66f50bacebd0f7dbac6a5e0cee6d",
+  "harnessSha256": "30ecd4865a699c908a357094232d586637ba5b8b6f73576b77e30bd9ef609ef6",
+  "driverSha256": "337142a9f81d09ff2d9a13f1fae7faa50f0bd0e270539138579f9a276321a38f",
+  "allRuntimeSourcesStable": true,
+  "pureMedicParityAcrossSources": true,
+  "rows": [
+    {
+      "name": "original",
+      "source": "28ba8b8a447182e495ae869777539f4d6abe363d",
+      "runtimeSourceSha256": "1fd02790388858335372499ccd5e04df43af9be2c3cf1cdc86fe23fcbf9c4369",
+      "runtimeOverrides": null,
+      "n": 100,
+      "attackerWins": {
+        "mixed": 6,
+        "pureA": 6,
+        "pureB": 0
+      },
+      "timeouts": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 100
+      },
+      "deltaOverBestPure": 0,
+      "winWilson95": {
+        "mixed": [
+          0.027786,
+          0.124768
+        ],
+        "pureA": [
+          0.027786,
+          0.124768
+        ],
+        "pureB": [
+          0,
+          0.036993
+        ]
+      },
+      "pairedTests": {
+        "pureA": {
+          "better": 6,
+          "worse": 6,
+          "discordant": 12,
+          "pOneSided": 0.61279296875,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        },
+        "pureB": {
+          "better": 6,
+          "worse": 0,
+          "discordant": 6,
+          "pOneSided": 0.015625,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        }
+      },
+      "budgets": {
+        "mixed": 15.552,
+        "pureA": 17.28,
+        "pureB": 16.128
+      },
+      "castleDamage": {
+        "mixed": 736.3104,
+        "pureA": 793.2768,
+        "pureB": 1.0368
+      },
+      "actualSupportShare": 0.259259,
+      "mechanism": {
+        "siegeMeanEffectiveHealingReceived": 247.16159999999985,
+        "mixedMeanHeroDeaths": 0,
+        "pureSiegeMeanHeroDeaths": 0,
+        "siegeEffectiveHealingFractionOfInitialPool": 0.26006060606060594,
+        "meanCastleHpAgainstPureSiege": 206.72320000000002
+      },
+      "attackerLosses": {
+        "mixed": 94,
+        "pureA": 94,
+        "pureB": 0
+      },
+      "sourceFreeForProductionChanges": true
+    },
+    {
+      "name": "interception",
+      "source": "working-tree",
+      "runtimeSourceSha256": "3847875d37cbcc7ab1c85a87a1f1d42779c7a3d2e4e32cd721c13bc4d8727b2c",
+      "runtimeOverrides": {
+        "monsterTypes": {
+          "siegebreaker": {
+            "hp": 165,
+            "damage": 23
+          }
+        }
+      },
+      "n": 100,
+      "attackerWins": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "timeouts": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 100
+      },
+      "deltaOverBestPure": 0,
+      "winWilson95": {
+        "mixed": [
+          0,
+          0.036993
+        ],
+        "pureA": [
+          0,
+          0.036993
+        ],
+        "pureB": [
+          0,
+          0.036993
+        ]
+      },
+      "pairedTests": {
+        "pureA": {
+          "better": 0,
+          "worse": 0,
+          "discordant": 0,
+          "pOneSided": 1,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        },
+        "pureB": {
+          "better": 0,
+          "worse": 0,
+          "discordant": 0,
+          "pOneSided": 1,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        }
+      },
+      "budgets": {
+        "mixed": 15.552,
+        "pureA": 17.28,
+        "pureB": 16.128
+      },
+      "castleDamage": {
+        "mixed": 52.3296,
+        "pureA": 44.0496,
+        "pureB": 1.0368
+      },
+      "actualSupportShare": 0.259259,
+      "mechanism": {
+        "siegeMeanEffectiveHealingReceived": 413.8848,
+        "mixedMeanHeroDeaths": 0.02,
+        "pureSiegeMeanHeroDeaths": 0.02,
+        "siegeEffectiveHealingFractionOfInitialPool": 0.4354848484848485,
+        "meanCastleHpAgainstPureSiege": 955.9504
+      },
+      "attackerLosses": {
+        "mixed": 100,
+        "pureA": 100,
+        "pureB": 0
+      },
+      "sourceFreeForProductionChanges": true
+    },
+    {
+      "name": "hp90",
+      "source": "working-tree",
+      "runtimeSourceSha256": "3847875d37cbcc7ab1c85a87a1f1d42779c7a3d2e4e32cd721c13bc4d8727b2c",
+      "runtimeOverrides": {
+        "monsterTypes": {
+          "siegebreaker": {
+            "hp": 90,
+            "damage": 42
+          }
+        }
+      },
+      "n": 100,
+      "attackerWins": {
+        "mixed": 30,
+        "pureA": 1,
+        "pureB": 0
+      },
+      "timeouts": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 100
+      },
+      "deltaOverBestPure": 0.29,
+      "winWilson95": {
+        "mixed": [
+          0.218949,
+          0.395849
+        ],
+        "pureA": [
+          0.001767,
+          0.054486
+        ],
+        "pureB": [
+          0,
+          0.036993
+        ]
+      },
+      "pairedTests": {
+        "pureA": {
+          "better": 30,
+          "worse": 1,
+          "discordant": 31,
+          "pOneSided": 1.4901161193847656e-8,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        },
+        "pureB": {
+          "better": 30,
+          "worse": 0,
+          "discordant": 30,
+          "pOneSided": 9.313225746154785e-10,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        }
+      },
+      "budgets": {
+        "mixed": 15.552,
+        "pureA": 17.28,
+        "pureB": 16.128
+      },
+      "castleDamage": {
+        "mixed": 426.4032,
+        "pureA": 85.6,
+        "pureB": 1.0368
+      },
+      "actualSupportShare": 0.259259,
+      "mechanism": {
+        "siegeMeanEffectiveHealingReceived": 423.76736,
+        "mixedMeanHeroDeaths": 0.87,
+        "pureSiegeMeanHeroDeaths": 0.2,
+        "siegeEffectiveHealingFractionOfInitialPool": 0.8174524691358025,
+        "meanCastleHpAgainstPureSiege": 914.4
+      },
+      "attackerLosses": {
+        "mixed": 69,
+        "pureA": 99,
+        "pureB": 0
+      },
+      "sourceFreeForProductionChanges": true
+    }
+  ],
+  "pairedSourceEffectsOnMixedAttackerWins": {
+    "original": {
+      "better": 30,
+      "worse": 6,
+      "discordant": 36,
+      "pOneSided": 0.00003480084706097842,
+      "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+    },
+    "interception": {
+      "better": 30,
+      "worse": 0,
+      "discordant": 30,
+      "pOneSided": 9.313225746154785e-10,
+      "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+    }
+  },
+  "criteria": {
+    "conservativeBudgets": true,
+    "mixedDeltaAtLeast15pp": true,
+    "pairedSuperiorityAgainstBothAt025": true,
+    "pureSiegeCounterSuccessRateAtMost25": true,
+    "clearIncrementOverOriginalMixed": true,
+    "clearIncrementOverInterceptionControl": true,
+    "allRequestedConfirmationCriteriaHold": true
+  },
+  "assessment": "The90HP/42damage profile with interception passes the selected75-second defended-castle partner/counter confirmation: mixed30/100 wins versus1/100 pure siege and0/100 pure medics. Original6/6/0 and interception-only0/0/0 do not show this complementarity. Integration, save-compatibility, difficulty and campaign checks remain the root task.",
+  "limitations": [
+    "Single selected opponent composition, rank/level and75-second deadline; broad/difficulty/campaign validation remains necessary.",
+    "Mixed success is30%, so this demonstrates complementary value rather than an unbeatable raiding army.",
+    "Pure medics survive to the deadline without destroying the castle; all100 are timeouts, not losses.",
+    "Changes were applied through in-memory harness configure only; no production edits by this agent."
+  ],
+  "pairedSourceEffectIntervalsOnMixed": {
+    "original": {
+      "pairedSeeds": 100,
+      "delta": 0.24,
+      "pairedBootstrap95": [
+        0.13,
+        0.35
+      ],
+      "pairedNormal95": [
+        0.131677,
+        0.348323
+      ],
+      "bootstrapResamples": 20000,
+      "bootstrapSeed": 5367457,
+      "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval."
+    },
+    "interception": {
+      "pairedSeeds": 100,
+      "delta": 0.3,
+      "pairedBootstrap95": [
+        0.21,
+        0.39
+      ],
+      "pairedNormal95": [
+        0.209731,
+        0.390269
+      ],
+      "bootstrapResamples": 20000,
+      "bootstrapSeed": 5367457,
+      "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval."
+    }
+  },
+  "pairedOverallVariantIntervals": {
+    "original": {
+      "pairedSeeds": 100,
+      "delta": 0.063333,
+      "pairedBootstrap95": [
+        0.026667,
+        0.1
+      ],
+      "pairedNormal95": [
+        0.025392,
+        0.101275
+      ],
+      "bootstrapResamples": 20000,
+      "bootstrapSeed": 5367457,
+      "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval.",
+      "aggregation": "Equal-weight average over mixed/pure-siege/pure-medic arms within each seed; bootstrap resamples100 seed clusters, not300 independent observations."
+    },
+    "interception": {
+      "pairedSeeds": 100,
+      "delta": 0.103333,
+      "pairedBootstrap95": [
+        0.073333,
+        0.133333
+      ],
+      "pairedNormal95": [
+        0.072965,
+        0.133701
+      ],
+      "bootstrapResamples": 20000,
+      "bootstrapSeed": 5367457,
+      "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval.",
+      "aggregation": "Equal-weight average over mixed/pure-siege/pure-medic arms within each seed; bootstrap resamples100 seed clusters, not300 independent observations."
+    }
+  },
+  "pairedMedicSynergyIntervals": {
+    "pureA": {
+      "pairedSeeds": 100,
+      "delta": 0.29,
+      "pairedBootstrap95": [
+        0.2,
+        0.38
+      ],
+      "pairedNormal95": [
+        0.196376,
+        0.383624
+      ],
+      "bootstrapResamples": 20000,
+      "bootstrapSeed": 5367457,
+      "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval."
+    },
+    "pureB": {
+      "pairedSeeds": 100,
+      "delta": 0.3,
+      "pairedBootstrap95": [
+        0.21,
+        0.39
+      ],
+      "pairedNormal95": [
+        0.209731,
+        0.390269
+      ],
+      "bootstrapResamples": 20000,
+      "bootstrapSeed": 5367457,
+      "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval."
+    }
+  },
+  "counterArm": {
+    "defender": "Level3 warrior+healer+mage+necromancer and active1000HP castle",
+    "attackers": "Six rank3 siegebreakers, threat17.28 versus mixed15.552",
+    "candidateAttackerWinLossTimeout": [
+      1,
+      99,
+      0
+    ],
+    "originalAttackerWinLossTimeout": [
+      6,
+      94,
+      0
+    ],
+    "meanCastleHp": {
+      "original": 206.7232,
+      "interception": 955.9504,
+      "hp90": 914.4
+    },
+    "interpretation": "The pure burst siege army is countered despite spending11.11% more initial threat than the mixed army. Interception protects the building, and low HP leaves the unsupported engine vulnerable; medics restore complementary value."
+  },
+  "sourceStateAtSimulation": "All simulations completed before any production stats/save-compatibility integration. Runtime source hashes identify the captured165/23 interception source;90/42 was an explicit in-memory override."
+}

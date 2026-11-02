@@ -1,0 +1,1091 @@
+{
+  "version": "v2",
+  "sourceSha256": "4939595f304f67f2de17d7616352b4b59f348dd354f884f659c2265f1c1d10dc",
+  "modelFrozenAt": "2026-11-01T23:41:36.822Z",
+  "units": "Rank3-unit cost equivalents against a fixed level3 12-recruitment-cost reference panel; not directly comparable with old base THREAT.",
+  "heroLevel": 3,
+  "monsterRank": 3,
+  "referenceHeroRecruitmentCost": 12,
+  "referencePanels": {
+    "balanced": [
+      "warrior",
+      "warrior",
+      "ranger",
+      "healer",
+      "mage"
+    ],
+    "assault": [
+      "warrior",
+      "warrior",
+      "warrior",
+      "mage",
+      "mage"
+    ],
+    "skirmish": [
+      "ranger",
+      "ranger",
+      "ranger",
+      "healer",
+      "healer"
+    ]
+  },
+  "definition": "Monster victory means actual outcome loss for the hero side; opposing victories and timeouts stay separate. Absolute monster-win share across all starts defines the reference threshold.",
+  "method": "Fixed count grids; equal weighting of three predeclared reference hero panels; monotone PAVA curve with linear 50% crossing interpolation. Conditional supporter substitution prices are fitted in functioning anchor armies, not pure-support duels. Training18 and model-validation36 seeds cover the same full distance × spacing × mirror distribution. Weights frozen before validation; no refit to force counter or synergy thresholds.",
+  "geometry": {
+    "trainingSeeds": 18,
+    "heldoutSeeds": 36,
+    "sameJointCycle": true
+  },
+  "costs": [
+    {
+      "type": "rattler",
+      "cost": 0.38636363636363635,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 31.058823529411764,
+        "bracket": [
+          24,
+          32
+        ]
+      },
+      "trainingBrier": 0.1861405055849501,
+      "validationArmy": {
+        "rattler": 31
+      },
+      "achievedBudget": 11.977272727272727,
+      "predictedReferenceVictory": 0.49768518518518523,
+      "heldoutReferenceVictory": 0.46296296296296297,
+      "referencePredictionError": -0.034722222222222286,
+      "counterPanelPredictionRMSE": 0.4191809429045837
+    },
+    {
+      "type": "sporeling",
+      "cost": 0.3040540540540541,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 39.46666666666666,
+        "bracket": [
+          32,
+          40
+        ]
+      },
+      "trainingBrier": 0.1861405055849504,
+      "validationArmy": {
+        "sporeling": 39
+      },
+      "achievedBudget": 11.85810810810811,
+      "predictedReferenceVictory": 0.4918981481481482,
+      "heldoutReferenceVictory": 0.46296296296296297,
+      "referencePredictionError": -0.028935185185185192,
+      "counterPanelPredictionRMSE": 0.4352285857988115
+    },
+    {
+      "type": "husher",
+      "cost": 1.2048192771084336,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 9.96,
+        "bracket": [
+          9,
+          11
+        ]
+      },
+      "trainingBrier": 0.06847279378143577,
+      "validationArmy": {
+        "husher": 10
+      },
+      "achievedBudget": 12.048192771084336,
+      "predictedReferenceVictory": 0.5092592592592593,
+      "heldoutReferenceVictory": 0.49074074074074076,
+      "referencePredictionError": -0.018518518518518563,
+      "counterPanelPredictionRMSE": 0.38306933116976777
+    },
+    {
+      "type": "nightwing",
+      "cost": 0.44999999999999996,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 26.666666666666668,
+        "bracket": [
+          26,
+          30
+        ]
+      },
+      "trainingBrier": 0.16586648376771845,
+      "validationArmy": {
+        "nightwing": 27
+      },
+      "achievedBudget": 12.149999999999999,
+      "predictedReferenceVictory": 0.5092592592592592,
+      "heldoutReferenceVictory": 0.4351851851851852,
+      "referencePredictionError": -0.07407407407407403,
+      "counterPanelPredictionRMSE": 0.3799682320126517
+    },
+    {
+      "type": "thornling",
+      "cost": 1.0256410256410258,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 11.7,
+        "bracket": [
+          11,
+          13
+        ]
+      },
+      "trainingBrier": 0.09607910379515315,
+      "validationArmy": {
+        "thornling": 12
+      },
+      "achievedBudget": 12.30769230769231,
+      "predictedReferenceVictory": 0.5555555555555556,
+      "heldoutReferenceVictory": 0.4166666666666667,
+      "referencePredictionError": -0.13888888888888892,
+      "counterPanelPredictionRMSE": 0.38978072341468994
+    },
+    {
+      "type": "broodcap",
+      "cost": 1.125,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 10.666666666666666,
+        "bracket": [
+          10,
+          12
+        ]
+      },
+      "trainingBrier": 0.1283721993598533,
+      "validationArmy": {
+        "broodcap": 11
+      },
+      "achievedBudget": 12.375,
+      "predictedReferenceVictory": 0.5277777777777778,
+      "heldoutReferenceVictory": 0.5555555555555555,
+      "referencePredictionError": 0.027777777777777773,
+      "counterPanelPredictionRMSE": 0.23830678432808017
+    },
+    {
+      "type": "siegebreaker",
+      "cost": 1.3404255319148937,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 8.952380952380953,
+        "bracket": [
+          8,
+          10
+        ]
+      },
+      "trainingBrier": 0.0853909465020575,
+      "validationArmy": {
+        "siegebreaker": 9
+      },
+      "achievedBudget": 12.063829787234043,
+      "predictedReferenceVictory": 0.5092592592592593,
+      "heldoutReferenceVictory": 0.5648148148148148,
+      "referencePredictionError": 0.055555555555555504,
+      "counterPanelPredictionRMSE": 0.38992366739186046
+    },
+    {
+      "type": "mender",
+      "cost": 1.275,
+      "status": "identified",
+      "conditionalOnly": true,
+      "anchor": "rattler",
+      "threshold": {
+        "status": "identified",
+        "value": 6.6,
+        "bracket": [
+          5,
+          9
+        ]
+      },
+      "trainingBrier": 0.19259259259259262,
+      "validationArmy": {
+        "rattler": 24,
+        "mender": 2
+      },
+      "achievedBudget": 11.822727272727274,
+      "predictedReferenceVictory": 0.48148148148148145,
+      "heldoutReferenceVictory": 0.5370370370370371,
+      "referencePredictionError": 0.05555555555555558,
+      "counterPanelPredictionRMSE": 0.36747712525507475
+    },
+    {
+      "type": "binder",
+      "cost": 3.6923076923076925,
+      "status": "identified",
+      "conditionalOnly": true,
+      "anchor": "thornling",
+      "threshold": {
+        "status": "identified",
+        "value": 3.5999999999999996,
+        "bracket": [
+          2,
+          4
+        ]
+      },
+      "trainingBrier": 0.12777777777777777,
+      "validationArmy": {
+        "thornling": 8,
+        "binder": 1
+      },
+      "achievedBudget": 11.897435897435898,
+      "predictedReferenceVictory": 0.4444444444444444,
+      "heldoutReferenceVictory": 0.4259259259259259,
+      "referencePredictionError": -0.01851851851851849,
+      "counterPanelPredictionRMSE": 0.3630290945045454
+    },
+    {
+      "type": "bulwark",
+      "cost": 2.3132530120481922,
+      "status": "identified",
+      "conditionalOnly": true,
+      "anchor": "husher",
+      "threshold": {
+        "status": "identified",
+        "value": 1.9199999999999997,
+        "bracket": [
+          0,
+          2
+        ]
+      },
+      "trainingBrier": 0.08566529492455419,
+      "validationArmy": {
+        "husher": 8,
+        "bulwark": 1
+      },
+      "achievedBudget": 11.951807228915662,
+      "predictedReferenceVictory": 0.4814814814814814,
+      "heldoutReferenceVictory": 0.5555555555555555,
+      "referencePredictionError": 0.07407407407407414,
+      "counterPanelPredictionRMSE": 0.39532808343553344
+    }
+  ],
+  "referenceValidationBrier": 0.25087301204560764,
+  "counters": [
+    {
+      "type": "rattler",
+      "direction": "strong",
+      "opponent": "warriors",
+      "monsterArmy": {
+        "rattler": 31
+      },
+      "achievedBudget": 11.977272727272727,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "rattler",
+      "direction": "weak",
+      "opponent": "mages",
+      "monsterArmy": {
+        "rattler": 31
+      },
+      "achievedBudget": 11.977272727272727,
+      "n": 100,
+      "monsterWins": 0,
+      "opponentWins": 100,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0,
+        0.036993
+      ],
+      "opponentWilson95": [
+        0.963007,
+        1
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "sporeling",
+      "direction": "strong",
+      "opponent": "skirmish",
+      "monsterArmy": {
+        "sporeling": 39
+      },
+      "achievedBudget": 11.85810810810811,
+      "n": 100,
+      "monsterWins": 96,
+      "opponentWins": 1,
+      "timeouts": 3,
+      "monsterWilson95": [
+        0.901629,
+        0.984337
+      ],
+      "opponentWilson95": [
+        0.001767,
+        0.054486
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "sporeling",
+      "direction": "weak",
+      "opponent": "assault",
+      "monsterArmy": {
+        "sporeling": 39
+      },
+      "achievedBudget": 11.85810810810811,
+      "n": 100,
+      "monsterWins": 0,
+      "opponentWins": 100,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0,
+        0.036993
+      ],
+      "opponentWilson95": [
+        0.963007,
+        1
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "husher",
+      "direction": "strong",
+      "opponent": "rangers",
+      "monsterArmy": {
+        "husher": 10
+      },
+      "achievedBudget": 12.048192771084336,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "husher",
+      "direction": "weak",
+      "opponent": "warriors",
+      "monsterArmy": {
+        "husher": 10
+      },
+      "achievedBudget": 12.048192771084336,
+      "n": 100,
+      "monsterWins": 1,
+      "opponentWins": 99,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.001767,
+        0.054486
+      ],
+      "opponentWilson95": [
+        0.945514,
+        0.998233
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "nightwing",
+      "direction": "strong",
+      "opponent": "rangers",
+      "monsterArmy": {
+        "nightwing": 27
+      },
+      "achievedBudget": 12.149999999999999,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "nightwing",
+      "direction": "weak",
+      "opponent": "assault",
+      "monsterArmy": {
+        "nightwing": 27
+      },
+      "achievedBudget": 12.149999999999999,
+      "n": 100,
+      "monsterWins": 2,
+      "opponentWins": 98,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.005502,
+        0.070012
+      ],
+      "opponentWilson95": [
+        0.929988,
+        0.994498
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "thornling",
+      "direction": "strong",
+      "opponent": "skirmish",
+      "monsterArmy": {
+        "thornling": 12
+      },
+      "achievedBudget": 12.30769230769231,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "thornling",
+      "direction": "weak",
+      "opponent": "assault",
+      "monsterArmy": {
+        "thornling": 12
+      },
+      "achievedBudget": 12.30769230769231,
+      "n": 100,
+      "monsterWins": 2,
+      "opponentWins": 98,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.005502,
+        0.070012
+      ],
+      "opponentWilson95": [
+        0.929988,
+        0.994498
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "broodcap",
+      "direction": "strong",
+      "opponent": "warriors",
+      "monsterArmy": {
+        "broodcap": 11
+      },
+      "achievedBudget": 12.375,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "siegebreaker",
+      "direction": "strong",
+      "opponent": "skirmish",
+      "monsterArmy": {
+        "siegebreaker": 9
+      },
+      "achievedBudget": 12.063829787234043,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "siegebreaker",
+      "direction": "weak",
+      "opponent": "mages",
+      "monsterArmy": {
+        "siegebreaker": 9
+      },
+      "achievedBudget": 12.063829787234043,
+      "n": 100,
+      "monsterWins": 0,
+      "opponentWins": 100,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0,
+        0.036993
+      ],
+      "opponentWilson95": [
+        0.963007,
+        1
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "mender",
+      "direction": "strong",
+      "opponent": "warriors",
+      "monsterArmy": {
+        "rattler": 24,
+        "mender": 2
+      },
+      "achievedBudget": 11.822727272727274,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "mender",
+      "direction": "weak",
+      "opponent": "mages",
+      "monsterArmy": {
+        "rattler": 24,
+        "mender": 2
+      },
+      "achievedBudget": 11.822727272727274,
+      "n": 100,
+      "monsterWins": 0,
+      "opponentWins": 100,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0,
+        0.036993
+      ],
+      "opponentWilson95": [
+        0.963007,
+        1
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "binder",
+      "direction": "strong",
+      "opponent": "healers",
+      "monsterArmy": {
+        "thornling": 8,
+        "binder": 1
+      },
+      "achievedBudget": 11.897435897435898,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "binder",
+      "direction": "weak",
+      "opponent": "assault",
+      "monsterArmy": {
+        "thornling": 8,
+        "binder": 1
+      },
+      "achievedBudget": 11.897435897435898,
+      "n": 100,
+      "monsterWins": 0,
+      "opponentWins": 100,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0,
+        0.036993
+      ],
+      "opponentWilson95": [
+        0.963007,
+        1
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "bulwark",
+      "direction": "strong",
+      "opponent": "rangers",
+      "monsterArmy": {
+        "husher": 8,
+        "bulwark": 1
+      },
+      "achievedBudget": 11.951807228915662,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "bulwark",
+      "direction": "weak",
+      "opponent": "assault",
+      "monsterArmy": {
+        "husher": 8,
+        "bulwark": 1
+      },
+      "achievedBudget": 11.951807228915662,
+      "n": 100,
+      "monsterWins": 23,
+      "opponentWins": 77,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.158433,
+        0.321544
+      ],
+      "opponentWilson95": [
+        0.678456,
+        0.841567
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": false
+    }
+  ],
+  "synergyCriteria": {
+    "primaryPracticalDelta": 0.15,
+    "selectedAnchoredContexts": 3,
+    "pairedOneSidedTests": 6,
+    "bonferroniAlpha": 0.008333333333333333,
+    "thornBulwark": "One separately preselected transfer context; passes its two-test correction and eight-test sensitivity across all four contexts.",
+    "intervals": "Nominal95% paired bootstrap intervals, not simultaneous coverage; Wilson intervals for outcome shares."
+  },
+  "synergies": [
+    {
+      "key": "mender/balanced",
+      "opponent": "balanced",
+      "budgets": {
+        "mixed": 11.822727272727274,
+        "pureAnchor": 11.977272727272727,
+        "pureSupport": 12.75,
+        "anchorCost": 0.38636363636363635,
+        "supportCost": 1.275,
+        "anchorCount": 31,
+        "supportCount": 10
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 58,
+          "opponentWins": 24,
+          "timeouts": 18,
+          "monsterWilson95": [
+            0.482065,
+            0.672016
+          ]
+        },
+        "pureAnchor": {
+          "n": 100,
+          "monsterWins": 39,
+          "opponentWins": 58,
+          "timeouts": 3,
+          "monsterWilson95": [
+            0.300169,
+            0.48797
+          ]
+        },
+        "pureSupport": {
+          "n": 100,
+          "monsterWins": 1,
+          "opponentWins": 1,
+          "timeouts": 98,
+          "monsterWilson95": [
+            0.001767,
+            0.054486
+          ]
+        }
+      },
+      "deltaOverBestPure": 0.18999999999999995,
+      "pairedBootstrap95": [
+        0.06,
+        0.32
+      ],
+      "pairedCIMethod": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval.",
+      "exactPairedVsAnchor": {
+        "better": 33,
+        "worse": 14,
+        "discordant": 47,
+        "pOneSided": 0.003971363254741787,
+        "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+      },
+      "exactPairedVsSupport": {
+        "better": 58,
+        "worse": 1,
+        "discordant": 59,
+        "pOneSided": 1.0408340855860836e-16,
+        "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+      },
+      "primaryPracticalTarget": 0.15,
+      "practicalPass": true,
+      "sixTestAlpha": 0.008333333333333333,
+      "sixTestPass": true,
+      "eightTestSensitivityAlpha": 0.00625,
+      "eightTestSensitivityPass": true
+    },
+    {
+      "key": "binder/balanced",
+      "opponent": "balanced",
+      "budgets": {
+        "mixed": 11.897435897435898,
+        "pureAnchor": 12.30769230769231,
+        "pureSupport": 14.76923076923077,
+        "anchorCost": 1.0256410256410258,
+        "supportCost": 3.6923076923076925,
+        "anchorCount": 12,
+        "supportCount": 4
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 38,
+          "opponentWins": 62,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.290976,
+            0.477902
+          ]
+        },
+        "pureAnchor": {
+          "n": 100,
+          "monsterWins": 34,
+          "opponentWins": 66,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.254615,
+            0.437223
+          ]
+        },
+        "pureSupport": {
+          "n": 100,
+          "monsterWins": 0,
+          "opponentWins": 100,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0,
+            0.036993
+          ]
+        }
+      },
+      "deltaOverBestPure": 0.03999999999999998,
+      "pairedBootstrap95": [
+        -0.08,
+        0.16
+      ],
+      "pairedCIMethod": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval.",
+      "exactPairedVsAnchor": {
+        "better": 22,
+        "worse": 18,
+        "discordant": 40,
+        "pOneSided": 0.3179140013144206,
+        "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+      },
+      "exactPairedVsSupport": {
+        "better": 38,
+        "worse": 0,
+        "discordant": 38,
+        "pOneSided": 3.637978807091714e-12,
+        "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+      },
+      "primaryPracticalTarget": 0.15,
+      "practicalPass": false,
+      "sixTestAlpha": 0.008333333333333333,
+      "sixTestPass": false,
+      "eightTestSensitivityAlpha": 0.00625,
+      "eightTestSensitivityPass": false
+    },
+    {
+      "key": "bulwark/mage_necromancer",
+      "opponent": "mage_necromancer",
+      "budgets": {
+        "mixed": 11.951807228915662,
+        "pureAnchor": 12.048192771084336,
+        "pureSupport": 13.879518072289153,
+        "anchorCost": 1.2048192771084336,
+        "supportCost": 2.3132530120481922,
+        "anchorCount": 10,
+        "supportCount": 6
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 100,
+          "opponentWins": 0,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.963007,
+            1
+          ]
+        },
+        "pureAnchor": {
+          "n": 100,
+          "monsterWins": 60,
+          "opponentWins": 40,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.502003,
+            0.690599
+          ]
+        },
+        "pureSupport": {
+          "n": 100,
+          "monsterWins": 3,
+          "opponentWins": 97,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.010255,
+            0.084519
+          ]
+        }
+      },
+      "deltaOverBestPure": 0.4,
+      "pairedBootstrap95": [
+        0.31,
+        0.5
+      ],
+      "pairedCIMethod": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval.",
+      "exactPairedVsAnchor": {
+        "better": 40,
+        "worse": 0,
+        "discordant": 40,
+        "pOneSided": 9.094947017729279e-13,
+        "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+      },
+      "exactPairedVsSupport": {
+        "better": 97,
+        "worse": 0,
+        "discordant": 97,
+        "pOneSided": 6.310887241768095e-30,
+        "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+      },
+      "primaryPracticalTarget": 0.15,
+      "practicalPass": true,
+      "sixTestAlpha": 0.008333333333333333,
+      "sixTestPass": true,
+      "eightTestSensitivityAlpha": 0.00625,
+      "eightTestSensitivityPass": true
+    },
+    {
+      "key": "thornling+bulwark/original-necromancy-x2",
+      "opponent": "original-necromancy-x2",
+      "budgets": {
+        "mixed": 22.848316342292247,
+        "pureAnchor": 23.58974358974359,
+        "pureSupport": 23.132530120481924,
+        "anchorCost": 1.0256410256410258,
+        "supportCost": 2.3132530120481922,
+        "anchorCount": 23,
+        "supportCount": 10
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 69,
+          "opponentWins": 31,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.593739,
+            0.772203
+          ]
+        },
+        "pureAnchor": {
+          "n": 100,
+          "monsterWins": 31,
+          "opponentWins": 68,
+          "timeouts": 1,
+          "monsterWilson95": [
+            0.227797,
+            0.406261
+          ]
+        },
+        "pureSupport": {
+          "n": 100,
+          "monsterWins": 0,
+          "opponentWins": 100,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0,
+            0.036993
+          ]
+        }
+      },
+      "deltaOverBestPure": 0.37999999999999995,
+      "pairedBootstrap95": [
+        0.24,
+        0.51
+      ],
+      "pairedCIMethod": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval.",
+      "exactPairedVsAnchor": {
+        "better": 49,
+        "worse": 11,
+        "discordant": 60,
+        "pOneSided": 3.7806404911983765e-7,
+        "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+      },
+      "exactPairedVsSupport": {
+        "better": 69,
+        "worse": 0,
+        "discordant": 69,
+        "pOneSided": 1.6940658945086e-21,
+        "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+      },
+      "primaryPracticalTarget": 0.15,
+      "practicalPass": true,
+      "sixTestAlpha": 0.008333333333333333,
+      "sixTestPass": true,
+      "eightTestSensitivityAlpha": 0.00625,
+      "eightTestSensitivityPass": true,
+      "preselectedOriginalHypothesis": true,
+      "originalBudgets": {
+        "mixed": 28.656,
+        "pureA": 29.808,
+        "pureB": 28.8
+      },
+      "protocol": {
+        "hypothesis": "Preselected original thornling+bulwark partnership, not an additional discovery scan.",
+        "originalSource": "/workspace/scratch/23d09e66c6fe/experiments/enemy-validation.json",
+        "originalKey": "thornling+bulwark/necromancy/x2/1",
+        "originalBudgets": {
+          "mixed": 28.656,
+          "pureA": 29.808,
+          "pureB": 28.8
+        },
+        "originalBudgetUnits": "Initial THREAT units including rank multiplier; not directly comparable with v2 reference equivalents.",
+        "newBudgets": {
+          "mixed": 22.848316342292247,
+          "pureAnchor": 23.58974358974359,
+          "pureSupport": 23.132530120481924,
+          "anchorCost": 1.0256410256410258,
+          "supportCost": 2.3132530120481922,
+          "anchorCount": 23,
+          "supportCount": 10
+        },
+        "newBudgetUnits": "Rank3-unit cost equivalents against a fixed level3 12-recruitment-cost reference panel; not directly comparable with old base THREAT.",
+        "heroRecruitmentCost": 22,
+        "rostersPreserved": true,
+        "level": 3,
+        "rank": 3,
+        "geometry": "V2 two-column formation, all18 legal distance/spacing/mirror combinations cycled over100fresh seeds.",
+        "seeds": 100,
+        "prefix": "cal-thorn-bulwark-460000+",
+        "counterCaveat": "Bulwark cost is conditional on husher support in training; transfer to thornling is a calibrated-budget sensitivity test, not universal scalar-price proof."
+      }
+    }
+  ],
+  "roles": [
+    "Guardian: actual boss-gate checks.",
+    "Boneservant: owned/raised body checks."
+  ],
+  "unresolved": [
+    "No decisive broodcap weakness emerged in this fixed model-validation panel; a timeout is not an opposing victory. Root owns any later probe.",
+    "Binder + thornling did not confirm: +4pp, paired95% CI −8 to +16; no supported smaller effect.",
+    "Bulwark anchor-army weakness reached77% opposing wins, but Wilson95% lower bound67.85% remains below75%.",
+    "Thornling reference prediction error remains −13.89pp; costs were not refitted."
+  ],
+  "limitations": [
+    "Conditional reference costs, not universal scalar power.",
+    "Timeouts never establish either decisive strong or decisive weak.",
+    "Support values are conditional on their anchor army.",
+    "The reference model predicts a fixed-panel average; counter-panel prediction RMSE exposes role dependence.",
+    "Bulwark-to-thornling price transfer and the cost22 original opponent are sensitivity checks beyond the cost12 husher anchor calibration.",
+    "Pure-support controls extrapolate conditional prices out of role; the rounded-up combatant control is the primary substitution comparison.",
+    "Initial nominal THREAT outcomes and rank3 reference equivalents are different units; v1 geometry-transfer failure is preserved separately."
+  ],
+  "evidenceAccounting": {
+    "training": 2376,
+    "support": 810,
+    "validation": 3600,
+    "supportAuditRecords": 3240,
+    "supportAuditNewArenaRuns": 1080,
+    "supportAuditReusedValidationRecords": 2160,
+    "confirmation": 2800,
+    "thornBulwark": 300,
+    "recordedRows": 13126,
+    "executedArenaRuns": 10966,
+    "excludedLostRun": "An interrupted uncheckpointed validation attempt produced no retained evidence and is not counted."
+  }
+}

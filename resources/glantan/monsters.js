@@ -2,7 +2,12 @@
 (function(root) {
   'use strict';
   const G = root.Starlight.Glantan;
-  G.monsterDamage = (w, monster) => (monster.attackDamage ?? G.monsterTypes[monster.type].damage * monster.strength) * G.profiles[w.pace].damage;
+  // Default to the threat to heroes. Building-breaking damage must not make
+  // expedition planning mistake a weak retaliatory strike for a heavy blow.
+  G.monsterDamage = (w, monster, building = false) => {
+    const spec = G.monsterTypes[monster.type];
+    return (monster.attackDamage ?? spec.damage * monster.strength) * G.profiles[w.pace].damage * (spec.siege && !building ? (spec.retaliation ?? .35) : 1);
+  };
   G.monsterSpeed = monster => G.monsterTypes[monster.type].speed;
   G.spawnMonster = function(w, lair, { type = G.lairTypes[lair.type].monster, guard = false, wave = 0, at = null, broodParent = null } = {}) {
     const living = w.monsters.filter(G.alive);
@@ -13,6 +18,7 @@
     const bossStats = boss ? G.bossGuards[w.pace] : null;
     const hp = bossStats ? bossStats.hp : spec.hp * strength;
     const monster = { id: w.nextId++, type, monster: true, ...point, hp, maxHp: hp, strength, attackDamage: bossStats ? bossStats.damage : spec.damage * strength, rank: broodParent ? 1 : boss ? 3 + ['gentle', 'steady', 'brave'].indexOf(w.pace) : lair.tier + lair.level - 1, boss, guard, wave, broodParent, lair: lair.id, cooldown: 0, route: [], routeKey: '', raidAt: w.time, patrolAt: w.time, stunnedUntil: 0, slowUntil: 0, born: w.time, facing: 1 };
+    if (spec.siege) monster.siegeRevision = 1;
     w.monsters.push(monster); return monster;
   };
   G.seedLairGuards = function(w, lair) {
@@ -227,7 +233,12 @@
       });
       if (defending && (!target || G.distance(monster, home) > 7)) { patrol(w, monster, home, dt); continue; }
       if (!target && w.time < monster.raidAt && home) continue;
-      if (spec.siege) target = G.best(buildings, b => G.alive(b) ? G.distance(b,monster) : Infinity);
+      if (spec.siege) {
+        // A frontline fighter can intercept a siege engine. Its escorts must
+        // clear the blocker before the engine can resume breaking buildings.
+        const blocker = G.best(heroes, h => G.alive(h) && G.distanceSquared(h, monster) < 1.6 * 1.6 && G.attackLine(w, monster, h) ? G.distanceSquared(h, monster) : Infinity);
+        target = blocker || G.best(buildings, b => G.alive(b) ? G.distance(b,monster) : Infinity);
+      }
       if (!target) target = G.best(buildings, b => { const d = G.distance(b,monster); return d < 3.3 ? d : Infinity; }) || castle;
       if (!target || !G.alive(target)) continue;
       monster.targetId = target.id;
@@ -263,7 +274,7 @@
           G.effect(w, 'snare', target.x, target.y, { duration: 1, color: '#c7a3e6' });
         }
         G.soundEvent?.(w, monster.boss ? 'guardian' : spec.spell ? 'mage' : 'monster', monster);
-        G.damage(w, target, G.monsterDamage(w, monster), monster);
+        G.damage(w, target, G.monsterDamage(w, monster, !!target.w), monster);
         if (monster.type === 'husher') for (const friend of heroes) if (friend !== target && G.alive(friend) && G.distance(friend, target) < 1.25 && G.attackLine(w, target, friend)) G.damage(w, friend, G.monsterDamage(w, monster) * .35, monster);
       }
     }

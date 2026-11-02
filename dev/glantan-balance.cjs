@@ -2,11 +2,27 @@
    node dev/glantan-balance.cjs gentle 10 0 1 2
    node dev/glantan-balance.cjs --boss
    Arguments: difficulty, seconds per answer, one or more map seeds.
-   GLANTAN_SPECIALISTS=1 exercises the necromancer and trapper composition. */
+   GLANTAN_SPECIALISTS=1 exercises the necromancer and trapper composition.
+   GLANTAN_RANGERS=1 probes an eight-ranger plan with paid upgrades.
+   GLANTAN_COMPARE=1 runs matched-schedule mixed and eight-ranger campaigns.
+   GLANTAN_ESCORTS=1 probes four warriors plus four rangers.
+   GLANTAN_REF=<git-ref> runs against that revision's Gläntan runtime. */
 'use strict';
+const path = require('node:path'), vm = require('node:vm');
+const { execFileSync } = require('node:child_process');
 const { runtime } = require('../tests/games/glantan/helpers.cjs');
+const sourceRef = process.env.GLANTAN_REF || null;
+function sourceRuntime(exercises = false) {
+  const loaded = runtime(exercises);
+  if (sourceRef) for (const name of ['content', 'world', 'engine', 'orders', 'summons', 'traps', 'heroes', 'monsters', ...(exercises ? ['game'] : [])]) {
+    const filename = 'resources/glantan/' + name + '.js';
+    const source = execFileSync('git', ['show', `${sourceRef}:${filename}`], { cwd: path.resolve(__dirname, '..'), encoding: 'utf8' });
+    vm.runInContext(source, loaded.context, { filename });
+  }
+  return { G: loaded.context.Starlight.Glantan, SC: loaded.context.Starlight };
+}
 if (process.argv[2] === '--boss') {
-  const { G } = runtime();
+  const { G } = sourceRuntime();
   // Controlled arena isolates replenishing guardians from travel and raid waves.
   // The medium party uses two healers now that healing shares the attack timer.
   // Three hard-mode guards require the ordinary late-game combat upgrades.
@@ -31,7 +47,7 @@ if (process.argv[2] === '--boss') {
     for (let step = 0; step < 6000 && G.alive(lair); step++) simulation.update(.1);
     const combined = levels.reduce((sum, level) => sum + level, 0), atTarget = combined >= lair.suggestedLevels;
     const passed = atTarget ? !G.alive(lair) && !w.fallen : G.alive(lair) && !w.fallen;
-    console.log(JSON.stringify({ pace, combined, upgraded, recommended: lair.suggestedLevels, cleared: !G.alive(lair), seconds: Math.round(w.time), fallen: w.fallen, passed }));
+    console.log(JSON.stringify({ sourceRef: sourceRef || 'working-tree', pace, combined, upgraded, recommended: lair.suggestedLevels, cleared: !G.alive(lair), seconds: Math.round(w.time), fallen: w.fallen, passed }));
     if (!passed) process.exitCode = 1;
   }
   return;
@@ -39,19 +55,45 @@ if (process.argv[2] === '--boss') {
 const [pace = 'gentle', intervalText = '10', ...requestedSeeds] = process.argv.slice(2);
 const seconds = Number(intervalText), seeds = requestedSeeds.length ? requestedSeeds : ['0', '1', '2'];
 if (!['gentle', 'steady', 'brave'].includes(pace) || !(seconds >= 1 && seconds <= 60)) throw Error('Use gentle/steady/brave and 1–60 seconds per answer.');
-const { G, SC } = runtime(true);
-const plan = [['build', 'hall'], ['recruit', 'warrior'], ['build', 'lodge'], ['recruit', 'ranger'], ['build', 'garden'], ['recruit', 'healer'], ['build', 'tower'], ['build', 'house'], ['build', 'spire'], ['recruit', 'mage'], ['build', 'tower'], ['attack', 'nearest'], ['recruit', 'warrior'], ['recruit', 'warrior'], ['recruit', 'ranger'], ['recruit', 'healer'], ['research', 'armor'], ['research', 'boots'], ['research', 'castle2'], ['research', 'banner'], ['research', 'marksman'], ['research', 'bloom']];
-if (process.env.GLANTAN_SPECIALISTS) {
-  plan[plan.findIndex(action => action[1] === 'marksman')][1] = 'traps';
-  const at = plan.findIndex(action => action[0] === 'recruit' && action[1] === 'mage');
-  plan.splice(at + 1, 0, ['build', 'crypt'], ['recruit', 'necromancer']);
-  // Keep the same eight-person budget, replacing one duplicate frontline fighter.
-  plan.splice(plan.findLastIndex(action => action[0] === 'recruit' && action[1] === 'warrior'), 1);
+const { G, SC } = sourceRuntime(true);
+const compareMode = !!process.env.GLANTAN_COMPARE;
+const rangerMode = !!process.env.GLANTAN_RANGERS;
+const escortMode = !!process.env.GLANTAN_ESCORTS;
+const mixedPlan = [['build', 'hall'], ['recruit', 'warrior'], ['build', 'lodge'], ['recruit', 'ranger'], ['build', 'garden'], ['recruit', 'healer'], ['build', 'tower'], ['build', 'house'], ['build', 'spire'], ['recruit', 'mage'], ['build', 'tower'], ['attack', 'nearest'], ['recruit', 'warrior'], ['recruit', 'warrior'], ['recruit', 'ranger'], ['recruit', 'healer'], ['research', 'armor'], ['research', 'boots'], ['research', 'castle2'], ['research', 'banner'], ['research', 'marksman'], ['research', 'bloom']];
+const scheduledPlan = mode => {
+  const first = mode === 'eight-ranger' ? Array(4).fill('ranger') : mode === 'escorts' ? ['warrior', 'ranger', 'warrior', 'ranger'] : ['warrior', 'ranger', 'healer', 'mage'];
+  const second = mode === 'eight-ranger' ? Array(4).fill('ranger') : mode === 'escorts' ? ['warrior', 'ranger', 'warrior', 'ranger'] : ['warrior', 'warrior', 'ranger', 'healer'];
+  const branches = mode === 'eight-ranger' ? ['marksman'] : mode === 'escorts' ? ['banner', 'marksman'] : ['banner', 'marksman', 'bloom', 'echo'];
+  return [
+    ...first.map(id => ['recruit', id]), ['attack', 'nearest'],
+    ['build', 'house'], ...second.map(id => ['recruit', id]), ['attack', 'nearest'],
+    ['research', 'armor'], ['research', 'boots'], ['research', 'castle2'],
+    ...branches.map(id => ['research', id]), ['attack', 'nearest']
+  ];
+};
+const modes = compareMode ? ['mixed', 'eight-ranger'] : escortMode ? ['escorts'] : [rangerMode ? 'eight-ranger' : process.env.GLANTAN_SPECIALISTS ? 'specialists' : 'mixed'];
+function plannedAcquisition(plan, world) {
+  const recruits = plan.filter(([type]) => type === 'recruit').map(([, id]) => id);
+  const research = plan.filter(([type]) => type === 'research').map(([, id]) => id);
+  const buildings = new Set([
+    ...recruits.map(id => G.classes[id].guild),
+    ...research.map(id => G.research[id].building)
+  ].filter(id => id !== 'castle' && id !== 'house'));
+  const houseSpec = G.buildings.house;
+  const startingHouses = world.buildings.filter(b => b.type === 'house' && G.alive(b)).length;
+  const requiredHouses = Math.ceil(recruits.length / houseSpec.capacity);
+  const extraHouses = Math.max(0, requiredHouses - startingHouses);
+  const result = {
+    recruits: recruits.reduce((sum, id) => sum + G.classes[id].cost, 0),
+    guilds: [...buildings].reduce((sum, id) => sum + G.buildings[id].cost, 0),
+    housing: extraHouses * houseSpec.cost,
+    research: research.reduce((sum, id) => sum + G.research[id].cost, 0),
+    guildBuildings: [...buildings], startingHouses, extraHouses,
+    excludesBountiesAndEmergencies: true
+  };
+  result.total = result.recruits + result.guilds + result.housing + result.research;
+  return result;
 }
-if (pace === 'brave') plan.splice(plan.findIndex(action => action[0] === 'research'), 0,
-  ['build', 'house'], ['recruit', 'warrior'], ['recruit', 'healer'], ['recruit', 'mage'], ['recruit', 'ranger'],
-  ['build', 'tower'], ['build', 'tower'], ['guard', 'village']);
-if (pace === 'brave') plan.splice(plan.findIndex(action => action[1] === 'castle2') + 1, 0, ['build', 'beacon']);
 function plot(w, id) {
   const plots = [];
   for (let y = 1; y < w.height - 1; y++) for (let x = 1; x < w.width - 1; x++) if (!G.placementReason(w, id, x, y)) plots.push({ type: 'build', id, x, y });
@@ -66,10 +108,27 @@ function frontier(w) {
   }
   return candidates.sort((a, b) => G.distance(b, G.castle(w)) - G.distance(a, G.castle(w)))[0];
 }
+for (const mode of modes) {
+  const isRangerMode = mode === 'eight-ranger';
+  const specialistMode = mode === 'specialists';
+  const plan = compareMode || isRangerMode || escortMode ? scheduledPlan(mode) : mixedPlan.map(action => [...action]);
+  if (specialistMode) {
+    plan[plan.findIndex(action => action[1] === 'marksman')][1] = 'traps';
+    const at = plan.findIndex(action => action[0] === 'recruit' && action[1] === 'mage');
+    plan.splice(at + 1, 0, ['build', 'crypt'], ['recruit', 'necromancer']);
+    // Keep the same eight-person budget, replacing one duplicate frontline fighter.
+    plan.splice(plan.findLastIndex(action => action[0] === 'recruit' && action[1] === 'warrior'), 1);
+  }
+  if (!compareMode && !['eight-ranger', 'escorts'].includes(mode) && pace === 'brave') plan.splice(plan.findIndex(action => action[0] === 'research'), 0,
+    ['build', 'house'], ['recruit', 'warrior'], ['recruit', 'healer'], ['recruit', 'mage'], ['recruit', 'ranger'],
+    ['build', 'tower'], ['build', 'tower'], ['guard', 'village']);
+  if (!compareMode && !['eight-ranger', 'escorts'].includes(mode) && pace === 'brave') plan.splice(plan.findIndex(action => action[1] === 'castle2') + 1, 0, ['build', 'beacon']);
+  let acquisition = null;
 for (const seed of seeds) {
   const game = new SC.GlantanGame({ random: () => .37 });
   game.start({ seed, pace, mode: 'swedish', items: [{ label: 'sol', answer: 'sol' }], fresh: true });
   const w = game.world; let next = 0, planIndex = 0, maxCost = 0;
+  acquisition ||= plannedAcquisition(plan, w);
   while (game.state === 'playing' && w.time < 2400) {
     if (!game.pending) {
       let action;
@@ -82,9 +141,12 @@ for (const seed of seeds) {
       else if (planIndex < plan.length) {
         const [type, id] = plan[planIndex];
         if (type === 'attack') {
-          const target = w.lairs.filter(l => G.alive(l) && l.seen).sort((a, b) => G.threat(w, a) - G.threat(w, b))[0];
-          if (target) action = { type: 'bounty', id: 'attack', target: target.id, level: 1 };
-          else planIndex++; // Scouting may not have found an objective yet.
+          if (w.bounties.some(b => b.type === 'attack')) planIndex++;
+          else {
+            const target = w.lairs.filter(l => G.alive(l) && l.seen).sort((a, b) => G.threat(w, a) - G.threat(w, b))[0];
+            if (target) action = { type: 'bounty', id: 'attack', target: target.id, level: 1 };
+            else planIndex++; // Scouting may not have found an objective yet.
+          }
         } else if (type === 'guard') {
           const castle = G.castle(w); action = { type: 'bounty', id: 'defend', x: castle.x, y: castle.y, level: 1 };
         } else {
@@ -112,10 +174,11 @@ for (const seed of seeds) {
     if (game.canAnswer() && w.time + .001 >= next) { game.answer({ text: game.targets[0].item.answer, source: 'typing' }); next = w.time + seconds; }
     game.update(.1);
   }
-  console.log(JSON.stringify({ seed, pace, secondsPerAnswer: seconds, outcome: w.outcome || 'timeout', time: G.clockText(w.time), answers: game.hits, maxStreakCost: maxCost, lairsDestroyed: w.destroyed, combinedHeroLevels: w.heroes.filter(G.alive).reduce((n,h)=>n+h.level,0), bossRemaining: w.lairs.some(l=>l.boss&&G.alive(l)), fallen: w.fallen, castle: Math.ceil(G.castle(w).hp), heroes: G.population(w) }));
+  console.log(JSON.stringify({ mode, schedule: compareMode || escortMode ? 'matched' : 'standard', sourceRef: sourceRef || 'working-tree', plannedAcquisition: acquisition, seed, pace, secondsPerAnswer: seconds, outcome: w.outcome || 'timeout', time: G.clockText(w.time), answers: game.hits, maxStreakCost: maxCost, lairsDestroyed: w.destroyed, combinedHeroLevels: w.heroes.filter(G.alive).reduce((n,h)=>n+h.level,0), bossRemaining: w.lairs.some(l=>l.boss&&G.alive(l)), fallen: w.fallen, castle: Math.ceil(G.castle(w).hp), heroes: G.population(w) }));
   if (w.outcome !== 'won') {
     if (process.env.GLANTAN_BALANCE_SNAPSHOT) require('node:fs').writeFileSync(process.env.GLANTAN_BALANCE_SNAPSHOT, JSON.stringify(w));
     console.log(JSON.stringify({ planIndex, planned:plan[planIndex], pending:game.pending, progress:game.progress, remaining: w.lairs.filter(G.alive).map(l => ({ id:l.id, boss:l.boss, seen:l.seen, hp:Math.round(l.hp), x:l.x,y:l.y })), monsters:w.monsters.filter(G.alive).length, heroes:w.heroes.filter(G.alive).map(h=>({id:h.id,role:h.classId,level:h.level,hp:Math.round(h.hp),task:h.task,x:+h.x.toFixed(1),y:+h.y.toFixed(1),exp:h.expedition,route:h.route?.length})), expeditions:w.expeditions.map(e=>({id:e.id,bounty:e.bounty,state:e.state,reason:e.reason,members:e.members,readiness:+G.expeditionReadiness(w,e).toFixed(2)})), bounties:w.bounties }));
     process.exitCode = 1;
   }
+}
 }

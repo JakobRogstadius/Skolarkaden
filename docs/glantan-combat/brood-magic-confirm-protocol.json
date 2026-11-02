@@ -1,0 +1,29 @@
+{
+  "sourceSha256": "4939595f304f67f2de17d7616352b4b59f348dd354f884f659c2265f1c1d10dc",
+  "sourceRef": "working-tree frozen current siege90/42",
+  "casesSha256": "77f93ba9282b6e377f0a6a92a01547e5f248f0d09c35f0b441e99d8931c289a7",
+  "driverSha256": "3b375d737f6b48ec240755f966dd5d1e14953d20d9895fcf900022f539d3fc39",
+  "prototypeFile": "/workspace/scratch/23d09e66c6fe/experiments/brood-magic-probe.cjs",
+  "prototypeSha256": "1818de9f1778bfddfe64f39b460e03588e976654e1151718884eda76321a10c2",
+  "configureFunction": "function configure(multiplier){return G=>{\n let spellOwner=null;\n const strike=G.necromancerStrike,damage=G.damage;\n G.necromancerStrike=function(w,h,t,d){const old=spellOwner;spellOwner=h;try{return strike(w,h,t,d);}finally{spellOwner=old;}};\n G.damage=function(w,t,a,attacker){const magical=attacker?.classId==='mage'||attacker?.classId==='healer'||spellOwner&&attacker===spellOwner;return damage(w,t,a*(t?.type==='broodcap'&&magical?multiplier:1),attacker);};\n};}",
+  "overrides": {
+    "broodcapMagicDamageMultipliers": [
+      1,
+      1.5
+    ],
+    "scope": "Mage/healer direct attacks and necromancer spells only. Summoned skeleton melee remains physical. No production edits."
+  },
+  "selection": "Preselected mage_necromancer and warriors; no new context selection.",
+  "freshSeeds": 100,
+  "prefix": "brood-magic-confirm-480000+",
+  "geometry": "Full18-cell distance × spacing × mirror cycle;100 seeds yield5or6starts/cell. Same configs/seeds in both multiplier arms.",
+  "freshArenaRuns": 400,
+  "replayArenaRuns": 300,
+  "originalReplayFile": "/workspace/scratch/23d09e66c6fe/experiments/calibration-v2/cal-cross-discovery-confirm-raw.jsonl",
+  "originalReplaySha256": "fb40f8d881bd376feb9a8288a10c0a2c80881eaab61145a6f2d2e5c82394bff8",
+  "originalReplayFilter": {
+    "pair": "broodcap_mender"
+  },
+  "replay": "Exact300config objects from original confirmation; no geometry/roster/seed modifications.",
+  "frozenAt": "2026-11-02T00:23:18.827Z"
+}

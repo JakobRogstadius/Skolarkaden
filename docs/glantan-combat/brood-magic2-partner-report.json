@@ -1,0 +1,1708 @@
+{
+  "protocol": {
+    "sourceSha256": "4939595f304f67f2de17d7616352b4b59f348dd354f884f659c2265f1c1d10dc",
+    "multiplier": 2,
+    "mechanism": "Broodcaps take twice direct or area spell damage, including necromancer strike; skeleton melee stays physical.",
+    "status": "Read-only prototype, not production",
+    "contexts": [
+      {
+        "key": "9b1w/balanced",
+        "counts": {
+          "broodcap": 9,
+          "bulwark": 1
+        },
+        "panel": "balanced",
+        "party": [
+          "warrior",
+          "warrior",
+          "ranger",
+          "healer",
+          "mage"
+        ],
+        "budget": 12.438253012048193,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "9b1w/assault",
+        "counts": {
+          "broodcap": 9,
+          "bulwark": 1
+        },
+        "panel": "assault",
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "mage",
+          "mage"
+        ],
+        "budget": 12.438253012048193,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "9b1w/skirmish",
+        "counts": {
+          "broodcap": 9,
+          "bulwark": 1
+        },
+        "panel": "skirmish",
+        "party": [
+          "ranger",
+          "ranger",
+          "ranger",
+          "healer",
+          "healer"
+        ],
+        "budget": 12.438253012048193,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "9b1w/warriors",
+        "counts": {
+          "broodcap": 9,
+          "bulwark": 1
+        },
+        "panel": "warriors",
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "warrior",
+          "warrior",
+          "warrior"
+        ],
+        "budget": 12.438253012048193,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "9b1w/rangers",
+        "counts": {
+          "broodcap": 9,
+          "bulwark": 1
+        },
+        "panel": "rangers",
+        "party": [
+          "ranger",
+          "ranger",
+          "ranger",
+          "ranger",
+          "ranger",
+          "ranger"
+        ],
+        "budget": 12.438253012048193,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "9b1w/healers",
+        "counts": {
+          "broodcap": 9,
+          "bulwark": 1
+        },
+        "panel": "healers",
+        "party": [
+          "healer",
+          "healer",
+          "healer",
+          "healer"
+        ],
+        "budget": 12.438253012048193,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "9b1w/mages",
+        "counts": {
+          "broodcap": 9,
+          "bulwark": 1
+        },
+        "panel": "mages",
+        "party": [
+          "mage",
+          "mage",
+          "mage",
+          "mage"
+        ],
+        "budget": 12.438253012048193,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "9b1w/necromancers",
+        "counts": {
+          "broodcap": 9,
+          "bulwark": 1
+        },
+        "panel": "necromancers",
+        "party": [
+          "necromancer",
+          "necromancer",
+          "necromancer",
+          "necromancer"
+        ],
+        "budget": 12.438253012048193,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "9b1w/warrior_healer",
+        "counts": {
+          "broodcap": 9,
+          "bulwark": 1
+        },
+        "panel": "warrior_healer",
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "healer",
+          "healer"
+        ],
+        "budget": 12.438253012048193,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "9b1w/mage_necromancer",
+        "counts": {
+          "broodcap": 9,
+          "bulwark": 1
+        },
+        "panel": "mage_necromancer",
+        "party": [
+          "mage",
+          "mage",
+          "necromancer",
+          "necromancer"
+        ],
+        "budget": 12.438253012048193,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "7b2w/balanced",
+        "counts": {
+          "broodcap": 7,
+          "bulwark": 2
+        },
+        "panel": "balanced",
+        "party": [
+          "warrior",
+          "warrior",
+          "ranger",
+          "healer",
+          "mage"
+        ],
+        "budget": 12.501506024096384,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "7b2w/assault",
+        "counts": {
+          "broodcap": 7,
+          "bulwark": 2
+        },
+        "panel": "assault",
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "mage",
+          "mage"
+        ],
+        "budget": 12.501506024096384,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "7b2w/skirmish",
+        "counts": {
+          "broodcap": 7,
+          "bulwark": 2
+        },
+        "panel": "skirmish",
+        "party": [
+          "ranger",
+          "ranger",
+          "ranger",
+          "healer",
+          "healer"
+        ],
+        "budget": 12.501506024096384,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "7b2w/warriors",
+        "counts": {
+          "broodcap": 7,
+          "bulwark": 2
+        },
+        "panel": "warriors",
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "warrior",
+          "warrior",
+          "warrior"
+        ],
+        "budget": 12.501506024096384,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "7b2w/rangers",
+        "counts": {
+          "broodcap": 7,
+          "bulwark": 2
+        },
+        "panel": "rangers",
+        "party": [
+          "ranger",
+          "ranger",
+          "ranger",
+          "ranger",
+          "ranger",
+          "ranger"
+        ],
+        "budget": 12.501506024096384,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "7b2w/healers",
+        "counts": {
+          "broodcap": 7,
+          "bulwark": 2
+        },
+        "panel": "healers",
+        "party": [
+          "healer",
+          "healer",
+          "healer",
+          "healer"
+        ],
+        "budget": 12.501506024096384,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "7b2w/mages",
+        "counts": {
+          "broodcap": 7,
+          "bulwark": 2
+        },
+        "panel": "mages",
+        "party": [
+          "mage",
+          "mage",
+          "mage",
+          "mage"
+        ],
+        "budget": 12.501506024096384,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "7b2w/necromancers",
+        "counts": {
+          "broodcap": 7,
+          "bulwark": 2
+        },
+        "panel": "necromancers",
+        "party": [
+          "necromancer",
+          "necromancer",
+          "necromancer",
+          "necromancer"
+        ],
+        "budget": 12.501506024096384,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "7b2w/warrior_healer",
+        "counts": {
+          "broodcap": 7,
+          "bulwark": 2
+        },
+        "panel": "warrior_healer",
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "healer",
+          "healer"
+        ],
+        "budget": 12.501506024096384,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      },
+      {
+        "key": "7b2w/mage_necromancer",
+        "counts": {
+          "broodcap": 7,
+          "bulwark": 2
+        },
+        "panel": "mage_necromancer",
+        "party": [
+          "mage",
+          "mage",
+          "necromancer",
+          "necromancer"
+        ],
+        "budget": 12.501506024096384,
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        }
+      }
+    ],
+    "seedCount": 18,
+    "selection": "Highest mixed win rate minus stronger pure win rate; confirm only if >=15pp. Fresh100 confirm must meet >=15pp and both paired p<.025; simultaneously require >=75% actual hero victories for2mage2necro vs11broods and >=75% brood victories vs6warriors. Frozen v2 prices, no refit.",
+    "cases": 1080
+  },
+  "contexts": [
+    {
+      "key": "7b2w/mages",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "mages",
+      "party": [
+        "mage",
+        "mage",
+        "mage",
+        "mage"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          2,
+          1,
+          0
+        ],
+        "rates": [
+          0.1111111111111111,
+          0.05555555555555555,
+          0
+        ],
+        "intervals": [
+          [
+            0.03101952264561239,
+            0.32799765130178804
+          ],
+          [
+            0.009875190978303097,
+            0.25757300781872594
+          ],
+          [
+            0,
+            0.17587922364665765
+          ]
+        ],
+        "delta": 0.05555555555555555,
+        "pairedBootstrap95": [
+          0,
+          0.16666666666666666
+        ],
+        "comparisons": [
+          {
+            "better": 1,
+            "worse": 0,
+            "oneSidedExactP": 0.5
+          },
+          {
+            "better": 2,
+            "worse": 0,
+            "oneSidedExactP": 0.25
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "9b1w/assault",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "assault",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "mage",
+        "mage"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          6,
+          5,
+          0
+        ],
+        "rates": [
+          0.3333333333333333,
+          0.2777777777777778,
+          0
+        ],
+        "intervals": [
+          [
+            0.1627877475083369,
+            0.5625053270405489
+          ],
+          [
+            0.12499753379553993,
+            0.5087265656029746
+          ],
+          [
+            0,
+            0.17587922364665765
+          ]
+        ],
+        "delta": 0.05555555555555555,
+        "pairedBootstrap95": [
+          -0.16666666666666666,
+          0.2777777777777778
+        ],
+        "comparisons": [
+          {
+            "better": 3,
+            "worse": 2,
+            "oneSidedExactP": 0.4999999999999999
+          },
+          {
+            "better": 6,
+            "worse": 0,
+            "oneSidedExactP": 0.015625000000000007
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "9b1w/healers",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "healers",
+      "party": [
+        "healer",
+        "healer",
+        "healer",
+        "healer"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          14,
+          13,
+          3
+        ],
+        "rates": [
+          0.7777777777777778,
+          0.7222222222222222,
+          0.16666666666666666
+        ],
+        "intervals": [
+          [
+            0.5478541568378739,
+            0.9099907189139831
+          ],
+          [
+            0.4912734343970254,
+            0.8750024662044601
+          ],
+          [
+            0.05836576805861446,
+            0.39222038103915724
+          ]
+        ],
+        "delta": 0.05555555555555555,
+        "pairedBootstrap95": [
+          -0.16666666666666666,
+          0.2777777777777778
+        ],
+        "comparisons": [
+          {
+            "better": 3,
+            "worse": 2,
+            "oneSidedExactP": 0.4999999999999999
+          },
+          {
+            "better": 12,
+            "worse": 1,
+            "oneSidedExactP": 0.0017089843750000004
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "7b2w/warriors",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "warriors",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          18,
+          18,
+          0
+        ],
+        "rates": [
+          1,
+          1,
+          0
+        ],
+        "intervals": [
+          [
+            0.8241207763533425,
+            1
+          ],
+          [
+            0.8241207763533425,
+            1
+          ],
+          [
+            0,
+            0.17587922364665765
+          ]
+        ],
+        "delta": 0,
+        "pairedBootstrap95": [
+          0,
+          0
+        ],
+        "comparisons": [
+          {
+            "better": 0,
+            "worse": 0,
+            "oneSidedExactP": 1
+          },
+          {
+            "better": 18,
+            "worse": 0,
+            "oneSidedExactP": 0.000003814697265624994
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "9b1w/mages",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "mages",
+      "party": [
+        "mage",
+        "mage",
+        "mage",
+        "mage"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          1,
+          1,
+          0
+        ],
+        "rates": [
+          0.05555555555555555,
+          0.05555555555555555,
+          0
+        ],
+        "intervals": [
+          [
+            0.009875190978303097,
+            0.25757300781872594
+          ],
+          [
+            0.009875190978303097,
+            0.25757300781872594
+          ],
+          [
+            0,
+            0.17587922364665765
+          ]
+        ],
+        "delta": 0,
+        "pairedBootstrap95": [
+          0,
+          0
+        ],
+        "comparisons": [
+          {
+            "better": 0,
+            "worse": 0,
+            "oneSidedExactP": 1
+          },
+          {
+            "better": 1,
+            "worse": 0,
+            "oneSidedExactP": 0.5
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "9b1w/warriors",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "warriors",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          18,
+          18,
+          0
+        ],
+        "rates": [
+          1,
+          1,
+          0
+        ],
+        "intervals": [
+          [
+            0.8241207763533425,
+            1
+          ],
+          [
+            0.8241207763533425,
+            1
+          ],
+          [
+            0,
+            0.17587922364665765
+          ]
+        ],
+        "delta": 0,
+        "pairedBootstrap95": [
+          0,
+          0
+        ],
+        "comparisons": [
+          {
+            "better": 0,
+            "worse": 0,
+            "oneSidedExactP": 1
+          },
+          {
+            "better": 18,
+            "worse": 0,
+            "oneSidedExactP": 0.000003814697265624994
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "7b2w/mage_necromancer",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "mage_necromancer",
+      "party": [
+        "mage",
+        "mage",
+        "necromancer",
+        "necromancer"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          0,
+          1,
+          1
+        ],
+        "rates": [
+          0,
+          0.05555555555555555,
+          0.05555555555555555
+        ],
+        "intervals": [
+          [
+            0,
+            0.17587922364665765
+          ],
+          [
+            0.009875190978303097,
+            0.25757300781872594
+          ],
+          [
+            0.009875190978303097,
+            0.25757300781872594
+          ]
+        ],
+        "delta": -0.05555555555555555,
+        "pairedBootstrap95": [
+          -0.2222222222222222,
+          0
+        ],
+        "comparisons": [
+          {
+            "better": 0,
+            "worse": 1,
+            "oneSidedExactP": 1
+          },
+          {
+            "better": 0,
+            "worse": 1,
+            "oneSidedExactP": 1
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "9b1w/mage_necromancer",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "mage_necromancer",
+      "party": [
+        "mage",
+        "mage",
+        "necromancer",
+        "necromancer"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          0,
+          1,
+          1
+        ],
+        "rates": [
+          0,
+          0.05555555555555555,
+          0.05555555555555555
+        ],
+        "intervals": [
+          [
+            0,
+            0.17587922364665765
+          ],
+          [
+            0.009875190978303097,
+            0.25757300781872594
+          ],
+          [
+            0.009875190978303097,
+            0.25757300781872594
+          ]
+        ],
+        "delta": -0.05555555555555555,
+        "pairedBootstrap95": [
+          -0.2222222222222222,
+          0
+        ],
+        "comparisons": [
+          {
+            "better": 0,
+            "worse": 1,
+            "oneSidedExactP": 1
+          },
+          {
+            "better": 0,
+            "worse": 1,
+            "oneSidedExactP": 1
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "9b1w/balanced",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "balanced",
+      "party": [
+        "warrior",
+        "warrior",
+        "ranger",
+        "healer",
+        "mage"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          4,
+          7,
+          0
+        ],
+        "rates": [
+          0.2222222222222222,
+          0.3888888888888889,
+          0
+        ],
+        "intervals": [
+          [
+            0.09000928108601694,
+            0.45214584316212625
+          ],
+          [
+            0.2030524657216362,
+            0.613809583977621
+          ],
+          [
+            0,
+            0.17587922364665765
+          ]
+        ],
+        "delta": -0.16666666666666666,
+        "pairedBootstrap95": [
+          -0.3888888888888889,
+          0.05555555555555555
+        ],
+        "comparisons": [
+          {
+            "better": 1,
+            "worse": 4,
+            "oneSidedExactP": 0.9687499999999998
+          },
+          {
+            "better": 4,
+            "worse": 0,
+            "oneSidedExactP": 0.0625
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "9b1w/rangers",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "rangers",
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          14,
+          17,
+          0
+        ],
+        "rates": [
+          0.7777777777777778,
+          0.9444444444444444,
+          0
+        ],
+        "intervals": [
+          [
+            0.5478541568378739,
+            0.9099907189139831
+          ],
+          [
+            0.7424269921812741,
+            0.990124809021697
+          ],
+          [
+            0,
+            0.17587922364665765
+          ]
+        ],
+        "delta": -0.16666666666666666,
+        "pairedBootstrap95": [
+          -0.3888888888888889,
+          0.05555555555555555
+        ],
+        "comparisons": [
+          {
+            "better": 1,
+            "worse": 4,
+            "oneSidedExactP": 0.9687499999999998
+          },
+          {
+            "better": 14,
+            "worse": 0,
+            "oneSidedExactP": 0.00006103515625000003
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "9b1w/warrior_healer",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "warrior_healer",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "healer",
+        "healer"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          10,
+          13,
+          2
+        ],
+        "rates": [
+          0.5555555555555556,
+          0.7222222222222222,
+          0.1111111111111111
+        ],
+        "intervals": [
+          [
+            0.33716415642042774,
+            0.7544048187299437
+          ],
+          [
+            0.4912734343970254,
+            0.8750024662044601
+          ],
+          [
+            0.03101952264561239,
+            0.32799765130178804
+          ]
+        ],
+        "delta": -0.16666666666666666,
+        "pairedBootstrap95": [
+          -0.3888888888888889,
+          0.05555555555555555
+        ],
+        "comparisons": [
+          {
+            "better": 1,
+            "worse": 4,
+            "oneSidedExactP": 0.9687499999999998
+          },
+          {
+            "better": 9,
+            "worse": 1,
+            "oneSidedExactP": 0.010742187500000002
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "7b2w/assault",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "assault",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "mage",
+        "mage"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          1,
+          5,
+          0
+        ],
+        "rates": [
+          0.05555555555555555,
+          0.2777777777777778,
+          0
+        ],
+        "intervals": [
+          [
+            0.009875190978303097,
+            0.25757300781872594
+          ],
+          [
+            0.12499753379553993,
+            0.5087265656029746
+          ],
+          [
+            0,
+            0.17587922364665765
+          ]
+        ],
+        "delta": -0.2222222222222222,
+        "pairedBootstrap95": [
+          -0.4444444444444444,
+          -0.05555555555555555
+        ],
+        "comparisons": [
+          {
+            "better": 0,
+            "worse": 4,
+            "oneSidedExactP": 1
+          },
+          {
+            "better": 1,
+            "worse": 0,
+            "oneSidedExactP": 0.5
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "7b2w/balanced",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "balanced",
+      "party": [
+        "warrior",
+        "warrior",
+        "ranger",
+        "healer",
+        "mage"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          3,
+          7,
+          0
+        ],
+        "rates": [
+          0.16666666666666666,
+          0.3888888888888889,
+          0
+        ],
+        "intervals": [
+          [
+            0.05836576805861446,
+            0.39222038103915724
+          ],
+          [
+            0.2030524657216362,
+            0.613809583977621
+          ],
+          [
+            0,
+            0.17587922364665765
+          ]
+        ],
+        "delta": -0.2222222222222222,
+        "pairedBootstrap95": [
+          -0.5555555555555556,
+          0.1111111111111111
+        ],
+        "comparisons": [
+          {
+            "better": 3,
+            "worse": 7,
+            "oneSidedExactP": 0.9453125000000002
+          },
+          {
+            "better": 3,
+            "worse": 0,
+            "oneSidedExactP": 0.12500000000000003
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "9b1w/skirmish",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "skirmish",
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "healer",
+        "healer"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          9,
+          14,
+          0
+        ],
+        "rates": [
+          0.5,
+          0.7777777777777778,
+          0
+        ],
+        "intervals": [
+          [
+            0.29031021505169974,
+            0.7096897849483003
+          ],
+          [
+            0.5478541568378739,
+            0.9099907189139831
+          ],
+          [
+            0,
+            0.17587922364665765
+          ]
+        ],
+        "delta": -0.2777777777777778,
+        "pairedBootstrap95": [
+          -0.5555555555555556,
+          0
+        ],
+        "comparisons": [
+          {
+            "better": 2,
+            "worse": 7,
+            "oneSidedExactP": 0.9804687499999998
+          },
+          {
+            "better": 9,
+            "worse": 0,
+            "oneSidedExactP": 0.0019531249999999985
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "7b2w/necromancers",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "necromancers",
+      "party": [
+        "necromancer",
+        "necromancer",
+        "necromancer",
+        "necromancer"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          1,
+          7,
+          2
+        ],
+        "rates": [
+          0.05555555555555555,
+          0.3888888888888889,
+          0.1111111111111111
+        ],
+        "intervals": [
+          [
+            0.009875190978303097,
+            0.25757300781872594
+          ],
+          [
+            0.2030524657216362,
+            0.613809583977621
+          ],
+          [
+            0.03101952264561239,
+            0.32799765130178804
+          ]
+        ],
+        "delta": -0.3333333333333333,
+        "pairedBootstrap95": [
+          -0.5555555555555556,
+          -0.1111111111111111
+        ],
+        "comparisons": [
+          {
+            "better": 0,
+            "worse": 6,
+            "oneSidedExactP": 1
+          },
+          {
+            "better": 0,
+            "worse": 1,
+            "oneSidedExactP": 1
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "7b2w/rangers",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "rangers",
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          11,
+          17,
+          0
+        ],
+        "rates": [
+          0.6111111111111112,
+          0.9444444444444444,
+          0
+        ],
+        "intervals": [
+          [
+            0.3861904160223791,
+            0.7969475342783638
+          ],
+          [
+            0.7424269921812741,
+            0.990124809021697
+          ],
+          [
+            0,
+            0.17587922364665765
+          ]
+        ],
+        "delta": -0.3333333333333333,
+        "pairedBootstrap95": [
+          -0.5555555555555556,
+          -0.1111111111111111
+        ],
+        "comparisons": [
+          {
+            "better": 0,
+            "worse": 6,
+            "oneSidedExactP": 1
+          },
+          {
+            "better": 11,
+            "worse": 0,
+            "oneSidedExactP": 0.00048828124999999995
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "9b1w/necromancers",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "necromancers",
+      "party": [
+        "necromancer",
+        "necromancer",
+        "necromancer",
+        "necromancer"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          1,
+          7,
+          2
+        ],
+        "rates": [
+          0.05555555555555555,
+          0.3888888888888889,
+          0.1111111111111111
+        ],
+        "intervals": [
+          [
+            0.009875190978303097,
+            0.25757300781872594
+          ],
+          [
+            0.2030524657216362,
+            0.613809583977621
+          ],
+          [
+            0.03101952264561239,
+            0.32799765130178804
+          ]
+        ],
+        "delta": -0.3333333333333333,
+        "pairedBootstrap95": [
+          -0.5555555555555556,
+          -0.1111111111111111
+        ],
+        "comparisons": [
+          {
+            "better": 0,
+            "worse": 6,
+            "oneSidedExactP": 1
+          },
+          {
+            "better": 0,
+            "worse": 1,
+            "oneSidedExactP": 1
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "7b2w/healers",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "healers",
+      "party": [
+        "healer",
+        "healer",
+        "healer",
+        "healer"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          6,
+          13,
+          3
+        ],
+        "rates": [
+          0.3333333333333333,
+          0.7222222222222222,
+          0.16666666666666666
+        ],
+        "intervals": [
+          [
+            0.1627877475083369,
+            0.5625053270405489
+          ],
+          [
+            0.4912734343970254,
+            0.8750024662044601
+          ],
+          [
+            0.05836576805861446,
+            0.39222038103915724
+          ]
+        ],
+        "delta": -0.3888888888888889,
+        "pairedBootstrap95": [
+          -0.6666666666666666,
+          -0.1111111111111111
+        ],
+        "comparisons": [
+          {
+            "better": 1,
+            "worse": 8,
+            "oneSidedExactP": 0.9980468749999996
+          },
+          {
+            "better": 4,
+            "worse": 1,
+            "oneSidedExactP": 0.18749999999999994
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "7b2w/skirmish",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "skirmish",
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "healer",
+        "healer"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          6,
+          14,
+          0
+        ],
+        "rates": [
+          0.3333333333333333,
+          0.7777777777777778,
+          0
+        ],
+        "intervals": [
+          [
+            0.1627877475083369,
+            0.5625053270405489
+          ],
+          [
+            0.5478541568378739,
+            0.9099907189139831
+          ],
+          [
+            0,
+            0.17587922364665765
+          ]
+        ],
+        "delta": -0.4444444444444444,
+        "pairedBootstrap95": [
+          -0.7222222222222222,
+          -0.1111111111111111
+        ],
+        "comparisons": [
+          {
+            "better": 2,
+            "worse": 10,
+            "oneSidedExactP": 0.9968261718750006
+          },
+          {
+            "better": 6,
+            "worse": 0,
+            "oneSidedExactP": 0.015625000000000007
+          }
+        ],
+        "passes": false
+      }
+    },
+    {
+      "key": "7b2w/warrior_healer",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "warrior_healer",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "healer",
+        "healer"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      },
+      "synergy": {
+        "n": 18,
+        "wins": [
+          5,
+          13,
+          2
+        ],
+        "rates": [
+          0.2777777777777778,
+          0.7222222222222222,
+          0.1111111111111111
+        ],
+        "intervals": [
+          [
+            0.12499753379553993,
+            0.5087265656029746
+          ],
+          [
+            0.4912734343970254,
+            0.8750024662044601
+          ],
+          [
+            0.03101952264561239,
+            0.32799765130178804
+          ]
+        ],
+        "delta": -0.4444444444444444,
+        "pairedBootstrap95": [
+          -0.7222222222222222,
+          -0.1111111111111111
+        ],
+        "comparisons": [
+          {
+            "better": 2,
+            "worse": 10,
+            "oneSidedExactP": 0.9968261718750006
+          },
+          {
+            "better": 4,
+            "worse": 1,
+            "oneSidedExactP": 0.18749999999999994
+          }
+        ],
+        "passes": false
+      }
+    }
+  ],
+  "selected": null
+}

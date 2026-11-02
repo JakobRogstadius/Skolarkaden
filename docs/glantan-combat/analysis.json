@@ -1,0 +1,2441 @@
+{
+  "baseline": "28ba8b8a447182e495ae869777539f4d6abe363d",
+  "totalArchivedArenas": 74004,
+  "heroSynergies": [
+    {
+      "family": "bulwark",
+      "ratio": 1.3,
+      "pair": [
+        "warrior",
+        "mage"
+      ],
+      "timeouts": [
+        0,
+        5,
+        0
+      ],
+      "n": 100,
+      "wins": [
+        92,
+        11,
+        29
+      ],
+      "rates": [
+        0.92,
+        0.11,
+        0.29
+      ],
+      "intervals": [
+        [
+          0.8500189229905127,
+          0.9589065385156194
+        ],
+        [
+          0.06254196357064568,
+          0.18631296503080313
+        ],
+        [
+          0.2101483574912227,
+          0.3853889117557111
+        ]
+      ],
+      "delta": 0.63,
+      "pairedBootstrap95": [
+        0.52,
+        0.73
+      ],
+      "comparisons": [
+        {
+          "better": 82,
+          "worse": 1,
+          "oneSidedExactP": 8.685396431806792e-24
+        },
+        {
+          "better": 66,
+          "worse": 3,
+          "oneSidedExactP": 9.285175167801566e-17
+        }
+      ],
+      "passes": true
+    },
+    {
+      "family": "hush",
+      "ratio": 1,
+      "pair": [
+        "ranger",
+        "healer"
+      ],
+      "timeouts": [
+        3,
+        0,
+        96
+      ],
+      "n": 100,
+      "wins": [
+        79,
+        50,
+        0
+      ],
+      "rates": [
+        0.79,
+        0.5,
+        0
+      ],
+      "intervals": [
+        [
+          0.7002003116591013,
+          0.858343459380847
+        ],
+        [
+          0.4038315303659956,
+          0.5961684696340044
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": 0.29,
+      "pairedBootstrap95": [
+        0.18,
+        0.4
+      ],
+      "comparisons": [
+        {
+          "better": 35,
+          "worse": 6,
+          "oneSidedExactP": 0.00000243679915001849
+        },
+        {
+          "better": 79,
+          "worse": 0,
+          "oneSidedExactP": 1.6543612251060587e-24
+        }
+      ],
+      "passes": true
+    },
+    {
+      "family": "thorn",
+      "ratio": 0.7,
+      "pair": [
+        "healer",
+        "mage"
+      ],
+      "timeouts": [
+        1,
+        76,
+        0
+      ],
+      "n": 100,
+      "wins": [
+        76,
+        0,
+        31
+      ],
+      "rates": [
+        0.76,
+        0,
+        0.31
+      ],
+      "intervals": [
+        [
+          0.6676766365018553,
+          0.8330867444305122
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        [
+          0.22779697212376038,
+          0.40626055719489407
+        ]
+      ],
+      "delta": 0.45,
+      "pairedBootstrap95": [
+        0.34,
+        0.56
+      ],
+      "comparisons": [
+        {
+          "better": 76,
+          "worse": 0,
+          "oneSidedExactP": 1.323488980084845e-23
+        },
+        {
+          "better": 49,
+          "worse": 4,
+          "oneSidedExactP": 3.526989811319937e-11
+        }
+      ],
+      "passes": true
+    },
+    {
+      "family": "shielded",
+      "ratio": 1,
+      "pair": [
+        "mage",
+        "necromancer"
+      ],
+      "timeouts": [
+        5,
+        0,
+        27
+      ],
+      "n": 100,
+      "wins": [
+        70,
+        36,
+        18
+      ],
+      "rates": [
+        0.7,
+        0.36,
+        0.18
+      ],
+      "intervals": [
+        [
+          0.6041514536665332,
+          0.7810511470506724
+        ],
+        [
+          0.2727122040140433,
+          0.4576459754839126
+        ],
+        [
+          0.1170022549894635,
+          0.2666735838630073
+        ]
+      ],
+      "delta": 0.34,
+      "pairedBootstrap95": [
+        0.22,
+        0.46
+      ],
+      "comparisons": [
+        {
+          "better": 42,
+          "worse": 8,
+          "oneSidedExactP": 5.817779022976296e-7
+        },
+        {
+          "better": 55,
+          "worse": 3,
+          "oneSidedExactP": 1.1299294833122502e-13
+        }
+      ],
+      "passes": true
+    },
+    {
+      "family": "bulwark",
+      "ratio": 1.3,
+      "pair": [
+        "warrior",
+        "healer"
+      ],
+      "timeouts": [
+        60,
+        5,
+        73
+      ],
+      "n": 100,
+      "wins": [
+        21,
+        11,
+        0
+      ],
+      "rates": [
+        0.21,
+        0.11,
+        0
+      ],
+      "intervals": [
+        [
+          0.141656540619153,
+          0.29979968834089865
+        ],
+        [
+          0.06254196357064568,
+          0.18631296503080313
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": 0.1,
+      "pairedBootstrap95": [
+        0,
+        0.2
+      ],
+      "comparisons": [
+        {
+          "better": 19,
+          "worse": 9,
+          "oneSidedExactP": 0.04357927665114407
+        },
+        {
+          "better": 21,
+          "worse": 0,
+          "oneSidedExactP": 4.7683715820312495e-7
+        }
+      ],
+      "passes": false
+    }
+  ],
+  "enemySynergies": [
+    {
+      "dataset": "enemy-confirmation-300",
+      "key": "husher+bulwark/fresh/support0.15/necromancy/x2/1",
+      "pair": [
+        "husher",
+        "bulwark"
+      ],
+      "army": "necromancy",
+      "scale": 2,
+      "ratio": 1,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 29.16,
+        "pureA": 30.6,
+        "pureB": 31.68
+      },
+      "counts": {
+        "mixed": 15,
+        "mixedA": 13,
+        "mixedB": 2,
+        "pureA": 17,
+        "pureB": 11
+      },
+      "preexistingCorpses": 0,
+      "actualSupportShare": 0.197531,
+      "timeouts": [
+        2,
+        2,
+        1
+      ],
+      "n": 300,
+      "wins": [
+        94,
+        36,
+        1
+      ],
+      "rates": [
+        0.31333333333333335,
+        0.12,
+        0.0033333333333333335
+      ],
+      "intervals": [
+        [
+          0.2634843975598553,
+          0.36790231169730847
+        ],
+        [
+          0.0879508443036389,
+          0.16165781382701605
+        ],
+        [
+          0.0005886577218511581,
+          0.018636693694531237
+        ]
+      ],
+      "delta": 0.19333333333333333,
+      "pairedBootstrap95": [
+        0.13333333333333333,
+        0.25333333333333335
+      ],
+      "comparisons": [
+        {
+          "better": 79,
+          "worse": 21,
+          "oneSidedExactP": 2.1686833167108043e-9
+        },
+        {
+          "better": 94,
+          "worse": 1,
+          "oneSidedExactP": 2.423380700838926e-27
+        }
+      ],
+      "passes": true,
+      "reportFamilyAlpha": 0.0125,
+      "reportFamilyPass": true
+    },
+    {
+      "dataset": "enemy-confirmation-300",
+      "key": "sporeling+mender/fresh/support0.3/balanced/x1/1.3",
+      "pair": [
+        "sporeling",
+        "mender"
+      ],
+      "army": "balanced",
+      "scale": 1,
+      "ratio": 1.3,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 17.568,
+        "pureA": 18,
+        "pureB": 18.144
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 16,
+        "mixedB": 3,
+        "pureA": 25,
+        "pureB": 9
+      },
+      "preexistingCorpses": 0,
+      "actualSupportShare": 0.344262,
+      "timeouts": [
+        68,
+        13,
+        293
+      ],
+      "n": 300,
+      "wins": [
+        126,
+        46,
+        7
+      ],
+      "rates": [
+        0.42,
+        0.15333333333333332,
+        0.023333333333333334
+      ],
+      "intervals": [
+        [
+          0.3655060253806384,
+          0.4765168500152888
+        ],
+        [
+          0.11696640299091687,
+          0.19846605705810166
+        ],
+        [
+          0.011347660299125234,
+          0.04737197226827532
+        ]
+      ],
+      "delta": 0.26666666666666666,
+      "pairedBootstrap95": [
+        0.20333333333333334,
+        0.33
+      ],
+      "comparisons": [
+        {
+          "better": 98,
+          "worse": 18,
+          "oneSidedExactP": 8.245527912526221e-15
+        },
+        {
+          "better": 123,
+          "worse": 4,
+          "oneSidedExactP": 6.274864664075039e-32
+        }
+      ],
+      "passes": true,
+      "reportFamilyAlpha": 0.0125,
+      "reportFamilyPass": true
+    },
+    {
+      "dataset": "enemy-expanded-validation",
+      "key": "nightwing+mender/balanced/x1/1.3",
+      "pair": [
+        "nightwing",
+        "mender"
+      ],
+      "army": "balanced",
+      "scale": 1,
+      "ratio": 1.3,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 17.64,
+        "pureA": 18.36,
+        "pureB": 18.144
+      },
+      "counts": {
+        "mixed": 12,
+        "mixedA": 7,
+        "mixedB": 5,
+        "pureA": 17,
+        "pureB": 9
+      },
+      "preexistingCorpses": 0,
+      "timeouts": [
+        26,
+        3,
+        99
+      ],
+      "n": 100,
+      "wins": [
+        74,
+        24,
+        1
+      ],
+      "rates": [
+        0.74,
+        0.24,
+        0.01
+      ],
+      "intervals": [
+        [
+          0.6462901055081282,
+          0.8159530153525186
+        ],
+        [
+          0.16691325556948772,
+          0.33232336349814473
+        ],
+        [
+          0.0017674320641406505,
+          0.054486196178705315
+        ]
+      ],
+      "delta": 0.5,
+      "pairedBootstrap95": [
+        0.37,
+        0.63
+      ],
+      "comparisons": [
+        {
+          "better": 59,
+          "worse": 9,
+          "oneSidedExactP": 1.9570615985534231e-10
+        },
+        {
+          "better": 74,
+          "worse": 1,
+          "oneSidedExactP": 2.0117032497289742e-21
+        }
+      ],
+      "passes": true,
+      "reportFamilyAlpha": 0.008333333333333333,
+      "reportFamilyPass": true
+    },
+    {
+      "dataset": "enemy-expanded-validation",
+      "key": "siegebreaker+mender/necromancy/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "mender"
+      ],
+      "army": "necromancy",
+      "scale": 1,
+      "ratio": 1.3,
+      "mode": "objective",
+      "eligible": true,
+      "budgets": {
+        "mixed": 18.72,
+        "pureA": 20.16,
+        "pureB": 20.16
+      },
+      "counts": {
+        "mixed": 8,
+        "mixedA": 3,
+        "mixedB": 5,
+        "pureA": 7,
+        "pureB": 10
+      },
+      "preexistingCorpses": 0,
+      "timeouts": [
+        0,
+        0,
+        76
+      ],
+      "n": 100,
+      "wins": [
+        87,
+        81,
+        23
+      ],
+      "rates": [
+        0.87,
+        0.81,
+        0.23
+      ],
+      "intervals": [
+        [
+          0.7901964855992357,
+          0.9224283257275948
+        ],
+        [
+          0.7222115462093562,
+          0.8748524849023126
+        ],
+        [
+          0.15843265880303448,
+          0.3215438302287378
+        ]
+      ],
+      "delta": 0.06,
+      "pairedBootstrap95": [
+        -0.03,
+        0.15
+      ],
+      "comparisons": [
+        {
+          "better": 13,
+          "worse": 7,
+          "oneSidedExactP": 0.13158798217773424
+        },
+        {
+          "better": 72,
+          "worse": 8,
+          "oneSidedExactP": 2.687547922283365e-14
+        }
+      ],
+      "passes": false,
+      "reportFamilyAlpha": 0.008333333333333333,
+      "reportFamilyPass": false
+    },
+    {
+      "dataset": "enemy-expanded-validation",
+      "key": "boneservant+mender/necromancy/x2/1.3",
+      "pair": [
+        "boneservant",
+        "mender"
+      ],
+      "army": "necromancy",
+      "scale": 2,
+      "ratio": 1.3,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 37.728,
+        "pureA": 37.944,
+        "pureB": 38.304
+      },
+      "counts": {
+        "mixed": 25,
+        "mixedA": 16,
+        "mixedB": 9,
+        "pureA": 31,
+        "pureB": 19
+      },
+      "preexistingCorpses": 0,
+      "timeouts": [
+        11,
+        3,
+        99
+      ],
+      "n": 100,
+      "wins": [
+        87,
+        79,
+        1
+      ],
+      "rates": [
+        0.87,
+        0.79,
+        0.01
+      ],
+      "intervals": [
+        [
+          0.7901964855992357,
+          0.9224283257275948
+        ],
+        [
+          0.7002003116591013,
+          0.858343459380847
+        ],
+        [
+          0.0017674320641406505,
+          0.054486196178705315
+        ]
+      ],
+      "delta": 0.08,
+      "pairedBootstrap95": [
+        -0.01,
+        0.17
+      ],
+      "comparisons": [
+        {
+          "better": 16,
+          "worse": 8,
+          "oneSidedExactP": 0.07579481601715099
+        },
+        {
+          "better": 86,
+          "worse": 0,
+          "oneSidedExactP": 1.2924697071141098e-26
+        }
+      ],
+      "passes": false,
+      "reportFamilyAlpha": 0.008333333333333333,
+      "reportFamilyPass": false
+    },
+    {
+      "dataset": "enemy-natural-brood-validation",
+      "key": "binder+broodcap/ranged/x1/1.3",
+      "pair": [
+        "binder",
+        "broodcap"
+      ],
+      "army": "ranged",
+      "scale": 1,
+      "ratio": 1.3,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 17.136,
+        "pureA": 19.008,
+        "pureB": 18
+      },
+      "counts": {
+        "mixed": 5,
+        "mixedA": 2,
+        "mixedB": 3,
+        "pureA": 6,
+        "pureB": 5
+      },
+      "preexistingCorpses": 0,
+      "timeouts": [
+        0,
+        0,
+        2
+      ],
+      "n": 100,
+      "wins": [
+        52,
+        6,
+        11
+      ],
+      "rates": [
+        0.52,
+        0.06,
+        0.11
+      ],
+      "intervals": [
+        [
+          0.4231657776522397,
+          0.615354482419481
+        ],
+        [
+          0.027786123963188192,
+          0.1247681544589592
+        ],
+        [
+          0.06254196357064568,
+          0.18631296503080313
+        ]
+      ],
+      "delta": 0.41,
+      "pairedBootstrap95": [
+        0.3,
+        0.51
+      ],
+      "comparisons": [
+        {
+          "better": 47,
+          "worse": 1,
+          "oneSidedExactP": 1.740829702612247e-13
+        },
+        {
+          "better": 43,
+          "worse": 2,
+          "oneSidedExactP": 2.944489096989865e-11
+        }
+      ],
+      "passes": true,
+      "reportFamilyAlpha": 0.025,
+      "reportFamilyPass": true
+    },
+    {
+      "dataset": "enemy-roles-validation",
+      "key": "husher+bulwark/fresh/support0.15/necromancy/x2/1",
+      "pair": [
+        "husher",
+        "bulwark"
+      ],
+      "army": "necromancy",
+      "scale": 2,
+      "ratio": 1,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 29.16,
+        "pureA": 30.6,
+        "pureB": 31.68
+      },
+      "counts": {
+        "mixed": 15,
+        "mixedA": 13,
+        "mixedB": 2,
+        "pureA": 17,
+        "pureB": 11
+      },
+      "preexistingCorpses": 0,
+      "actualSupportShare": 0.197531,
+      "timeouts": [
+        0,
+        0,
+        0
+      ],
+      "n": 100,
+      "wins": [
+        31,
+        16,
+        0
+      ],
+      "rates": [
+        0.31,
+        0.16,
+        0
+      ],
+      "intervals": [
+        [
+          0.22779697212376038,
+          0.40626055719489407
+        ],
+        [
+          0.10095288488804782,
+          0.24420269389270244
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": 0.15,
+      "pairedBootstrap95": [
+        0.04,
+        0.25
+      ],
+      "comparisons": [
+        {
+          "better": 23,
+          "worse": 8,
+          "oneSidedExactP": 0.005336920265108349
+        },
+        {
+          "better": 31,
+          "worse": 0,
+          "oneSidedExactP": 4.656612873077388e-10
+        }
+      ],
+      "passes": true,
+      "reportFamilyAlpha": 0.004166666666666667,
+      "reportFamilyPass": false
+    },
+    {
+      "dataset": "enemy-roles-validation",
+      "key": "binder+thornling/fresh/support0.15/ranged/x2/1",
+      "pair": [
+        "binder",
+        "thornling"
+      ],
+      "army": "ranged",
+      "scale": 2,
+      "ratio": 1,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 26.496,
+        "pureA": 28.512,
+        "pureB": 27.216
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 1,
+        "mixedB": 18,
+        "pureA": 9,
+        "pureB": 21
+      },
+      "preexistingCorpses": 0,
+      "actualSupportShare": 0.119565,
+      "timeouts": [
+        0,
+        0,
+        0
+      ],
+      "n": 100,
+      "wins": [
+        88,
+        0,
+        72
+      ],
+      "rates": [
+        0.88,
+        0,
+        0.72
+      ],
+      "intervals": [
+        [
+          0.8018790057328857,
+          0.9300059356298052
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        [
+          0.6251197129007884,
+          0.7986031478881379
+        ]
+      ],
+      "delta": 0.16,
+      "pairedBootstrap95": [
+        0.08,
+        0.25
+      ],
+      "comparisons": [
+        {
+          "better": 88,
+          "worse": 0,
+          "oneSidedExactP": 3.231174267785285e-27
+        },
+        {
+          "better": 19,
+          "worse": 3,
+          "oneSidedExactP": 0.0004277229309082029
+        }
+      ],
+      "passes": true,
+      "reportFamilyAlpha": 0.004166666666666667,
+      "reportFamilyPass": true
+    },
+    {
+      "dataset": "enemy-roles-validation",
+      "key": "binder+broodcap/shared2corpses/support0.15/ranged/x1/1.3",
+      "pair": [
+        "binder",
+        "broodcap"
+      ],
+      "army": "ranged",
+      "scale": 1,
+      "ratio": 1.3,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 17.568,
+        "pureA": 19.008,
+        "pureB": 18
+      },
+      "counts": {
+        "mixed": 5,
+        "mixedA": 1,
+        "mixedB": 4,
+        "pureA": 6,
+        "pureB": 5
+      },
+      "preexistingCorpses": 2,
+      "actualSupportShare": 0.180328,
+      "timeouts": [
+        4,
+        0,
+        1
+      ],
+      "n": 100,
+      "wins": [
+        43,
+        30,
+        13
+      ],
+      "rates": [
+        0.43,
+        0.3,
+        0.13
+      ],
+      "intervals": [
+        [
+          0.33733298524110106,
+          0.5278461045078768
+        ],
+        [
+          0.2189488529493276,
+          0.3958485463334666
+        ],
+        [
+          0.07757167427240512,
+          0.20980351440076428
+        ]
+      ],
+      "delta": 0.13,
+      "pairedBootstrap95": [
+        0.01,
+        0.25
+      ],
+      "comparisons": [
+        {
+          "better": 27,
+          "worse": 14,
+          "oneSidedExactP": 0.0297919440090482
+        },
+        {
+          "better": 37,
+          "worse": 7,
+          "oneSidedExactP": 0.000002649790872055742
+        }
+      ],
+      "passes": false,
+      "reportFamilyAlpha": 0.004166666666666667,
+      "reportFamilyPass": false
+    },
+    {
+      "dataset": "enemy-roles-validation",
+      "key": "guardian+mender/fresh/support0.15/balanced/x3/0.7",
+      "pair": [
+        "guardian",
+        "mender"
+      ],
+      "army": "balanced",
+      "scale": 3,
+      "ratio": 0.7,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 27.072,
+        "pureA": 28.8,
+        "pureB": 28.224
+      },
+      "counts": {
+        "mixed": 6,
+        "mixedA": 4,
+        "mixedB": 2,
+        "pureA": 5,
+        "pureB": 14
+      },
+      "preexistingCorpses": 0,
+      "actualSupportShare": 0.148936,
+      "timeouts": [
+        0,
+        0,
+        0
+      ],
+      "n": 100,
+      "wins": [
+        4,
+        15,
+        0
+      ],
+      "rates": [
+        0.04,
+        0.15,
+        0
+      ],
+      "intervals": [
+        [
+          0.01566330399154762,
+          0.0983707143588792
+        ],
+        [
+          0.0930598528365663,
+          0.23283559590832364
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": -0.11,
+      "pairedBootstrap95": [
+        -0.19,
+        -0.03
+      ],
+      "comparisons": [
+        {
+          "better": 3,
+          "worse": 14,
+          "oneSidedExactP": 0.998825073242188
+        },
+        {
+          "better": 4,
+          "worse": 0,
+          "oneSidedExactP": 0.0625
+        }
+      ],
+      "passes": false,
+      "reportFamilyAlpha": 0.004166666666666667,
+      "reportFamilyPass": false
+    },
+    {
+      "dataset": "enemy-roles-validation",
+      "key": "sporeling+mender/fresh/support0.3/balanced/x1/1.3",
+      "pair": [
+        "sporeling",
+        "mender"
+      ],
+      "army": "balanced",
+      "scale": 1,
+      "ratio": 1.3,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 17.568,
+        "pureA": 18,
+        "pureB": 18.144
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 16,
+        "mixedB": 3,
+        "pureA": 25,
+        "pureB": 9
+      },
+      "preexistingCorpses": 0,
+      "actualSupportShare": 0.344262,
+      "timeouts": [
+        26,
+        1,
+        98
+      ],
+      "n": 100,
+      "wins": [
+        32,
+        17,
+        2
+      ],
+      "rates": [
+        0.32,
+        0.17,
+        0.02
+      ],
+      "intervals": [
+        [
+          0.23669147324999093,
+          0.41662618610452384
+        ],
+        [
+          0.10893566114059931,
+          0.25548004767601123
+        ],
+        [
+          0.00550196755016235,
+          0.07001179072854388
+        ]
+      ],
+      "delta": 0.15,
+      "pairedBootstrap95": [
+        0.04,
+        0.26
+      ],
+      "comparisons": [
+        {
+          "better": 25,
+          "worse": 10,
+          "oneSidedExactP": 0.008336923900060373
+        },
+        {
+          "better": 32,
+          "worse": 2,
+          "oneSidedExactP": 3.469176590442667e-8
+        }
+      ],
+      "passes": true,
+      "reportFamilyAlpha": 0.004166666666666667,
+      "reportFamilyPass": false
+    },
+    {
+      "dataset": "enemy-roles-validation",
+      "key": "siegebreaker+bulwark/fresh/support0.15/balanced/x2/1",
+      "pair": [
+        "siegebreaker",
+        "bulwark"
+      ],
+      "army": "balanced",
+      "scale": 2,
+      "ratio": 1,
+      "mode": "objective",
+      "eligible": true,
+      "budgets": {
+        "mixed": 25.92,
+        "pureA": 25.92,
+        "pureB": 25.92
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 8,
+        "mixedB": 1,
+        "pureA": 9,
+        "pureB": 9
+      },
+      "preexistingCorpses": 0,
+      "actualSupportShare": 0.111111,
+      "timeouts": [
+        0,
+        0,
+        0
+      ],
+      "n": 100,
+      "wins": [
+        25,
+        18,
+        0
+      ],
+      "rates": [
+        0.25,
+        0.18,
+        0
+      ],
+      "intervals": [
+        [
+          0.17545211362287672,
+          0.34304463548061603
+        ],
+        [
+          0.1170022549894635,
+          0.2666735838630073
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": 0.07,
+      "pairedBootstrap95": [
+        0.02,
+        0.13
+      ],
+      "comparisons": [
+        {
+          "better": 8,
+          "worse": 1,
+          "oneSidedExactP": 0.019531249999999997
+        },
+        {
+          "better": 25,
+          "worse": 0,
+          "oneSidedExactP": 2.98023223876953e-8
+        }
+      ],
+      "passes": false,
+      "reportFamilyAlpha": 0.004166666666666667,
+      "reportFamilyPass": false
+    },
+    {
+      "dataset": "enemy-siege-validation",
+      "key": "siegebreaker+mender/fresh/support0.1/necromancy/x2/1",
+      "pair": [
+        "siegebreaker",
+        "mender"
+      ],
+      "army": "necromancy",
+      "scale": 2,
+      "ratio": 1,
+      "mode": "objective",
+      "eligible": true,
+      "budgets": {
+        "mixed": 29.088,
+        "pureA": 31.68,
+        "pureB": 30.24
+      },
+      "counts": {
+        "mixed": 11,
+        "mixedA": 8,
+        "mixedB": 3,
+        "pureA": 11,
+        "pureB": 15
+      },
+      "preexistingCorpses": 0,
+      "actualSupportShare": 0.207921,
+      "timeouts": [
+        0,
+        0,
+        99
+      ],
+      "n": 100,
+      "wins": [
+        50,
+        59,
+        0
+      ],
+      "rates": [
+        0.5,
+        0.59,
+        0
+      ],
+      "intervals": [
+        [
+          0.4038315303659956,
+          0.5961684696340044
+        ],
+        [
+          0.4920143005341078,
+          0.6813268697886348
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": -0.09,
+      "pairedBootstrap95": [
+        -0.18,
+        0
+      ],
+      "comparisons": [
+        {
+          "better": 7,
+          "worse": 16,
+          "oneSidedExactP": 0.9826551675796498
+        },
+        {
+          "better": 50,
+          "worse": 0,
+          "oneSidedExactP": 8.881784197001244e-16
+        }
+      ],
+      "passes": false,
+      "reportFamilyAlpha": 0.025,
+      "reportFamilyPass": false
+    },
+    {
+      "dataset": "enemy-validation",
+      "key": "rattler+mender/balanced/x1/1.3",
+      "pair": [
+        "rattler",
+        "mender"
+      ],
+      "army": "balanced",
+      "scale": 1,
+      "ratio": 1.3,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 17.64,
+        "pureA": 18.36,
+        "pureB": 18.144
+      },
+      "counts": {
+        "mixed": 12,
+        "mixedA": 7,
+        "mixedB": 5,
+        "pureA": 17,
+        "pureB": 9
+      },
+      "preexistingCorpses": 0,
+      "timeouts": [
+        56,
+        3,
+        100
+      ],
+      "n": 100,
+      "wins": [
+        42,
+        6,
+        0
+      ],
+      "rates": [
+        0.42,
+        0.06,
+        0
+      ],
+      "intervals": [
+        [
+          0.3279838267435473,
+          0.5179351329695703
+        ],
+        [
+          0.027786123963188192,
+          0.1247681544589592
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": 0.36,
+      "pairedBootstrap95": [
+        0.25,
+        0.47
+      ],
+      "comparisons": [
+        {
+          "better": 41,
+          "worse": 5,
+          "oneSidedExactP": 2.202968119036078e-8
+        },
+        {
+          "better": 42,
+          "worse": 0,
+          "oneSidedExactP": 2.273736754432328e-13
+        }
+      ],
+      "passes": true,
+      "reportFamilyAlpha": 0.005,
+      "reportFamilyPass": true
+    },
+    {
+      "dataset": "enemy-validation",
+      "key": "sporeling+broodcap/balanced/x1/1.3",
+      "pair": [
+        "sporeling",
+        "broodcap"
+      ],
+      "army": "balanced",
+      "scale": 1,
+      "ratio": 1.3,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 17.28,
+        "pureA": 17.28,
+        "pureB": 18
+      },
+      "counts": {
+        "mixed": 16,
+        "mixedA": 14,
+        "mixedB": 2,
+        "pureA": 24,
+        "pureB": 5
+      },
+      "preexistingCorpses": 0,
+      "timeouts": [
+        5,
+        3,
+        15
+      ],
+      "n": 100,
+      "wins": [
+        5,
+        7,
+        2
+      ],
+      "rates": [
+        0.05,
+        0.07,
+        0.02
+      ],
+      "intervals": [
+        [
+          0.02154367915436796,
+          0.11175046923191913
+        ],
+        [
+          0.03431926106727268,
+          0.137495147390735
+        ],
+        [
+          0.00550196755016235,
+          0.07001179072854388
+        ]
+      ],
+      "delta": -0.02,
+      "pairedBootstrap95": [
+        -0.09,
+        0.05
+      ],
+      "comparisons": [
+        {
+          "better": 5,
+          "worse": 7,
+          "oneSidedExactP": 0.8061523437500004
+        },
+        {
+          "better": 5,
+          "worse": 2,
+          "oneSidedExactP": 0.22656250000000008
+        }
+      ],
+      "passes": false,
+      "reportFamilyAlpha": 0.005,
+      "reportFamilyPass": false
+    },
+    {
+      "dataset": "enemy-validation",
+      "key": "husher+binder/necromancy/x2/1",
+      "pair": [
+        "husher",
+        "binder"
+      ],
+      "army": "necromancy",
+      "scale": 2,
+      "ratio": 1,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 28.872,
+        "pureA": 30.6,
+        "pureB": 31.68
+      },
+      "counts": {
+        "mixed": 13,
+        "mixedA": 9,
+        "mixedB": 4,
+        "pureA": 17,
+        "pureB": 10
+      },
+      "preexistingCorpses": 0,
+      "timeouts": [
+        1,
+        1,
+        0
+      ],
+      "n": 100,
+      "wins": [
+        5,
+        12,
+        0
+      ],
+      "rates": [
+        0.05,
+        0.12,
+        0
+      ],
+      "intervals": [
+        [
+          0.02154367915436796,
+          0.11175046923191913
+        ],
+        [
+          0.06999406437019488,
+          0.19812099426711421
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": -0.07,
+      "pairedBootstrap95": [
+        -0.15,
+        0.01
+      ],
+      "comparisons": [
+        {
+          "better": 5,
+          "worse": 12,
+          "oneSidedExactP": 0.975479125976563
+        },
+        {
+          "better": 5,
+          "worse": 0,
+          "oneSidedExactP": 0.031249999999999986
+        }
+      ],
+      "passes": false,
+      "reportFamilyAlpha": 0.005,
+      "reportFamilyPass": false
+    },
+    {
+      "dataset": "enemy-validation",
+      "key": "thornling+bulwark/necromancy/x2/1",
+      "pair": [
+        "thornling",
+        "bulwark"
+      ],
+      "army": "necromancy",
+      "scale": 2,
+      "ratio": 1,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 28.656,
+        "pureA": 29.808,
+        "pureB": 28.8
+      },
+      "counts": {
+        "mixed": 16,
+        "mixedA": 11,
+        "mixedB": 5,
+        "pureA": 23,
+        "pureB": 10
+      },
+      "preexistingCorpses": 0,
+      "timeouts": [
+        0,
+        0,
+        0
+      ],
+      "n": 100,
+      "wins": [
+        60,
+        27,
+        0
+      ],
+      "rates": [
+        0.6,
+        0.27,
+        0
+      ],
+      "intervals": [
+        [
+          0.5020025867910618,
+          0.6905987135675411
+        ],
+        [
+          0.1926958414957634,
+          0.36432116767944994
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": 0.33,
+      "pairedBootstrap95": [
+        0.19,
+        0.46
+      ],
+      "comparisons": [
+        {
+          "better": 45,
+          "worse": 12,
+          "oneSidedExactP": 0.000006563721582142317
+        },
+        {
+          "better": 60,
+          "worse": 0,
+          "oneSidedExactP": 8.673617379884113e-19
+        }
+      ],
+      "passes": true,
+      "reportFamilyAlpha": 0.005,
+      "reportFamilyPass": true
+    },
+    {
+      "dataset": "enemy-validation",
+      "key": "guardian+bulwark/ranged/x2/1",
+      "pair": [
+        "guardian",
+        "bulwark"
+      ],
+      "army": "ranged",
+      "scale": 2,
+      "ratio": 1,
+      "mode": "field",
+      "eligible": true,
+      "budgets": {
+        "mixed": 25.92,
+        "pureA": 28.8,
+        "pureB": 25.92
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 2,
+        "mixedB": 5,
+        "pureA": 5,
+        "pureB": 9
+      },
+      "preexistingCorpses": 0,
+      "timeouts": [
+        0,
+        0,
+        0
+      ],
+      "n": 100,
+      "wins": [
+        82,
+        96,
+        4
+      ],
+      "rates": [
+        0.82,
+        0.96,
+        0.04
+      ],
+      "intervals": [
+        [
+          0.7333264161369926,
+          0.8829977450105364
+        ],
+        [
+          0.9016292856411208,
+          0.9843366960084523
+        ],
+        [
+          0.01566330399154762,
+          0.0983707143588792
+        ]
+      ],
+      "delta": -0.14,
+      "pairedBootstrap95": [
+        -0.23,
+        -0.06
+      ],
+      "comparisons": [
+        {
+          "better": 3,
+          "worse": 17,
+          "oneSidedExactP": 0.9997987747192372
+        },
+        {
+          "better": 78,
+          "worse": 0,
+          "oneSidedExactP": 3.308722450212123e-24
+        }
+      ],
+      "passes": false,
+      "reportFamilyAlpha": 0.005,
+      "reportFamilyPass": false
+    }
+  ],
+  "acceptedSiege": [
+    {
+      "dataset": "enemy-siege-final-original",
+      "source": "1fd02790388858335372499ccd5e04df43af9be2c3cf1cdc86fe23fcbf9c4369",
+      "controls": {
+        "castleShots": true,
+        "endOnPartyDeath": false,
+        "deadline": 75
+      },
+      "budgets": {
+        "mixed": 15.552,
+        "pureA": 17.28,
+        "pureB": 16.128
+      },
+      "counts": {
+        "mixed": 6,
+        "mixedA": 4,
+        "mixedB": 2,
+        "pureA": 6,
+        "pureB": 8
+      },
+      "timeouts": [
+        0,
+        0,
+        100
+      ],
+      "n": 100,
+      "wins": [
+        6,
+        6,
+        0
+      ],
+      "rates": [
+        0.06,
+        0.06,
+        0
+      ],
+      "intervals": [
+        [
+          0.027786123963188192,
+          0.1247681544589592
+        ],
+        [
+          0.027786123963188192,
+          0.1247681544589592
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": 0,
+      "pairedBootstrap95": [
+        -0.07,
+        0.07
+      ],
+      "comparisons": [
+        {
+          "better": 6,
+          "worse": 6,
+          "oneSidedExactP": 0.6127929687500003
+        },
+        {
+          "better": 6,
+          "worse": 0,
+          "oneSidedExactP": 0.015625000000000007
+        }
+      ],
+      "passes": false
+    },
+    {
+      "dataset": "enemy-siege-final-interception",
+      "source": "3847875d37cbcc7ab1c85a87a1f1d42779c7a3d2e4e32cd721c13bc4d8727b2c",
+      "controls": {
+        "castleShots": true,
+        "endOnPartyDeath": false,
+        "deadline": 75
+      },
+      "budgets": {
+        "mixed": 15.552,
+        "pureA": 17.28,
+        "pureB": 16.128
+      },
+      "counts": {
+        "mixed": 6,
+        "mixedA": 4,
+        "mixedB": 2,
+        "pureA": 6,
+        "pureB": 8
+      },
+      "timeouts": [
+        0,
+        0,
+        100
+      ],
+      "n": 100,
+      "wins": [
+        0,
+        0,
+        0
+      ],
+      "rates": [
+        0,
+        0,
+        0
+      ],
+      "intervals": [
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": 0,
+      "pairedBootstrap95": [
+        0,
+        0
+      ],
+      "comparisons": [
+        {
+          "better": 0,
+          "worse": 0,
+          "oneSidedExactP": 1
+        },
+        {
+          "better": 0,
+          "worse": 0,
+          "oneSidedExactP": 1
+        }
+      ],
+      "passes": false
+    },
+    {
+      "dataset": "siege-production-validation",
+      "source": "06b9058a5874335a97a9b5f053dbf7a9edfbc0a55955fb5d90608f60fb803d47",
+      "controls": {
+        "castleShots": true,
+        "endOnPartyDeath": false,
+        "deadline": 75
+      },
+      "budgets": {
+        "mixed": 15.552,
+        "pureA": 17.28,
+        "pureB": 16.128
+      },
+      "counts": {
+        "mixed": 6,
+        "mixedA": 4,
+        "mixedB": 2,
+        "pureA": 6,
+        "pureB": 8
+      },
+      "timeouts": [
+        1,
+        0,
+        100
+      ],
+      "n": 100,
+      "wins": [
+        30,
+        1,
+        0
+      ],
+      "rates": [
+        0.3,
+        0.01,
+        0
+      ],
+      "intervals": [
+        [
+          0.2189488529493276,
+          0.3958485463334666
+        ],
+        [
+          0.0017674320641406505,
+          0.054486196178705315
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": 0.29,
+      "pairedBootstrap95": [
+        0.2,
+        0.39
+      ],
+      "comparisons": [
+        {
+          "better": 30,
+          "worse": 1,
+          "oneSidedExactP": 1.490116119384763e-8
+        },
+        {
+          "better": 30,
+          "worse": 0,
+          "oneSidedExactP": 9.313225746154793e-10
+        }
+      ],
+      "passes": true
+    }
+  ],
+  "siegeCostSensitivity": [
+    {
+      "dataset": "siege-calibrated-v1-validation",
+      "source": "06b9058a5874335a97a9b5f053dbf7a9edfbc0a55955fb5d90608f60fb803d47",
+      "controls": {
+        "castleShots": true,
+        "endOnPartyDeath": false,
+        "deadline": 75
+      },
+      "budgets": {
+        "mixed": 9.332046332046332,
+        "pureA": 10.378378378378379,
+        "pureB": 10.357142857142856
+      },
+      "counts": {
+        "mixed": 6,
+        "mixedA": 4,
+        "mixedB": 2,
+        "pureA": 8,
+        "pureB": 5
+      },
+      "timeouts": [
+        1,
+        0,
+        39
+      ],
+      "n": 100,
+      "wins": [
+        32,
+        43,
+        0
+      ],
+      "rates": [
+        0.32,
+        0.43,
+        0
+      ],
+      "intervals": [
+        [
+          0.23669147324999093,
+          0.41662618610452384
+        ],
+        [
+          0.33733298524110106,
+          0.5278461045078768
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": -0.11,
+      "pairedBootstrap95": [
+        -0.24,
+        0.01
+      ],
+      "comparisons": [
+        {
+          "better": 16,
+          "worse": 27,
+          "oneSidedExactP": 0.9670029827721
+        },
+        {
+          "better": 32,
+          "worse": 0,
+          "oneSidedExactP": 2.328306436538698e-10
+        }
+      ],
+      "passes": false
+    },
+    {
+      "dataset": "siege-calibrated-v2-validation",
+      "source": "06b9058a5874335a97a9b5f053dbf7a9edfbc0a55955fb5d90608f60fb803d47",
+      "controls": {
+        "castleShots": true,
+        "endOnPartyDeath": false,
+        "deadline": 75
+      },
+      "budgets": {
+        "mixed": 7.9117021276595745,
+        "pureA": 8.042553191489361,
+        "pureB": 8.924999999999999
+      },
+      "counts": {
+        "mixed": 6,
+        "mixedA": 4,
+        "mixedB": 2,
+        "pureA": 6,
+        "pureB": 7
+      },
+      "timeouts": [
+        0,
+        0,
+        91
+      ],
+      "n": 100,
+      "wins": [
+        37,
+        1,
+        0
+      ],
+      "rates": [
+        0.37,
+        0.01,
+        0
+      ],
+      "intervals": [
+        [
+          0.28182360534324524,
+          0.4677947041905709
+        ],
+        [
+          0.0017674320641406505,
+          0.054486196178705315
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": 0.36,
+      "pairedBootstrap95": [
+        0.27,
+        0.46
+      ],
+      "comparisons": [
+        {
+          "better": 36,
+          "worse": 0,
+          "oneSidedExactP": 1.4551915228366858e-11
+        },
+        {
+          "better": 37,
+          "worse": 0,
+          "oneSidedExactP": 7.27595761418344e-12
+        }
+      ],
+      "passes": true
+    }
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "cells": [
+        {
+          "rank": 1,
+          "n": 40,
+          "wins": 25,
+          "losses": 11,
+          "timeouts": 4
+        },
+        {
+          "rank": 3,
+          "n": 40,
+          "wins": 3,
+          "losses": 31,
+          "timeouts": 6
+        },
+        {
+          "rank": 5,
+          "n": 40,
+          "wins": 0,
+          "losses": 38,
+          "timeouts": 2
+        },
+        {
+          "rank": 6,
+          "n": 40,
+          "wins": 0,
+          "losses": 40,
+          "timeouts": 0
+        }
+      ]
+    },
+    {
+      "level": 3,
+      "cells": [
+        {
+          "rank": 1,
+          "n": 40,
+          "wins": 36,
+          "losses": 4,
+          "timeouts": 0
+        },
+        {
+          "rank": 3,
+          "n": 40,
+          "wins": 11,
+          "losses": 24,
+          "timeouts": 5
+        },
+        {
+          "rank": 5,
+          "n": 40,
+          "wins": 2,
+          "losses": 32,
+          "timeouts": 6
+        },
+        {
+          "rank": 6,
+          "n": 40,
+          "wins": 1,
+          "losses": 33,
+          "timeouts": 6
+        }
+      ]
+    },
+    {
+      "level": 5,
+      "cells": [
+        {
+          "rank": 1,
+          "n": 40,
+          "wins": 38,
+          "losses": 2,
+          "timeouts": 0
+        },
+        {
+          "rank": 3,
+          "n": 40,
+          "wins": 29,
+          "losses": 9,
+          "timeouts": 2
+        },
+        {
+          "rank": 5,
+          "n": 40,
+          "wins": 7,
+          "losses": 26,
+          "timeouts": 7
+        },
+        {
+          "rank": 6,
+          "n": 40,
+          "wins": 5,
+          "losses": 30,
+          "timeouts": 5
+        }
+      ]
+    },
+    {
+      "level": 8,
+      "cells": [
+        {
+          "rank": 1,
+          "n": 40,
+          "wins": 40,
+          "losses": 0,
+          "timeouts": 0
+        },
+        {
+          "rank": 3,
+          "n": 40,
+          "wins": 36,
+          "losses": 4,
+          "timeouts": 0
+        },
+        {
+          "rank": 5,
+          "n": 40,
+          "wins": 29,
+          "losses": 9,
+          "timeouts": 2
+        },
+        {
+          "rank": 6,
+          "n": 40,
+          "wins": 22,
+          "losses": 13,
+          "timeouts": 5
+        }
+      ]
+    }
+  ],
+  "rejectedHush": [
+    {
+      "family": "husher",
+      "army": "warrior",
+      "n": 100,
+      "before": {
+        "wins": 100,
+        "losses": 0,
+        "timeouts": 0,
+        "duration": 18.308000000000003
+      },
+      "after": {
+        "wins": 100,
+        "losses": 0,
+        "timeouts": 0,
+        "duration": 18.308000000000003
+      }
+    },
+    {
+      "family": "hush",
+      "army": "warrior",
+      "n": 100,
+      "before": {
+        "wins": 99,
+        "losses": 1,
+        "timeouts": 0,
+        "duration": 18.311999999999998
+      },
+      "after": {
+        "wins": 99,
+        "losses": 1,
+        "timeouts": 0,
+        "duration": 18.311999999999998
+      }
+    },
+    {
+      "family": "husher",
+      "army": "ranger",
+      "n": 100,
+      "before": {
+        "wins": 41,
+        "losses": 59,
+        "timeouts": 0,
+        "duration": 38.67599999999998
+      },
+      "after": {
+        "wins": 41,
+        "losses": 59,
+        "timeouts": 0,
+        "duration": 38.67599999999998
+      }
+    },
+    {
+      "family": "hush",
+      "army": "ranger",
+      "n": 100,
+      "before": {
+        "wins": 54,
+        "losses": 46,
+        "timeouts": 0,
+        "duration": 48.089000000000006
+      },
+      "after": {
+        "wins": 54,
+        "losses": 46,
+        "timeouts": 0,
+        "duration": 48.089000000000006
+      }
+    },
+    {
+      "family": "husher",
+      "army": "healer",
+      "n": 100,
+      "before": {
+        "wins": 0,
+        "losses": 76,
+        "timeouts": 24,
+        "duration": 60.90699999999999
+      },
+      "after": {
+        "wins": 0,
+        "losses": 99,
+        "timeouts": 1,
+        "duration": 40.53999999999999
+      }
+    },
+    {
+      "family": "hush",
+      "army": "healer",
+      "n": 100,
+      "before": {
+        "wins": 0,
+        "losses": 5,
+        "timeouts": 95,
+        "duration": 98.34899999999999
+      },
+      "after": {
+        "wins": 0,
+        "losses": 76,
+        "timeouts": 24,
+        "duration": 70.55799999999998
+      }
+    },
+    {
+      "family": "husher",
+      "army": "ranger+healer",
+      "n": 100,
+      "before": {
+        "wins": 70,
+        "losses": 30,
+        "timeouts": 0,
+        "duration": 42.419000000000025
+      },
+      "after": {
+        "wins": 42,
+        "losses": 56,
+        "timeouts": 2,
+        "duration": 43.88900000000002
+      }
+    },
+    {
+      "family": "hush",
+      "army": "ranger+healer",
+      "n": 100,
+      "before": {
+        "wins": 76,
+        "losses": 16,
+        "timeouts": 8,
+        "duration": 53.32500000000001
+      },
+      "after": {
+        "wins": 51,
+        "losses": 44,
+        "timeouts": 5,
+        "duration": 55.654999999999994
+      }
+    },
+    {
+      "family": "husher",
+      "army": "mage+necromancer",
+      "n": 100,
+      "before": {
+        "wins": 31,
+        "losses": 69,
+        "timeouts": 0,
+        "duration": 28.805000000000003
+      },
+      "after": {
+        "wins": 22,
+        "losses": 78,
+        "timeouts": 0,
+        "duration": 28.35899999999999
+      }
+    },
+    {
+      "family": "hush",
+      "army": "mage+necromancer",
+      "n": 100,
+      "before": {
+        "wins": 22,
+        "losses": 78,
+        "timeouts": 0,
+        "duration": 31.873999999999995
+      },
+      "after": {
+        "wins": 19,
+        "losses": 81,
+        "timeouts": 0,
+        "duration": 31.313000000000006
+      }
+    }
+  ],
+  "counterValidation": [
+    {
+      "id": "nightwing/L3/1/warrior",
+      "family": "nightwing",
+      "level": 3,
+      "ratio": 1,
+      "army": "warrior",
+      "heroBudget": 15.959548865804447,
+      "monsterBudget": 16.200000000000003,
+      "n": 100,
+      "wins": 0,
+      "losses": 98,
+      "timeouts": 2,
+      "duration": 26.727000000000007,
+      "heroDeaths": 5.95,
+      "castleDamage": 171.33148970000002,
+      "winRate": 0
+    },
+    {
+      "id": "sporeling/L3/1/ranger",
+      "family": "sporeling",
+      "level": 3,
+      "ratio": 1,
+      "army": "ranger",
+      "heroBudget": 15.959548865804447,
+      "monsterBudget": 15.840000000000005,
+      "n": 100,
+      "wins": 100,
+      "losses": 0,
+      "timeouts": 0,
+      "duration": 19.64099999999999,
+      "heroDeaths": 0.05,
+      "castleDamage": 4.7519673000000004,
+      "winRate": 1
+    },
+    {
+      "id": "guardian/L3/1/healer",
+      "family": "guardian",
+      "level": 3,
+      "ratio": 1,
+      "army": "healer",
+      "heroBudget": 15.959548865804448,
+      "monsterBudget": 17.28,
+      "n": 100,
+      "wins": 0,
+      "losses": 99,
+      "timeouts": 1,
+      "duration": 20.031,
+      "heroDeaths": 3.98,
+      "castleDamage": 63.504030199999995,
+      "winRate": 0
+    },
+    {
+      "id": "sporeling/L3/1/mage",
+      "family": "sporeling",
+      "level": 3,
+      "ratio": 1,
+      "army": "mage",
+      "heroBudget": 15.959548865804448,
+      "monsterBudget": 15.840000000000005,
+      "n": 100,
+      "wins": 100,
+      "losses": 0,
+      "timeouts": 0,
+      "duration": 19.75,
+      "heroDeaths": 0.02,
+      "castleDamage": 11.159923899999999,
+      "winRate": 1
+    },
+    {
+      "id": "thornling/L3/1/mage",
+      "family": "thornling",
+      "level": 3,
+      "ratio": 1,
+      "army": "mage",
+      "heroBudget": 15.959548865804448,
+      "monsterBudget": 15.551999999999998,
+      "n": 100,
+      "wins": 2,
+      "losses": 98,
+      "timeouts": 0,
+      "duration": 20.418999999999997,
+      "heroDeaths": 3.97,
+      "castleDamage": 137.08823309999988,
+      "winRate": 0.02
+    },
+    {
+      "id": "sporeling/L3/1/necromancer",
+      "family": "sporeling",
+      "level": 3,
+      "ratio": 1,
+      "army": "necromancer",
+      "heroBudget": 15.959548865804448,
+      "monsterBudget": 15.840000000000005,
+      "n": 100,
+      "wins": 100,
+      "losses": 0,
+      "timeouts": 0,
+      "duration": 21.326,
+      "heroDeaths": 0,
+      "castleDamage": 10.727926799999999,
+      "winRate": 1
+    },
+    {
+      "id": "guardian/L3/1/necromancer",
+      "family": "guardian",
+      "level": 3,
+      "ratio": 1,
+      "army": "necromancer",
+      "heroBudget": 15.959548865804448,
+      "monsterBudget": 17.28,
+      "n": 100,
+      "wins": 0,
+      "losses": 100,
+      "timeouts": 0,
+      "duration": 21.206000000000003,
+      "heroDeaths": 4,
+      "castleDamage": 29.232012900000004,
+      "winRate": 0
+    }
+  ]
+}

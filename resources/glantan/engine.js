@@ -200,6 +200,14 @@
       // Additive save migration preserves heroes, purchases and paid answer streaks.
       w.skeletons ||= []; w.corpses ||= []; w.traps ||= [];
       w.corpses = w.corpses.filter(c => G.freshCorpse(w, c));
+      // Keep old runs playable: siege stats were stored on each body. Preserve
+      // its health fraction, position and action timers when adopting the new role.
+      for (const monster of w.monsters) if (monster.type === 'siegebreaker' && !monster.siegeRevision) {
+        const fraction = monster.maxHp > 0 ? G.clamp(monster.hp / monster.maxHp, 0, 1) : 0;
+        const strength = monster.strength ?? 1, spec = G.monsterTypes.siegebreaker;
+        monster.maxHp = spec.hp * strength; monster.hp = monster.maxHp * fraction;
+        monster.attackDamage = spec.damage * strength; monster.siegeRevision = 1;
+      }
       for (const hero of w.heroes) if (hero.healCooldown !== undefined) {
         if (hero.classId === 'healer') hero.cooldown = Math.max(hero.cooldown || 0, hero.healCooldown || 0);
         delete hero.healCooldown;
