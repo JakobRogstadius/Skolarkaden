@@ -11,7 +11,7 @@ target selection, action cooldowns, movement, retreat, healing, summons and wave
 formations. It freezes natural lair escalation, recruitment and experience gains.
 The standing attack order bypasses strategic expedition recruitment/readiness;
 heroes still select nearby combat targets through the production AI. Castle
-shots are disabled. Field experiments keep the real retreat destination, while
+shots are disabled by default. Field experiments keep the real retreat destination, while
 objective experiments allow enemies to destroy a normal 1,000-HP castle.
 
 The original `mode:'objective'` batches retain the duel loss condition (all
@@ -70,6 +70,46 @@ always match exactly; retain achieved budgets. Homogeneous enemy controls round
 up from a mixed army's budget, never down, and capped comparisons are ineligible
 for synergy claims. Do not retrospectively fit these weights to conceal an
 overpowered unit. Pilot calibration errors are reported as limitations.
+
+## Independent reference-cost calibration
+
+The later v2 study replaces the initial threat guesses for its own comparisons.
+It does not change recruitment prices, spawning or XP in the game. Its units are
+**rank-3 monster equivalents against level-3 heroes**; do not multiply them by
+the earlier level/rank factors or mix the two scales in one comparison.
+
+Three predeclared hero armies each cost 12: two warriors, one ranger, one healer
+and one mage; three warriors and two mages; three rangers and two healers. For
+each ordinary damage type, fit a monotone count-versus-victory curve to these
+equally weighted reference armies. Interpolate the count giving 50% absolute
+monster victories and assign each monster `12 / count` reference points.
+Timeouts remain in the denominator and are not victories. Menders, binders and
+bulwarks instead receive conditional substitution estimates in rattler,
+thornling and husher armies respectively. Siege uses a separate defended-castle
+assay. These estimates are context-dependent; transferring a support price to
+another anchor is an explicit sensitivity assumption.
+
+Training uses 18 seeds covering every distance (3.8/5.6/7), spacing (.6/.8/1)
+and mirror combination. Validation uses 36 fresh seeds from the same geometry
+distribution. A bounded two-column formation accommodates large enemy armies.
+Freeze fitted prices and exact rosters before validation. Do not use the
+desired 75% counters or 15-point synergies to fit prices. The earlier v1 study
+used incomplete geometry coverage and is preserved as superseded evidence.
+
+The 36-seed validation panel checks prediction error and discovers possible
+counters. Selecting its best contexts does not make those contexts confirmed:
+they receive a separate 100-seed confirmation. Partnership discovery also
+varies support ratios and tests both pure controls, rounding their budgets up.
+An observed 75% rate is a point target; report its uncertainty separately and
+do not claim that the population rate is at least 75% when its interval crosses
+that threshold. Exploratory bootstrap intervals are nominal, not simultaneous.
+
+Unresolved types receive additional predeclared discovery screens. For example,
+the brood counter screen enumerates all 46 integer hero compositions costing
+12 and confirms its best context only if the screen reaches the frozen gate.
+Preserve failures and timeout-heavy contexts alongside successes. Reusing an
+identical cached result is valid, but counts as a reused record, not another
+independent simulation.
 
 ## Intended mechanisms to investigate
 
@@ -163,7 +203,11 @@ GLANTAN_REF=28ba8b8 GLANTAN_ESCORTS=1 node dev/glantan-balance.cjs brave 10 0 1
 node dev/glantan-evidence.cjs cases docs/glantan-combat/data/baseline-hero-validation.json.gz /tmp/cases.json
 node dev/glantan-study.cjs --cases /tmp/cases.json --ref 28ba8b8 --out /tmp/replay.json
 node dev/glantan-report.cjs
+node dev/glantan-acceptance.cjs
 python dev/glantan-plots.py
+node dev/glantan-calibration.cjs --dir /tmp/calibration-v2 --seeds 18 --validation-seeds 36 --jobs 2
+node dev/glantan-calibration.cjs --support-audit --dir /tmp/calibration-v2 --jobs 2
+node dev/glantan-calibration.cjs --confirm-frozen --dir /tmp/calibration-v2 --jobs 2
 ```
 
 Raw reports include exact input rosters and seeds for replay. Large matrices
@@ -176,6 +220,21 @@ Instrumentation version 2 corrects newly raised enemy skeleton starting stats
 after their spawn overrides. Legacy outcomes, timing, damage and HP were checked
 for parity. Optional castle-fire/terminal-condition flags default to the old
 controls, so archived inputs still replay with their original semantics.
+
+The calibration extensions retain exact input configurations and per-start
+outcomes. Some auxiliary partnership runners captured summary combat metrics
+only; unavailable per-unit fields are null and their original summary records
+are preserved separately. Eleven absent log rows were recovered by exact
+deterministic replay, checked against the original aggregates, and explicitly
+counted as additional executions without inflating sample sizes. The manifest
+separates recorded cases, cached reuse and simulator executions.
+
+Rejected brood prototypes use `configure(multiplier)` from
+`dev/experiments/glantan-brood-magic.cjs`, passed to `createHarness` with the
+archived source revision (`40ef9d2` has the retained siege rules). Unpack the
+corresponding archive to recover exact inputs, then run each with that harness.
+Do not replay a numeric prototype with unmodified production code and interpret
+the different outcomes as a failed deterministic replay.
 
 To replay the retained siege confirmation with current production code:
 

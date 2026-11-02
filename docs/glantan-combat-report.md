@@ -1,6 +1,6 @@
 # Klockgläntan: reproducible combat balance study
 
-2026-11-01. Baseline: `28ba8b8a447182e495ae869777539f4d6abe363d`.
+2026-11-01–02. Baseline: `28ba8b8a447182e495ae869777539f4d6abe363d`.
 
 The retained game change gives the siegebreaker a clearer role: fragile,
 dangerous to buildings, stoppable by nearby defenders, and useful with mender
@@ -9,9 +9,12 @@ escorts. In 100 fresh defended-castle starts, siege + mender armies breached
 rules produced six breaches for both mixed and pure-siege armies.
 
 The baseline already has substantial complementary army composition. All five
-hero classes have a confirmed partner, and seven baseline monster partnerships
-cover nine ordinary monster types. The new siege + mender result covers the
-tenth. The all-ranger campaign advantage is partly an acquisition-cost
+hero classes have a confirmed partner. The initial monster partnership screen
+covers all ten ordinary types after the siege change, but some of those results
+fail the later independently calibrated comparisons below. Seven calibrated
+partnerships cover nine ordinary monster types; broodcap remains unresolved.
+Nine types also meet the observed strong/weak counter targets, although the
+bulwark weakness has wider uncertainty. The all-ranger campaign advantage is partly an acquisition-cost
 advantage; an all-ranger loss also appears on the second hard-mode map seed.
 The original anecdotes alone did not justify a ranger nerf.
 
@@ -59,6 +62,24 @@ exactly apart from wall-clock execution time. The
 and compressed per-trial evidence preserve the comparison. The earlier
 interception-only source is retained as a
 [replay patch](../dev/experiments/glantan-siege-interception.patch).
+
+A separate cost-sensitivity check preserves the mixed army and defender while
+funding pure controls with independently fitted reference equivalents. The
+first fit had mismatched training/validation formation coverage; its fresh
+check failed: **32% mixed versus 43% for eight siege and 0% for five menders**.
+That failure is retained in the [v1 record](glantan-combat/siege-calibrated-summary.json).
+
+The corrected fit uses the full distance × spacing × mirror distribution
+before freezing its prices. It funds six pure siege or seven pure menders
+against the same four siege + two menders. On another 100 fresh starts the
+mixture wins **37% versus 1%/0%**, a **36-point gain, paired 95% interval
+27–46**. The mixed and pure-siege armies have no timeouts; pure menders have
+91 timeouts and nine defeats. Both checks use the same production code.
+See the [v2 result](glantan-combat/siege-calibrated-v2-summary.json) and
+[frozen controls](glantan-combat/siege-calibrated-v2-protocol.json).
+The mender equivalent was learned with rattlers, and the siege equivalent in
+a separate castle assay; transferring these values remains an explicit
+sensitivity assumption, not proof of a universal unit price.
 
 A further 908 fixed-case regressions cover the affected baseline core, level
 and progression suites. In the 270 pure-siege core cases, hero victories rise
@@ -110,7 +131,110 @@ The healer's favorable result is a team contribution, not evidence that a
 healer-only army should win. The summon-using classes were tested both with
 natural corpse generation and, in separately labelled probes, seeded remains.
 
-## Confirmed monster partnerships
+## Independently calibrated comparisons
+
+The initial monster weights are a useful first screen, but some partnerships
+vanish when their pure controls receive a better-founded budget. The v2 study
+fits reference equivalents before testing counters and synergies. It uses
+three fixed level-3 hero armies costing 12, 18 training starts covering the full
+distance × spacing × mirror distribution, and 36 fresh validation starts.
+Pure-type prices come from the count giving 50% actual monster victories;
+support prices come from replacing part of a functioning anchor army. The
+75% counter and 15-point synergy targets never enter the fit.
+
+These are rank-3 reference equivalents, not purchase prices or the earlier base
+threat scale. Support prices remain conditional on their anchors, and siege is
+measured in a defended-castle assay. Transferring them is an explicit assumption.
+
+| Type | Rank-3 reference cost | Context |
+| --- | ---: | --- |
+| Rattler | 0.386 | Three reference armies |
+| Sporeling | 0.304 | Three reference armies |
+| Husher | 1.205 | Three reference armies |
+| Nightwing | 0.450 | Three reference armies |
+| Thornling | 1.026 | Three reference armies |
+| Broodcap | 1.125 | Three reference armies |
+| Siegebreaker | 1.340 | Defended castle |
+| Mender | 1.275 | With rattler |
+| Binder | 3.692 | With thornling |
+| Bulwark | 2.313 | With husher |
+
+Mean absolute held-out reference prediction error is **5.3 percentage
+points**; thornlings have the largest error, 13.9 points. This describes the
+reference average, not individual matchups: counter-panel prediction errors
+are much larger. The earlier v1 fit trained on only one spacing and failed its
+geometry-shifted validation; its model and failed siege sensitivity remain in
+the archive. The v2 fit fixes that distribution mismatch before confirmation.
+See the [frozen model summary](glantan-combat/calibration-v2-summary.json).
+
+Each row below combines two separately selected, freshly confirmed contexts.
+Each context has 100 starts. A weak matchup requires actual opposing victories;
+remaining outcomes are defeats or timeouts, never automatically wins.
+
+| Monster army | Favorable opponent: monster victories | Unfavorable opponent: hero victories |
+| --- | --- | --- |
+| 31 rattler | 6 warriors: 100% | 4 mages: 100% |
+| 39 sporeling | 3 rangers + 2 healers: 96% | 3 warriors + 2 mages: 100% |
+| 10 husher | 6 rangers: 100% | 6 warriors: 99% |
+| 27 nightwing | 6 rangers: 100% | 3 warriors + 2 mages: 98% |
+| 12 thornling | 3 rangers + 2 healers: 100% | 3 warriors + 2 mages: 98% |
+| 11 broodcap | 6 warriors: 100% | Unresolved |
+| 9 siegebreaker | 3 rangers + 2 healers: 100% | 4 mages: 100% |
+| 24 rattler + 2 mender | 6 warriors: 100% | 4 mages: 100% |
+| 8 thornling + 1 binder | 4 healers: 100% | 3 warriors + 2 mages: 100% |
+| 8 husher + 1 bulwark | 6 rangers: 100% | 3 warriors + 2 mages: 77% |
+
+The bulwark army's 77% defeat rate has a nominal Wilson 95% interval of
+67.8–84.2%; it meets the point target but does not yet establish a population
+rate above 75%. Other confirmed directions clear that lower-bound check.
+Mender, binder and bulwark rows are army-role checks, not pure-support duels.
+Broodcaps remain the counter gap in this version: a subsequent complete screen
+of all 46 cost-12 hero compositions found at most 9/18 hero victories, below its
+predeclared confirmation gate. Its full [screen](glantan-combat/brood-composition-summary.json)
+is retained rather than treating a low brood victory share as a decisive loss.
+
+## Current partnerships at calibrated budgets
+
+All rows use 100 fresh paired starts per arm. Pure controls spend at least the
+mixture's achieved budget. Their listed victory rates are monster victories.
+The [acceptance matrix](glantan-combat/acceptance.json) includes actual budgets,
+opponents, both paired tests and every failed confirmation.
+
+| Mixture | Pure control counts | Mixed wins | Pure A wins | Pure B wins | Gain, nominal 95% interval |
+| --- | --- | ---: | ---: | ---: | --- |
+| 24 rattlers + 2 menders | 31 rattlers / 10 menders | 58% | 39% | 1% | +19 points, +6 to +32 |
+| 8 hushers + 1 bulwark | 10 hushers / 6 bulwarks | 100% | 60% | 3% | +40 points, +31 to +50 |
+| 11 thornlings + 5 bulwarks | 23 thornlings / 10 bulwarks | 69% | 31% | 0% | +38 points, +24 to +51 |
+| 22 sporelings + 3 hushers | 34 sporelings / 9 hushers | 26% | 1% | 0% | +25 points, +16 to +34 |
+| 15 sporelings + 2 binders | 40 sporelings / 4 binders | 50% | 2% | 0% | +48 points, +38 to +58 |
+| 21 nightwings + 2 menders | 27 nightwings / 10 menders | 85% | 50% | 0% | +35 points, +23 to +47 |
+| 4 siege + 2 menders | 6 siege / 7 menders | 37% | 1% | 0% | +36 points, +27 to +46 |
+
+The contexts differ: these rows establish useful partnerships, not rankings or
+universally winning compositions. The rattler mixture times out in 18% of
+starts and the nightwing mixture in 5%; the other listed mixtures have no
+timeouts. Several pure mender controls mostly time out. The separate counter
+criteria ensure that a modest synergy win rate is not mistaken for a decisive
+favorable matchup.
+
+All seven pass the original batch criteria and a broader Holm sensitivity
+check across all **13 calibrated confirmations / 26 paired comparisons**,
+including the failures. This broader check is explicitly post hoc; the
+predeclared batch corrections remain in the archived protocols. Confidence
+intervals in the table are nominal, not simultaneous.
+
+Failed fresh confirmations include binder + thornling (+4 points), sporeling +
+mender (+6), broodcap + mender (+13), nightwing + binder (−10), nightwing +
+bulwark (+4), and broodcap + bulwark (−2). Brood + bulwark's exploratory
+16.7-point gain did not reproduce: 66% mixed victories versus 68% for pure
+broodcaps. No failed row was silently replaced by its discovery result.
+
+The nightwing result illustrates why mixture ratios matter. Under the new
+prices, an earlier mender-heavy army did not improve on pure nightwings.
+Reducing menders to 21.25% of the achieved budget produced the confirmed
+35-point advantage without changing either unit.
+
+## Historical monster partnerships at initial weights
 
 All these results use fresh validation seeds, real combat AI and rank-3
 monsters. The pure controls spend at least the achieved mixed nominal threat
@@ -236,6 +360,31 @@ complementarity. Stronger reductions were worse. The complete rejected
 behavioral tests and visible status indicator, is preserved for review.
 It is not applied to the game.
 
+**Brood spell vulnerability.** A read-only prototype increased spell damage
+received by broodcaps while preserving physical skeleton attacks. At 1.5×,
+fresh hero victories for two mages + two necromancers rose from 38% to 73%
+against 11 broodcaps, missing the 75% target. The same change reduced an
+existing brood + mender candidate from 76% to 17% victories and gave it a
+37-point disadvantage to the stronger pure control. It was rejected.
+
+At 2×, no brood + bulwark mixture in 20 predeclared contexts met the 15-point
+discovery gate; the largest gain was 5.6 points. A separate fixed-grid cost fit
+then valued the prototype at 0.870 reference points instead of 1.125. At its
+newly fitted budget, 14 broodcaps faced the same two mages + two necromancers:
+heroes won only 21/36 starts (58.3%), with 11 brood victories and four timeouts.
+The held-out reference prediction error was just 1.9 points. Thus the apparent
+counter against 11 bodies depended partly on making the monster generally
+cheaper, rather than establishing the requested weakness at equal reference
+value. Neither prototype is applied. The
+[override](../dev/experiments/glantan-brood-magic.cjs),
+[1.5× confirmation](glantan-combat/brood-magic-confirm-report.json) and
+[2× partnership screen](glantan-combat/brood-magic2-partner-report.json), and
+[2× cost diagnostic](glantan-combat/brood-magic2-cost-summary.json) preserve the
+rejected work. The cost fits use different training seeds, so their difference
+is descriptive rather than a paired estimate. The prototype reference panel
+also has 43/108 timeouts; good average prediction does not establish decisive
+combat resolution.
+
 ## Experimental limits and next acceptance checks
 
 * The arena uses actual fixed-step gameplay but disables strategic expedition
@@ -250,13 +399,10 @@ It is not applied to the game.
   healing in the validated contexts was roughly 21–24 HP per 25-HP cast;
   widespread wasted healing was not demonstrated. The game already has natural
   wave escalation, which makes a long hold costly.
-* A complete cost-calibrated, decisive strong/weak audit for every monster is
-  still open. The initial near-equal-budget screen did not find a 75% pure-army
-  victory context for rattlers, binders or broodcaps, while the lowest confirmed
-  thornling victory share was 27%, just above the 25% target. Support roles and
-  provisional threat weights make these findings diagnostic, not automatic
-  reasons to buff those units. The screen is also insufficient when timeouts
-  dominate; see the [per-type matrix](glantan-combat/enemy-final-summary.json).
+* The current calibrated counter audit supersedes the earlier
+  [initial-weight matrix](glantan-combat/enemy-final-summary.json). Price
+  assumptions, support anchors and actual loss rates matter: changing a
+  bookkeeping weight can change a comparison without changing combat.
 * Human difficulty targets must specify expected answer pace, error rate,
   investment decisions and acceptable session length before tuning global
   difficulty from bot outcomes.
@@ -272,7 +418,9 @@ See the [protocol](glantan-combat-protocol.md) for commands and frozen weights.
 `dev/glantan-combat.cjs` exposes controlled encounters; `glantan-study.cjs` and
 `glantan-enemy-study.cjs` generate and run matrices; `glantan-evidence.cjs`
 unpacks archived cases; `glantan-report.cjs` and `glantan-plots.py` rebuild the
-statistics and figures. Large batches are opt-in development tools.
+statistics and figures. `glantan-calibration.cjs` fits and freezes reference
+costs; `glantan-acceptance.cjs` consolidates current calibrated confirmations,
+including failures. Large batches are opt-in development tools.
 
 Compressed archives preserve exact inputs, individual outcomes and aggregate
 metrics, plus the SHA-256 of each original detailed report. Packing was checked

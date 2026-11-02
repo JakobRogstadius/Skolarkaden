@@ -39,11 +39,13 @@ const levels=[1,3,5,8].map(level=>({level,cells:[1,3,5,6].map(rank=>{
 const hushBefore=load('hush-validation-before').metadata.summary,hushAfter=load('hush-validation-after').metadata.summary;
 const rejectedHush=hushBefore.map(before=>({family:before.family,army:before.army,n:before.n,before:{wins:before.wins,losses:before.losses,timeouts:before.timeouts,duration:before.duration},after:(()=>{const a=hushAfter.find(r=>r.id===before.id);return{wins:a.wins,losses:a.losses,timeouts:a.timeouts,duration:a.duration};})()}));
 const siegeSources=['enemy-siege-final-original','enemy-siege-final-interception','siege-production-validation'];
-const acceptedSiege=siegeSources.map(dataset=>{
+function analyzeSiege(dataset){
   const data=rows(dataset),get=arm=>data.filter(r=>r.config.enemyStudy.arm===arm);
   const mixed=get('mixed'),A=get('pureA'),B=get('pureB'),context=mixed[0].config.enemyStudy;
   return {dataset,source:load(dataset).metadata.sourceSha256||load(dataset).metadata.runtimeSha256Before,controls:{castleShots:true,endOnPartyDeath:false,deadline:75},budgets:context.match.budgets,counts:context.match.counts,timeouts:[mixed,A,B].map(rs=>rs.filter(r=>r.outcome==='timeout').length),...synergy(mixed,A,B,'loss')};
-});
-const output={baseline:manifest.baseline,totalArchivedArenas:manifest.totalArenas,heroSynergies:heroes,enemySynergies:enemies,acceptedSiege,progression:levels,rejectedHush,counterValidation:load('hero-counter-validation').metadata.summary};
+}
+const acceptedSiege=siegeSources.map(analyzeSiege);
+const siegeCostSensitivity=['siege-calibrated-v1-validation','siege-calibrated-v2-validation'].map(analyzeSiege);
+const output={baseline:manifest.baseline,totalArchivedArenas:manifest.totalArenas,heroSynergies:heroes,enemySynergies:enemies,acceptedSiege,siegeCostSensitivity,progression:levels,rejectedHush,counterValidation:load('hero-counter-validation').metadata.summary};
 fs.writeFileSync(path.join(dir,'analysis.json'),JSON.stringify(output,null,2)+'\n');
 console.log(JSON.stringify({heroContrasts:heroes.length,enemyContrasts:enemies.length,totalArchivedArenas:manifest.totalArenas,out:path.join(dir,'analysis.json')}));

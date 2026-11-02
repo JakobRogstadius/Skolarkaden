@@ -1,0 +1,1556 @@
+{
+  "sourceSha256": "4939595f304f67f2de17d7616352b4b59f348dd354f884f659c2265f1c1d10dc",
+  "modelVersion": "v2",
+  "definition": "Actual monster victories; timeouts are neither side's victory. Same-or-higher-cost pure controls. Every reported context has100 fresh paired starts.",
+  "multiplicity": {
+    "method": "Holm sensitivity across all v2 current-production confirmation comparisons",
+    "contexts": 13,
+    "comparisons": 26,
+    "alpha": 0.05,
+    "postHocSensitivity": true,
+    "note": "Original predeclared batch criteria remain in source reports. Nominal bootstrap intervals are not simultaneous."
+  },
+  "costs": [
+    {
+      "type": "rattler",
+      "cost": 0.38636363636363635,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 31.058823529411764,
+        "bracket": [
+          24,
+          32
+        ]
+      },
+      "trainingBrier": 0.1861405055849501,
+      "validationArmy": {
+        "rattler": 31
+      },
+      "achievedBudget": 11.977272727272727,
+      "predictedReferenceVictory": 0.49768518518518523,
+      "heldoutReferenceVictory": 0.46296296296296297,
+      "referencePredictionError": -0.034722222222222286,
+      "counterPanelPredictionRMSE": 0.4191809429045837
+    },
+    {
+      "type": "sporeling",
+      "cost": 0.3040540540540541,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 39.46666666666666,
+        "bracket": [
+          32,
+          40
+        ]
+      },
+      "trainingBrier": 0.1861405055849504,
+      "validationArmy": {
+        "sporeling": 39
+      },
+      "achievedBudget": 11.85810810810811,
+      "predictedReferenceVictory": 0.4918981481481482,
+      "heldoutReferenceVictory": 0.46296296296296297,
+      "referencePredictionError": -0.028935185185185192,
+      "counterPanelPredictionRMSE": 0.4352285857988115
+    },
+    {
+      "type": "husher",
+      "cost": 1.2048192771084336,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 9.96,
+        "bracket": [
+          9,
+          11
+        ]
+      },
+      "trainingBrier": 0.06847279378143577,
+      "validationArmy": {
+        "husher": 10
+      },
+      "achievedBudget": 12.048192771084336,
+      "predictedReferenceVictory": 0.5092592592592593,
+      "heldoutReferenceVictory": 0.49074074074074076,
+      "referencePredictionError": -0.018518518518518563,
+      "counterPanelPredictionRMSE": 0.38306933116976777
+    },
+    {
+      "type": "nightwing",
+      "cost": 0.44999999999999996,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 26.666666666666668,
+        "bracket": [
+          26,
+          30
+        ]
+      },
+      "trainingBrier": 0.16586648376771845,
+      "validationArmy": {
+        "nightwing": 27
+      },
+      "achievedBudget": 12.149999999999999,
+      "predictedReferenceVictory": 0.5092592592592592,
+      "heldoutReferenceVictory": 0.4351851851851852,
+      "referencePredictionError": -0.07407407407407403,
+      "counterPanelPredictionRMSE": 0.3799682320126517
+    },
+    {
+      "type": "thornling",
+      "cost": 1.0256410256410258,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 11.7,
+        "bracket": [
+          11,
+          13
+        ]
+      },
+      "trainingBrier": 0.09607910379515315,
+      "validationArmy": {
+        "thornling": 12
+      },
+      "achievedBudget": 12.30769230769231,
+      "predictedReferenceVictory": 0.5555555555555556,
+      "heldoutReferenceVictory": 0.4166666666666667,
+      "referencePredictionError": -0.13888888888888892,
+      "counterPanelPredictionRMSE": 0.38978072341468994
+    },
+    {
+      "type": "broodcap",
+      "cost": 1.125,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 10.666666666666666,
+        "bracket": [
+          10,
+          12
+        ]
+      },
+      "trainingBrier": 0.1283721993598533,
+      "validationArmy": {
+        "broodcap": 11
+      },
+      "achievedBudget": 12.375,
+      "predictedReferenceVictory": 0.5277777777777778,
+      "heldoutReferenceVictory": 0.5555555555555555,
+      "referencePredictionError": 0.027777777777777773,
+      "counterPanelPredictionRMSE": 0.23830678432808017
+    },
+    {
+      "type": "siegebreaker",
+      "cost": 1.3404255319148937,
+      "status": "identified",
+      "conditionalOnly": false,
+      "anchor": null,
+      "threshold": {
+        "status": "identified",
+        "value": 8.952380952380953,
+        "bracket": [
+          8,
+          10
+        ]
+      },
+      "trainingBrier": 0.0853909465020575,
+      "validationArmy": {
+        "siegebreaker": 9
+      },
+      "achievedBudget": 12.063829787234043,
+      "predictedReferenceVictory": 0.5092592592592593,
+      "heldoutReferenceVictory": 0.5648148148148148,
+      "referencePredictionError": 0.055555555555555504,
+      "counterPanelPredictionRMSE": 0.38992366739186046
+    },
+    {
+      "type": "mender",
+      "cost": 1.275,
+      "status": "identified",
+      "conditionalOnly": true,
+      "anchor": "rattler",
+      "threshold": {
+        "status": "identified",
+        "value": 6.6,
+        "bracket": [
+          5,
+          9
+        ]
+      },
+      "trainingBrier": 0.19259259259259262,
+      "validationArmy": {
+        "rattler": 24,
+        "mender": 2
+      },
+      "achievedBudget": 11.822727272727274,
+      "predictedReferenceVictory": 0.48148148148148145,
+      "heldoutReferenceVictory": 0.5370370370370371,
+      "referencePredictionError": 0.05555555555555558,
+      "counterPanelPredictionRMSE": 0.36747712525507475
+    },
+    {
+      "type": "binder",
+      "cost": 3.6923076923076925,
+      "status": "identified",
+      "conditionalOnly": true,
+      "anchor": "thornling",
+      "threshold": {
+        "status": "identified",
+        "value": 3.5999999999999996,
+        "bracket": [
+          2,
+          4
+        ]
+      },
+      "trainingBrier": 0.12777777777777777,
+      "validationArmy": {
+        "thornling": 8,
+        "binder": 1
+      },
+      "achievedBudget": 11.897435897435898,
+      "predictedReferenceVictory": 0.4444444444444444,
+      "heldoutReferenceVictory": 0.4259259259259259,
+      "referencePredictionError": -0.01851851851851849,
+      "counterPanelPredictionRMSE": 0.3630290945045454
+    },
+    {
+      "type": "bulwark",
+      "cost": 2.3132530120481922,
+      "status": "identified",
+      "conditionalOnly": true,
+      "anchor": "husher",
+      "threshold": {
+        "status": "identified",
+        "value": 1.9199999999999997,
+        "bracket": [
+          0,
+          2
+        ]
+      },
+      "trainingBrier": 0.08566529492455419,
+      "validationArmy": {
+        "husher": 8,
+        "bulwark": 1
+      },
+      "achievedBudget": 11.951807228915662,
+      "predictedReferenceVictory": 0.4814814814814814,
+      "heldoutReferenceVictory": 0.5555555555555555,
+      "referencePredictionError": 0.07407407407407414,
+      "counterPanelPredictionRMSE": 0.39532808343553344
+    }
+  ],
+  "counters": [
+    {
+      "type": "rattler",
+      "direction": "strong",
+      "opponent": "warriors",
+      "monsterArmy": {
+        "rattler": 31
+      },
+      "achievedBudget": 11.977272727272727,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "rattler",
+      "direction": "weak",
+      "opponent": "mages",
+      "monsterArmy": {
+        "rattler": 31
+      },
+      "achievedBudget": 11.977272727272727,
+      "n": 100,
+      "monsterWins": 0,
+      "opponentWins": 100,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0,
+        0.036993
+      ],
+      "opponentWilson95": [
+        0.963007,
+        1
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "sporeling",
+      "direction": "strong",
+      "opponent": "skirmish",
+      "monsterArmy": {
+        "sporeling": 39
+      },
+      "achievedBudget": 11.85810810810811,
+      "n": 100,
+      "monsterWins": 96,
+      "opponentWins": 1,
+      "timeouts": 3,
+      "monsterWilson95": [
+        0.901629,
+        0.984337
+      ],
+      "opponentWilson95": [
+        0.001767,
+        0.054486
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "sporeling",
+      "direction": "weak",
+      "opponent": "assault",
+      "monsterArmy": {
+        "sporeling": 39
+      },
+      "achievedBudget": 11.85810810810811,
+      "n": 100,
+      "monsterWins": 0,
+      "opponentWins": 100,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0,
+        0.036993
+      ],
+      "opponentWilson95": [
+        0.963007,
+        1
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "husher",
+      "direction": "strong",
+      "opponent": "rangers",
+      "monsterArmy": {
+        "husher": 10
+      },
+      "achievedBudget": 12.048192771084336,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "husher",
+      "direction": "weak",
+      "opponent": "warriors",
+      "monsterArmy": {
+        "husher": 10
+      },
+      "achievedBudget": 12.048192771084336,
+      "n": 100,
+      "monsterWins": 1,
+      "opponentWins": 99,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.001767,
+        0.054486
+      ],
+      "opponentWilson95": [
+        0.945514,
+        0.998233
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "nightwing",
+      "direction": "strong",
+      "opponent": "rangers",
+      "monsterArmy": {
+        "nightwing": 27
+      },
+      "achievedBudget": 12.149999999999999,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "nightwing",
+      "direction": "weak",
+      "opponent": "assault",
+      "monsterArmy": {
+        "nightwing": 27
+      },
+      "achievedBudget": 12.149999999999999,
+      "n": 100,
+      "monsterWins": 2,
+      "opponentWins": 98,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.005502,
+        0.070012
+      ],
+      "opponentWilson95": [
+        0.929988,
+        0.994498
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "thornling",
+      "direction": "strong",
+      "opponent": "skirmish",
+      "monsterArmy": {
+        "thornling": 12
+      },
+      "achievedBudget": 12.30769230769231,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "thornling",
+      "direction": "weak",
+      "opponent": "assault",
+      "monsterArmy": {
+        "thornling": 12
+      },
+      "achievedBudget": 12.30769230769231,
+      "n": 100,
+      "monsterWins": 2,
+      "opponentWins": 98,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.005502,
+        0.070012
+      ],
+      "opponentWilson95": [
+        0.929988,
+        0.994498
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "broodcap",
+      "direction": "strong",
+      "opponent": "warriors",
+      "monsterArmy": {
+        "broodcap": 11
+      },
+      "achievedBudget": 12.375,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "siegebreaker",
+      "direction": "strong",
+      "opponent": "skirmish",
+      "monsterArmy": {
+        "siegebreaker": 9
+      },
+      "achievedBudget": 12.063829787234043,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "siegebreaker",
+      "direction": "weak",
+      "opponent": "mages",
+      "monsterArmy": {
+        "siegebreaker": 9
+      },
+      "achievedBudget": 12.063829787234043,
+      "n": 100,
+      "monsterWins": 0,
+      "opponentWins": 100,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0,
+        0.036993
+      ],
+      "opponentWilson95": [
+        0.963007,
+        1
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "mender",
+      "direction": "strong",
+      "opponent": "warriors",
+      "monsterArmy": {
+        "rattler": 24,
+        "mender": 2
+      },
+      "achievedBudget": 11.822727272727274,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "mender",
+      "direction": "weak",
+      "opponent": "mages",
+      "monsterArmy": {
+        "rattler": 24,
+        "mender": 2
+      },
+      "achievedBudget": 11.822727272727274,
+      "n": 100,
+      "monsterWins": 0,
+      "opponentWins": 100,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0,
+        0.036993
+      ],
+      "opponentWilson95": [
+        0.963007,
+        1
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "binder",
+      "direction": "strong",
+      "opponent": "healers",
+      "monsterArmy": {
+        "thornling": 8,
+        "binder": 1
+      },
+      "achievedBudget": 11.897435897435898,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "binder",
+      "direction": "weak",
+      "opponent": "assault",
+      "monsterArmy": {
+        "thornling": 8,
+        "binder": 1
+      },
+      "achievedBudget": 11.897435897435898,
+      "n": 100,
+      "monsterWins": 0,
+      "opponentWins": 100,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0,
+        0.036993
+      ],
+      "opponentWilson95": [
+        0.963007,
+        1
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "bulwark",
+      "direction": "strong",
+      "opponent": "rangers",
+      "monsterArmy": {
+        "husher": 8,
+        "bulwark": 1
+      },
+      "achievedBudget": 11.951807228915662,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.963007,
+        1
+      ],
+      "opponentWilson95": [
+        0,
+        0.036993
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "bulwark",
+      "direction": "weak",
+      "opponent": "assault",
+      "monsterArmy": {
+        "husher": 8,
+        "bulwark": 1
+      },
+      "achievedBudget": 11.951807228915662,
+      "n": 100,
+      "monsterWins": 23,
+      "opponentWins": 77,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.158433,
+        0.321544
+      ],
+      "opponentWilson95": [
+        0.678456,
+        0.841567
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": false
+    }
+  ],
+  "synergies": [
+    {
+      "key": "mender/balanced",
+      "types": [
+        "rattler",
+        "mender"
+      ],
+      "context": "balanced",
+      "n": 100,
+      "wins": [
+        58,
+        39,
+        1
+      ],
+      "delta": 0.18999999999999995,
+      "pairedBootstrap95": [
+        0.06,
+        0.32
+      ],
+      "rawPairedP": [
+        0.003971363254741787,
+        1.0408340855860836e-16
+      ],
+      "budgets": {
+        "mixed": 11.822727272727274,
+        "pureAnchor": 11.977272727272727,
+        "pureSupport": 12.75,
+        "anchorCost": 0.38636363636363635,
+        "supportCost": 1.275,
+        "anchorCount": 31,
+        "supportCount": 10
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 58,
+          "opponentWins": 24,
+          "timeouts": 18,
+          "monsterWilson95": [
+            0.482065,
+            0.672016
+          ]
+        },
+        "pureAnchor": {
+          "n": 100,
+          "monsterWins": 39,
+          "opponentWins": 58,
+          "timeouts": 3,
+          "monsterWilson95": [
+            0.300169,
+            0.48797
+          ]
+        },
+        "pureSupport": {
+          "n": 100,
+          "monsterWins": 1,
+          "opponentWins": 1,
+          "timeouts": 98,
+          "monsterWilson95": [
+            0.001767,
+            0.054486
+          ]
+        }
+      },
+      "source": "calibration-v2-summary.json",
+      "holmAdjustedP": [
+        0.027799542783192507,
+        2.1857515797307758e-15
+      ],
+      "practicalPass": true,
+      "broadSensitivityPass": true
+    },
+    {
+      "key": "binder/balanced",
+      "types": [
+        "thornling",
+        "binder"
+      ],
+      "context": "balanced",
+      "n": 100,
+      "wins": [
+        38,
+        34,
+        0
+      ],
+      "delta": 0.03999999999999998,
+      "pairedBootstrap95": [
+        -0.08,
+        0.16
+      ],
+      "rawPairedP": [
+        0.3179140013144206,
+        3.637978807091714e-12
+      ],
+      "budgets": {
+        "mixed": 11.897435897435898,
+        "pureAnchor": 12.30769230769231,
+        "pureSupport": 14.76923076923077,
+        "anchorCost": 1.0256410256410258,
+        "supportCost": 3.6923076923076925,
+        "anchorCount": 12,
+        "supportCount": 4
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 38,
+          "opponentWins": 62,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.290976,
+            0.477902
+          ]
+        },
+        "pureAnchor": {
+          "n": 100,
+          "monsterWins": 34,
+          "opponentWins": 66,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.254615,
+            0.437223
+          ]
+        },
+        "pureSupport": {
+          "n": 100,
+          "monsterWins": 0,
+          "opponentWins": 100,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0,
+            0.036993
+          ]
+        }
+      },
+      "source": "calibration-v2-summary.json",
+      "holmAdjustedP": [
+        0.9537420039432618,
+        6.184563972055913e-11
+      ],
+      "practicalPass": false,
+      "broadSensitivityPass": false
+    },
+    {
+      "key": "bulwark/mage_necromancer",
+      "types": [
+        "husher",
+        "bulwark"
+      ],
+      "context": "mage_necromancer",
+      "n": 100,
+      "wins": [
+        100,
+        60,
+        3
+      ],
+      "delta": 0.4,
+      "pairedBootstrap95": [
+        0.31,
+        0.5
+      ],
+      "rawPairedP": [
+        9.094947017729279e-13,
+        6.310887241768095e-30
+      ],
+      "budgets": {
+        "mixed": 11.951807228915662,
+        "pureAnchor": 12.048192771084336,
+        "pureSupport": 13.879518072289153,
+        "anchorCost": 1.2048192771084336,
+        "supportCost": 2.3132530120481922,
+        "anchorCount": 10,
+        "supportCount": 6
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 100,
+          "opponentWins": 0,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.963007,
+            1
+          ]
+        },
+        "pureAnchor": {
+          "n": 100,
+          "monsterWins": 60,
+          "opponentWins": 40,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.502003,
+            0.690599
+          ]
+        },
+        "pureSupport": {
+          "n": 100,
+          "monsterWins": 3,
+          "opponentWins": 97,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.010255,
+            0.084519
+          ]
+        }
+      },
+      "source": "calibration-v2-summary.json",
+      "holmAdjustedP": [
+        1.6370904631912702e-11,
+        1.6408306828597046e-28
+      ],
+      "practicalPass": true,
+      "broadSensitivityPass": true
+    },
+    {
+      "key": "thornling+bulwark/original-necromancy-x2",
+      "types": [
+        "thornling",
+        "bulwark"
+      ],
+      "context": "original-necromancy-x2",
+      "n": 100,
+      "wins": [
+        69,
+        31,
+        0
+      ],
+      "delta": 0.37999999999999995,
+      "pairedBootstrap95": [
+        0.24,
+        0.51
+      ],
+      "rawPairedP": [
+        3.7806404911983765e-7,
+        1.6940658945086e-21
+      ],
+      "budgets": {
+        "mixed": 22.848316342292247,
+        "pureAnchor": 23.58974358974359,
+        "pureSupport": 23.132530120481924,
+        "anchorCost": 1.0256410256410258,
+        "supportCost": 2.3132530120481922,
+        "anchorCount": 23,
+        "supportCount": 10
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 69,
+          "opponentWins": 31,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.593739,
+            0.772203
+          ]
+        },
+        "pureAnchor": {
+          "n": 100,
+          "monsterWins": 31,
+          "opponentWins": 68,
+          "timeouts": 1,
+          "monsterWilson95": [
+            0.227797,
+            0.406261
+          ]
+        },
+        "pureSupport": {
+          "n": 100,
+          "monsterWins": 0,
+          "opponentWins": 100,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0,
+            0.036993
+          ]
+        }
+      },
+      "source": "calibration-v2-summary.json",
+      "holmAdjustedP": [
+        0.000004158704540318214,
+        3.89635155736978e-20
+      ],
+      "practicalPass": true,
+      "broadSensitivityPass": true
+    },
+    {
+      "key": "sporeling-mender",
+      "types": [
+        "sporeling",
+        "mender"
+      ],
+      "context": "sporeling+mender/fresh/support0.3/balanced/x1/1.3",
+      "n": 100,
+      "wins": [
+        20,
+        14,
+        0
+      ],
+      "delta": 0.06,
+      "pairedBootstrap95": [
+        -0.03,
+        0.15
+      ],
+      "rawPairedP": [
+        0.1431393623352049,
+        9.5367431640625e-7
+      ],
+      "counts": {
+        "sporeling": 16,
+        "mender": 3
+      },
+      "budgets": {
+        "mixed": 8.689864864864866,
+        "sporeling": 8.817567567567568,
+        "mender": 8.924999999999999
+      },
+      "source": "cal-v2-cross-anchor-sensitivity",
+      "holmAdjustedP": [
+        0.7156968116760245,
+        0.0000095367431640625
+      ],
+      "practicalPass": false,
+      "broadSensitivityPass": false
+    },
+    {
+      "key": "sporeling_husher/higher_share",
+      "types": [
+        "sporeling",
+        "husher"
+      ],
+      "context": "assault",
+      "n": 100,
+      "wins": [
+        26,
+        1,
+        0
+      ],
+      "delta": 0.25,
+      "pairedBootstrap95": [
+        0.16,
+        0.34
+      ],
+      "rawPairedP": [
+        2.0861625671386708e-7,
+        1.4901161193847676e-8
+      ],
+      "counts": {
+        "actualCost": 10.303647,
+        "shares": {
+          "sporeling": 0.649206,
+          "husher": 0.350794
+        },
+        "pure": {
+          "sporeling": 34,
+          "husher": 9
+        },
+        "mixed": {
+          "sporeling": 22,
+          "husher": 3
+        }
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 26,
+          "heroWins": 74,
+          "timeouts": 0,
+          "meanDuration": 31.379
+        },
+        "pure_a": {
+          "n": 100,
+          "monsterWins": 1,
+          "heroWins": 99,
+          "timeouts": 0,
+          "meanDuration": 20.775
+        },
+        "pure_b": {
+          "n": 100,
+          "monsterWins": 0,
+          "heroWins": 100,
+          "timeouts": 0,
+          "meanDuration": 13.116
+        }
+      },
+      "source": "cal-v2-cross-discovery",
+      "holmAdjustedP": [
+        0.000002503395080566405,
+        2.0861625671386745e-7
+      ],
+      "practicalPass": true,
+      "broadSensitivityPass": true
+    },
+    {
+      "key": "broodcap_mender/higher_share",
+      "types": [
+        "broodcap",
+        "mender"
+      ],
+      "context": "mages",
+      "n": 100,
+      "wins": [
+        76,
+        63,
+        54
+      ],
+      "delta": 0.13,
+      "pairedBootstrap95": [
+        0.01,
+        0.25
+      ],
+      "rawPairedP": [
+        0.0297919440090482,
+        0.0006300169081328008
+      ],
+      "counts": {
+        "actualCost": 11.7,
+        "shares": {
+          "broodcap": 0.673077,
+          "mender": 0.326923
+        },
+        "pure": {
+          "broodcap": 11,
+          "mender": 10
+        },
+        "mixed": {
+          "broodcap": 7,
+          "mender": 3
+        }
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 76,
+          "heroWins": 11,
+          "timeouts": 13,
+          "meanDuration": 54.176
+        },
+        "pure_a": {
+          "n": 100,
+          "monsterWins": 63,
+          "heroWins": 22,
+          "timeouts": 15,
+          "meanDuration": 51.971
+        },
+        "pure_b": {
+          "n": 100,
+          "monsterWins": 54,
+          "heroWins": 45,
+          "timeouts": 1,
+          "meanDuration": 40.959
+        }
+      },
+      "source": "cal-v2-cross-discovery",
+      "holmAdjustedP": [
+        0.17875166405428922,
+        0.005670152173195207
+      ],
+      "practicalPass": false,
+      "broadSensitivityPass": false
+    },
+    {
+      "key": "nightwing_binder/borderline",
+      "types": [
+        "nightwing",
+        "binder"
+      ],
+      "context": "warrior_healer",
+      "n": 100,
+      "wins": [
+        86,
+        96,
+        0
+      ],
+      "delta": -0.1,
+      "pairedBootstrap95": [
+        -0.18,
+        -0.02
+      ],
+      "rawPairedP": [
+        0.9962310791015625,
+        1.2924697071141098e-26
+      ],
+      "counts": {
+        "mixed": {
+          "nightwing": 15,
+          "binder": 1
+        },
+        "pure": {
+          "nightwing": 24,
+          "binder": 3
+        },
+        "actualCost": 10.442307692307692,
+        "supportShare": 0.3535911602209945
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 86,
+          "heroWins": 0,
+          "timeouts": 14,
+          "meanDuration": 38.813999999999986
+        },
+        "pure_a": {
+          "n": 100,
+          "monsterWins": 96,
+          "heroWins": 0,
+          "timeouts": 4,
+          "meanDuration": 26.559000000000005
+        },
+        "pure_b": {
+          "n": 100,
+          "monsterWins": 0,
+          "heroWins": 100,
+          "timeouts": 0,
+          "meanDuration": 13.272
+        }
+      },
+      "source": "cal-v2-cross-discovery",
+      "holmAdjustedP": [
+        1,
+        3.2311742677852745e-25
+      ],
+      "practicalPass": false,
+      "broadSensitivityPass": false
+    },
+    {
+      "key": "nightwing_bulwark/lower_support",
+      "types": [
+        "nightwing",
+        "bulwark"
+      ],
+      "context": "assault",
+      "n": 100,
+      "wins": [
+        9,
+        5,
+        0
+      ],
+      "delta": 0.04,
+      "pairedBootstrap95": [
+        -0.03,
+        0.11
+      ],
+      "rawPairedP": [
+        0.1938476562500001,
+        0.0019531249999999985
+      ],
+      "counts": {
+        "mixed": {
+          "nightwing": 21,
+          "bulwark": 1
+        },
+        "pure": {
+          "nightwing": 27,
+          "bulwark": 6
+        },
+        "actualCost": 11.763253012048192,
+        "shares": {
+          "nightwing": 0.8033492087878322,
+          "bulwark": 0.19665079121216772
+        }
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 9,
+          "heroWins": 91,
+          "timeouts": 0,
+          "meanDuration": 18.523000000000007
+        },
+        "pure_a": {
+          "n": 100,
+          "monsterWins": 5,
+          "heroWins": 95,
+          "timeouts": 0,
+          "meanDuration": 14.846000000000004
+        },
+        "pure_b": {
+          "n": 100,
+          "monsterWins": 0,
+          "heroWins": 100,
+          "timeouts": 0,
+          "meanDuration": 25.242000000000004
+        }
+      },
+      "source": "cal-v2-final-partner",
+      "holmAdjustedP": [
+        0.7753906250000004,
+        0.015624999999999988
+      ],
+      "practicalPass": false,
+      "broadSensitivityPass": false
+    },
+    {
+      "key": "sporeling_binder/higher_support",
+      "types": [
+        "sporeling",
+        "binder"
+      ],
+      "context": "assault",
+      "n": 100,
+      "wins": [
+        50,
+        2,
+        0
+      ],
+      "delta": 0.48,
+      "pairedBootstrap95": [
+        0.38,
+        0.58
+      ],
+      "rawPairedP": [
+        4.529709940470636e-14,
+        8.881784197001244e-16
+      ],
+      "counts": {
+        "mixed": {
+          "sporeling": 15,
+          "binder": 2
+        },
+        "pure": {
+          "sporeling": 40,
+          "binder": 4
+        },
+        "actualCost": 11.945426195426197,
+        "shares": {
+          "sporeling": 0.38180394204411955,
+          "binder": 0.6181960579558804
+        }
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 50,
+          "heroWins": 50,
+          "timeouts": 0,
+          "meanDuration": 43.952
+        },
+        "pure_a": {
+          "n": 100,
+          "monsterWins": 2,
+          "heroWins": 98,
+          "timeouts": 0,
+          "meanDuration": 23.688999999999997
+        },
+        "pure_b": {
+          "n": 100,
+          "monsterWins": 0,
+          "heroWins": 100,
+          "timeouts": 0,
+          "meanDuration": 8.168000000000001
+        }
+      },
+      "source": "cal-v2-final-partner",
+      "holmAdjustedP": [
+        8.606448886894208e-13,
+        1.776356839400249e-14
+      ],
+      "practicalPass": true,
+      "broadSensitivityPass": true
+    },
+    {
+      "key": "nightwing_mender/lower_share",
+      "types": [
+        "nightwing",
+        "mender"
+      ],
+      "context": "balanced",
+      "n": 100,
+      "wins": [
+        85,
+        50,
+        0
+      ],
+      "delta": 0.35,
+      "pairedBootstrap95": [
+        0.23,
+        0.47
+      ],
+      "rawPairedP": [
+        8.858493316665768e-8,
+        2.584939414228224e-26
+      ],
+      "counts": {
+        "mixed": {
+          "nightwing": 21,
+          "mender": 2
+        },
+        "pure": {
+          "nightwing": 27,
+          "mender": 10
+        },
+        "actualCost": 12,
+        "shares": {
+          "nightwing": 0.7875,
+          "mender": 0.2125
+        }
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 85,
+          "heroWins": 10,
+          "timeouts": 5,
+          "meanDuration": 25.215999999999998
+        },
+        "pure_a": {
+          "n": 100,
+          "monsterWins": 50,
+          "heroWins": 48,
+          "timeouts": 2,
+          "meanDuration": 21.842000000000006
+        },
+        "pure_b": {
+          "n": 100,
+          "monsterWins": 0,
+          "heroWins": 0,
+          "timeouts": 100,
+          "meanDuration": 100
+        }
+      },
+      "source": "cal-v2-remaining-partner",
+      "holmAdjustedP": [
+        0.00000115160413116655,
+        6.203854594147738e-25
+      ],
+      "practicalPass": true,
+      "broadSensitivityPass": true
+    },
+    {
+      "key": "broodcap_bulwark/lower_share",
+      "types": [
+        "broodcap",
+        "bulwark"
+      ],
+      "context": "mages",
+      "n": 100,
+      "wins": [
+        66,
+        68,
+        5
+      ],
+      "delta": -0.02,
+      "pairedBootstrap95": [
+        -0.14,
+        0.1
+      ],
+      "rawPairedP": [
+        0.6864487149214279,
+        5.816744655384755e-17
+      ],
+      "counts": {
+        "mixed": {
+          "broodcap": 9,
+          "bulwark": 1
+        },
+        "pure": {
+          "broodcap": 12,
+          "bulwark": 6
+        },
+        "actualCost": 12.438253012048193,
+        "shares": {
+          "broodcap": 0.814021067925899,
+          "bulwark": 0.18597893207410093
+        }
+      },
+      "arms": {
+        "mixed": {
+          "n": 100,
+          "monsterWins": 66,
+          "heroWins": 26,
+          "timeouts": 8,
+          "meanDuration": 50.181000000000004
+        },
+        "pure_a": {
+          "n": 100,
+          "monsterWins": 68,
+          "heroWins": 18,
+          "timeouts": 14,
+          "meanDuration": 53.19200000000001
+        },
+        "pure_b": {
+          "n": 100,
+          "monsterWins": 5,
+          "heroWins": 95,
+          "timeouts": 0,
+          "meanDuration": 17.857
+        }
+      },
+      "source": "cal-v2-remaining-partner",
+      "holmAdjustedP": [
+        1,
+        1.279683824184646e-15
+      ],
+      "practicalPass": false,
+      "broadSensitivityPass": false
+    },
+    {
+      "key": "siegebreaker_mender/v2",
+      "types": [
+        "siegebreaker",
+        "mender"
+      ],
+      "context": "defended-castle75",
+      "n": 100,
+      "wins": [
+        37,
+        1,
+        0
+      ],
+      "delta": 0.36,
+      "pairedBootstrap95": [
+        0.27,
+        0.46
+      ],
+      "rawPairedP": [
+        1.4551915228366858e-11,
+        7.27595761418344e-12
+      ],
+      "source": "siege-calibrated-v2-summary.json",
+      "holmAdjustedP": [
+        2.1827872842550288e-10,
+        1.1641532182693505e-10
+      ],
+      "practicalPass": true,
+      "broadSensitivityPass": true
+    }
+  ],
+  "coveredOrdinaryMonsterTypes": [
+    "binder",
+    "bulwark",
+    "husher",
+    "mender",
+    "nightwing",
+    "rattler",
+    "siegebreaker",
+    "sporeling",
+    "thornling"
+  ],
+  "unresolved": {
+    "broodcap": [
+      "No decisive cost-calibrated weak matchup confirmed.",
+      "No calibrated partner clears the15-point target on fresh confirmation."
+    ],
+    "bulwark": [
+      "Observed77% defeats meets point target; its95% interval crosses75%."
+    ]
+  },
+  "roleExceptions": {
+    "guardian": "Actual boss-garrison readiness checks.",
+    "boneservant": "Binder-owned summon; corpse, cap and owner-death checks."
+  },
+  "scope": "Conditional level3/rank3 flat-arena evidence. Hero recruitment costs exclude guild/research setup; monster equivalents are not universal prices or game spawn costs."
+}

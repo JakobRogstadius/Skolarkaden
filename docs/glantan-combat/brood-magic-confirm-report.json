@@ -1,0 +1,475 @@
+{
+  "protocol": {
+    "sourceSha256": "4939595f304f67f2de17d7616352b4b59f348dd354f884f659c2265f1c1d10dc",
+    "sourceRef": "working-tree frozen current siege90/42",
+    "casesSha256": "77f93ba9282b6e377f0a6a92a01547e5f248f0d09c35f0b441e99d8931c289a7",
+    "driverSha256": "3b375d737f6b48ec240755f966dd5d1e14953d20d9895fcf900022f539d3fc39",
+    "prototypeFile": "/workspace/scratch/23d09e66c6fe/experiments/brood-magic-probe.cjs",
+    "prototypeSha256": "1818de9f1778bfddfe64f39b460e03588e976654e1151718884eda76321a10c2",
+    "configureFunction": "function configure(multiplier){return G=>{\n let spellOwner=null;\n const strike=G.necromancerStrike,damage=G.damage;\n G.necromancerStrike=function(w,h,t,d){const old=spellOwner;spellOwner=h;try{return strike(w,h,t,d);}finally{spellOwner=old;}};\n G.damage=function(w,t,a,attacker){const magical=attacker?.classId==='mage'||attacker?.classId==='healer'||spellOwner&&attacker===spellOwner;return damage(w,t,a*(t?.type==='broodcap'&&magical?multiplier:1),attacker);};\n};}",
+    "overrides": {
+      "broodcapMagicDamageMultipliers": [
+        1,
+        1.5
+      ],
+      "scope": "Mage/healer direct attacks and necromancer spells only. Summoned skeleton melee remains physical. No production edits."
+    },
+    "selection": "Preselected mage_necromancer and warriors; no new context selection.",
+    "freshSeeds": 100,
+    "prefix": "brood-magic-confirm-480000+",
+    "geometry": "Full18-cell distance × spacing × mirror cycle;100 seeds yield5or6starts/cell. Same configs/seeds in both multiplier arms.",
+    "freshArenaRuns": 400,
+    "replayArenaRuns": 300,
+    "originalReplayFile": "/workspace/scratch/23d09e66c6fe/experiments/calibration-v2/cal-cross-discovery-confirm-raw.jsonl",
+    "originalReplaySha256": "fb40f8d881bd376feb9a8288a10c0a2c80881eaab61145a6f2d2e5c82394bff8",
+    "originalReplayFilter": {
+      "pair": "broodcap_mender"
+    },
+    "replay": "Exact300config objects from original confirmation; no geometry/roster/seed modifications.",
+    "frozenAt": "2026-11-02T00:23:18.827Z"
+  },
+  "sourceStable": true,
+  "counter": [
+    {
+      "army": "mage_necromancer",
+      "multiplier1": {
+        "n": 100,
+        "monsterWins": 35,
+        "opponentWins": 38,
+        "timeouts": 27,
+        "monsterWilson95": [
+          0.26364248243097527,
+          0.44745556703112027
+        ],
+        "opponentWilson95": [
+          0.29097599252478734,
+          0.47790244704488916
+        ]
+      },
+      "multiplier1_5": {
+        "n": 100,
+        "monsterWins": 15,
+        "opponentWins": 73,
+        "timeouts": 12,
+        "monsterWilson95": [
+          0.0930598528365663,
+          0.23283559590832364
+        ],
+        "opponentWilson95": [
+          0.6356788323205499,
+          0.8073041585042365
+        ]
+      },
+      "pairedOpponentVictoryEffect": {
+        "outcome": "win",
+        "delta": 0.35,
+        "better": 39,
+        "worse": 4,
+        "oneSidedExactP": 1.5540763342869435e-8,
+        "CI": {
+          "pairedSeeds": 100,
+          "delta": 0.35,
+          "pairedBootstrap95": [
+            0.24,
+            0.46
+          ],
+          "pairedNormal95": [
+            0.240767,
+            0.459233
+          ],
+          "bootstrapResamples": 20000,
+          "bootstrapSeed": 5367457,
+          "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval."
+        }
+      },
+      "pairedMonsterVictoryEffect": {
+        "outcome": "loss",
+        "delta": -0.2,
+        "better": 2,
+        "worse": 22,
+        "oneSidedExactP": 0.9999985098838816,
+        "CI": {
+          "pairedSeeds": 100,
+          "delta": -0.2,
+          "pairedBootstrap95": [
+            -0.29,
+            -0.11
+          ],
+          "pairedNormal95": [
+            -0.288094,
+            -0.111906
+          ],
+          "bootstrapResamples": 20000,
+          "bootstrapSeed": 5367457,
+          "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval."
+        }
+      }
+    },
+    {
+      "army": "warriors",
+      "multiplier1": {
+        "n": 100,
+        "monsterWins": 100,
+        "opponentWins": 0,
+        "timeouts": 0,
+        "monsterWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "opponentWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      },
+      "multiplier1_5": {
+        "n": 100,
+        "monsterWins": 100,
+        "opponentWins": 0,
+        "timeouts": 0,
+        "monsterWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "opponentWilson95": [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      },
+      "pairedOpponentVictoryEffect": {
+        "outcome": "win",
+        "delta": 0,
+        "better": 0,
+        "worse": 0,
+        "oneSidedExactP": 1,
+        "CI": {
+          "pairedSeeds": 100,
+          "delta": 0,
+          "pairedBootstrap95": [
+            0,
+            0
+          ],
+          "pairedNormal95": [
+            0,
+            0
+          ],
+          "bootstrapResamples": 20000,
+          "bootstrapSeed": 5367457,
+          "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval."
+        }
+      },
+      "pairedMonsterVictoryEffect": {
+        "outcome": "loss",
+        "delta": 0,
+        "better": 0,
+        "worse": 0,
+        "oneSidedExactP": 1,
+        "CI": {
+          "pairedSeeds": 100,
+          "delta": 0,
+          "pairedBootstrap95": [
+            0,
+            0
+          ],
+          "pairedNormal95": [
+            0,
+            0
+          ],
+          "bootstrapResamples": 20000,
+          "bootstrapSeed": 5367457,
+          "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval."
+        }
+      }
+    }
+  ],
+  "partnership": {
+    "before": {
+      "mixed": {
+        "n": 100,
+        "monsterWins": 76,
+        "opponentWins": 11,
+        "timeouts": 13,
+        "monsterWilson95": [
+          0.6676766365018553,
+          0.8330867444305122
+        ],
+        "opponentWilson95": [
+          0.06254196357064568,
+          0.18631296503080313
+        ]
+      },
+      "pure_a": {
+        "n": 100,
+        "monsterWins": 63,
+        "opponentWins": 22,
+        "timeouts": 15,
+        "monsterWilson95": [
+          0.5322052958094291,
+          0.7181763946567546
+        ],
+        "opponentWilson95": [
+          0.150012823846054,
+          0.31070353514985793
+        ]
+      },
+      "pure_b": {
+        "n": 100,
+        "monsterWins": 54,
+        "opponentWins": 45,
+        "timeouts": 1,
+        "monsterWilson95": [
+          0.44264860323368227,
+          0.6343919169097589
+        ],
+        "opponentWilson95": [
+          0.3561453797951198,
+          0.5475539700255787
+        ]
+      }
+    },
+    "after": {
+      "mixed": {
+        "n": 100,
+        "monsterWins": 17,
+        "opponentWins": 79,
+        "timeouts": 4,
+        "monsterWilson95": [
+          0.10893566114059931,
+          0.25548004767601123
+        ],
+        "opponentWilson95": [
+          0.7002003116591013,
+          0.858343459380847
+        ]
+      },
+      "pure_a": {
+        "n": 100,
+        "monsterWins": 16,
+        "opponentWins": 79,
+        "timeouts": 5,
+        "monsterWilson95": [
+          0.10095288488804782,
+          0.24420269389270244
+        ],
+        "opponentWilson95": [
+          0.7002003116591013,
+          0.858343459380847
+        ]
+      },
+      "pure_b": {
+        "n": 100,
+        "monsterWins": 54,
+        "opponentWins": 45,
+        "timeouts": 1,
+        "monsterWilson95": [
+          0.44264860323368227,
+          0.6343919169097589
+        ],
+        "opponentWilson95": [
+          0.3561453797951198,
+          0.5475539700255787
+        ]
+      }
+    },
+    "beforeSynergy": {
+      "n": 100,
+      "wins": [
+        76,
+        63,
+        54
+      ],
+      "rates": [
+        0.76,
+        0.63,
+        0.54
+      ],
+      "intervals": [
+        [
+          0.6676766365018553,
+          0.8330867444305122
+        ],
+        [
+          0.5322052958094291,
+          0.7181763946567546
+        ],
+        [
+          0.44264860323368227,
+          0.6343919169097589
+        ]
+      ],
+      "delta": 0.13,
+      "pairedBootstrap95": [
+        0.01,
+        0.25
+      ],
+      "comparisons": [
+        {
+          "better": 27,
+          "worse": 14,
+          "oneSidedExactP": 0.0297919440090482
+        },
+        {
+          "better": 33,
+          "worse": 11,
+          "oneSidedExactP": 0.0006300169081328008
+        }
+      ],
+      "passes": false
+    },
+    "afterSynergy": {
+      "n": 100,
+      "wins": [
+        17,
+        16,
+        54
+      ],
+      "rates": [
+        0.17,
+        0.16,
+        0.54
+      ],
+      "intervals": [
+        [
+          0.10893566114059931,
+          0.25548004767601123
+        ],
+        [
+          0.10095288488804782,
+          0.24420269389270244
+        ],
+        [
+          0.44264860323368227,
+          0.6343919169097589
+        ]
+      ],
+      "delta": -0.37,
+      "pairedBootstrap95": [
+        -0.49,
+        -0.25
+      ],
+      "comparisons": [
+        {
+          "better": 10,
+          "worse": 9,
+          "oneSidedExactP": 0.5000000000000006
+        },
+        {
+          "better": 6,
+          "worse": 43,
+          "oneSidedExactP": 0.9999999962014205
+        }
+      ],
+      "passes": false
+    },
+    "pairedMonsterVictoryChanges": {
+      "mixed": {
+        "outcome": "loss",
+        "delta": -0.59,
+        "better": 1,
+        "worse": 60,
+        "oneSidedExactP": 1,
+        "CI": {
+          "pairedSeeds": 100,
+          "delta": -0.59,
+          "pairedBootstrap95": [
+            -0.69,
+            -0.49
+          ],
+          "pairedNormal95": [
+            -0.690809,
+            -0.489191
+          ],
+          "bootstrapResamples": 20000,
+          "bootstrapSeed": 5367457,
+          "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval."
+        }
+      },
+      "pure_a": {
+        "outcome": "loss",
+        "delta": -0.47,
+        "better": 1,
+        "worse": 48,
+        "oneSidedExactP": 0.999999999999998,
+        "CI": {
+          "pairedSeeds": 100,
+          "delta": -0.47,
+          "pairedBootstrap95": [
+            -0.57,
+            -0.37
+          ],
+          "pairedNormal95": [
+            -0.572185,
+            -0.367815
+          ],
+          "bootstrapResamples": 20000,
+          "bootstrapSeed": 5367457,
+          "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval."
+        }
+      },
+      "pure_b": {
+        "outcome": "loss",
+        "delta": 0,
+        "better": 0,
+        "worse": 0,
+        "oneSidedExactP": 1,
+        "CI": {
+          "pairedSeeds": 100,
+          "delta": 0,
+          "pairedBootstrap95": [
+            0,
+            0
+          ],
+          "pairedNormal95": [
+            0,
+            0
+          ],
+          "bootstrapResamples": 20000,
+          "bootstrapSeed": 5367457,
+          "method": "Approximate percentile bootstrap resampling paired seed deltas (or seed-cluster averages), preserving within-seed dependence; nominal95%, not simultaneous coverage. All-tie data can produce a degenerate empirical interval."
+        }
+      }
+    },
+    "pureMenderReplayParity": {
+      "cases": 100,
+      "matchingOutcomeReasonDurationHeroDamageMonsterDamage": 100
+    }
+  },
+  "criteria": {
+    "decisiveWeak": "Actual opponent victories>=75% across all100 starts.",
+    "preserveFavorable": "Actual monster victories>=75% against warriors.",
+    "partnership": "Compare mixed to both conservatively funded pure controls; primary practical margin15pp; exact paired tests and nominal paired bootstrap95 reported."
+  },
+  "acceptance": {
+    "counter75PointPass": false,
+    "counterActualOpponentVictories": 73,
+    "counterCandidateOpponentWilson95": [
+      0.6356788323205499,
+      0.8073041585042365
+    ],
+    "favorableWarriorPointPass": true,
+    "nearPositivePartnershipPreserved": false,
+    "conclusion": "The candidate improves the intended magic counter but misses the predeclared75% decisive threshold and removes the near-positive brood+mender margin. It does not meet the stated acceptance criteria."
+  },
+  "rawReports": [
+    {
+      "file": "/workspace/scratch/23d09e66c6fe/experiments/brood-magic-confirm-counter-before-raw.json",
+      "cases": 200,
+      "bytes": 7119103,
+      "sha256": "7cce5cad31ced537bed479d3d7929845ec3dec8542cd62e8dce6dd10140650c9",
+      "multiplier": 1
+    },
+    {
+      "file": "/workspace/scratch/23d09e66c6fe/experiments/brood-magic-confirm-counter-after1.5-raw.json",
+      "cases": 200,
+      "bytes": 6000933,
+      "sha256": "1bc538e04917a5529843bf6e93a6204dc701c6bec4d952cbed009c5371a0c796",
+      "multiplier": 1.5
+    },
+    {
+      "file": "/workspace/scratch/23d09e66c6fe/experiments/brood-magic-confirm-partnership-after1.5-raw.json",
+      "cases": 300,
+      "bytes": 5106623,
+      "sha256": "d6edfc709ac948ccf130640c75ec9d107b44d1227f8f081d5a8b06b10a4f1384",
+      "multiplier": 1.5
+    }
+  ]
+}

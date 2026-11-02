@@ -1,6 +1,6 @@
 {
   "baseline": "28ba8b8a447182e495ae869777539f4d6abe363d",
-  "totalArchivedArenas": 46032,
+  "totalArchivedArenas": 74004,
   "heroSynergies": [
     {
       "family": "bulwark",
@@ -1866,6 +1866,146 @@
           "better": 30,
           "worse": 0,
           "oneSidedExactP": 9.313225746154793e-10
+        }
+      ],
+      "passes": true
+    }
+  ],
+  "siegeCostSensitivity": [
+    {
+      "dataset": "siege-calibrated-v1-validation",
+      "source": "06b9058a5874335a97a9b5f053dbf7a9edfbc0a55955fb5d90608f60fb803d47",
+      "controls": {
+        "castleShots": true,
+        "endOnPartyDeath": false,
+        "deadline": 75
+      },
+      "budgets": {
+        "mixed": 9.332046332046332,
+        "pureA": 10.378378378378379,
+        "pureB": 10.357142857142856
+      },
+      "counts": {
+        "mixed": 6,
+        "mixedA": 4,
+        "mixedB": 2,
+        "pureA": 8,
+        "pureB": 5
+      },
+      "timeouts": [
+        1,
+        0,
+        39
+      ],
+      "n": 100,
+      "wins": [
+        32,
+        43,
+        0
+      ],
+      "rates": [
+        0.32,
+        0.43,
+        0
+      ],
+      "intervals": [
+        [
+          0.23669147324999093,
+          0.41662618610452384
+        ],
+        [
+          0.33733298524110106,
+          0.5278461045078768
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": -0.11,
+      "pairedBootstrap95": [
+        -0.24,
+        0.01
+      ],
+      "comparisons": [
+        {
+          "better": 16,
+          "worse": 27,
+          "oneSidedExactP": 0.9670029827721
+        },
+        {
+          "better": 32,
+          "worse": 0,
+          "oneSidedExactP": 2.328306436538698e-10
+        }
+      ],
+      "passes": false
+    },
+    {
+      "dataset": "siege-calibrated-v2-validation",
+      "source": "06b9058a5874335a97a9b5f053dbf7a9edfbc0a55955fb5d90608f60fb803d47",
+      "controls": {
+        "castleShots": true,
+        "endOnPartyDeath": false,
+        "deadline": 75
+      },
+      "budgets": {
+        "mixed": 7.9117021276595745,
+        "pureA": 8.042553191489361,
+        "pureB": 8.924999999999999
+      },
+      "counts": {
+        "mixed": 6,
+        "mixedA": 4,
+        "mixedB": 2,
+        "pureA": 6,
+        "pureB": 7
+      },
+      "timeouts": [
+        0,
+        0,
+        91
+      ],
+      "n": 100,
+      "wins": [
+        37,
+        1,
+        0
+      ],
+      "rates": [
+        0.37,
+        0.01,
+        0
+      ],
+      "intervals": [
+        [
+          0.28182360534324524,
+          0.4677947041905709
+        ],
+        [
+          0.0017674320641406505,
+          0.054486196178705315
+        ],
+        [
+          3.469446951953614e-18,
+          0.03699349820698568
+        ]
+      ],
+      "delta": 0.36,
+      "pairedBootstrap95": [
+        0.27,
+        0.46
+      ],
+      "comparisons": [
+        {
+          "better": 36,
+          "worse": 0,
+          "oneSidedExactP": 1.4551915228366858e-11
+        },
+        {
+          "better": 37,
+          "worse": 0,
+          "oneSidedExactP": 7.27595761418344e-12
         }
       ],
       "passes": true
