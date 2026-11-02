@@ -35,8 +35,12 @@ function build() {
   fromRows(bundle('cal-v2-final-partner').study.confirmations, 'cal-v2-final-partner');
   fromRows(bundle('cal-v2-remaining-partner').study.confirmations, 'cal-v2-remaining-partner');
   add('siegebreaker_mender/v2', ['siegebreaker','mender'], 'defended-castle75', read('siege-calibrated-v2-summary.json'), { source: 'siege-calibrated-v2-summary.json' });
-  // A broader, post-hoc sensitivity check across all current-production v2
-  // confirmation comparisons; the original declared batch tests stay archived.
+  const completion = read('completion.json');
+  for (const r of completion.partnerships)
+    add('broodcap_husher/'+r.candidate, ['broodcap','husher'], 'assault', r.pairedSynergy,
+      { counts:r.roster, mixedBudget:r.actualBudget, partnerBudgetShare:r.actualHusherBudgetShare, arms:{mixed:r.mixed,pureBrood:r.pureBrood,pureHusher:r.pureHusher}, source:'completion-brood-partner-summary.json' });
+  // A broader, post-hoc sensitivity check, retaining historical failed
+  // confirmations as well. Original declared batch tests stay archived.
   const tests = rows.flatMap(row => row.rawPairedP.map((p, arm) => ({ row, arm, p }))).sort((a,b) => a.p-b.p);
   let adjusted = 0;
   for (let i=0; i<tests.length; i++) {
@@ -45,13 +49,20 @@ function build() {
   }
   for (const r of rows) { r.practicalPass = r.delta >= .15-1e-12; r.broadSensitivityPass = r.practicalPass && r.holmAdjustedP.every(p => p < .05); }
   const covered = [...new Set(rows.filter(r => r.broadSensitivityPass).flatMap(r => r.types))].sort();
+  const counters = model.counters.filter(r => !completion.counterReplacements.some(c => c.type===r.type&&c.direction===r.direction)).concat(completion.counterReplacements);
+  const costs=model.costs.map(c=>c.type!=='broodcap'?c:{type:'broodcap',cost:completion.broodFit.cost,status:'identified',conditionalOnly:false,anchor:null,threshold:completion.broodFit.threshold,validationArmy:{broodcap:completion.broodReference.armyCount},achievedBudget:completion.broodReference.budget,predictedReferenceVictory:completion.broodReference.predictedWinRate,heldoutReferenceVictory:completion.broodReference.heldoutWinRate,referencePredictionError:completion.broodReference.error,source:'brood-role-splash-fit.json'});
+  const unresolved={};
+  for(const c of costs) {
+    if(!covered.includes(c.type)) (unresolved[c.type]||=[]).push('No confirmed partnership.');
+    for(const direction of ['strong','weak'])if(!counters.some(r=>r.type===c.type&&r.direction===direction&&r.point75Pass)) (unresolved[c.type]||=[]).push('Missing '+direction+' counter.');
+  }
   return {
-    sourceSha256: model.sourceSha256, modelVersion: model.version,
-    definition: 'Actual monster victories; timeouts are neither side\'s victory. Same-or-higher-cost pure controls. Every reported context has100 fresh paired starts.',
-    multiplicity: { method: 'Holm sensitivity across all v2 current-production confirmation comparisons', contexts: rows.length, comparisons: tests.length, alpha: .05, postHocSensitivity: true, note: 'Original predeclared batch criteria remain in source reports. Nominal bootstrap intervals are not simultaneous.' },
-    costs: model.costs, counters: model.counters, synergies: rows,
+    sourceSha256: completion.sourceSha256, modelVersion: completion.version,
+    definition: 'Actual monster victories; timeouts are neither side\'s victory. Same-or-higher-cost pure controls. Each partnership context has 100 fresh paired starts; counter sample sizes are explicit.',
+    multiplicity: { method: 'Holm sensitivity across all calibrated confirmation comparisons, including historical failures', contexts: rows.length, comparisons: tests.length, alpha: .05, postHocSensitivity: true, note: 'Original predeclared batch criteria remain in source reports. Nominal bootstrap intervals are not simultaneous. Brood confirmation contexts share their pure controls.' },
+    costs, counters, synergies: rows,
     coveredOrdinaryMonsterTypes: covered,
-    unresolved: { broodcap: ['No decisive cost-calibrated weak matchup confirmed.', 'No calibrated partner clears the15-point target on fresh confirmation.'], bulwark: ['Observed77% defeats meets point target; its95% interval crosses75%.'] },
+    unresolved,
     roleExceptions: { guardian: 'Actual boss-garrison readiness checks.', boneservant: 'Binder-owned summon; corpse, cap and owner-death checks.' },
     scope: 'Conditional level3/rank3 flat-arena evidence. Hero recruitment costs exclude guild/research setup; monster equivalents are not universal prices or game spawn costs.'
   };

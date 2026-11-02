@@ -109,6 +109,57 @@ for (const type of Object.keys(G.monsterTypes)) {
   assert.equal(w.monsters.filter(m => m.broodParent === giant.id).length, 1, 'striking delays the next otherwise ready brood');
 }
 {
+  const { w, lair } = arena(), caster = hero(w, 'necromancer'), giant = enemy(w, lair, 'broodcap');
+  const child = G.spawnMonster(w, lair, { type: 'sporeling', at: giant, broodParent: giant.id });
+  const ordinary = enemy(w, lair, 'sporeling'); Object.assign(child, { x: giant.x, y: giant.y });
+  for (const target of [giant, child, ordinary]) {
+    target.hp = target.maxHp = 100;
+    assert.equal(G.damage(w, target, 10, caster), 10, 'four-argument direct damage is unchanged, including caster credit');
+    assert.equal(G.damage(w, target, 10, caster, 'area'), target === ordinary ? 10 : 20, 'only the brood family takes double secondary area damage');
+  }
+  enemy(w, lair, 'bulwark', 20, 15); enemy(w, lair, 'bulwark', 20, 16);
+  for (const target of [giant, child, ordinary]) {
+    target.hp = 100;
+    assert.equal(G.damage(w, target, 10, caster, 'area'), target === ordinary ? 7.5 : 15, 'one nonstacking ward multiplies the area vulnerability');
+  }
+  giant.hp = 0; w.monsters = [child];
+  const loaded = new G.Simulation({ saved: JSON.parse(JSON.stringify(w)) }).world;
+  assert.equal(G.damage(loaded, loaded.monsters[0], 4, loaded.heroes[0], 'area'), 8, 'old broodParent data retains the weakness after saving and losing its parent');
+}
+for (const role of ['mage', 'necromancer']) {
+  const { w, lair } = arena(), caster = hero(w, role, 9, 9), primary = enemy(w, lair, 'broodcap', 10, 9);
+  const secondary = enemy(w, lair, 'broodcap', 10.4, 9.4), ordinary = enemy(w, lair, 'sporeling', 10.8, 9.6);
+  const child = G.spawnMonster(w, lair, { type: 'sporeling', at: primary, broodParent: primary.id }); Object.assign(child, { x: 10.7, y: 9.5 });
+  for (const monster of w.monsters) monster.targetId = caster.id;
+  w.time = 10; w.tick = 3;
+  const damage = G.heroStats(w, caster).damage, splash = damage * (role === 'mage' ? .5 : .65);
+  G.updateHeroes(w, .1);
+  assert.equal(caster.targetId, primary.id); assert.equal(primary.hp, primary.maxHp - damage, role + ' primary hit stays unchanged');
+  assert.equal(secondary.hp, secondary.maxHp - splash * 2, role + ' secondary hit doubles against a broodcap');
+  assert.equal(child.hp, child.maxHp - splash * 2, role + ' secondary hit doubles against brood offspring');
+  assert.equal(ordinary.hp, ordinary.maxHp - splash, role + ' normal sporelings retain normal splash damage');
+  assert.equal(caster.cooldown, G.classes[role].cooldown, role + ' spends only the normal attack action');
+}
+{
+  const { w, lair } = arena(), master = hero(w, 'necromancer'), giant = enemy(w, lair, 'broodcap', 17.2, 15);
+  bones(w, 16.5, 15, 2); const skeleton = G.raiseSkeleton(w, master); Object.assign(skeleton, { x: 16.5, y: 15 }); master.targetId = giant.id;
+  const damage = (5 + skeleton.level * 2.4) * G.offenseBoost(w, skeleton);
+  G.updateSkeletons(w, .1);
+  assert.equal(giant.hp, giant.maxHp - damage, 'a skeleton strike credited to its necromancer remains direct physical damage');
+  const kills = master.kills; giant.hp = 1; elapse(w, 2); G.updateSkeletons(w, .1);
+  assert.equal(master.kills, kills + 1, 'the same physical strike still credits its master');
+}
+{
+  const { w, lair } = arena(), beacon = G.addBuilding(w, 'beacon', 15, 9), primary = enemy(w, lair, 'broodcap', 18, 10);
+  const secondary = enemy(w, lair, 'broodcap', 18.5, 10), ordinary = enemy(w, lair, 'sporeling', 18.5, 10.5);
+  G.castle(w).shotAt = 1e6;
+  G.updateBuildings(w, .1);
+  assert.equal(primary.hp, primary.maxHp - 28, 'beacon primary damage is unchanged');
+  assert.equal(secondary.hp, secondary.maxHp - 28 * .6 * 2, 'beacon secondary area damage uses the brood vulnerability');
+  assert.equal(ordinary.hp, ordinary.maxHp - 28 * .6, 'ordinary monsters retain normal beacon splash');
+  assert.equal(beacon.shotAt, w.time + 1.4, 'area vulnerability does not add another building action');
+}
+{
   const { w, lair } = arena(), ranger = hero(w, 'ranger'); w.research.traps = true;
   const goal = G.trapSites(w, lair)[0]; Object.assign(ranger, { x: goal.x, y: goal.y, trapGoal: { ...goal, lair: lair.id } });
   G.rangerTrapWork(w, ranger, 2, .1); assert.equal(w.traps.length, 1); assert.equal(ranger.actionCue.kind, 'trap');

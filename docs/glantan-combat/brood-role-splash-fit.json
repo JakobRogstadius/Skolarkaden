@@ -1,0 +1,80 @@
+{
+  "ref": "626eaa0c3040e12778c55b694bf13800482146b5",
+  "variant": {
+    "area": 2
+  },
+  "points": [
+    {
+      "count": 4,
+      "n": 54,
+      "monsterWinRate": 0,
+      "monsterWins": 0,
+      "heroWins": 54,
+      "timeouts": 0,
+      "fittedMonsterWinRate": 0
+    },
+    {
+      "count": 6,
+      "n": 54,
+      "monsterWinRate": 0.05555555555555555,
+      "monsterWins": 3,
+      "heroWins": 38,
+      "timeouts": 13,
+      "fittedMonsterWinRate": 0.05555555555555555
+    },
+    {
+      "count": 8,
+      "n": 54,
+      "monsterWinRate": 0.09259259259259259,
+      "monsterWins": 5,
+      "heroWins": 31,
+      "timeouts": 18,
+      "fittedMonsterWinRate": 0.09259259259259259
+    },
+    {
+      "count": 10,
+      "n": 54,
+      "monsterWinRate": 0.3148148148148148,
+      "monsterWins": 17,
+      "heroWins": 18,
+      "timeouts": 19,
+      "fittedMonsterWinRate": 0.3148148148148148
+    },
+    {
+      "count": 12,
+      "n": 54,
+      "monsterWinRate": 0.46296296296296297,
+      "monsterWins": 25,
+      "heroWins": 13,
+      "timeouts": 16,
+      "fittedMonsterWinRate": 0.46296296296296297
+    },
+    {
+      "count": 14,
+      "n": 54,
+      "monsterWinRate": 0.6851851851851852,
+      "monsterWins": 37,
+      "heroWins": 4,
+      "timeouts": 13,
+      "fittedMonsterWinRate": 0.6851851851851852
+    },
+    {
+      "count": 18,
+      "n": 54,
+      "monsterWinRate": 0.8518518518518519,
+      "monsterWins": 46,
+      "heroWins": 0,
+      "timeouts": 8,
+      "fittedMonsterWinRate": 0.8518518518518519
+    }
+  ],
+  "threshold": {
+    "status": "identified",
+    "value": 12.333333333333334,
+    "bracket": [
+      12,
+      14
+    ]
+  },
+  "cost": 0.9729729729729729
+}

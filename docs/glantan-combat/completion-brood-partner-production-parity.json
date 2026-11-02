@@ -1,0 +1,31 @@
+{
+  "title": "Brood splash prototype to production replay parity",
+  "prototypeRef": "626eaa0c3040e12778c55b694bf13800482146b5",
+  "prototypeSha256": "359f3b6e234601fd8741f0e083458793e87e5cbed9d5f7126fb65158129c9be6",
+  "productionSourceSha256": "3adece360a199127c445d0f6d619b210100c7889504d12dc77625e0aab15910e",
+  "productionSourceHashMethod": "SHA-256 updated sequentially with each relative path string followed by its file bytes, in the listed order; no separator bytes.",
+  "productionSourceFiles": [
+    "resources/glantan/content.js",
+    "resources/glantan/world.js",
+    "resources/glantan/engine.js",
+    "resources/glantan/orders.js",
+    "resources/glantan/summons.js",
+    "resources/glantan/traps.js",
+    "resources/glantan/heroes.js",
+    "resources/glantan/monsters.js"
+  ],
+  "harnessSha256": "c27c2391adc3dba66faed3c5d43bb6dc14f7d89feab6a7149a0bc633d42bc061",
+  "comparedRecords": 600,
+  "exactParityExcept": [
+    "ref",
+    "wallMs"
+  ],
+  "differingTrials": 0,
+  "prototypeOutcomes": {
+    "loss": 267,
+    "win": 319,
+    "timeout": 14
+  },
+  "countsAsIndependentValidation": false,
+  "details": "Production replay is a reproduction check of the same confirmation inputs, not an independent validation sample."
+}

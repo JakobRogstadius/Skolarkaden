@@ -1,0 +1,686 @@
+{
+  "version": "v3-brood",
+  "sourceSha256": "b2b7195698171f7a79dc7f258e0f50f31ba4c5df19d8ce9006a052abee56d201",
+  "completed": "2026-11-02",
+  "mechanic": "Broodcap and broodParent offspring take2x secondary-area damage; primary/direct damage unchanged. Explicit area tags, no class inference.",
+  "broodFit": {
+    "ref": "626eaa0c3040e12778c55b694bf13800482146b5",
+    "variant": {
+      "area": 2
+    },
+    "points": [
+      {
+        "count": 4,
+        "n": 54,
+        "monsterWinRate": 0,
+        "monsterWins": 0,
+        "heroWins": 54,
+        "timeouts": 0,
+        "fittedMonsterWinRate": 0
+      },
+      {
+        "count": 6,
+        "n": 54,
+        "monsterWinRate": 0.05555555555555555,
+        "monsterWins": 3,
+        "heroWins": 38,
+        "timeouts": 13,
+        "fittedMonsterWinRate": 0.05555555555555555
+      },
+      {
+        "count": 8,
+        "n": 54,
+        "monsterWinRate": 0.09259259259259259,
+        "monsterWins": 5,
+        "heroWins": 31,
+        "timeouts": 18,
+        "fittedMonsterWinRate": 0.09259259259259259
+      },
+      {
+        "count": 10,
+        "n": 54,
+        "monsterWinRate": 0.3148148148148148,
+        "monsterWins": 17,
+        "heroWins": 18,
+        "timeouts": 19,
+        "fittedMonsterWinRate": 0.3148148148148148
+      },
+      {
+        "count": 12,
+        "n": 54,
+        "monsterWinRate": 0.46296296296296297,
+        "monsterWins": 25,
+        "heroWins": 13,
+        "timeouts": 16,
+        "fittedMonsterWinRate": 0.46296296296296297
+      },
+      {
+        "count": 14,
+        "n": 54,
+        "monsterWinRate": 0.6851851851851852,
+        "monsterWins": 37,
+        "heroWins": 4,
+        "timeouts": 13,
+        "fittedMonsterWinRate": 0.6851851851851852
+      },
+      {
+        "count": 18,
+        "n": 54,
+        "monsterWinRate": 0.8518518518518519,
+        "monsterWins": 46,
+        "heroWins": 0,
+        "timeouts": 8,
+        "fittedMonsterWinRate": 0.8518518518518519
+      }
+    ],
+    "threshold": {
+      "status": "identified",
+      "value": 12.333333333333334,
+      "bracket": [
+        12,
+        14
+      ]
+    },
+    "cost": 0.9729729729729729
+  },
+  "broodReference": {
+    "armyCount": 12,
+    "budget": 11.675675675675675,
+    "predictedWinRate": 0.46296296296296297,
+    "heldoutWinRate": 0.5462962962962963,
+    "error": 0.08333333333333331,
+    "starts": 108
+  },
+  "counterReplacements": [
+    {
+      "type": "broodcap",
+      "direction": "strong",
+      "opponent": "warriors",
+      "monsterArmy": {
+        "broodcap": 12
+      },
+      "achievedBudget": 11.675675675675675,
+      "n": 100,
+      "monsterWins": 100,
+      "opponentWins": 0,
+      "timeouts": 0,
+      "winningSideWilson95": [
+        0.9630065017930143,
+        1
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "broodcap",
+      "direction": "weak",
+      "opponent": "mage_necromancer",
+      "monsterArmy": {
+        "broodcap": 12
+      },
+      "achievedBudget": 11.675675675675675,
+      "n": 500,
+      "monsterWins": 32,
+      "opponentWins": 439,
+      "timeouts": 29,
+      "winningSideWilson95": [
+        0.8463952769261602,
+        0.9038407216849063
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    },
+    {
+      "type": "bulwark",
+      "direction": "weak",
+      "opponent": "assault",
+      "monsterArmy": {
+        "husher": 8,
+        "bulwark": 1
+      },
+      "achievedBudget": 11.951807228915662,
+      "n": 1000,
+      "monsterWins": 214,
+      "opponentWins": 786,
+      "timeouts": 0,
+      "monsterWilson95": [
+        0.1897000852144518,
+        0.24048882063928573
+      ],
+      "opponentWilson95": [
+        0.7595111793607143,
+        0.8102999147855483
+      ],
+      "point75Pass": true,
+      "winningSideWilsonLowerAtLeast75": true
+    }
+  ],
+  "partnerships": [
+    {
+      "candidate": "husher-half-assault",
+      "roster": {
+        "brood": 7,
+        "husher": 4
+      },
+      "actualBudget": 11.630087919244545,
+      "actualHusherBudgetShare": 0.4143801097547318,
+      "screenDelta": 0.5555555555555556,
+      "mixed": {
+        "n": 100,
+        "monsterWins": 96,
+        "heroWins": 4,
+        "timeouts": 0,
+        "monsterWilson95": [
+          0.9016292856411208,
+          0.9843366960084523
+        ],
+        "heroWilson95": [
+          0.01566330399154762,
+          0.0983707143588792
+        ]
+      },
+      "pureBrood": {
+        "n": 100,
+        "monsterWins": 34,
+        "heroWins": 59,
+        "timeouts": 7,
+        "monsterWilson95": [
+          0.25461520797348164,
+          0.43722271145275377
+        ],
+        "heroWilson95": [
+          0.4920143005341078,
+          0.6813268697886348
+        ]
+      },
+      "pureHusher": {
+        "n": 100,
+        "monsterWins": 6,
+        "heroWins": 94,
+        "timeouts": 0,
+        "monsterWilson95": [
+          0.027786123963188192,
+          0.1247681544589592
+        ],
+        "heroWilson95": [
+          0.8752318455410406,
+          0.9722138760368118
+        ]
+      },
+      "pairedSynergy": {
+        "n": 100,
+        "wins": [
+          96,
+          34,
+          6
+        ],
+        "rates": [
+          0.96,
+          0.34,
+          0.06
+        ],
+        "intervals": [
+          [
+            0.9016292856411208,
+            0.9843366960084523
+          ],
+          [
+            0.25461520797348164,
+            0.43722271145275377
+          ],
+          [
+            0.027786123963188192,
+            0.1247681544589592
+          ]
+        ],
+        "delta": 0.62,
+        "pairedBootstrap95": [
+          0.51,
+          0.72
+        ],
+        "comparisons": [
+          {
+            "better": 65,
+            "worse": 3,
+            "oneSidedExactP": 1.7775155804720904e-16
+          },
+          {
+            "better": 90,
+            "worse": 0,
+            "oneSidedExactP": 8.077935669463182e-28
+          }
+        ],
+        "passes": true
+      },
+      "passes": true
+    },
+    {
+      "candidate": "husher-quarter-assault",
+      "roster": {
+        "brood": 9,
+        "husher": 2
+      },
+      "actualBudget": 11.166395310973623,
+      "actualHusherBudgetShare": 0.2157937711419573,
+      "screenDelta": 0.5,
+      "mixed": {
+        "n": 100,
+        "monsterWins": 91,
+        "heroWins": 9,
+        "timeouts": 0,
+        "monsterWilson95": [
+          0.837737871472837,
+          0.9519274599974348
+        ],
+        "heroWilson95": [
+          0.04807254000256516,
+          0.1622621285271631
+        ]
+      },
+      "pureBrood": {
+        "n": 100,
+        "monsterWins": 34,
+        "heroWins": 59,
+        "timeouts": 7,
+        "monsterWilson95": [
+          0.25461520797348164,
+          0.43722271145275377
+        ],
+        "heroWilson95": [
+          0.4920143005341078,
+          0.6813268697886348
+        ]
+      },
+      "pureHusher": {
+        "n": 100,
+        "monsterWins": 6,
+        "heroWins": 94,
+        "timeouts": 0,
+        "monsterWilson95": [
+          0.027786123963188192,
+          0.1247681544589592
+        ],
+        "heroWilson95": [
+          0.8752318455410406,
+          0.9722138760368118
+        ]
+      },
+      "pairedSynergy": {
+        "n": 100,
+        "wins": [
+          91,
+          34,
+          6
+        ],
+        "rates": [
+          0.91,
+          0.34,
+          0.06
+        ],
+        "intervals": [
+          [
+            0.837737871472837,
+            0.9519274599974348
+          ],
+          [
+            0.25461520797348164,
+            0.43722271145275377
+          ],
+          [
+            0.027786123963188192,
+            0.1247681544589592
+          ]
+        ],
+        "delta": 0.57,
+        "pairedBootstrap95": [
+          0.46,
+          0.68
+        ],
+        "comparisons": [
+          {
+            "better": 61,
+            "worse": 4,
+            "oneSidedExactP": 1.9593322190397688e-14
+          },
+          {
+            "better": 85,
+            "worse": 0,
+            "oneSidedExactP": 2.584939414228224e-26
+          }
+        ],
+        "passes": true
+      },
+      "passes": true
+    }
+  ],
+  "broodCounterProductionParity": {
+    "cases": 708,
+    "mismatches": []
+  },
+  "progression": {
+    "groups": [
+      {
+        "level": 1,
+        "rank": 1,
+        "n": 40,
+        "before": {
+          "win": 26,
+          "loss": 10,
+          "timeout": 4
+        },
+        "after": {
+          "win": 28,
+          "loss": 10,
+          "timeout": 2
+        }
+      },
+      {
+        "level": 1,
+        "rank": 3,
+        "n": 40,
+        "before": {
+          "win": 2,
+          "loss": 32,
+          "timeout": 6
+        },
+        "after": {
+          "win": 1,
+          "loss": 32,
+          "timeout": 7
+        }
+      },
+      {
+        "level": 1,
+        "rank": 5,
+        "n": 40,
+        "before": {
+          "win": 0,
+          "loss": 38,
+          "timeout": 2
+        },
+        "after": {
+          "win": 0,
+          "loss": 35,
+          "timeout": 5
+        }
+      },
+      {
+        "level": 1,
+        "rank": 6,
+        "n": 40,
+        "before": {
+          "win": 0,
+          "loss": 40,
+          "timeout": 0
+        },
+        "after": {
+          "win": 0,
+          "loss": 40,
+          "timeout": 0
+        }
+      },
+      {
+        "level": 3,
+        "rank": 1,
+        "n": 40,
+        "before": {
+          "win": 36,
+          "loss": 4,
+          "timeout": 0
+        },
+        "after": {
+          "win": 36,
+          "loss": 4,
+          "timeout": 0
+        }
+      },
+      {
+        "level": 3,
+        "rank": 3,
+        "n": 40,
+        "before": {
+          "win": 12,
+          "loss": 23,
+          "timeout": 5
+        },
+        "after": {
+          "win": 12,
+          "loss": 22,
+          "timeout": 6
+        }
+      },
+      {
+        "level": 3,
+        "rank": 5,
+        "n": 40,
+        "before": {
+          "win": 2,
+          "loss": 32,
+          "timeout": 6
+        },
+        "after": {
+          "win": 4,
+          "loss": 31,
+          "timeout": 5
+        }
+      },
+      {
+        "level": 3,
+        "rank": 6,
+        "n": 40,
+        "before": {
+          "win": 1,
+          "loss": 33,
+          "timeout": 6
+        },
+        "after": {
+          "win": 1,
+          "loss": 32,
+          "timeout": 7
+        }
+      },
+      {
+        "level": 5,
+        "rank": 1,
+        "n": 40,
+        "before": {
+          "win": 38,
+          "loss": 2,
+          "timeout": 0
+        },
+        "after": {
+          "win": 38,
+          "loss": 2,
+          "timeout": 0
+        }
+      },
+      {
+        "level": 5,
+        "rank": 3,
+        "n": 40,
+        "before": {
+          "win": 29,
+          "loss": 9,
+          "timeout": 2
+        },
+        "after": {
+          "win": 29,
+          "loss": 9,
+          "timeout": 2
+        }
+      },
+      {
+        "level": 5,
+        "rank": 5,
+        "n": 40,
+        "before": {
+          "win": 7,
+          "loss": 26,
+          "timeout": 7
+        },
+        "after": {
+          "win": 7,
+          "loss": 24,
+          "timeout": 9
+        }
+      },
+      {
+        "level": 5,
+        "rank": 6,
+        "n": 40,
+        "before": {
+          "win": 6,
+          "loss": 29,
+          "timeout": 5
+        },
+        "after": {
+          "win": 5,
+          "loss": 30,
+          "timeout": 5
+        }
+      },
+      {
+        "level": 8,
+        "rank": 1,
+        "n": 40,
+        "before": {
+          "win": 40,
+          "loss": 0,
+          "timeout": 0
+        },
+        "after": {
+          "win": 40,
+          "loss": 0,
+          "timeout": 0
+        }
+      },
+      {
+        "level": 8,
+        "rank": 3,
+        "n": 40,
+        "before": {
+          "win": 36,
+          "loss": 4,
+          "timeout": 0
+        },
+        "after": {
+          "win": 36,
+          "loss": 4,
+          "timeout": 0
+        }
+      },
+      {
+        "level": 8,
+        "rank": 5,
+        "n": 40,
+        "before": {
+          "win": 29,
+          "loss": 9,
+          "timeout": 2
+        },
+        "after": {
+          "win": 29,
+          "loss": 9,
+          "timeout": 2
+        }
+      },
+      {
+        "level": 8,
+        "rank": 6,
+        "n": 40,
+        "before": {
+          "win": 22,
+          "loss": 13,
+          "timeout": 5
+        },
+        "after": {
+          "win": 24,
+          "loss": 13,
+          "timeout": 3
+        }
+      }
+    ]
+  },
+  "validation": {
+    "ordinarySuites": 97,
+    "ordinarySuitesPassed": 97,
+    "wallSeconds": 98.61,
+    "sourceStable": true,
+    "harnessSelfTest": {
+      "passed": true,
+      "ref": "working-tree",
+      "basicDuration": 2.6,
+      "basicDamage": 28,
+      "broodSpawns": 1,
+      "binderSummons": 1,
+      "siegeOutcome": "loss"
+    },
+    "campaignExecutions": 36,
+    "bossChecksPassed": 6
+  },
+  "criteriaStatus": "All ordinary-monster strong/weak point targets and all hero/ordinary-monster partnership targets are met in the defined role-aware benchmark suite. Bosses and summons use the documented role checks.",
+  "limits": [
+    "Nominal per-context confidence intervals, not simultaneous population guarantees for the whole roster.",
+    "Monster costs are conditional reference equivalents; game purchase/spawn costs are unchanged.",
+    "Flat arenas and fixed campaign policies do not establish human difficulty targets."
+  ],
+  "sourceHashMethod": "SHA-256 of concatenated file bytes in the listed harness load order, without path names or separators.",
+  "sourceFiles": [
+    "resources/glantan/content.js",
+    "resources/glantan/world.js",
+    "resources/glantan/engine.js",
+    "resources/glantan/orders.js",
+    "resources/glantan/summons.js",
+    "resources/glantan/traps.js",
+    "resources/glantan/heroes.js",
+    "resources/glantan/monsters.js"
+  ],
+  "broodPartnershipProductionParity": {
+    "title": "Brood splash prototype to production replay parity",
+    "prototypeRef": "626eaa0c3040e12778c55b694bf13800482146b5",
+    "prototypeSha256": "359f3b6e234601fd8741f0e083458793e87e5cbed9d5f7126fb65158129c9be6",
+    "productionSourceSha256": "3adece360a199127c445d0f6d619b210100c7889504d12dc77625e0aab15910e",
+    "productionSourceHashMethod": "SHA-256 updated sequentially with each relative path string followed by its file bytes, in the listed order; no separator bytes.",
+    "productionSourceFiles": [
+      "resources/glantan/content.js",
+      "resources/glantan/world.js",
+      "resources/glantan/engine.js",
+      "resources/glantan/orders.js",
+      "resources/glantan/summons.js",
+      "resources/glantan/traps.js",
+      "resources/glantan/heroes.js",
+      "resources/glantan/monsters.js"
+    ],
+    "harnessSha256": "c27c2391adc3dba66faed3c5d43bb6dc14f7d89feab6a7149a0bc633d42bc061",
+    "comparedRecords": 600,
+    "exactParityExcept": [
+      "ref",
+      "wallMs"
+    ],
+    "differingTrials": 0,
+    "prototypeOutcomes": {
+      "loss": 267,
+      "win": 319,
+      "timeout": 14
+    },
+    "countsAsIndependentValidation": false,
+    "details": "Production replay is a reproduction check of the same confirmation inputs, not an independent validation sample."
+  },
+  "unaffectedProductionParity": {
+    "oldRef": "626eaa0",
+    "newRef": "working-tree",
+    "contexts": 41,
+    "cases": 123,
+    "simulatorExecutions": 246,
+    "selection": "First3 recorded seeds per non-brood context from current counter/partnership confirmation and baseline hero validation. Both sources replayed under the same current instrumentation.",
+    "mismatches": []
+  },
+  "evidenceAccounting": {
+    "datasets": 81,
+    "archivedRecordedCases": 85963,
+    "archivedArenaExecutions": 83814,
+    "cachedReuses": 2160,
+    "completionArchivedExecutions": 9810,
+    "additionalNonBroodParityExecutions": 246
+  }
+}

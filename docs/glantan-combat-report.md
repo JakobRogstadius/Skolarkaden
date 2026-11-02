@@ -2,27 +2,62 @@
 
 2026-11-01–02. Baseline: `28ba8b8a447182e495ae869777539f4d6abe363d`.
 
-The retained game change gives the siegebreaker a clearer role: fragile,
-dangerous to buildings, stoppable by nearby defenders, and useful with mender
-escorts. In 100 fresh defended-castle starts, siege + mender armies breached
-30 times versus once for pure siege and never for pure menders. The original
-rules produced six breaches for both mixed and pure-siege armies.
+The completed, role-aware benchmark gives all five hero classes a confirmed
+partner and all ten ordinary monster types a confirmed partner, favorable
+matchup and unfavorable matchup. Eight distinct calibrated monster partnerships
+pass in nine contexts. The retained changes give siegebreakers a fragile,
+defender-interceptible siege role and make broodcaps and their offspring
+specifically vulnerable to secondary area damage. Support units are assessed
+within functioning armies; guardians and boneservants have boss/summon checks.
 
-The baseline already has substantial complementary army composition. All five
-hero classes have a confirmed partner. The initial monster partnership screen
-covers all ten ordinary types after the siege change, but some of those results
-fail the later independently calibrated comparisons below. Seven calibrated
-partnerships cover nine ordinary monster types; broodcap remains unresolved.
-Nine types also meet the observed strong/weak counter targets, although the
-bulwark weakness has wider uncertainty. The all-ranger campaign advantage is partly an acquisition-cost
-advantage; an all-ranger loss also appears on the second hard-mode map seed.
-The original anecdotes alone did not justify a ranger nerf.
+The final broodcap counter wins 439/500 fresh starts (87.8%). Broodcap + husher
+wins 96/100 versus 34/100 for pure broodcaps and 6/100 for pure hushers, with
+the pure controls spending slightly more. A separate 1,000-start bulwark check
+also clears the previously uncertain weakness threshold. The all-ranger
+campaign advantage is partly an acquisition-cost advantage; an all-ranger loss
+also appears on the second hard-mode map seed. The evidence did not justify a
+general ranger nerf.
 
 The [protocol](glantan-combat-protocol.md), actual-engine runners and
 [archived evidence](glantan-combat/manifest.json) make those findings replayable.
-Each experiment distinguishes victories, defeats and timeouts. The study does
-**not** establish that every unit has passed every proposed acceptance condition,
-or estimate human campaign win rates.
+Each experiment distinguishes victories, defeats and timeouts. The
+[acceptance matrix](glantan-combat/acceptance.json) has no unresolved ordinary
+monster cells under these declared criteria. This is conditional combat
+evidence, not a universal unit price or an estimate of human campaign win rates.
+
+## Retained change: brood family vulnerable to area damage
+
+Broodcaps and sporelings carrying their `broodParent` origin take **2× secondary
+area damage**. Primary hits, ordinary sporelings, ranger traps and physical
+skeleton strikes retain their previous damage. Mage, necromancer and beacon
+splash use the explicit area tag. Bulwark protection still multiplies damage
+by 0.75 once. Offspring retain their weakness after their parent dies and through
+existing saves. No attack gains another action or bypasses a cooldown. The unit
+descriptions explain the weakness.
+
+A fixed three-candidate discovery compared physical resistance, area
+vulnerability, and both together. Each candidate received a separate count-based
+cost fit before its counter screen. The simpler area-only candidate was frozen
+for fresh confirmation. Its rank-3 reference cost is **0.973**; twelve broodcaps
+spend 11.676 against hero armies costing 12. This is a new independently fitted
+reference cost, not a change to spawning or an adjustment to manufacture a
+desired counter rate. The held-out reference error is +8.33 percentage points.
+
+Against six warriors, broodcaps win **100/100** fresh starts. Against two mages
+and two necromancers, heroes win **439/500**, broodcaps win 32 and 29 time out.
+The hero-victory Wilson 95% interval is **84.6–90.4%**, above the 75% target at
+its lower bound. In a separate partnership screen, hushers supply useful ranged
+pressure alongside the brood's replenishing bodies. Two independently
+confirmed mixture ratios beat both pure controls; see the calibrated table.
+
+Current production reproduces all **708 counter/reference trial records** and
+**600 partnership trial records** from the retained prototype exactly, excluding
+only source labels and wall-clock execution time. These replays check faithful
+integration; they are not additional independent validation samples. The
+[completion record](glantan-combat/completion.json),
+[candidate screen](glantan-combat/brood-role-screen-summary.json) and
+[partnership evidence](glantan-combat/completion-brood-partner-summary.json)
+retain the selection, costs, outcomes and tests.
 
 ## Retained change: siegebreaker with escorts
 
@@ -153,14 +188,14 @@ measured in a defended-castle assay. Transferring them is an explicit assumption
 | Husher | 1.205 | Three reference armies |
 | Nightwing | 0.450 | Three reference armies |
 | Thornling | 1.026 | Three reference armies |
-| Broodcap | 1.125 | Three reference armies |
+| Broodcap | 0.973 | Three reference armies; area-vulnerability redesign |
 | Siegebreaker | 1.340 | Defended castle |
 | Mender | 1.275 | With rattler |
 | Binder | 3.692 | With thornling |
 | Bulwark | 2.313 | With husher |
 
-Mean absolute held-out reference prediction error is **5.3 percentage
-points**; thornlings have the largest error, 13.9 points. This describes the
+Mean absolute held-out reference prediction error is **5.8 percentage
+points** with the updated brood fit; thornlings have the largest error, 13.9 points. This describes the
 reference average, not individual matchups: counter-panel prediction errors
 are much larger. The earlier v1 fit trained on only one spacing and failed its
 geometry-shifted validation; its model and failed siege sensitivity remain in
@@ -168,7 +203,8 @@ the archive. The v2 fit fixes that distribution mismatch before confirmation.
 See the [frozen model summary](glantan-combat/calibration-v2-summary.json).
 
 Each row below combines two separately selected, freshly confirmed contexts.
-Each context has 100 starts. A weak matchup requires actual opposing victories;
+Each context has 100 starts except the final brood weakness (500) and bulwark
+weakness (1,000). A weak matchup requires actual opposing victories;
 remaining outcomes are defeats or timeouts, never automatically wins.
 
 | Monster army | Favorable opponent: monster victories | Unfavorable opponent: hero victories |
@@ -178,20 +214,22 @@ remaining outcomes are defeats or timeouts, never automatically wins.
 | 10 husher | 6 rangers: 100% | 6 warriors: 99% |
 | 27 nightwing | 6 rangers: 100% | 3 warriors + 2 mages: 98% |
 | 12 thornling | 3 rangers + 2 healers: 100% | 3 warriors + 2 mages: 98% |
-| 11 broodcap | 6 warriors: 100% | Unresolved |
+| 12 broodcap | 6 warriors: 100% | 2 mages + 2 necromancers: 87.8% |
 | 9 siegebreaker | 3 rangers + 2 healers: 100% | 4 mages: 100% |
 | 24 rattler + 2 mender | 6 warriors: 100% | 4 mages: 100% |
 | 8 thornling + 1 binder | 4 healers: 100% | 3 warriors + 2 mages: 100% |
-| 8 husher + 1 bulwark | 6 rangers: 100% | 3 warriors + 2 mages: 77% |
+| 8 husher + 1 bulwark | 6 rangers: 100% | 3 warriors + 2 mages: 78.6% |
 
-The bulwark army's 77% defeat rate has a nominal Wilson 95% interval of
-67.8–84.2%; it meets the point target but does not yet establish a population
-rate above 75%. Other confirmed directions clear that lower-bound check.
+The bulwark army's original 77/100 defeat result had an interval crossing 75%.
+A frozen 1,000-start precision check on new seeds gives **786 hero victories,
+214 monster victories and no timeouts**, nominal Wilson 95% interval
+**76.0–81.0%**. It passes without pooling the earlier 100 starts or optional
+stopping. All current monster counter directions clear the nominal lower-bound
+check; these intervals are not a simultaneous roster-wide guarantee.
 Mender, binder and bulwark rows are army-role checks, not pure-support duels.
-Broodcaps remain the counter gap in this version: a subsequent complete screen
-of all 46 cost-12 hero compositions found at most 9/18 hero victories, below its
-predeclared confirmation gate. Its full [screen](glantan-combat/brood-composition-summary.json)
-is retained rather than treating a low brood victory share as a decisive loss.
+The pre-redesign brood screen of all 46 cost-12 hero compositions failed its
+gate and remains [archived](glantan-combat/brood-composition-summary.json).
+It is superseded by the fresh, recalibrated area-vulnerability confirmation.
 
 ## Current partnerships at calibrated budgets
 
@@ -209,6 +247,8 @@ opponents, both paired tests and every failed confirmation.
 | 15 sporelings + 2 binders | 40 sporelings / 4 binders | 50% | 2% | 0% | +48 points, +38 to +58 |
 | 21 nightwings + 2 menders | 27 nightwings / 10 menders | 85% | 50% | 0% | +35 points, +23 to +47 |
 | 4 siege + 2 menders | 6 siege / 7 menders | 37% | 1% | 0% | +36 points, +27 to +46 |
+| 7 broodcaps + 4 hushers | 12 broodcaps / 10 hushers | 96% | 34% | 6% | +62 points, +51 to +72 |
+| 9 broodcaps + 2 hushers | 12 broodcaps / 10 hushers | 91% | 34% | 6% | +57 points, +46 to +68 |
 
 The contexts differ: these rows establish useful partnerships, not rankings or
 universally winning compositions. The rattler mixture times out in 18% of
@@ -217,17 +257,26 @@ timeouts. Several pure mender controls mostly time out. The separate counter
 criteria ensure that a modest synergy win rate is not mistaken for a decisive
 favorable matchup.
 
-All seven pass the original batch criteria and a broader Holm sensitivity
-check across all **13 calibrated confirmations / 26 paired comparisons**,
-including the failures. This broader check is explicitly post hoc; the
+All nine contexts (eight distinct partnerships) pass the original batch criteria
+and a broader Holm sensitivity check across all **15 calibrated confirmations /
+30 paired comparisons**, including historical failures. This broader check is explicitly post hoc; the
 predeclared batch corrections remain in the archived protocols. Confidence
 intervals in the table are nominal, not simultaneous.
 
-Failed fresh confirmations include binder + thornling (+4 points), sporeling +
+The two brood rows face three warriors + two mages. Hushers occupy 41.44% and
+21.58% of the achieved mixed budgets, respectively. Their 600 executed records
+contain 400 unique simulation inputs: both rows share the same 100 pure-brood
+and 100 pure-husher starting conditions. They are two mixture-ratio checks,
+not independent replications of those controls. The declared four-comparison
+Bonferroni test and the broader Holm test remain valid with that dependence.
+
+Historical failed fresh confirmations include binder + thornling (+4 points), sporeling +
 mender (+6), broodcap + mender (+13), nightwing + binder (−10), nightwing +
 bulwark (+4), and broodcap + bulwark (−2). Brood + bulwark's exploratory
 16.7-point gain did not reproduce: 66% mixed victories versus 68% for pure
-broodcaps. No failed row was silently replaced by its discovery result.
+broodcaps. Both failed brood rows used the previous brood rules and costs;
+they are retained as history rather than current-version tests. No failed row
+was silently replaced by its discovery result.
 
 The nightwing result illustrates why mixture ratios matter. Under the new
 prices, an earlier mender-heavy army did not improve on pure nightwings.
@@ -284,7 +333,7 @@ Holding the four-hero composition and enemy counts fixed, increasing hero level
 improves victory share and increasing monster rank reduces it in the tested
 grid. Each cell combines five encounter families and eight starting conditions.
 
-![Progression sweep](glantan-combat/progression.png)
+![Original baseline progression sweep](glantan-combat/progression.png)
 
 This supports the direction of progression. It does not validate a universal
 power price. The initial monster weights overestimate some basic creatures
@@ -295,10 +344,17 @@ objective pressure. Fit a baseline threat model separately, freeze it, and
 keep matchup deviations explicit; do not refit prices after a stat change just
 to make that change look balanced.
 
-The [current progression grid](glantan-combat/progression-current.json)
-substitutes the 128 rerun siege-containing cases and retains the 512 unchanged
-cases. It still improves monotonically with hero level and declines with
-monster rank across the tested grid.
+The final [before/after progression sweep](glantan-combat/completion-progression-summary.json)
+reruns all 640 cases under both sources. Current hero victories out of 40 per
+cell are below; increasing hero level still helps and increasing monster rank
+still hurts throughout this grid.
+
+| Hero level | Rank 1 | Rank 3 | Rank 5 | Rank 6 |
+| --- | ---: | ---: | ---: | ---: |
+| 1 | 28 | 1 | 0 | 0 |
+| 3 | 36 | 12 | 4 | 1 |
+| 5 | 38 | 29 | 7 | 5 |
+| 8 | 40 | 36 | 29 | 24 |
 
 Monster rank also does not uniquely specify stats. The arena uses canonical
 nest tier `min(3, rank)` and nest level `rank - tier + 1`, preserving the actual
@@ -340,8 +396,18 @@ baseline mixed-plan contexts were not rerun; one new mixed hard/10-second
 context was added. The two ranger policies still win 11/12 and 10/12 respectively.
 These probes did not expose a campaign effect; they do not establish that the
 redesign has no effect on other maps or player decisions.
-The [current campaign records](glantan-combat/campaigns-after.json) include all
+The [siege-only campaign records](glantan-combat/campaigns-after.json) include all
 six repeated boss checks, which also retain their original outcomes and timing.
+
+The final brood redesign adds **36 campaign executions**: twelve before/after
+pairs at ten seconds per answer, plus twelve current-source runs at three
+seconds. These cover the mixed four-class and eight-ranger plans, all three
+difficulties and both map seeds. All twelve paired outcomes are unchanged.
+One mixed medium-difficulty run finishes ten seconds earlier with combined
+hero level 43 instead of 44; the other recorded paired metrics are unchanged.
+Across the 24 current runs, the mixed plan wins 9/12 and eight rangers 11/12;
+both plans win all their three-second runs. All six current boss checks pass
+again. See the [final campaign and boss results](glantan-combat/completion-campaigns.json).
 
 ## Rejected changes
 
@@ -385,7 +451,7 @@ is descriptive rather than a paired estimate. The prototype reference panel
 also has 43/108 timeouts; good average prediction does not establish decisive
 combat resolution.
 
-## Experimental limits and next acceptance checks
+## Experimental limits
 
 * The arena uses actual fixed-step gameplay but disables strategic expedition
   recruitment, natural escalation and experience gain. Heroes receive a standing
@@ -429,9 +495,18 @@ The initial instrumentation recorded pre-override starting HP for newly raised
 enemy skeletons; those fields are not used in the reported victory, action or
 damage analyses. The final harness addresses that instrumentation limitation.
 
-Final production verification: **97/97 ordinary suites passed**, including
-interception, cooldown, line-of-sight and saved-game migration regressions.
+Final production verification: **97/97 ordinary suites passed** in 98.61 seconds,
+including interception, cooldown, line-of-sight, secondary area damage,
+offspring save compatibility and saved-game migration regressions.
 Harness self-checks passed against both original and current source. The
 unopposed siege self-check now leaves the castle undefended explicitly: the
 previous healer defender can intercept under the new rules. Asset versions
 were regenerated and `git diff --check` passed.
+
+Beyond the 1,308 retained-prototype production replays, 123 fixed non-brood
+cases spanning 41 existing hero/monster confirmation contexts were rerun on
+both sources. All recorded fields match except source labels and execution
+time. These 246 verification executions are reported separately from archived
+arena totals. They support carrying forward the unaffected confirmations;
+they are not new sample sizes. A separate read-only code/evidence review found
+no concrete bug in the final implementation.

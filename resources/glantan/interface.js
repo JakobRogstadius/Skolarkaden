@@ -247,6 +247,7 @@
         if (bounty) { const status = el('div', 'g-expedition'); this.panel.append(status); this.live.push(() => this.expeditionStatus(status, bounty)); }
         if (!bounty || bounty.level < 3) this.panel.append(this.action({ type: 'bounty', id: 'attack', target: target.id, level: bounty ? bounty.level + 1 : 1 }, { name: bounty ? 'Höj flaggan' : 'Anfall här' }));
         const details = [isLair ? spec.description : spec.role];
+        if (!isLair && target.broodParent) details.push('Odlad av en jättesporsvamp. Tar dubbel skada från områdesattacker mot grannar.');
         if (target.boss && isLair) details.push('Tystnadens hjärta. Samla cirka ' + target.suggestedLevels + ' hjältenivåer' + (w.pace === 'brave' ? ' med rustning, fanor och gruppläkning.' : '.'));
         const numbers = el('p'); this.live.push(() => { numbers.textContent = 'Liv ' + Math.ceil(target.hp) + '/' + target.maxHp; }); details.push(numbers);
         if (isLair) { const growth = el('p'); this.live.push(() => { growth.textContent = target.awake && target.level < 4 ? (target.type === 'spore' && !target.spread ? 'Nytt bo om ' : 'Växer om ') + G.clockText(Math.max(0, target.nextGrowth - w.time)) : ''; }); details.push(growth); }

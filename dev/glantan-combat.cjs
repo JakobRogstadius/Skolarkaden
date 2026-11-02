@@ -5,7 +5,8 @@
  * node dev/glantan-combat.cjs --matrix /tmp/cases.json --ref 28ba8b8 --json /tmp/baseline.json
  * node dev/glantan-combat.cjs --benchmark 20
  *
- * API: const h = createHarness({ ref?, configure(G)? }); h.G exposes real rules.
+ * API: const h = createHarness({ ref?, configure(G)?, transformSource(source,module)? });
+ * Source transforms are explicit experimental recipes; h.G exposes real rules.
  * h.runArena({ heroes:[{type:'warrior',level:3,branch:'banner'}],
  *   monsters:[{type:'rattler',rank:3}], seed:'0', difficulty:'steady',
  *   layout:'line'|'staggered'|'scatter', distance:5, spacing:1.25, mirror:false,
@@ -73,12 +74,13 @@ const round = n => Math.round(n * 1e5) / 1e5;
 const copy = value => JSON.parse(JSON.stringify(value));
 const CONTROL_VERSION = 1;
 
-function createHarness({ ref = null, configure } = {}) {
+function createHarness({ ref = null, configure, transformSource } = {}) {
   // Reuse the existing test runtime, including its sandbox and script load order.
   const loaded = runtime();
-  if (ref) for (const file of ['content', 'world', 'engine', 'orders', 'summons', 'traps', 'heroes', 'monsters']) {
+  if (ref || transformSource) for (const file of ['content', 'world', 'engine', 'orders', 'summons', 'traps', 'heroes', 'monsters']) {
     const filename = 'resources/glantan/' + file + '.js';
-    vm.runInContext(execFileSync('git', ['show', `${ref}:${filename}`], { cwd: ROOT, encoding: 'utf8' }), loaded.context, { filename });
+    const source = ref ? execFileSync('git', ['show', `${ref}:${filename}`], { cwd: ROOT, encoding: 'utf8' }) : fs.readFileSync(path.join(ROOT, filename), 'utf8');
+    vm.runInContext(transformSource ? transformSource(source, file) : source, loaded.context, { filename });
   }
   const G = loaded.context.Starlight.Glantan;
   configure?.(G);

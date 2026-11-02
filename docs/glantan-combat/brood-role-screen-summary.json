@@ -1,0 +1,462 @@
+[
+  {
+    "name": "shell",
+    "variant": {
+      "physical": 0.4
+    },
+    "points": [
+      {
+        "count": 4,
+        "n": 54,
+        "monsterWinRate": 0.018518518518518517,
+        "monsterWins": 1,
+        "heroWins": 37,
+        "timeouts": 16,
+        "fittedMonsterWinRate": 0.018518518518518517
+      },
+      {
+        "count": 6,
+        "n": 54,
+        "monsterWinRate": 0.07407407407407407,
+        "monsterWins": 4,
+        "heroWins": 26,
+        "timeouts": 24,
+        "fittedMonsterWinRate": 0.07407407407407407
+      },
+      {
+        "count": 8,
+        "n": 54,
+        "monsterWinRate": 0.2222222222222222,
+        "monsterWins": 12,
+        "heroWins": 15,
+        "timeouts": 27,
+        "fittedMonsterWinRate": 0.2222222222222222
+      },
+      {
+        "count": 10,
+        "n": 54,
+        "monsterWinRate": 0.4074074074074074,
+        "monsterWins": 22,
+        "heroWins": 3,
+        "timeouts": 29,
+        "fittedMonsterWinRate": 0.4074074074074074
+      },
+      {
+        "count": 12,
+        "n": 54,
+        "monsterWinRate": 0.5185185185185185,
+        "monsterWins": 28,
+        "heroWins": 1,
+        "timeouts": 25,
+        "fittedMonsterWinRate": 0.5185185185185185
+      },
+      {
+        "count": 14,
+        "n": 54,
+        "monsterWinRate": 0.7222222222222222,
+        "monsterWins": 39,
+        "heroWins": 0,
+        "timeouts": 15,
+        "fittedMonsterWinRate": 0.7222222222222222
+      },
+      {
+        "count": 18,
+        "n": 54,
+        "monsterWinRate": 0.8518518518518519,
+        "monsterWins": 46,
+        "heroWins": 0,
+        "timeouts": 8,
+        "fittedMonsterWinRate": 0.8518518518518519
+      }
+    ],
+    "threshold": {
+      "status": "identified",
+      "value": 11.666666666666668,
+      "bracket": [
+        10,
+        12
+      ]
+    },
+    "cost": 1.0285714285714285,
+    "count": 12,
+    "panels": [
+      {
+        "army": "balanced",
+        "n": 18,
+        "monsterWins": 13,
+        "heroWins": 0,
+        "timeouts": 5
+      },
+      {
+        "army": "assault",
+        "n": 18,
+        "monsterWins": 13,
+        "heroWins": 0,
+        "timeouts": 5
+      },
+      {
+        "army": "skirmish",
+        "n": 18,
+        "monsterWins": 10,
+        "heroWins": 0,
+        "timeouts": 8
+      },
+      {
+        "army": "warriors",
+        "n": 18,
+        "monsterWins": 18,
+        "heroWins": 0,
+        "timeouts": 0
+      },
+      {
+        "army": "rangers",
+        "n": 18,
+        "monsterWins": 18,
+        "heroWins": 0,
+        "timeouts": 0
+      },
+      {
+        "army": "healers",
+        "n": 18,
+        "monsterWins": 15,
+        "heroWins": 0,
+        "timeouts": 3
+      },
+      {
+        "army": "mages",
+        "n": 18,
+        "monsterWins": 13,
+        "heroWins": 4,
+        "timeouts": 1
+      },
+      {
+        "army": "necromancers",
+        "n": 18,
+        "monsterWins": 3,
+        "heroWins": 2,
+        "timeouts": 13
+      },
+      {
+        "army": "warrior_healer",
+        "n": 18,
+        "monsterWins": 15,
+        "heroWins": 0,
+        "timeouts": 3
+      },
+      {
+        "army": "mage_necromancer",
+        "n": 18,
+        "monsterWins": 6,
+        "heroWins": 6,
+        "timeouts": 6
+      }
+    ]
+  },
+  {
+    "name": "splash",
+    "variant": {
+      "area": 2
+    },
+    "points": [
+      {
+        "count": 4,
+        "n": 54,
+        "monsterWinRate": 0,
+        "monsterWins": 0,
+        "heroWins": 54,
+        "timeouts": 0,
+        "fittedMonsterWinRate": 0
+      },
+      {
+        "count": 6,
+        "n": 54,
+        "monsterWinRate": 0.05555555555555555,
+        "monsterWins": 3,
+        "heroWins": 38,
+        "timeouts": 13,
+        "fittedMonsterWinRate": 0.05555555555555555
+      },
+      {
+        "count": 8,
+        "n": 54,
+        "monsterWinRate": 0.09259259259259259,
+        "monsterWins": 5,
+        "heroWins": 31,
+        "timeouts": 18,
+        "fittedMonsterWinRate": 0.09259259259259259
+      },
+      {
+        "count": 10,
+        "n": 54,
+        "monsterWinRate": 0.3148148148148148,
+        "monsterWins": 17,
+        "heroWins": 18,
+        "timeouts": 19,
+        "fittedMonsterWinRate": 0.3148148148148148
+      },
+      {
+        "count": 12,
+        "n": 54,
+        "monsterWinRate": 0.46296296296296297,
+        "monsterWins": 25,
+        "heroWins": 13,
+        "timeouts": 16,
+        "fittedMonsterWinRate": 0.46296296296296297
+      },
+      {
+        "count": 14,
+        "n": 54,
+        "monsterWinRate": 0.6851851851851852,
+        "monsterWins": 37,
+        "heroWins": 4,
+        "timeouts": 13,
+        "fittedMonsterWinRate": 0.6851851851851852
+      },
+      {
+        "count": 18,
+        "n": 54,
+        "monsterWinRate": 0.8518518518518519,
+        "monsterWins": 46,
+        "heroWins": 0,
+        "timeouts": 8,
+        "fittedMonsterWinRate": 0.8518518518518519
+      }
+    ],
+    "threshold": {
+      "status": "identified",
+      "value": 12.333333333333334,
+      "bracket": [
+        12,
+        14
+      ]
+    },
+    "cost": 0.9729729729729729,
+    "count": 12,
+    "panels": [
+      {
+        "army": "balanced",
+        "n": 18,
+        "monsterWins": 4,
+        "heroWins": 0,
+        "timeouts": 14
+      },
+      {
+        "army": "assault",
+        "n": 18,
+        "monsterWins": 8,
+        "heroWins": 10,
+        "timeouts": 0
+      },
+      {
+        "army": "skirmish",
+        "n": 18,
+        "monsterWins": 11,
+        "heroWins": 0,
+        "timeouts": 7
+      },
+      {
+        "army": "warriors",
+        "n": 18,
+        "monsterWins": 18,
+        "heroWins": 0,
+        "timeouts": 0
+      },
+      {
+        "army": "rangers",
+        "n": 18,
+        "monsterWins": 15,
+        "heroWins": 0,
+        "timeouts": 3
+      },
+      {
+        "army": "healers",
+        "n": 18,
+        "monsterWins": 15,
+        "heroWins": 0,
+        "timeouts": 3
+      },
+      {
+        "army": "mages",
+        "n": 18,
+        "monsterWins": 3,
+        "heroWins": 15,
+        "timeouts": 0
+      },
+      {
+        "army": "necromancers",
+        "n": 18,
+        "monsterWins": 1,
+        "heroWins": 13,
+        "timeouts": 4
+      },
+      {
+        "army": "warrior_healer",
+        "n": 18,
+        "monsterWins": 15,
+        "heroWins": 0,
+        "timeouts": 3
+      },
+      {
+        "army": "mage_necromancer",
+        "n": 18,
+        "monsterWins": 1,
+        "heroWins": 17,
+        "timeouts": 0
+      }
+    ]
+  },
+  {
+    "name": "shell_splash",
+    "variant": {
+      "physical": 0.5,
+      "area": 2
+    },
+    "points": [
+      {
+        "count": 4,
+        "n": 54,
+        "monsterWinRate": 0,
+        "monsterWins": 0,
+        "heroWins": 42,
+        "timeouts": 12,
+        "fittedMonsterWinRate": 0
+      },
+      {
+        "count": 6,
+        "n": 54,
+        "monsterWinRate": 0.037037037037037035,
+        "monsterWins": 2,
+        "heroWins": 36,
+        "timeouts": 16,
+        "fittedMonsterWinRate": 0.037037037037037035
+      },
+      {
+        "count": 8,
+        "n": 54,
+        "monsterWinRate": 0.1111111111111111,
+        "monsterWins": 6,
+        "heroWins": 31,
+        "timeouts": 17,
+        "fittedMonsterWinRate": 0.1111111111111111
+      },
+      {
+        "count": 10,
+        "n": 54,
+        "monsterWinRate": 0.4074074074074074,
+        "monsterWins": 22,
+        "heroWins": 17,
+        "timeouts": 15,
+        "fittedMonsterWinRate": 0.4074074074074074
+      },
+      {
+        "count": 12,
+        "n": 54,
+        "monsterWinRate": 0.5,
+        "monsterWins": 27,
+        "heroWins": 10,
+        "timeouts": 17,
+        "fittedMonsterWinRate": 0.5
+      },
+      {
+        "count": 14,
+        "n": 54,
+        "monsterWinRate": 0.7037037037037037,
+        "monsterWins": 38,
+        "heroWins": 3,
+        "timeouts": 13,
+        "fittedMonsterWinRate": 0.7037037037037037
+      },
+      {
+        "count": 18,
+        "n": 54,
+        "monsterWinRate": 0.8518518518518519,
+        "monsterWins": 46,
+        "heroWins": 0,
+        "timeouts": 8,
+        "fittedMonsterWinRate": 0.8518518518518519
+      }
+    ],
+    "threshold": {
+      "status": "identified",
+      "value": 12,
+      "bracket": [
+        12,
+        12
+      ]
+    },
+    "cost": 1,
+    "count": 12,
+    "panels": [
+      {
+        "army": "balanced",
+        "n": 18,
+        "monsterWins": 5,
+        "heroWins": 0,
+        "timeouts": 13
+      },
+      {
+        "army": "assault",
+        "n": 18,
+        "monsterWins": 8,
+        "heroWins": 9,
+        "timeouts": 1
+      },
+      {
+        "army": "skirmish",
+        "n": 18,
+        "monsterWins": 10,
+        "heroWins": 0,
+        "timeouts": 8
+      },
+      {
+        "army": "warriors",
+        "n": 18,
+        "monsterWins": 18,
+        "heroWins": 0,
+        "timeouts": 0
+      },
+      {
+        "army": "rangers",
+        "n": 18,
+        "monsterWins": 18,
+        "heroWins": 0,
+        "timeouts": 0
+      },
+      {
+        "army": "healers",
+        "n": 18,
+        "monsterWins": 15,
+        "heroWins": 0,
+        "timeouts": 3
+      },
+      {
+        "army": "mages",
+        "n": 18,
+        "monsterWins": 3,
+        "heroWins": 15,
+        "timeouts": 0
+      },
+      {
+        "army": "necromancers",
+        "n": 18,
+        "monsterWins": 1,
+        "heroWins": 12,
+        "timeouts": 5
+      },
+      {
+        "army": "warrior_healer",
+        "n": 18,
+        "monsterWins": 15,
+        "heroWins": 0,
+        "timeouts": 3
+      },
+      {
+        "army": "mage_necromancer",
+        "n": 18,
+        "monsterWins": 2,
+        "heroWins": 16,
+        "timeouts": 0
+      }
+    ]
+  }
+]

@@ -46,6 +46,7 @@ function analyzeSiege(dataset){
 }
 const acceptedSiege=siegeSources.map(analyzeSiege);
 const siegeCostSensitivity=['siege-calibrated-v1-validation','siege-calibrated-v2-validation'].map(analyzeSiege);
-const output={baseline:manifest.baseline,totalArchivedArenas:manifest.totalArenas,heroSynergies:heroes,enemySynergies:enemies,acceptedSiege,siegeCostSensitivity,progression:levels,rejectedHush,counterValidation:load('hero-counter-validation').metadata.summary};
+const completion=JSON.parse(fs.readFileSync(path.join(dir,'completion.json')));
+const output={baseline:manifest.baseline,totalArchivedArenas:manifest.totalArenas,heroSynergies:heroes,enemySynergies:enemies,acceptedSiege,siegeCostSensitivity,progression:levels,rejectedHush,counterValidation:load('hero-counter-validation').metadata.summary,completion:{modelVersion:completion.version,sourceSha256:completion.sourceSha256,acceptance:'acceptance.json',details:'completion.json',counterReplacements:completion.counterReplacements,progression:completion.progression,criteriaStatus:completion.criteriaStatus}};
 fs.writeFileSync(path.join(dir,'analysis.json'),JSON.stringify(output,null,2)+'\n');
 console.log(JSON.stringify({heroContrasts:heroes.length,enemyContrasts:enemies.length,totalArchivedArenas:manifest.totalArenas,out:path.join(dir,'analysis.json')}));

@@ -1,0 +1,396 @@
+{
+  "title": "Broodcap area-splash role and partner evidence",
+  "prototype": {
+    "file": "dev/experiments/glantan-brood-role.cjs",
+    "multiplier": {
+      "area": 2
+    },
+    "sourceRef": "626eaa0c3040e12778c55b694bf13800482146b5",
+    "sha256": "359f3b6e234601fd8741f0e083458793e87e5cbed9d5f7126fb65158129c9be6"
+  },
+  "costs": {
+    "broodcap": 0.9729729729729729,
+    "mender": 1.275,
+    "nightwing": 0.45,
+    "husher": 1.2048192771084336,
+    "sporeling": 0.3040540540540541,
+    "binder": 3.6923076923076925,
+    "bulwark": 2.3132530120481922
+  },
+  "screen": {
+    "cases": 3240,
+    "contexts": 60,
+    "armsPerContext": 3,
+    "pairedSeedsPerContext": 18,
+    "selection": "Largest mixed monster-win rate minus stronger pure control; all 60 contexts retained.",
+    "leaders": [
+      {
+        "partner": "husher",
+        "requestedShare": 0.5,
+        "heroPanel": "assault",
+        "counts": {
+          "broodcap": 7,
+          "partner": 4
+        },
+        "actualBudget": 11.630087919244545,
+        "mixed": {
+          "n": 18,
+          "mixedWins": 17,
+          "heroWins": 1,
+          "timeouts": 0
+        },
+        "pureBrood": {
+          "n": 18,
+          "mixedWins": 7,
+          "heroWins": 10,
+          "timeouts": 1
+        },
+        "purePartner": {
+          "n": 18,
+          "mixedWins": 0,
+          "heroWins": 18,
+          "timeouts": 0
+        },
+        "gainOverStrongerPure": 0.5555555555555556,
+        "actualPartnerBudgetShare": 0.4143801097547318
+      },
+      {
+        "partner": "husher",
+        "requestedShare": 0.25,
+        "heroPanel": "assault",
+        "counts": {
+          "broodcap": 9,
+          "partner": 2
+        },
+        "actualBudget": 11.166395310973623,
+        "mixed": {
+          "n": 18,
+          "mixedWins": 16,
+          "heroWins": 2,
+          "timeouts": 0
+        },
+        "pureBrood": {
+          "n": 18,
+          "mixedWins": 7,
+          "heroWins": 10,
+          "timeouts": 1
+        },
+        "purePartner": {
+          "n": 18,
+          "mixedWins": 0,
+          "heroWins": 18,
+          "timeouts": 0
+        },
+        "gainOverStrongerPure": 0.49999999999999994,
+        "actualPartnerBudgetShare": 0.2157937711419573
+      },
+      {
+        "partner": "mender",
+        "requestedShare": 0.25,
+        "heroPanel": "assault",
+        "counts": {
+          "broodcap": 9,
+          "partner": 2
+        },
+        "actualBudget": 11.306756756756755,
+        "mixed": {
+          "n": 18,
+          "mixedWins": 11,
+          "heroWins": 6,
+          "timeouts": 1
+        },
+        "pureBrood": {
+          "n": 18,
+          "mixedWins": 7,
+          "heroWins": 10,
+          "timeouts": 1
+        },
+        "purePartner": {
+          "n": 18,
+          "mixedWins": 2,
+          "heroWins": 13,
+          "timeouts": 3
+        },
+        "gainOverStrongerPure": 0.22222222222222227,
+        "actualPartnerBudgetShare": 0.22552886339189676
+      },
+      {
+        "partner": "binder",
+        "requestedShare": 0.25,
+        "heroPanel": "assault",
+        "counts": {
+          "broodcap": 8,
+          "partner": 1
+        },
+        "actualBudget": 11.476091476091476,
+        "mixed": {
+          "n": 18,
+          "mixedWins": 10,
+          "heroWins": 8,
+          "timeouts": 0
+        },
+        "pureBrood": {
+          "n": 18,
+          "mixedWins": 7,
+          "heroWins": 10,
+          "timeouts": 1
+        },
+        "purePartner": {
+          "n": 18,
+          "mixedWins": 0,
+          "heroWins": 18,
+          "timeouts": 0
+        },
+        "gainOverStrongerPure": 0.16666666666666669,
+        "actualPartnerBudgetShare": 0.32173913043478264
+      }
+    ],
+    "summaryFile": "completion-brood-partner-protocols.json.gz"
+  },
+  "confirmation": {
+    "contexts": 2,
+    "executedRecords": 600,
+    "uniqueSimulationInputs": 400,
+    "sharedPureControls": true,
+    "sharedSeedRange": [
+      1230000,
+      1230099
+    ],
+    "multiplicity": {
+      "method": "Bonferroni over 4 paired comparisons; valid under dependence",
+      "familyAlpha": 0.05,
+      "perComparisonAlpha": 0.0125
+    },
+    "results": [
+      {
+        "key": "husher-half-assault",
+        "roster": {
+          "broodcap": 7,
+          "husher": 4
+        },
+        "achievedBudget": 11.630087919244545,
+        "partnerBudgetShare": 0.4143801097547318,
+        "costs": {
+          "broodcap": 0.9729729729729729,
+          "husher": 1.2048192771084336
+        },
+        "mixedBudgetControl": {
+          "broodcapCount": 7,
+          "husherCount": 4
+        },
+        "pureControls": [
+          {
+            "type": "broodcap",
+            "count": 12,
+            "cost": 11.675675675675675,
+            "n": 100,
+            "monsterWins": 34,
+            "heroWins": 59,
+            "timeouts": 7,
+            "monsterWilson95": [
+              0.25461520797348164,
+              0.43722271145275377
+            ],
+            "heroWilson95": [
+              0.4920143005341078,
+              0.6813268697886348
+            ]
+          },
+          {
+            "type": "husher",
+            "count": 10,
+            "cost": 12.048192771084336,
+            "n": 100,
+            "monsterWins": 6,
+            "heroWins": 94,
+            "timeouts": 0,
+            "monsterWilson95": [
+              0.027786123963188192,
+              0.1247681544589592
+            ],
+            "heroWilson95": [
+              0.8752318455410406,
+              0.9722138760368118
+            ]
+          }
+        ],
+        "mixed": {
+          "n": 100,
+          "monsterWins": 96,
+          "heroWins": 4,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.9016292856411208,
+            0.9843366960084523
+          ],
+          "heroWilson95": [
+            0.01566330399154762,
+            0.0983707143588792
+          ]
+        },
+        "gainOverStrongerPure": 0.62,
+        "pairedBootstrap95": [
+          0.51,
+          0.72
+        ],
+        "pairedComparisons": [
+          {
+            "better": 65,
+            "worse": 3,
+            "oneSidedExactP": 1.7775155804720904e-16
+          },
+          {
+            "better": 90,
+            "worse": 0,
+            "oneSidedExactP": 8.077935669463182e-28
+          }
+        ],
+        "exactGate": true,
+        "passes": true
+      },
+      {
+        "key": "husher-quarter-assault",
+        "roster": {
+          "broodcap": 9,
+          "husher": 2
+        },
+        "achievedBudget": 11.166395310973623,
+        "partnerBudgetShare": 0.2157937711419573,
+        "costs": {
+          "broodcap": 0.9729729729729729,
+          "husher": 1.2048192771084336
+        },
+        "mixedBudgetControl": {
+          "broodcapCount": 9,
+          "husherCount": 2
+        },
+        "pureControls": [
+          {
+            "type": "broodcap",
+            "count": 12,
+            "cost": 11.675675675675675,
+            "n": 100,
+            "monsterWins": 34,
+            "heroWins": 59,
+            "timeouts": 7,
+            "monsterWilson95": [
+              0.25461520797348164,
+              0.43722271145275377
+            ],
+            "heroWilson95": [
+              0.4920143005341078,
+              0.6813268697886348
+            ]
+          },
+          {
+            "type": "husher",
+            "count": 10,
+            "cost": 12.048192771084336,
+            "n": 100,
+            "monsterWins": 6,
+            "heroWins": 94,
+            "timeouts": 0,
+            "monsterWilson95": [
+              0.027786123963188192,
+              0.1247681544589592
+            ],
+            "heroWilson95": [
+              0.8752318455410406,
+              0.9722138760368118
+            ]
+          }
+        ],
+        "mixed": {
+          "n": 100,
+          "monsterWins": 91,
+          "heroWins": 9,
+          "timeouts": 0,
+          "monsterWilson95": [
+            0.837737871472837,
+            0.9519274599974348
+          ],
+          "heroWilson95": [
+            0.04807254000256516,
+            0.1622621285271631
+          ]
+        },
+        "gainOverStrongerPure": 0.57,
+        "pairedBootstrap95": [
+          0.46,
+          0.68
+        ],
+        "pairedComparisons": [
+          {
+            "better": 61,
+            "worse": 4,
+            "oneSidedExactP": 1.9593322190397688e-14
+          },
+          {
+            "better": 85,
+            "worse": 0,
+            "oneSidedExactP": 2.584939414228224e-26
+          }
+        ],
+        "exactGate": true,
+        "passes": true
+      }
+    ]
+  },
+  "productionReplay": {
+    "title": "Brood splash prototype to production replay parity",
+    "prototypeRef": "626eaa0c3040e12778c55b694bf13800482146b5",
+    "prototypeSha256": "359f3b6e234601fd8741f0e083458793e87e5cbed9d5f7126fb65158129c9be6",
+    "productionSourceSha256": "3adece360a199127c445d0f6d619b210100c7889504d12dc77625e0aab15910e",
+    "productionSourceHashMethod": "SHA-256 updated sequentially with each relative path string followed by its file bytes, in the listed order; no separator bytes.",
+    "productionSourceFiles": [
+      "resources/glantan/content.js",
+      "resources/glantan/world.js",
+      "resources/glantan/engine.js",
+      "resources/glantan/orders.js",
+      "resources/glantan/summons.js",
+      "resources/glantan/traps.js",
+      "resources/glantan/heroes.js",
+      "resources/glantan/monsters.js"
+    ],
+    "harnessSha256": "c27c2391adc3dba66faed3c5d43bb6dc14f7d89feab6a7149a0bc633d42bc061",
+    "comparedRecords": 600,
+    "exactParityExcept": [
+      "ref",
+      "wallMs"
+    ],
+    "differingTrials": 0,
+    "prototypeOutcomes": {
+      "loss": 267,
+      "win": 319,
+      "timeout": 14
+    },
+    "countsAsIndependentValidation": false,
+    "details": "Production replay is a reproduction check of the same confirmation inputs, not an independent validation sample.",
+    "exactParity": true
+  },
+  "evidenceRoundtrip": {
+    "datasets": {
+      "screen": {
+        "cases": 3240,
+        "exactNestedConfigRoundtrip": true,
+        "metadataRoundtrip": true
+      },
+      "confirmation": {
+        "cases": 600,
+        "exactNestedConfigRoundtrip": true,
+        "metadataRoundtrip": true
+      },
+      "productionReplay": {
+        "cases": 600,
+        "exactNestedConfigRoundtrip": true,
+        "metadataRoundtrip": true
+      }
+    }
+  },
+  "evidenceFiles": [
+    "data/completion-brood-partner-screen.json.gz",
+    "data/completion-brood-partner-confirmation.json.gz",
+    "data/completion-brood-partner-production-replay.json.gz"
+  ],
+  "limits": "The two confirmation contexts use identical pure-control rosters and seed ranges. Thus 600 executed records correspond to 400 unique arena inputs (200 mixed + 100 pure brood + 100 pure husher); pure-control observations are shared, not independent replications."
+}

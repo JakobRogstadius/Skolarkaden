@@ -111,6 +111,52 @@ Preserve failures and timeout-heavy contexts alongside successes. Reusing an
 identical cached result is valid, but counts as a reused record, not another
 independent simulation.
 
+## Final brood and bulwark confirmation
+
+The completion study starts from `626eaa0c3040e12778c55b694bf13800482146b5`,
+which already contains the retained siege rules. `dev/glantan-completion.cjs`
+freezes three brood candidates: physical damage ×0.4; secondary area damage
+×2; and physical ×0.5 with secondary area ×2. The secondary-area multiplier
+also applies to offspring carrying `broodParent`. Primary spells, ordinary
+sporelings and physical skeleton damage retain their normal behavior. Only
+the area-only candidate is retained in production.
+
+Each candidate gets 378 training cases (seven counts × three reference armies
+× eighteen seeds) and 180 discovery cases (ten panels × eighteen seeds).
+Training starts at 1200000 and discovery at 1210000. Freeze the selected
+area-only candidate's independently fitted cost, 0.9729729729729729, before
+confirmation. Twelve broodcaps cost 11.675675675675675; hero armies cost 12.
+The final counter/reference recipe uses fresh seeds starting at 1240000:
+100 favorable starts against six warriors, 500 unfavorable starts against two
+mages and two necromancers, and 36 starts against each of the three reference
+armies. Use actual victories with timeouts in the denominator.
+
+Partnership discovery varies six partners, two budget shares and five hero
+panels, with eighteen paired starts and three arms per context: 3,240 trials.
+Freeze the two leading contexts before testing 100 fresh starts at 1230000
+against three warriors and two mages. The mixtures are seven broodcaps + four
+hushers and nine broodcaps + two hushers. Both compare with twelve broodcaps
+and ten hushers; pure controls spend at least each achieved mixed budget.
+Apply Bonferroni alpha 0.0125 to each of four paired comparisons. The pure
+controls and seeds are shared across ratios: 600 executions represent 400
+unique simulation inputs. Do not count shared controls as independent evidence.
+
+The bulwark precision check freezes its existing eight-husher + one-bulwark
+army against three warriors + two mages for 1,000 new starts at
+1100000–1100999. Do not pool the prior 100 starts or stop early. Report the
+nominal Wilson interval against the 75% threshold. The family-wide counter
+claim is descriptive; these individual intervals are not simultaneous bounds.
+
+Replay the retained prototype's 708 counter/reference and 600 partnership
+records using unmodified production. Compare every recorded field except
+`ref` and `wallMs`; require exact parity. Reproduction is not independent
+confirmation. Rerun the complete 640-case progression grid before and after,
+paired campaigns, and real boss-readiness probes. Separately replay three
+fixed starts in each of 41 non-brood confirmation contexts on both sources.
+All source hashes declare their file order/recipe in the associated records.
+The main completion hash concatenates the eight gameplay modules in harness
+load order and is `b2b7195698171f7a79dc7f258e0f50f31ba4c5df19d8ce9006a052abee56d201`.
+
 ## Intended mechanisms to investigate
 
 | Type | Intended opportunity | Intended vulnerability | Candidate partner |
@@ -208,6 +254,9 @@ python dev/glantan-plots.py
 node dev/glantan-calibration.cjs --dir /tmp/calibration-v2 --seeds 18 --validation-seeds 36 --jobs 2
 node dev/glantan-calibration.cjs --support-audit --dir /tmp/calibration-v2 --jobs 2
 node dev/glantan-calibration.cjs --confirm-frozen --dir /tmp/calibration-v2 --jobs 2
+GLANTAN_COMPLETION_DIR=/tmp/completion node dev/glantan-completion.cjs train
+node dev/glantan-evidence.cjs cases docs/glantan-combat/data/completion-production-counter-replay.json.gz /tmp/brood-cases.json
+node dev/glantan-study.cjs --cases /tmp/brood-cases.json --jobs 2 --out /tmp/brood-current.json
 ```
 
 Raw reports include exact input rosters and seeds for replay. Large matrices

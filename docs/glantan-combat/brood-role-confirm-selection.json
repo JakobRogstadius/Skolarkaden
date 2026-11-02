@@ -1,0 +1,71 @@
+{
+  "variant": {
+    "area": 2
+  },
+  "cost": 0.9729729729729729,
+  "count": 12,
+  "selection": "Simplest candidate with a>=75% opposing-win discovery context: no physical armor, only brood-lineage secondary-area vulnerability. Shell-only candidate failed its counter screen.",
+  "criteria": {
+    "strong": "Wilson95 lower>=.75 for actual monster victory",
+    "weak": "Wilson95 lower>=.75 for actual hero victory",
+    "reference": "Report absolute error; target <=15 percentage points on fixed panel."
+  },
+  "contexts": [
+    {
+      "army": "strong",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior"
+      ],
+      "seeds": 100
+    },
+    {
+      "army": "weak",
+      "party": [
+        "mage",
+        "mage",
+        "necromancer",
+        "necromancer"
+      ],
+      "seeds": 500
+    },
+    {
+      "army": "balanced",
+      "party": [
+        "warrior",
+        "warrior",
+        "ranger",
+        "healer",
+        "mage"
+      ],
+      "seeds": 36
+    },
+    {
+      "army": "assault",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "mage",
+        "mage"
+      ],
+      "seeds": 36
+    },
+    {
+      "army": "skirmish",
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "healer",
+        "healer"
+      ],
+      "seeds": 36
+    }
+  ],
+  "seedsPrefix": "brood-role-confirm-1240000+"
+}

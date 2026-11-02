@@ -1,6 +1,6 @@
 {
   "baseline": "28ba8b8a447182e495ae869777539f4d6abe363d",
-  "totalArchivedArenas": 74004,
+  "totalArchivedArenas": 83814,
   "heroSynergies": [
     {
       "family": "bulwark",
@@ -2437,5 +2437,320 @@
       "castleDamage": 29.232012900000004,
       "winRate": 0
     }
-  ]
+  ],
+  "completion": {
+    "modelVersion": "v3-brood",
+    "sourceSha256": "b2b7195698171f7a79dc7f258e0f50f31ba4c5df19d8ce9006a052abee56d201",
+    "acceptance": "acceptance.json",
+    "details": "completion.json",
+    "counterReplacements": [
+      {
+        "type": "broodcap",
+        "direction": "strong",
+        "opponent": "warriors",
+        "monsterArmy": {
+          "broodcap": 12
+        },
+        "achievedBudget": 11.675675675675675,
+        "n": 100,
+        "monsterWins": 100,
+        "opponentWins": 0,
+        "timeouts": 0,
+        "winningSideWilson95": [
+          0.9630065017930143,
+          1
+        ],
+        "point75Pass": true,
+        "winningSideWilsonLowerAtLeast75": true
+      },
+      {
+        "type": "broodcap",
+        "direction": "weak",
+        "opponent": "mage_necromancer",
+        "monsterArmy": {
+          "broodcap": 12
+        },
+        "achievedBudget": 11.675675675675675,
+        "n": 500,
+        "monsterWins": 32,
+        "opponentWins": 439,
+        "timeouts": 29,
+        "winningSideWilson95": [
+          0.8463952769261602,
+          0.9038407216849063
+        ],
+        "point75Pass": true,
+        "winningSideWilsonLowerAtLeast75": true
+      },
+      {
+        "type": "bulwark",
+        "direction": "weak",
+        "opponent": "assault",
+        "monsterArmy": {
+          "husher": 8,
+          "bulwark": 1
+        },
+        "achievedBudget": 11.951807228915662,
+        "n": 1000,
+        "monsterWins": 214,
+        "opponentWins": 786,
+        "timeouts": 0,
+        "monsterWilson95": [
+          0.1897000852144518,
+          0.24048882063928573
+        ],
+        "opponentWilson95": [
+          0.7595111793607143,
+          0.8102999147855483
+        ],
+        "point75Pass": true,
+        "winningSideWilsonLowerAtLeast75": true
+      }
+    ],
+    "progression": {
+      "groups": [
+        {
+          "level": 1,
+          "rank": 1,
+          "n": 40,
+          "before": {
+            "win": 26,
+            "loss": 10,
+            "timeout": 4
+          },
+          "after": {
+            "win": 28,
+            "loss": 10,
+            "timeout": 2
+          }
+        },
+        {
+          "level": 1,
+          "rank": 3,
+          "n": 40,
+          "before": {
+            "win": 2,
+            "loss": 32,
+            "timeout": 6
+          },
+          "after": {
+            "win": 1,
+            "loss": 32,
+            "timeout": 7
+          }
+        },
+        {
+          "level": 1,
+          "rank": 5,
+          "n": 40,
+          "before": {
+            "win": 0,
+            "loss": 38,
+            "timeout": 2
+          },
+          "after": {
+            "win": 0,
+            "loss": 35,
+            "timeout": 5
+          }
+        },
+        {
+          "level": 1,
+          "rank": 6,
+          "n": 40,
+          "before": {
+            "win": 0,
+            "loss": 40,
+            "timeout": 0
+          },
+          "after": {
+            "win": 0,
+            "loss": 40,
+            "timeout": 0
+          }
+        },
+        {
+          "level": 3,
+          "rank": 1,
+          "n": 40,
+          "before": {
+            "win": 36,
+            "loss": 4,
+            "timeout": 0
+          },
+          "after": {
+            "win": 36,
+            "loss": 4,
+            "timeout": 0
+          }
+        },
+        {
+          "level": 3,
+          "rank": 3,
+          "n": 40,
+          "before": {
+            "win": 12,
+            "loss": 23,
+            "timeout": 5
+          },
+          "after": {
+            "win": 12,
+            "loss": 22,
+            "timeout": 6
+          }
+        },
+        {
+          "level": 3,
+          "rank": 5,
+          "n": 40,
+          "before": {
+            "win": 2,
+            "loss": 32,
+            "timeout": 6
+          },
+          "after": {
+            "win": 4,
+            "loss": 31,
+            "timeout": 5
+          }
+        },
+        {
+          "level": 3,
+          "rank": 6,
+          "n": 40,
+          "before": {
+            "win": 1,
+            "loss": 33,
+            "timeout": 6
+          },
+          "after": {
+            "win": 1,
+            "loss": 32,
+            "timeout": 7
+          }
+        },
+        {
+          "level": 5,
+          "rank": 1,
+          "n": 40,
+          "before": {
+            "win": 38,
+            "loss": 2,
+            "timeout": 0
+          },
+          "after": {
+            "win": 38,
+            "loss": 2,
+            "timeout": 0
+          }
+        },
+        {
+          "level": 5,
+          "rank": 3,
+          "n": 40,
+          "before": {
+            "win": 29,
+            "loss": 9,
+            "timeout": 2
+          },
+          "after": {
+            "win": 29,
+            "loss": 9,
+            "timeout": 2
+          }
+        },
+        {
+          "level": 5,
+          "rank": 5,
+          "n": 40,
+          "before": {
+            "win": 7,
+            "loss": 26,
+            "timeout": 7
+          },
+          "after": {
+            "win": 7,
+            "loss": 24,
+            "timeout": 9
+          }
+        },
+        {
+          "level": 5,
+          "rank": 6,
+          "n": 40,
+          "before": {
+            "win": 6,
+            "loss": 29,
+            "timeout": 5
+          },
+          "after": {
+            "win": 5,
+            "loss": 30,
+            "timeout": 5
+          }
+        },
+        {
+          "level": 8,
+          "rank": 1,
+          "n": 40,
+          "before": {
+            "win": 40,
+            "loss": 0,
+            "timeout": 0
+          },
+          "after": {
+            "win": 40,
+            "loss": 0,
+            "timeout": 0
+          }
+        },
+        {
+          "level": 8,
+          "rank": 3,
+          "n": 40,
+          "before": {
+            "win": 36,
+            "loss": 4,
+            "timeout": 0
+          },
+          "after": {
+            "win": 36,
+            "loss": 4,
+            "timeout": 0
+          }
+        },
+        {
+          "level": 8,
+          "rank": 5,
+          "n": 40,
+          "before": {
+            "win": 29,
+            "loss": 9,
+            "timeout": 2
+          },
+          "after": {
+            "win": 29,
+            "loss": 9,
+            "timeout": 2
+          }
+        },
+        {
+          "level": 8,
+          "rank": 6,
+          "n": 40,
+          "before": {
+            "win": 22,
+            "loss": 13,
+            "timeout": 5
+          },
+          "after": {
+            "win": 24,
+            "loss": 13,
+            "timeout": 3
+          }
+        }
+      ]
+    },
+    "criteriaStatus": "All ordinary-monster strong/weak point targets and all hero/ordinary-monster partnership targets are met in the defined role-aware benchmark suite. Bosses and summons use the documented role checks."
+  }
 }
