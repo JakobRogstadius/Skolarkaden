@@ -1,0 +1,134 @@
+{
+  "protocol": {
+    "version": 1,
+    "frozenAt": "2026-11-02T17:53:53.415Z",
+    "sourceRef": "626eaa0c3040e12778c55b694bf13800482146b5",
+    "sourceSha256": "4939595f304f67f2de17d7616352b4b59f348dd354f884f659c2265f1c1d10dc",
+    "originalEvidenceFile": "data/calibration-v2-confirmation.json.gz",
+    "originalEvidenceSha256": "7662f53f69da83af85b049e6990f4b946b2dbadf1ee32f768b950ec0e44ac476",
+    "originalSelection": "counter/bulwark/weak",
+    "originalStarts": 100,
+    "freshStarts": 1000,
+    "seedPrefix": "completion-bulwark-weak-",
+    "seedRange": [
+      1100000,
+      1100999
+    ],
+    "selectionFixedBeforeFreshData": true,
+    "optionalStopping": false,
+    "primaryDenominator": "All1000starts, including timeouts. No selection or refit after results.",
+    "primaryOutcome": "Actual hero victory (arena outcome win); monster wins and timeouts reported separately.",
+    "criterion": "Pass only if the two-sided95% Wilson lower bound for actual hero victories is at least0.75. The previously reported100starts are not pooled into the primary result.",
+    "geometry": {
+      "method": "calibration.config; same distance×spacing×mirror distribution, fresh deterministic jitter",
+      "cellCounts": {
+        "7/0.6/false": 56,
+        "3.8/0.8/true": 56,
+        "5.6/0.8/false": 56,
+        "7/0.8/true": 56,
+        "3.8/1/false": 56,
+        "5.6/1/true": 56,
+        "7/1/false": 56,
+        "3.8/0.6/true": 56,
+        "5.6/0.6/false": 56,
+        "7/0.6/true": 56,
+        "3.8/0.8/false": 55,
+        "5.6/0.8/true": 55,
+        "7/0.8/false": 55,
+        "3.8/1/true": 55,
+        "5.6/1/false": 55,
+        "7/1/true": 55,
+        "3.8/0.6/false": 55,
+        "5.6/0.6/true": 55
+      },
+      "note": "1000 is not divisible by18; each cell receives55or56starts by the predeclared seed sequence."
+    },
+    "party": [
+      "warrior",
+      "warrior",
+      "warrior",
+      "mage",
+      "mage"
+    ],
+    "monsters": [
+      {
+        "type": "husher",
+        "rank": 3
+      },
+      {
+        "type": "husher",
+        "rank": 3
+      },
+      {
+        "type": "husher",
+        "rank": 3
+      },
+      {
+        "type": "husher",
+        "rank": 3
+      },
+      {
+        "type": "husher",
+        "rank": 3
+      },
+      {
+        "type": "husher",
+        "rank": 3
+      },
+      {
+        "type": "husher",
+        "rank": 3
+      },
+      {
+        "type": "husher",
+        "rank": 3
+      },
+      {
+        "type": "bulwark",
+        "rank": 3
+      }
+    ],
+    "rank": 3,
+    "heroLevel": 3,
+    "heroRecruitmentBudget": 12,
+    "monsterNominalBudget": 11.951807228915662,
+    "conditionalSupportPrice": true,
+    "initialCorpses": 0,
+    "casesSha256": "6b2351346a419152a76943c790771cc4ceef5ff4db31fe08e4a3c0ef0f5b3525",
+    "driverSha256": "60a59d1facaf45d89c2525387936a669c04d8150321f8d817b529e1c245f0555",
+    "limits": [
+      "One fixed flat-arena role context; no inference that pure bulwarks should lose this way.",
+      "Nominal single-context95% interval; not simultaneous inference across the entire roster."
+    ]
+  },
+  "sourceRef": "626eaa0c3040e12778c55b694bf13800482146b5",
+  "sourceSha256": "4939595f304f67f2de17d7616352b4b59f348dd354f884f659c2265f1c1d10dc",
+  "n": 1000,
+  "heroWins": 786,
+  "monsterWins": 214,
+  "timeouts": 0,
+  "heroWinRate": 0.786,
+  "heroWilson95": [
+    0.7595111793607143,
+    0.8102999147855483
+  ],
+  "monsterWilson95": [
+    0.1897000852144518,
+    0.24048882063928573
+  ],
+  "pass": true,
+  "meanDuration": 28.753199999999982,
+  "elapsedSeconds": 30.078,
+  "fixedRefUnchanged": true,
+  "interpretation": "This preselected functioning-army context establishes at least75% actual hero victories under the nominal95% criterion.",
+  "evidence": {
+    "file": "data/completion-bulwark-weak.json.gz",
+    "rawSha256": "982bf68817a8f0bd4fc4b7773cb8bc809843375f8870723e88c425a061516dda",
+    "sha256": "8c237742627988cfe79421d9dba8a254e3bf4bc21335a44f2e3c8c1d7fedd44c",
+    "cases": 1000,
+    "executedCases": 1000,
+    "reusedCases": 0,
+    "exactNestedConfigRoundtrip": true,
+    "metadataRoundtrip": true
+  }
+}

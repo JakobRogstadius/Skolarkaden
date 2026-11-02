@@ -1,0 +1,499 @@
+{
+  "families": [
+    {
+      "family": "hush+rust+sky",
+      "before": {
+        "rangers": {
+          "won": 3,
+          "lost": 0,
+          "timeout": 0
+        },
+        "focused": {
+          "won": 0,
+          "lost": 3,
+          "timeout": 0
+        },
+        "coordinated": {
+          "won": 2,
+          "lost": 1,
+          "timeout": 0
+        },
+        "guarded": {
+          "won": 2,
+          "lost": 1,
+          "timeout": 0
+        }
+      },
+      "after": {
+        "rangers": {
+          "won": 2,
+          "lost": 1,
+          "timeout": 0
+        },
+        "focused": {
+          "won": 1,
+          "lost": 2,
+          "timeout": 0
+        },
+        "coordinated": {
+          "won": 3,
+          "lost": 0,
+          "timeout": 0
+        },
+        "guarded": {
+          "won": 1,
+          "lost": 0,
+          "timeout": 2
+        }
+      }
+    },
+    {
+      "family": "hush+rust+spore",
+      "before": {
+        "rangers": {
+          "won": 3,
+          "lost": 0,
+          "timeout": 0
+        },
+        "focused": {
+          "won": 1,
+          "lost": 2,
+          "timeout": 0
+        },
+        "coordinated": {
+          "won": 1,
+          "lost": 2,
+          "timeout": 0
+        },
+        "guarded": {
+          "won": 1,
+          "lost": 2,
+          "timeout": 0
+        }
+      },
+      "after": {
+        "rangers": {
+          "won": 2,
+          "lost": 1,
+          "timeout": 0
+        },
+        "focused": {
+          "won": 0,
+          "lost": 3,
+          "timeout": 0
+        },
+        "coordinated": {
+          "won": 2,
+          "lost": 1,
+          "timeout": 0
+        },
+        "guarded": {
+          "won": 0,
+          "lost": 2,
+          "timeout": 1
+        }
+      }
+    },
+    {
+      "family": "hush+rust+thorn",
+      "before": {
+        "rangers": {
+          "won": 3,
+          "lost": 0,
+          "timeout": 0
+        },
+        "focused": {
+          "won": 1,
+          "lost": 2,
+          "timeout": 0
+        },
+        "coordinated": {
+          "won": 3,
+          "lost": 0,
+          "timeout": 0
+        },
+        "guarded": {
+          "won": 2,
+          "lost": 0,
+          "timeout": 1
+        }
+      },
+      "after": {
+        "rangers": {
+          "won": 0,
+          "lost": 3,
+          "timeout": 0
+        },
+        "focused": {
+          "won": 0,
+          "lost": 3,
+          "timeout": 0
+        },
+        "coordinated": {
+          "won": 3,
+          "lost": 0,
+          "timeout": 0
+        },
+        "guarded": {
+          "won": 1,
+          "lost": 1,
+          "timeout": 1
+        }
+      }
+    },
+    {
+      "family": "rust+sky+spore",
+      "before": {
+        "rangers": {
+          "won": 3,
+          "lost": 0,
+          "timeout": 0
+        },
+        "focused": {
+          "won": 1,
+          "lost": 2,
+          "timeout": 0
+        },
+        "coordinated": {
+          "won": 3,
+          "lost": 0,
+          "timeout": 0
+        },
+        "guarded": {
+          "won": 2,
+          "lost": 0,
+          "timeout": 1
+        }
+      },
+      "after": {
+        "rangers": {
+          "won": 2,
+          "lost": 1,
+          "timeout": 0
+        },
+        "focused": {
+          "won": 1,
+          "lost": 2,
+          "timeout": 0
+        },
+        "coordinated": {
+          "won": 3,
+          "lost": 0,
+          "timeout": 0
+        },
+        "guarded": {
+          "won": 1,
+          "lost": 0,
+          "timeout": 2
+        }
+      }
+    },
+    {
+      "family": "rust+sky+thorn",
+      "before": {
+        "rangers": {
+          "won": 2,
+          "lost": 0,
+          "timeout": 1
+        },
+        "focused": {
+          "won": 0,
+          "lost": 3,
+          "timeout": 0
+        },
+        "coordinated": {
+          "won": 1,
+          "lost": 1,
+          "timeout": 1
+        },
+        "guarded": {
+          "won": 2,
+          "lost": 0,
+          "timeout": 1
+        }
+      },
+      "after": {
+        "rangers": {
+          "won": 0,
+          "lost": 3,
+          "timeout": 0
+        },
+        "focused": {
+          "won": 1,
+          "lost": 2,
+          "timeout": 0
+        },
+        "coordinated": {
+          "won": 1,
+          "lost": 1,
+          "timeout": 1
+        },
+        "guarded": {
+          "won": 1,
+          "lost": 1,
+          "timeout": 1
+        }
+      }
+    },
+    {
+      "family": "rust+spore+thorn",
+      "before": {
+        "rangers": {
+          "won": 3,
+          "lost": 0,
+          "timeout": 0
+        },
+        "focused": {
+          "won": 2,
+          "lost": 1,
+          "timeout": 0
+        },
+        "coordinated": {
+          "won": 3,
+          "lost": 0,
+          "timeout": 0
+        },
+        "guarded": {
+          "won": 1,
+          "lost": 0,
+          "timeout": 2
+        }
+      },
+      "after": {
+        "rangers": {
+          "won": 2,
+          "lost": 1,
+          "timeout": 0
+        },
+        "focused": {
+          "won": 1,
+          "lost": 2,
+          "timeout": 0
+        },
+        "coordinated": {
+          "won": 2,
+          "lost": 1,
+          "timeout": 0
+        },
+        "guarded": {
+          "won": 2,
+          "lost": 0,
+          "timeout": 1
+        }
+      }
+    }
+  ],
+  "pairedTransitions": {
+    "rangers": {
+      "won -> won": 8,
+      "won -> lost": 9,
+      "timeout -> lost": 1
+    },
+    "focused": {
+      "lost -> lost": 11,
+      "lost -> won": 2,
+      "won -> lost": 3,
+      "won -> won": 2
+    },
+    "coordinated": {
+      "lost -> won": 2,
+      "won -> won": 12,
+      "lost -> lost": 2,
+      "timeout -> timeout": 1,
+      "won -> lost": 1
+    },
+    "guarded": {
+      "lost -> timeout": 1,
+      "won -> timeout": 5,
+      "won -> won": 4,
+      "lost -> lost": 2,
+      "won -> lost": 1,
+      "timeout -> won": 2,
+      "timeout -> timeout": 2,
+      "timeout -> lost": 1
+    }
+  },
+  "progression": {
+    "rangers": [
+      {
+        "fromSeconds": 0,
+        "toSeconds": 180,
+        "contacts": 59,
+        "medianLiveCohortAtContact": 4,
+        "medianHeroes": 5,
+        "medianNearbyHeroes": 4,
+        "medianHeroLevel": 2,
+        "medianUpgrades": 0,
+        "observedOriginalRankRange": [
+          1,
+          2
+        ]
+      },
+      {
+        "fromSeconds": 180,
+        "toSeconds": 360,
+        "contacts": 70,
+        "medianLiveCohortAtContact": 7.0,
+        "medianHeroes": 8.0,
+        "medianNearbyHeroes": 4.0,
+        "medianHeroLevel": 3,
+        "medianUpgrades": 4.0,
+        "observedOriginalRankRange": [
+          1,
+          2
+        ]
+      },
+      {
+        "fromSeconds": 360,
+        "toSeconds": 540,
+        "contacts": 78,
+        "medianLiveCohortAtContact": 7.0,
+        "medianHeroes": 8.0,
+        "medianNearbyHeroes": 4.0,
+        "medianHeroLevel": 4,
+        "medianUpgrades": 4.0,
+        "observedOriginalRankRange": [
+          2,
+          3
+        ]
+      },
+      {
+        "fromSeconds": 540,
+        "toSeconds": 720,
+        "contacts": 46,
+        "medianLiveCohortAtContact": 9.0,
+        "medianHeroes": 8.0,
+        "medianNearbyHeroes": 4.0,
+        "medianHeroLevel": 5.0,
+        "medianUpgrades": 4.0,
+        "observedOriginalRankRange": [
+          1,
+          4
+        ]
+      },
+      {
+        "fromSeconds": 720,
+        "toSeconds": 900,
+        "contacts": 15,
+        "medianLiveCohortAtContact": 7,
+        "medianHeroes": 8,
+        "medianNearbyHeroes": 4,
+        "medianHeroLevel": 5.0,
+        "medianUpgrades": 4,
+        "observedOriginalRankRange": [
+          1,
+          4
+        ]
+      },
+      {
+        "fromSeconds": 900,
+        "toSeconds": 1080,
+        "contacts": 1,
+        "medianLiveCohortAtContact": 9,
+        "medianHeroes": 7,
+        "medianNearbyHeroes": 1,
+        "medianHeroLevel": 6,
+        "medianUpgrades": 4,
+        "observedOriginalRankRange": [
+          3,
+          3
+        ]
+      }
+    ],
+    "coordinated": [
+      {
+        "fromSeconds": 0,
+        "toSeconds": 180,
+        "contacts": 34,
+        "medianLiveCohortAtContact": 4.0,
+        "medianHeroes": 3.0,
+        "medianNearbyHeroes": 2.0,
+        "medianHeroLevel": 1,
+        "medianUpgrades": 0.0,
+        "observedOriginalRankRange": [
+          1,
+          1
+        ]
+      },
+      {
+        "fromSeconds": 180,
+        "toSeconds": 360,
+        "contacts": 80,
+        "medianLiveCohortAtContact": 5.0,
+        "medianHeroes": 7.0,
+        "medianNearbyHeroes": 4.0,
+        "medianHeroLevel": 3,
+        "medianUpgrades": 0.0,
+        "observedOriginalRankRange": [
+          1,
+          2
+        ]
+      },
+      {
+        "fromSeconds": 360,
+        "toSeconds": 540,
+        "contacts": 102,
+        "medianLiveCohortAtContact": 6.0,
+        "medianHeroes": 12.0,
+        "medianNearbyHeroes": 3.0,
+        "medianHeroLevel": 3.0,
+        "medianUpgrades": 2.0,
+        "observedOriginalRankRange": [
+          1,
+          3
+        ]
+      },
+      {
+        "fromSeconds": 540,
+        "toSeconds": 720,
+        "contacts": 150,
+        "medianLiveCohortAtContact": 8.0,
+        "medianHeroes": 12.0,
+        "medianNearbyHeroes": 4.0,
+        "medianHeroLevel": 4.0,
+        "medianUpgrades": 7.0,
+        "observedOriginalRankRange": [
+          1,
+          4
+        ]
+      },
+      {
+        "fromSeconds": 720,
+        "toSeconds": 900,
+        "contacts": 148,
+        "medianLiveCohortAtContact": 9.0,
+        "medianHeroes": 12.0,
+        "medianNearbyHeroes": 4.0,
+        "medianHeroLevel": 5.0,
+        "medianUpgrades": 7.0,
+        "observedOriginalRankRange": [
+          1,
+          5
+        ]
+      },
+      {
+        "fromSeconds": 900,
+        "toSeconds": 1080,
+        "contacts": 110,
+        "medianLiveCohortAtContact": 11.0,
+        "medianHeroes": 12.0,
+        "medianNearbyHeroes": 5.0,
+        "medianHeroLevel": 6.0,
+        "medianUpgrades": 7.0,
+        "observedOriginalRankRange": [
+          3,
+          6
+        ]
+      }
+    ]
+  },
+  "acceptance": {
+    "coordinatedAtLeastHalf": true,
+    "atLeastTwoPoliciesAtLeastThird": true,
+    "rangersBelow85Percent": true,
+    "coordinatedCasualties": 18,
+    "fastCoordinatedAtLeastFiveOfSix": true,
+    "slowerCoordinatedHarder": true
+  },
+  "sampling": "Three held-out maps per each of six family combinations; these are fixed scripted-policy benchmarks, not human win probabilities."
+}

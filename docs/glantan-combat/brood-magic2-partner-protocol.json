@@ -1,0 +1,407 @@
+{
+  "sourceSha256": "4939595f304f67f2de17d7616352b4b59f348dd354f884f659c2265f1c1d10dc",
+  "multiplier": 2,
+  "mechanism": "Broodcaps take twice direct or area spell damage, including necromancer strike; skeleton melee stays physical.",
+  "status": "Read-only prototype, not production",
+  "contexts": [
+    {
+      "key": "9b1w/balanced",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "balanced",
+      "party": [
+        "warrior",
+        "warrior",
+        "ranger",
+        "healer",
+        "mage"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "9b1w/assault",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "assault",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "mage",
+        "mage"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "9b1w/skirmish",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "skirmish",
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "healer",
+        "healer"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "9b1w/warriors",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "warriors",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "9b1w/rangers",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "rangers",
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "9b1w/healers",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "healers",
+      "party": [
+        "healer",
+        "healer",
+        "healer",
+        "healer"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "9b1w/mages",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "mages",
+      "party": [
+        "mage",
+        "mage",
+        "mage",
+        "mage"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "9b1w/necromancers",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "necromancers",
+      "party": [
+        "necromancer",
+        "necromancer",
+        "necromancer",
+        "necromancer"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "9b1w/warrior_healer",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "warrior_healer",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "healer",
+        "healer"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "9b1w/mage_necromancer",
+      "counts": {
+        "broodcap": 9,
+        "bulwark": 1
+      },
+      "panel": "mage_necromancer",
+      "party": [
+        "mage",
+        "mage",
+        "necromancer",
+        "necromancer"
+      ],
+      "budget": 12.438253012048193,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "7b2w/balanced",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "balanced",
+      "party": [
+        "warrior",
+        "warrior",
+        "ranger",
+        "healer",
+        "mage"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "7b2w/assault",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "assault",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "mage",
+        "mage"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "7b2w/skirmish",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "skirmish",
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "healer",
+        "healer"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "7b2w/warriors",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "warriors",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "7b2w/rangers",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "rangers",
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "7b2w/healers",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "healers",
+      "party": [
+        "healer",
+        "healer",
+        "healer",
+        "healer"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "7b2w/mages",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "mages",
+      "party": [
+        "mage",
+        "mage",
+        "mage",
+        "mage"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "7b2w/necromancers",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "necromancers",
+      "party": [
+        "necromancer",
+        "necromancer",
+        "necromancer",
+        "necromancer"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "7b2w/warrior_healer",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "warrior_healer",
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "healer",
+        "healer"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    },
+    {
+      "key": "7b2w/mage_necromancer",
+      "counts": {
+        "broodcap": 7,
+        "bulwark": 2
+      },
+      "panel": "mage_necromancer",
+      "party": [
+        "mage",
+        "mage",
+        "necromancer",
+        "necromancer"
+      ],
+      "budget": 12.501506024096384,
+      "pure": {
+        "broodcap": 12,
+        "bulwark": 6
+      }
+    }
+  ],
+  "seedCount": 18,
+  "selection": "Highest mixed win rate minus stronger pure win rate; confirm only if >=15pp. Fresh100 confirm must meet >=15pp and both paired p<.025; simultaneously require >=75% actual hero victories for2mage2necro vs11broods and >=75% brood victories vs6warriors. Frozen v2 prices, no refit.",
+  "cases": 1080
+}

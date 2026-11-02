@@ -1,0 +1,131 @@
+{
+  "sourceSha256": "4939595f304f67f2de17d7616352b4b59f348dd354f884f659c2265f1c1d10dc",
+  "sourceStable": true,
+  "prototypeFile": "dev/experiments/glantan-brood-magic.cjs",
+  "prototypeSha256": "63e040950436a7b51924bd0d6b61548486bb55fcb81b311d3bf4b2731354750d",
+  "prototypeStable": true,
+  "overrides": {
+    "broodcapSpellDamageMultiplier": 2,
+    "scope": "Mage/healer direct attacks and necromancer spells; friendly skeleton melee remains physical."
+  },
+  "executedCases": 576,
+  "trainingCases": 432,
+  "heldoutCases": 144,
+  "modelUnits": "Rank3-broodcap recruitment equivalents against the same fixed level3 cost12 reference panel, conditional on2xspell vulnerability.",
+  "fitTarget": "50% absolute decisive monster victories across all starts, equally weighted over3fixed cost12TRAIN panels. Timeouts are neither side victories. No75%/synergy targets enter the fit.",
+  "fixedCounts": [
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    18,
+    22
+  ],
+  "frozenBeforeHeldout": true,
+  "frozenAt": "2026-11-02T00:46:43.710Z",
+  "threshold": {
+    "status": "identified",
+    "value": 13.8,
+    "bracket": [
+      12,
+      14
+    ]
+  },
+  "cost": 0.8695652173913043,
+  "trainingBrier": 0.14386145404663855,
+  "oldV2Cost": 1.125,
+  "costRatioToOriginalV2": 0.7729468599033816,
+  "heldout": {
+    "broodCount": 14,
+    "achievedBudget": 12.17391304347826,
+    "predictedReferenceMonsterWinRate": 0.5185185185185185,
+    "observedReferenceMonsterWinRate": 0.5370370370370371,
+    "referencePredictionError": 0.0185185185185186,
+    "referenceBrier": 0.2489711934156378,
+    "groups": [
+      {
+        "army": "balanced",
+        "n": 36,
+        "monsterWins": 19,
+        "heroWins": 0,
+        "timeouts": 17,
+        "monsterWinRate": 0.5277777777777778,
+        "heroWinRate": 0,
+        "heroWilson95": [
+          0,
+          0.09641862859446367
+        ]
+      },
+      {
+        "army": "assault",
+        "n": 36,
+        "monsterWins": 15,
+        "heroWins": 7,
+        "timeouts": 14,
+        "monsterWinRate": 0.4166666666666667,
+        "heroWinRate": 0.19444444444444445,
+        "heroWilson95": [
+          0.09753095418928728,
+          0.3502804299517739
+        ]
+      },
+      {
+        "army": "skirmish",
+        "n": 36,
+        "monsterWins": 24,
+        "heroWins": 0,
+        "timeouts": 12,
+        "monsterWinRate": 0.6666666666666666,
+        "heroWinRate": 0,
+        "heroWilson95": [
+          0,
+          0.09641862859446367
+        ]
+      },
+      {
+        "army": "mage_necromancer",
+        "n": 36,
+        "monsterWins": 11,
+        "heroWins": 21,
+        "timeouts": 4,
+        "monsterWinRate": 0.3055555555555556,
+        "heroWinRate": 0.5833333333333334,
+        "heroWilson95": [
+          0.4220025157487166,
+          0.7285943794855394
+        ]
+      }
+    ],
+    "counter": {
+      "army": "mage_necromancer",
+      "n": 36,
+      "monsterWins": 11,
+      "heroWins": 21,
+      "timeouts": 4,
+      "monsterWinRate": 0.3055555555555556,
+      "heroWinRate": 0.5833333333333334,
+      "heroWilson95": [
+        0.4220025157487166,
+        0.7285943794855394
+      ]
+    },
+    "referenceTotals": {
+      "n": 108,
+      "monsterWins": 58,
+      "heroWins": 7,
+      "timeouts": 43
+    }
+  },
+  "censoring": null,
+  "interpretation": "Only the fixed reference average is calibrated. Any2M2N victory share is measured at the newly fitted approximately equal budget, not the old frozen11-brood roster; no75%or partnership target enters fitting.",
+  "limitations": [
+    "No adaptive count extension.",
+    "Support prices are not refitted; a brood-only price sensitivity does not validate universal scalar transfer.",
+    "Heldout36is a model/counter check, not a fresh100-seed final acceptance claim.",
+    "Timeouts remain unresolved and never become opposing victories.",
+    "The cost comparison with originalv2uses different fresh training seeds with the same joint geometry distribution; it is a diagnostic point-estimate comparison, not a paired dose-effect confidence interval."
+  ],
+  "conclusion": "The2xprototype lowers the fitted reference cost from1.125to0.869565(22.7%). At the newly priced14-brood roster, reference prediction transfers within+1.85pp, but2M+2N win only21/36starts(58.3%); the old11-body counter does not establish a decisive calibrated-budget counter. No production change or adaptive extension."
+}

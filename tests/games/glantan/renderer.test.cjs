@@ -37,4 +37,28 @@ for (const type of Object.keys(G.monsterTypes)) for (let i=0;i<32;i++) {
 }
 assert(canvases.some(canvas=>canvas.width===0),'eviction releases the bitmap backing store');
 bounded.clear(); assert.equal(bounded.bytes,0); assert.equal(bounded.entries.size,0);
+
+class PreviewElement {
+  constructor(tag) { this.tagName=tag; this.children=[]; this.attributes={}; this.dataset={}; this.className=''; this.textContent=''; }
+  append(...children) { this.children.push(...children); }
+  setAttribute(name,value) { this.attributes[name]=String(value); }
+  replaceChildren(...children) { this.children=[...children]; }
+}
+context.document={createElement:tag=>new PreviewElement(tag)};
+for (const name of ['ui-art','interface']) vm.runInContext(fs.readFileSync('resources/glantan/'+name+'.js','utf8'),context);
+G.UI.portrait=(_world,_kind,type)=>{const portrait=new PreviewElement('span');portrait.monsterType=type;return portrait;};
+const previewWorld=G.createMap('preview-three-type','brave'), site=previewWorld.lairSites.find(l=>!l.boss), lair=G.addLair(previewWorld,{...site,type:'hush',tier:3},0);
+lair.level=4; lair.tier=3;
+const originalRoster=G.waveRoster;
+G.waveRoster=()=>['rattler','rattler','mender','nightwing','nightwing'];
+const previewPanel=new PreviewElement('div'), preview={game:{world:previewWorld},panel:previewPanel,live:[]};
+G.Interface.prototype.lairStatus.call(preview,lair,G.lairTypes[lair.type]);
+const wavePreview=previewPanel.children.find(node=>node.className==='g-wave');
+assert(wavePreview,'lair inspection renders a wave preview');
+const shown=[...wavePreview.children].map(group=>[group.children[0].monsterType,group.children[1].textContent]);
+G.launchWave(previewWorld,lair);
+const spawned=previewWorld.monsters.filter(m=>!m.guard&&m.lair===lair.id&&m.wave===lair.waveCount).reduce((counts,m)=>(counts[m.type]=(counts[m.type]||0)+1,counts),{});
+assert.deepEqual(shown.map(([type,count])=>[type,Number(count.replace('× ',''))]),Object.entries(spawned),'preview counts match a spawned three-species wave');
+assert.equal(wavePreview.attributes['aria-label'],'Anfall: 2 Skramlare, 1 Skrotläkare, 2 Nattvinge');
+G.waveRoster=originalRoster;
 console.log('renderer: sprite reuse, upgrade invalidation, continuous direction, interpolation ownership and bounded bitmap lifetime');

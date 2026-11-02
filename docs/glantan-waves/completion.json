@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-02",
+  "balanceFrozenBeforeConfirmation": true,
+  "baseline": "f2c03de332401a62194ba4a6ea64ca88c570dca4",
+  "retainedCandidate": "recovery",
+  "mainCampaignRecords": 744,
+  "additionalTelemetryRegression": 1,
+  "phaseCounts": {
+    "discovery": 540,
+    "productionParity": 12,
+    "confirmation": 192,
+    "telemetryCheck": 1
+  },
+  "ordinaryTests": {
+    "passed": 97,
+    "total": 97,
+    "log": "final-tests.log",
+    "sha256": "529032ebd5a9e8a0b92241ec8c3fcc8402a06ce5676e089f3fc31b230657f409"
+  },
+  "bossChecks": {
+    "passed": 6,
+    "total": 6,
+    "data": "final-boss.jsonl"
+  },
+  "combatHarnessSelfTest": {
+    "passed": true,
+    "data": "final-harness.json"
+  },
+  "productionParity": {
+    "exactMatches": 12,
+    "data": "production-parity.json"
+  },
+  "archivedSourceReplay": {
+    "candidateExactMatches": 12,
+    "baselineExactMatches": 1,
+    "data": "archive-replay-check.json"
+  },
+  "fixedRosterCombatPairs": {
+    "exactMatches": 10,
+    "data": "unit-parity.json"
+  },
+  "telemetryCorrection": {
+    "gameplayAndOtherFieldsUnchanged": true,
+    "data": "telemetry-regression.json"
+  },
+  "independentReview": "Production behavior, harness, report, protocol and archive reviewed by two agents. Corrected summon bookkeeping, grouping across differing deadlines/jitter, source-end validation, redundant hash verification and two wording ambiguities. No balance change after confirmation."
+}

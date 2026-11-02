@@ -99,11 +99,17 @@
       world.revision++;
     }
   };
-  G.damage = function(world, target, amount, attacker) {
+  G.damage = function(world, target, amount, attacker, kind = 'direct') {
     if (world.outcome || !target || !G.alive(target) || attacker && !G.canHit(attacker, target)) return 0;
     if (target.classId || target.skeleton) {
       if (target.shieldUntil > world.time) amount *= 0.65;
       if (world.research.guardian && world.heroes.some(h => G.alive(h) && h.classId === 'warrior' && G.distance(h, target) < 2.8 && G.clearLine(world, h, target))) amount *= 0.78;
+    }
+    if (kind === 'area' && target.monster) {
+      // Brood origin persists in saves and after the parent dies. Credit to a
+      // spellcaster does not turn a skeleton's physical strike into area damage.
+      const vulnerability = G.monsterTypes[target.type]?.areaVulnerability ?? (target.broodParent ? G.monsterTypes.broodcap.areaVulnerability : 1);
+      amount *= vulnerability;
     }
     if (target.monster && world.monsters.some(m => m !== target && G.alive(m) && G.monsterTypes[m.type].ward && G.distance(m, target) < 3 && G.attackLine(world, m, target))) amount *= .75;
     const dealt = Math.min(target.hp, Math.max(0, amount));
@@ -188,7 +194,7 @@
       G.effect(world, building.type === 'beacon' ? 'spell' : 'bolt', building.x, building.y - 0.6, { toX: target.x, toY: target.y, color: '#ffe0a0', school: 'sun', radius: 2, duration: building.type === 'beacon' ? .8 : .3 });
       G.soundEvent(world, building.type === 'beacon' ? 'mage' : 'ranger', building);
       G.damage(world, target, damage, building);
-      if (building.type === 'beacon') for (const m of world.monsters) if (m !== target && G.alive(m) && G.distance(m, target) < 2) G.damage(world, m, damage * 0.6, building);
+      if (building.type === 'beacon') for (const m of world.monsters) if (m !== target && G.alive(m) && G.distance(m, target) < 2) G.damage(world, m, damage * 0.6, building, 'area');
     }
   };
   // Finite encounter credit: leaving one nest alive cannot farm an endless score.
@@ -200,6 +206,14 @@
       // Additive save migration preserves heroes, purchases and paid answer streaks.
       w.skeletons ||= []; w.corpses ||= []; w.traps ||= [];
       w.corpses = w.corpses.filter(c => G.freshCorpse(w, c));
+      // Keep old runs playable: siege stats were stored on each body. Preserve
+      // its health fraction, position and action timers when adopting the new role.
+      for (const monster of w.monsters) if (monster.type === 'siegebreaker' && !monster.siegeRevision) {
+        const fraction = monster.maxHp > 0 ? G.clamp(monster.hp / monster.maxHp, 0, 1) : 0;
+        const strength = monster.strength ?? 1, spec = G.monsterTypes.siegebreaker;
+        monster.maxHp = spec.hp * strength; monster.hp = monster.maxHp * fraction;
+        monster.attackDamage = spec.damage * strength; monster.siegeRevision = 1;
+      }
       for (const hero of w.heroes) if (hero.healCooldown !== undefined) {
         if (hero.classId === 'healer') hero.cooldown = Math.max(hero.cooldown || 0, hero.healCooldown || 0);
         delete hero.healCooldown;

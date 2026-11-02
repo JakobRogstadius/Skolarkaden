@@ -1,0 +1,33 @@
+{
+  "assay": "defended-castle-raid",
+  "harnessSha256": "30ecd4865a699c908a357094232d586637ba5b8b6f73576b77e30bd9ef609ef6",
+  "oldResultsUnchanged": true,
+  "selection": "At most eight exploratory contexts selected from the previously saved screen; no defended-castle result inspected before freezing.",
+  "keys": [
+    "siegebreaker+husher/escort0.25/ranger_mage/x2/1.3",
+    "siegebreaker+thornling/escort0.25/ranger_mage/x2/1.3",
+    "siegebreaker+husher/escort0.25/warrior_mage/x1/1.3",
+    "siegebreaker+thornling/escort0.5/warrior_mage/x1/1.3",
+    "siegebreaker+nightwing/escort0.25/warriors/x2/1",
+    "siegebreaker+nightwing/escort0.25/warriors/x1/1.3",
+    "siegebreaker+husher/escort0.5/ranger_mage/x2/1",
+    "siegebreaker+thornling/escort0.5/ranger_mage/x1/1"
+  ],
+  "controls": {
+    "castleShots": true,
+    "endOnPartyDeath": false,
+    "deadlines": [
+      50,
+      75
+    ],
+    "seeds": 12,
+    "offset": 110000,
+    "layout": "scatter",
+    "difficulty": "steady"
+  },
+  "objective": "Attacker victory requires castle destruction by the deadline. Hero deaths alone do not end the simulation. Alive castle at deadline is a defended objective with possible surviving enemies.",
+  "caseFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-siege-raid-cases.json",
+  "caseSha256": "0e49938a5169fb8bfe9580d33f8b4388e1db1c9c6b53b5e54dec352ccc68e761",
+  "casesPerSource": 576,
+  "decision": "If baseline already establishes castle-raid partnership, no new mechanic is needed. Candidate acceptance additionally requires improved partner gain and a meaningful frontline counter; no post-hoc victory reinterpretation of legacy data."
+}

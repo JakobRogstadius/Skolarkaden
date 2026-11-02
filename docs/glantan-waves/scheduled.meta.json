@@ -1,0 +1,1018 @@
+{
+  "version": 1,
+  "casesSha256": "827c7a91eee88e4eab385fc5cfd9b9237877ed7804641ac2cd9a27f861cb7ace",
+  "cases": [
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "scheduled/assault/wave-map-101",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "scheduled/assault/wave-map-107",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "scheduled/assault/wave-map-105",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "scheduled/assault/wave-map-106",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "scheduled/assault/wave-map-114",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "scheduled/assault/wave-map-115",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "scheduled/assault/wave-map-100",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "scheduled/assault/wave-map-102",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "scheduled/assault/wave-map-108",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "scheduled/assault/wave-map-109",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "scheduled/assault/wave-map-111",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "scheduled/assault/wave-map-113",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "scheduled/rangers/wave-map-101",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "scheduled/rangers/wave-map-107",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "scheduled/rangers/wave-map-105",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "scheduled/rangers/wave-map-106",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "scheduled/rangers/wave-map-114",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "scheduled/rangers/wave-map-115",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "scheduled/rangers/wave-map-100",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "scheduled/rangers/wave-map-102",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "scheduled/rangers/wave-map-108",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "scheduled/rangers/wave-map-109",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "scheduled/rangers/wave-map-111",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "scheduled/rangers/wave-map-113",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "scheduled/guarded/wave-map-101",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "scheduled/guarded/wave-map-107",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "scheduled/guarded/wave-map-105",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "scheduled/guarded/wave-map-106",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "scheduled/guarded/wave-map-114",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "scheduled/guarded/wave-map-115",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "scheduled/guarded/wave-map-100",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "scheduled/guarded/wave-map-102",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "scheduled/guarded/wave-map-108",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "scheduled/guarded/wave-map-109",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "scheduled/guarded/wave-map-111",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "scheduled/guarded/wave-map-113",
+      "variant": "scheduled"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "recovery/assault/wave-map-101",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "recovery/assault/wave-map-107",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "recovery/assault/wave-map-105",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "recovery/assault/wave-map-106",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "recovery/assault/wave-map-114",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "recovery/assault/wave-map-115",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "recovery/assault/wave-map-100",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "recovery/assault/wave-map-102",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "recovery/assault/wave-map-108",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "recovery/assault/wave-map-109",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "recovery/assault/wave-map-111",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "assault",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "recovery/assault/wave-map-113",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "recovery/rangers/wave-map-101",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "recovery/rangers/wave-map-107",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "recovery/rangers/wave-map-105",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "recovery/rangers/wave-map-106",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "recovery/rangers/wave-map-114",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "recovery/rangers/wave-map-115",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "recovery/rangers/wave-map-100",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "recovery/rangers/wave-map-102",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "recovery/rangers/wave-map-108",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "recovery/rangers/wave-map-109",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "recovery/rangers/wave-map-111",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "recovery/rangers/wave-map-113",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "recovery/guarded/wave-map-101",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "recovery/guarded/wave-map-107",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "recovery/guarded/wave-map-105",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "recovery/guarded/wave-map-106",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "recovery/guarded/wave-map-114",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "recovery/guarded/wave-map-115",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "recovery/guarded/wave-map-100",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "recovery/guarded/wave-map-102",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "recovery/guarded/wave-map-108",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "recovery/guarded/wave-map-109",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "recovery/guarded/wave-map-111",
+      "variant": "recovery"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "recovery/guarded/wave-map-113",
+      "variant": "recovery"
+    }
+  ],
+  "sourceRef": "working-tree",
+  "sourceSha256": "463dbfd313b4bad17ae6ef9551f89e6106d1a1febb16368e172cd29c79f4369b",
+  "campaignHarnessSha256": "1026896cabd45c5362fd8ae527a6299f88ef1e43bfc422e8a34af2593aa6a296",
+  "variantModuleSha256": "8236720ebf0383879b2a77d4819f5de959ed4b8ef6c1fbe9f0bb5a69c12f1e57"
+}

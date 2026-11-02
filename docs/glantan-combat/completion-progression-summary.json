@@ -1,0 +1,244 @@
+{
+  "groups": [
+    {
+      "level": 1,
+      "rank": 1,
+      "n": 40,
+      "before": {
+        "win": 26,
+        "loss": 10,
+        "timeout": 4
+      },
+      "after": {
+        "win": 28,
+        "loss": 10,
+        "timeout": 2
+      }
+    },
+    {
+      "level": 1,
+      "rank": 3,
+      "n": 40,
+      "before": {
+        "win": 2,
+        "loss": 32,
+        "timeout": 6
+      },
+      "after": {
+        "win": 1,
+        "loss": 32,
+        "timeout": 7
+      }
+    },
+    {
+      "level": 1,
+      "rank": 5,
+      "n": 40,
+      "before": {
+        "win": 0,
+        "loss": 38,
+        "timeout": 2
+      },
+      "after": {
+        "win": 0,
+        "loss": 35,
+        "timeout": 5
+      }
+    },
+    {
+      "level": 1,
+      "rank": 6,
+      "n": 40,
+      "before": {
+        "win": 0,
+        "loss": 40,
+        "timeout": 0
+      },
+      "after": {
+        "win": 0,
+        "loss": 40,
+        "timeout": 0
+      }
+    },
+    {
+      "level": 3,
+      "rank": 1,
+      "n": 40,
+      "before": {
+        "win": 36,
+        "loss": 4,
+        "timeout": 0
+      },
+      "after": {
+        "win": 36,
+        "loss": 4,
+        "timeout": 0
+      }
+    },
+    {
+      "level": 3,
+      "rank": 3,
+      "n": 40,
+      "before": {
+        "win": 12,
+        "loss": 23,
+        "timeout": 5
+      },
+      "after": {
+        "win": 12,
+        "loss": 22,
+        "timeout": 6
+      }
+    },
+    {
+      "level": 3,
+      "rank": 5,
+      "n": 40,
+      "before": {
+        "win": 2,
+        "loss": 32,
+        "timeout": 6
+      },
+      "after": {
+        "win": 4,
+        "loss": 31,
+        "timeout": 5
+      }
+    },
+    {
+      "level": 3,
+      "rank": 6,
+      "n": 40,
+      "before": {
+        "win": 1,
+        "loss": 33,
+        "timeout": 6
+      },
+      "after": {
+        "win": 1,
+        "loss": 32,
+        "timeout": 7
+      }
+    },
+    {
+      "level": 5,
+      "rank": 1,
+      "n": 40,
+      "before": {
+        "win": 38,
+        "loss": 2,
+        "timeout": 0
+      },
+      "after": {
+        "win": 38,
+        "loss": 2,
+        "timeout": 0
+      }
+    },
+    {
+      "level": 5,
+      "rank": 3,
+      "n": 40,
+      "before": {
+        "win": 29,
+        "loss": 9,
+        "timeout": 2
+      },
+      "after": {
+        "win": 29,
+        "loss": 9,
+        "timeout": 2
+      }
+    },
+    {
+      "level": 5,
+      "rank": 5,
+      "n": 40,
+      "before": {
+        "win": 7,
+        "loss": 26,
+        "timeout": 7
+      },
+      "after": {
+        "win": 7,
+        "loss": 24,
+        "timeout": 9
+      }
+    },
+    {
+      "level": 5,
+      "rank": 6,
+      "n": 40,
+      "before": {
+        "win": 6,
+        "loss": 29,
+        "timeout": 5
+      },
+      "after": {
+        "win": 5,
+        "loss": 30,
+        "timeout": 5
+      }
+    },
+    {
+      "level": 8,
+      "rank": 1,
+      "n": 40,
+      "before": {
+        "win": 40,
+        "loss": 0,
+        "timeout": 0
+      },
+      "after": {
+        "win": 40,
+        "loss": 0,
+        "timeout": 0
+      }
+    },
+    {
+      "level": 8,
+      "rank": 3,
+      "n": 40,
+      "before": {
+        "win": 36,
+        "loss": 4,
+        "timeout": 0
+      },
+      "after": {
+        "win": 36,
+        "loss": 4,
+        "timeout": 0
+      }
+    },
+    {
+      "level": 8,
+      "rank": 5,
+      "n": 40,
+      "before": {
+        "win": 29,
+        "loss": 9,
+        "timeout": 2
+      },
+      "after": {
+        "win": 29,
+        "loss": 9,
+        "timeout": 2
+      }
+    },
+    {
+      "level": 8,
+      "rank": 6,
+      "n": 40,
+      "before": {
+        "win": 22,
+        "loss": 13,
+        "timeout": 5
+      },
+      "after": {
+        "win": 24,
+        "loss": 13,
+        "timeout": 3
+      }
+    }
+  ]
+}

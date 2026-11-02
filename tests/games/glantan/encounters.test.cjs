@@ -54,6 +54,36 @@ function fixture(pace = 'gentle', boss = false) {
   assert.equal(w.monsters.filter(m => m.guard).length, 2, 'awakening and later waves do not duplicate guardians');
 }
 {
+  for (const pace of ['gentle', 'steady']) {
+    const { w, lair } = fixture(pace);
+    G.awakenLair(w, lair);
+    lair.nextSpawn = 200; lair.nextGrowth = 50;
+    w.time = 50; G.updateLairs(w);
+    assert.equal(lair.level, 2);
+    assert.equal(lair.waveCount, 2, pace + ' retains its growth wave');
+    assert.equal(w.monsters.filter(m => !m.guard && m.wave === 2).length, 3, pace + ' growth wave uses the upgraded ordinary roster');
+    assert.equal(lair.nextSpawn, 50 + G.waveInterval(w, lair), pace + ' growth wave retains its existing timer reset');
+  }
+  const { w, lair } = fixture('brave');
+  G.awakenLair(w, lair);
+  assert.equal(w.monsters.filter(m => !m.guard && m.wave === 1).length, 4);
+  lair.nextSpawn = 200; lair.nextGrowth = 50;
+  const beforeGrowthCount = w.monsters.length;
+  w.time = 50; G.updateLairs(w);
+  assert.equal(lair.level, 2, 'hard-mode lairs still grow on schedule');
+  assert.equal(w.monsters.length, beforeGrowthCount, 'hard-mode growth does not inject an off-cycle cohort');
+  assert.equal(lair.waveCount, 1, 'hard-mode growth leaves the advertised raid sequence unchanged');
+  assert.equal(lair.nextSpawn, 200, 'hard-mode growth does not reset the next raid timer');
+  w.time = 199.9; G.updateLairs(w);
+  assert.equal(lair.waveCount, 1, 'the next scheduled wave does not arrive early');
+  w.time = 200; G.updateLairs(w);
+  const scheduled = w.monsters.filter(m => !m.guard && m.wave === 2);
+  assert.equal(scheduled.length, 7, 'the scheduled level-two hard wave uses the new rattler and mender counts');
+  assert.equal(scheduled.filter(m => m.type === 'rattler').length, 6);
+  assert.equal(scheduled.filter(m => m.type === 'mender').length, 1);
+  assert(scheduled.every(m => m.rank === 2 && m.lair === lair.id), 'scheduled hard members carry the upgraded rank and lair owner');
+}
+{
   const { w, lair } = fixture();
   G.damage(w, lair, 1);
   assert(lair.awake && lair.defendersRaised);
@@ -143,6 +173,31 @@ for (const level of [1, 2, 3, 4]) for (const tier of [1, 3]) {
   assert.equal(deadLair.pendingWave, undefined);
   assert.equal(restored.monsters.filter(m => G.alive(m) && !m.guard).length, G.MAX_RAIDERS);
   G.updateLairs(restored); assert.equal(restored.monsters.filter(m => m.wave === 1).length, 8);
+}
+{
+  const { w, lair } = fixture('brave');
+  lair.type = 'spore'; lair.level = 4; lair.tier = 3;
+  w.monsters.filter(m => m.guard).forEach(m => { m.hp = 0; });
+  const blockers = [];
+  for (let i = 0; i < G.MAX_RAIDERS; i++) blockers.push(G.spawnMonster(w, lair));
+  assert.equal(blockers.length, G.MAX_RAIDERS);
+  G.damage(w, lair, lair.hp);
+  const expected = { sporeling: 8, broodcap: 2, husher: 3 };
+  assert.deepEqual(lair.pendingWave.reduce((counts, type) => (counts[type] = (counts[type] || 0) + 1, counts), {}), expected, 'hard spore destruction roster retains all three species while capped');
+  assert.equal(lair.waveCount, 1, 'destroying a dormant hard lair releases one final wave');
+  blockers.slice(0, 4).forEach(m => { m.hp = 0; }); G.updateLairs(w);
+  const saved = new G.Simulation({ saved: JSON.parse(JSON.stringify(w)) }).world;
+  const resumedLair = saved.lairs[0];
+  assert.equal(resumedLair.pendingWave.length, 9, 'save preserves the unsent hard-wave suffix');
+  saved.monsters.filter(m => G.alive(m) && !m.guard && !m.wave).slice(0, 9).forEach(m => { m.hp = 0; });
+  G.updateLairs(saved);
+  const finalWave = saved.monsters.filter(m => G.alive(m) && m.wave === 1);
+  assert.deepEqual(finalWave.reduce((counts, m) => (counts[m.type] = (counts[m.type] || 0) + 1, counts), {}), expected);
+  assert(finalWave.every(m => !m.guard && m.lair === resumedLair.id), 'resumed final members retain the destroyed lair as owner');
+  assert.equal(resumedLair.pendingWave, undefined);
+  G.updateLairs(saved);
+  assert.equal(saved.lairs[0].waveCount, 1, 'a completed destruction wave does not create another cohort');
+  assert.equal(saved.monsters.filter(m => G.alive(m) && m.wave === 1).length, 13);
 }
 {
   const { w, lair } = fixture(); w.time = 25; w.monsters[0].hp = 0;

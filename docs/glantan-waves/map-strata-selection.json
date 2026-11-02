@@ -1,0 +1,3328 @@
+{
+  "createdFrom": "Skolarkaden-waves current working-tree resources/glantan/content.js + world.js via tests/games/glantan/helpers.cjs runtime(false)",
+  "mapCall": "G.createMap('wave-map-'+i,'brave')",
+  "selectionBasis": "family combination only; no campaign/outcome data read",
+  "familyCombinations": "rust plus two of spore/hush/sky/thorn",
+  "discovery": {
+    "label": "discovery",
+    "range": {
+      "from": 100,
+      "to": 399
+    },
+    "targetPerCombination": 2,
+    "selectedCount": 12,
+    "scannedCount": 16,
+    "panels": [
+      {
+        "combination": "hush+rust+sky",
+        "count": 2,
+        "maps": [
+          {
+            "i": 101,
+            "seed": "wave-map-101",
+            "families": [
+              "rust",
+              "hush",
+              "sky"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 42,
+                "ty": 41,
+                "distanceToCastle": 11
+              },
+              {
+                "index": 1,
+                "family": "hush",
+                "tier": 1,
+                "boss": false,
+                "tx": 67,
+                "ty": 33,
+                "distanceToCastle": 16.1
+              },
+              {
+                "index": 2,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 50,
+                "ty": 59,
+                "distanceToCastle": 18.2
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 41,
+                "ty": 25,
+                "distanceToCastle": 20
+              },
+              {
+                "index": 4,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 82,
+                "ty": 48,
+                "distanceToCastle": 29.8
+              },
+              {
+                "index": 5,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 24,
+                "ty": 54,
+                "distanceToCastle": 31.8
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 67,
+                "ty": 15,
+                "distanceToCastle": 29.5
+              },
+              {
+                "index": 7,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 69,
+                "ty": 72,
+                "distanceToCastle": 34.9
+              },
+              {
+                "index": 8,
+                "family": "sky",
+                "tier": 3,
+                "boss": true,
+                "tx": 12,
+                "ty": 27,
+                "distanceToCastle": 43.3
+              }
+            ]
+          },
+          {
+            "i": 107,
+            "seed": "wave-map-107",
+            "families": [
+              "rust",
+              "hush",
+              "sky"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 65,
+                "ty": 46,
+                "distanceToCastle": 13
+              },
+              {
+                "index": 1,
+                "family": "hush",
+                "tier": 1,
+                "boss": false,
+                "tx": 39,
+                "ty": 47,
+                "distanceToCastle": 15.2
+              },
+              {
+                "index": 2,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 63,
+                "ty": 24,
+                "distanceToCastle": 19.7
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 62,
+                "ty": 61,
+                "distanceToCastle": 21.9
+              },
+              {
+                "index": 4,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 31,
+                "ty": 29,
+                "distanceToCastle": 25.1
+              },
+              {
+                "index": 5,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 86,
+                "ty": 37,
+                "distanceToCastle": 33.2
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 32,
+                "ty": 66,
+                "distanceToCastle": 32.6
+              },
+              {
+                "index": 7,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 48,
+                "ty": 10,
+                "distanceToCastle": 31.4
+              },
+              {
+                "index": 8,
+                "family": "sky",
+                "tier": 3,
+                "boss": true,
+                "tx": 90,
+                "ty": 65,
+                "distanceToCastle": 44.1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "combination": "hush+rust+spore",
+        "count": 2,
+        "maps": [
+          {
+            "i": 105,
+            "seed": "wave-map-105",
+            "families": [
+              "rust",
+              "spore",
+              "hush"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 62,
+                "ty": 34,
+                "distanceToCastle": 11.4
+              },
+              {
+                "index": 1,
+                "family": "spore",
+                "tier": 1,
+                "boss": false,
+                "tx": 54,
+                "ty": 56,
+                "distanceToCastle": 15
+              },
+              {
+                "index": 2,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 40,
+                "ty": 30,
+                "distanceToCastle": 17
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 81,
+                "ty": 41,
+                "distanceToCastle": 28
+              },
+              {
+                "index": 4,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 31,
+                "ty": 56,
+                "distanceToCastle": 26.6
+              },
+              {
+                "index": 5,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 59,
+                "ty": 16,
+                "distanceToCastle": 25.7
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 72,
+                "ty": 69,
+                "distanceToCastle": 33.8
+              },
+              {
+                "index": 7,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 13,
+                "ty": 34,
+                "distanceToCastle": 40.6
+              },
+              {
+                "index": 8,
+                "family": "hush",
+                "tier": 3,
+                "boss": true,
+                "tx": 95,
+                "ty": 25,
+                "distanceToCastle": 44.9
+              }
+            ]
+          },
+          {
+            "i": 106,
+            "seed": "wave-map-106",
+            "families": [
+              "rust",
+              "hush",
+              "spore"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 64,
+                "ty": 37,
+                "distanceToCastle": 11.7
+              },
+              {
+                "index": 1,
+                "family": "hush",
+                "tier": 1,
+                "boss": false,
+                "tx": 49,
+                "ty": 55,
+                "distanceToCastle": 14.6
+              },
+              {
+                "index": 2,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 46,
+                "ty": 28,
+                "distanceToCastle": 14.8
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 77,
+                "ty": 50,
+                "distanceToCastle": 25.6
+              },
+              {
+                "index": 4,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 26,
+                "ty": 50,
+                "distanceToCastle": 28.5
+              },
+              {
+                "index": 5,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 66,
+                "ty": 19,
+                "distanceToCastle": 25.6
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 63,
+                "ty": 70,
+                "distanceToCastle": 30.7
+              },
+              {
+                "index": 7,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 19,
+                "ty": 24,
+                "distanceToCastle": 38
+              },
+              {
+                "index": 8,
+                "family": "spore",
+                "tier": 3,
+                "boss": true,
+                "tx": 100,
+                "ty": 36,
+                "distanceToCastle": 47.3
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "combination": "hush+rust+thorn",
+        "count": 2,
+        "maps": [
+          {
+            "i": 114,
+            "seed": "wave-map-114",
+            "families": [
+              "rust",
+              "hush",
+              "thorn"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 65,
+                "ty": 38,
+                "distanceToCastle": 12.4
+              },
+              {
+                "index": 1,
+                "family": "hush",
+                "tier": 1,
+                "boss": false,
+                "tx": 48,
+                "ty": 55,
+                "distanceToCastle": 14.9
+              },
+              {
+                "index": 2,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 43,
+                "ty": 28,
+                "distanceToCastle": 16.4
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 76,
+                "ty": 50,
+                "distanceToCastle": 24.7
+              },
+              {
+                "index": 4,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 25,
+                "ty": 48,
+                "distanceToCastle": 28.9
+              },
+              {
+                "index": 5,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 72,
+                "ty": 20,
+                "distanceToCastle": 28.3
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 60,
+                "ty": 71,
+                "distanceToCastle": 30.8
+              },
+              {
+                "index": 7,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 21,
+                "ty": 22,
+                "distanceToCastle": 37.2
+              },
+              {
+                "index": 8,
+                "family": "thorn",
+                "tier": 3,
+                "boss": true,
+                "tx": 100,
+                "ty": 36,
+                "distanceToCastle": 47.3
+              }
+            ]
+          },
+          {
+            "i": 115,
+            "seed": "wave-map-115",
+            "families": [
+              "rust",
+              "thorn",
+              "hush"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 51,
+                "ty": 30,
+                "distanceToCastle": 11.2
+              },
+              {
+                "index": 1,
+                "family": "thorn",
+                "tier": 1,
+                "boss": false,
+                "tx": 65,
+                "ty": 53,
+                "distanceToCastle": 17
+              },
+              {
+                "index": 2,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 34,
+                "ty": 40,
+                "distanceToCastle": 19
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 74,
+                "ty": 30,
+                "distanceToCastle": 23.7
+              },
+              {
+                "index": 4,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 49,
+                "ty": 63,
+                "distanceToCastle": 22.4
+              },
+              {
+                "index": 5,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 37,
+                "ty": 20,
+                "distanceToCastle": 26.4
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 90,
+                "ty": 50,
+                "distanceToCastle": 38.1
+              },
+              {
+                "index": 7,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 16,
+                "ty": 56,
+                "distanceToCastle": 39.9
+              },
+              {
+                "index": 8,
+                "family": "hush",
+                "tier": 3,
+                "boss": true,
+                "tx": 69,
+                "ty": 11,
+                "distanceToCastle": 34
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "combination": "rust+sky+spore",
+        "count": 2,
+        "maps": [
+          {
+            "i": 100,
+            "seed": "wave-map-100",
+            "families": [
+              "rust",
+              "sky",
+              "spore"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 65,
+                "ty": 47,
+                "distanceToCastle": 13.4
+              },
+              {
+                "index": 1,
+                "family": "sky",
+                "tier": 1,
+                "boss": false,
+                "tx": 38,
+                "ty": 46,
+                "distanceToCastle": 15.8
+              },
+              {
+                "index": 2,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 64,
+                "ty": 23,
+                "distanceToCastle": 21.1
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 59,
+                "ty": 62,
+                "distanceToCastle": 21.8
+              },
+              {
+                "index": 4,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 32,
+                "ty": 30,
+                "distanceToCastle": 23.7
+              },
+              {
+                "index": 5,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 87,
+                "ty": 39,
+                "distanceToCastle": 34.1
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 27,
+                "ty": 62,
+                "distanceToCastle": 33.4
+              },
+              {
+                "index": 7,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 51,
+                "ty": 10,
+                "distanceToCastle": 31.1
+              },
+              {
+                "index": 8,
+                "family": "spore",
+                "tier": 3,
+                "boss": true,
+                "tx": 87,
+                "ty": 67,
+                "distanceToCastle": 42.8
+              }
+            ]
+          },
+          {
+            "i": 102,
+            "seed": "wave-map-102",
+            "families": [
+              "rust",
+              "spore",
+              "sky"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 64,
+                "ty": 39,
+                "distanceToCastle": 11.2
+              },
+              {
+                "index": 1,
+                "family": "spore",
+                "tier": 1,
+                "boss": false,
+                "tx": 41,
+                "ty": 50,
+                "distanceToCastle": 15
+              },
+              {
+                "index": 2,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 58,
+                "ty": 25,
+                "distanceToCastle": 16.8
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 67,
+                "ty": 59,
+                "distanceToCastle": 22.8
+              },
+              {
+                "index": 4,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 26,
+                "ty": 36,
+                "distanceToCastle": 27.5
+              },
+              {
+                "index": 5,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 83,
+                "ty": 29,
+                "distanceToCastle": 32.3
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 41,
+                "ty": 69,
+                "distanceToCastle": 30.5
+              },
+              {
+                "index": 7,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 38,
+                "ty": 12,
+                "distanceToCastle": 32.6
+              },
+              {
+                "index": 8,
+                "family": "sky",
+                "tier": 3,
+                "boss": true,
+                "tx": 96,
+                "ty": 57,
+                "distanceToCastle": 45.9
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "combination": "rust+sky+thorn",
+        "count": 2,
+        "maps": [
+          {
+            "i": 108,
+            "seed": "wave-map-108",
+            "families": [
+              "rust",
+              "sky",
+              "thorn"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 43,
+                "ty": 46,
+                "distanceToCastle": 11.2
+              },
+              {
+                "index": 1,
+                "family": "sky",
+                "tier": 1,
+                "boss": false,
+                "tx": 62,
+                "ty": 30,
+                "distanceToCastle": 14.2
+              },
+              {
+                "index": 2,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 59,
+                "ty": 59,
+                "distanceToCastle": 19
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 30,
+                "ty": 31,
+                "distanceToCastle": 25.1
+              },
+              {
+                "index": 4,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 83,
+                "ty": 39,
+                "distanceToCastle": 30.1
+              },
+              {
+                "index": 5,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 33,
+                "ty": 62,
+                "distanceToCastle": 29
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 52,
+                "ty": 13,
+                "distanceToCastle": 28
+              },
+              {
+                "index": 7,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 84,
+                "ty": 64,
+                "distanceToCastle": 38.6
+              },
+              {
+                "index": 8,
+                "family": "thorn",
+                "tier": 3,
+                "boss": true,
+                "tx": 8,
+                "ty": 41,
+                "distanceToCastle": 45
+              }
+            ]
+          },
+          {
+            "i": 109,
+            "seed": "wave-map-109",
+            "families": [
+              "rust",
+              "thorn",
+              "sky"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 65,
+                "ty": 37,
+                "distanceToCastle": 12.6
+              },
+              {
+                "index": 1,
+                "family": "thorn",
+                "tier": 1,
+                "boss": false,
+                "tx": 48,
+                "ty": 55,
+                "distanceToCastle": 14.9
+              },
+              {
+                "index": 2,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 47,
+                "ty": 26,
+                "distanceToCastle": 16.2
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 74,
+                "ty": 53,
+                "distanceToCastle": 24.2
+              },
+              {
+                "index": 4,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 26,
+                "ty": 48,
+                "distanceToCastle": 27.9
+              },
+              {
+                "index": 5,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 72,
+                "ty": 22,
+                "distanceToCastle": 26.9
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 62,
+                "ty": 69,
+                "distanceToCastle": 29.4
+              },
+              {
+                "index": 7,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 19,
+                "ty": 23,
+                "distanceToCastle": 38.5
+              },
+              {
+                "index": 8,
+                "family": "sky",
+                "tier": 3,
+                "boss": true,
+                "tx": 100,
+                "ty": 39,
+                "distanceToCastle": 47
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "combination": "rust+spore+thorn",
+        "count": 2,
+        "maps": [
+          {
+            "i": 111,
+            "seed": "wave-map-111",
+            "families": [
+              "rust",
+              "spore",
+              "thorn"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 47,
+                "ty": 51,
+                "distanceToCastle": 11.7
+              },
+              {
+                "index": 1,
+                "family": "spore",
+                "tier": 1,
+                "boss": false,
+                "tx": 51,
+                "ty": 28,
+                "distanceToCastle": 13.2
+              },
+              {
+                "index": 2,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 70,
+                "ty": 53,
+                "distanceToCastle": 20.8
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 28,
+                "ty": 44,
+                "distanceToCastle": 25.2
+              },
+              {
+                "index": 4,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 74,
+                "ty": 25,
+                "distanceToCastle": 26.4
+              },
+              {
+                "index": 5,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 54,
+                "ty": 68,
+                "distanceToCastle": 27
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 28,
+                "ty": 20,
+                "distanceToCastle": 32.6
+              },
+              {
+                "index": 7,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 96,
+                "ty": 45,
+                "distanceToCastle": 43.2
+              },
+              {
+                "index": 8,
+                "family": "thorn",
+                "tier": 3,
+                "boss": true,
+                "tx": 17,
+                "ty": 63,
+                "distanceToCastle": 42.2
+              }
+            ]
+          },
+          {
+            "i": 113,
+            "seed": "wave-map-113",
+            "families": [
+              "rust",
+              "thorn",
+              "spore"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 45,
+                "ty": 50,
+                "distanceToCastle": 12
+              },
+              {
+                "index": 1,
+                "family": "thorn",
+                "tier": 1,
+                "boss": false,
+                "tx": 55,
+                "ty": 28,
+                "distanceToCastle": 13.2
+              },
+              {
+                "index": 2,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 67,
+                "ty": 55,
+                "distanceToCastle": 19.8
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 27,
+                "ty": 38,
+                "distanceToCastle": 26.2
+              },
+              {
+                "index": 4,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 78,
+                "ty": 29,
+                "distanceToCastle": 27.7
+              },
+              {
+                "index": 5,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 44,
+                "ty": 70,
+                "distanceToCastle": 30.4
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 35,
+                "ty": 17,
+                "distanceToCastle": 30
+              },
+              {
+                "index": 7,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 94,
+                "ty": 52,
+                "distanceToCastle": 42.4
+              },
+              {
+                "index": 8,
+                "family": "spore",
+                "tier": 3,
+                "boss": true,
+                "tx": 12,
+                "ty": 57,
+                "distanceToCastle": 44
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "allScannedFamilyAssignments": [
+      {
+        "i": 100,
+        "seed": "wave-map-100",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "sky",
+          "spore"
+        ],
+        "selected": true
+      },
+      {
+        "i": 101,
+        "seed": "wave-map-101",
+        "combination": "hush+rust+sky",
+        "families": [
+          "rust",
+          "hush",
+          "sky"
+        ],
+        "selected": true
+      },
+      {
+        "i": 102,
+        "seed": "wave-map-102",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "spore",
+          "sky"
+        ],
+        "selected": true
+      },
+      {
+        "i": 103,
+        "seed": "wave-map-103",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "spore",
+          "sky"
+        ],
+        "selected": false
+      },
+      {
+        "i": 104,
+        "seed": "wave-map-104",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "sky",
+          "spore"
+        ],
+        "selected": false
+      },
+      {
+        "i": 105,
+        "seed": "wave-map-105",
+        "combination": "hush+rust+spore",
+        "families": [
+          "rust",
+          "spore",
+          "hush"
+        ],
+        "selected": true
+      },
+      {
+        "i": 106,
+        "seed": "wave-map-106",
+        "combination": "hush+rust+spore",
+        "families": [
+          "rust",
+          "hush",
+          "spore"
+        ],
+        "selected": true
+      },
+      {
+        "i": 107,
+        "seed": "wave-map-107",
+        "combination": "hush+rust+sky",
+        "families": [
+          "rust",
+          "hush",
+          "sky"
+        ],
+        "selected": true
+      },
+      {
+        "i": 108,
+        "seed": "wave-map-108",
+        "combination": "rust+sky+thorn",
+        "families": [
+          "rust",
+          "sky",
+          "thorn"
+        ],
+        "selected": true
+      },
+      {
+        "i": 109,
+        "seed": "wave-map-109",
+        "combination": "rust+sky+thorn",
+        "families": [
+          "rust",
+          "thorn",
+          "sky"
+        ],
+        "selected": true
+      },
+      {
+        "i": 110,
+        "seed": "wave-map-110",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "spore",
+          "sky"
+        ],
+        "selected": false
+      },
+      {
+        "i": 111,
+        "seed": "wave-map-111",
+        "combination": "rust+spore+thorn",
+        "families": [
+          "rust",
+          "spore",
+          "thorn"
+        ],
+        "selected": true
+      },
+      {
+        "i": 112,
+        "seed": "wave-map-112",
+        "combination": "rust+sky+thorn",
+        "families": [
+          "rust",
+          "thorn",
+          "sky"
+        ],
+        "selected": false
+      },
+      {
+        "i": 113,
+        "seed": "wave-map-113",
+        "combination": "rust+spore+thorn",
+        "families": [
+          "rust",
+          "thorn",
+          "spore"
+        ],
+        "selected": true
+      },
+      {
+        "i": 114,
+        "seed": "wave-map-114",
+        "combination": "hush+rust+thorn",
+        "families": [
+          "rust",
+          "hush",
+          "thorn"
+        ],
+        "selected": true
+      },
+      {
+        "i": 115,
+        "seed": "wave-map-115",
+        "combination": "hush+rust+thorn",
+        "families": [
+          "rust",
+          "thorn",
+          "hush"
+        ],
+        "selected": true
+      }
+    ]
+  },
+  "confirmation": {
+    "label": "heldout-confirmation",
+    "range": {
+      "from": 1000,
+      "to": 1399
+    },
+    "targetPerCombination": 3,
+    "selectedCount": 18,
+    "scannedCount": 26,
+    "panels": [
+      {
+        "combination": "hush+rust+sky",
+        "count": 3,
+        "maps": [
+          {
+            "i": 1001,
+            "seed": "wave-map-1001",
+            "families": [
+              "rust",
+              "sky",
+              "hush"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 66,
+                "ty": 39,
+                "distanceToCastle": 13.2
+              },
+              {
+                "index": 1,
+                "family": "sky",
+                "tier": 1,
+                "boss": false,
+                "tx": 49,
+                "ty": 57,
+                "distanceToCastle": 16.5
+              },
+              {
+                "index": 2,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 47,
+                "ty": 21,
+                "distanceToCastle": 20.9
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 70,
+                "ty": 55,
+                "distanceToCastle": 22
+              },
+              {
+                "index": 4,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 24,
+                "ty": 44,
+                "distanceToCastle": 29.2
+              },
+              {
+                "index": 5,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 79,
+                "ty": 23,
+                "distanceToCastle": 31.6
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 54,
+                "ty": 68,
+                "distanceToCastle": 27
+              },
+              {
+                "index": 7,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 22,
+                "ty": 17,
+                "distanceToCastle": 39.2
+              },
+              {
+                "index": 8,
+                "family": "hush",
+                "tier": 3,
+                "boss": true,
+                "tx": 100,
+                "ty": 46,
+                "distanceToCastle": 47.3
+              }
+            ]
+          },
+          {
+            "i": 1009,
+            "seed": "wave-map-1009",
+            "families": [
+              "rust",
+              "sky",
+              "hush"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 41,
+                "ty": 47,
+                "distanceToCastle": 13.4
+              },
+              {
+                "index": 1,
+                "family": "sky",
+                "tier": 1,
+                "boss": false,
+                "tx": 59,
+                "ty": 29,
+                "distanceToCastle": 13.4
+              },
+              {
+                "index": 2,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 62,
+                "ty": 58,
+                "distanceToCastle": 19.2
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 27,
+                "ty": 35,
+                "distanceToCastle": 26.7
+              },
+              {
+                "index": 4,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 82,
+                "ty": 34,
+                "distanceToCastle": 29.8
+              },
+              {
+                "index": 5,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 38,
+                "ty": 65,
+                "distanceToCastle": 28.3
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 45,
+                "ty": 14,
+                "distanceToCastle": 28.2
+              },
+              {
+                "index": 7,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 89,
+                "ty": 60,
+                "distanceToCastle": 40.7
+              },
+              {
+                "index": 8,
+                "family": "hush",
+                "tier": 3,
+                "boss": true,
+                "tx": 8,
+                "ty": 48,
+                "distanceToCastle": 45.5
+              }
+            ]
+          },
+          {
+            "i": 1015,
+            "seed": "wave-map-1015",
+            "families": [
+              "rust",
+              "hush",
+              "sky"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 66,
+                "ty": 39,
+                "distanceToCastle": 13.2
+              },
+              {
+                "index": 1,
+                "family": "hush",
+                "tier": 1,
+                "boss": false,
+                "tx": 45,
+                "ty": 54,
+                "distanceToCastle": 15.3
+              },
+              {
+                "index": 2,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 50,
+                "ty": 25,
+                "distanceToCastle": 16.3
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 70,
+                "ty": 56,
+                "distanceToCastle": 22.7
+              },
+              {
+                "index": 4,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 25,
+                "ty": 44,
+                "distanceToCastle": 28.2
+              },
+              {
+                "index": 5,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 76,
+                "ty": 23,
+                "distanceToCastle": 29.2
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 54,
+                "ty": 71,
+                "distanceToCastle": 30
+              },
+              {
+                "index": 7,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 25,
+                "ty": 18,
+                "distanceToCastle": 36.2
+              },
+              {
+                "index": 8,
+                "family": "sky",
+                "tier": 3,
+                "boss": true,
+                "tx": 100,
+                "ty": 43,
+                "distanceToCastle": 47
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "combination": "hush+rust+spore",
+        "count": 3,
+        "maps": [
+          {
+            "i": 1004,
+            "seed": "wave-map-1004",
+            "families": [
+              "rust",
+              "hush",
+              "spore"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 42,
+                "ty": 39,
+                "distanceToCastle": 11.2
+              },
+              {
+                "index": 1,
+                "family": "hush",
+                "tier": 1,
+                "boss": false,
+                "tx": 69,
+                "ty": 36,
+                "distanceToCastle": 16.8
+              },
+              {
+                "index": 2,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 47,
+                "ty": 58,
+                "distanceToCastle": 18
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 43,
+                "ty": 23,
+                "distanceToCastle": 20.6
+              },
+              {
+                "index": 4,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 81,
+                "ty": 52,
+                "distanceToCastle": 30.1
+              },
+              {
+                "index": 5,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 23,
+                "ty": 46,
+                "distanceToCastle": 30.4
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 71,
+                "ty": 15,
+                "distanceToCastle": 31.6
+              },
+              {
+                "index": 7,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 63,
+                "ty": 74,
+                "distanceToCastle": 34.5
+              },
+              {
+                "index": 8,
+                "family": "spore",
+                "tier": 3,
+                "boss": true,
+                "tx": 16,
+                "ty": 21,
+                "distanceToCastle": 42.1
+              }
+            ]
+          },
+          {
+            "i": 1008,
+            "seed": "wave-map-1008",
+            "families": [
+              "rust",
+              "hush",
+              "spore"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 65,
+                "ty": 47,
+                "distanceToCastle": 13.4
+              },
+              {
+                "index": 1,
+                "family": "hush",
+                "tier": 1,
+                "boss": false,
+                "tx": 40,
+                "ty": 49,
+                "distanceToCastle": 15.3
+              },
+              {
+                "index": 2,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 66,
+                "ty": 23,
+                "distanceToCastle": 22.2
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 59,
+                "ty": 62,
+                "distanceToCastle": 21.8
+              },
+              {
+                "index": 4,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 33,
+                "ty": 27,
+                "distanceToCastle": 24.4
+              },
+              {
+                "index": 5,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 87,
+                "ty": 39,
+                "distanceToCastle": 34.1
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 26,
+                "ty": 66,
+                "distanceToCastle": 36.8
+              },
+              {
+                "index": 7,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 54,
+                "ty": 10,
+                "distanceToCastle": 31
+              },
+              {
+                "index": 8,
+                "family": "spore",
+                "tier": 3,
+                "boss": true,
+                "tx": 84,
+                "ty": 72,
+                "distanceToCastle": 43.8
+              }
+            ]
+          },
+          {
+            "i": 1016,
+            "seed": "wave-map-1016",
+            "families": [
+              "rust",
+              "spore",
+              "hush"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 65,
+                "ty": 38,
+                "distanceToCastle": 12.4
+              },
+              {
+                "index": 1,
+                "family": "spore",
+                "tier": 1,
+                "boss": false,
+                "tx": 46,
+                "ty": 54,
+                "distanceToCastle": 14.8
+              },
+              {
+                "index": 2,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 49,
+                "ty": 25,
+                "distanceToCastle": 16.5
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 75,
+                "ty": 53,
+                "distanceToCastle": 25.1
+              },
+              {
+                "index": 4,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 22,
+                "ty": 46,
+                "distanceToCastle": 31.4
+              },
+              {
+                "index": 5,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 78,
+                "ty": 22,
+                "distanceToCastle": 31.4
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 57,
+                "ty": 74,
+                "distanceToCastle": 33.2
+              },
+              {
+                "index": 7,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 23,
+                "ty": 21,
+                "distanceToCastle": 36.1
+              },
+              {
+                "index": 8,
+                "family": "hush",
+                "tier": 3,
+                "boss": true,
+                "tx": 100,
+                "ty": 42,
+                "distanceToCastle": 47
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "combination": "hush+rust+thorn",
+        "count": 3,
+        "maps": [
+          {
+            "i": 1007,
+            "seed": "wave-map-1007",
+            "families": [
+              "rust",
+              "hush",
+              "thorn"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 55,
+                "ty": 30,
+                "distanceToCastle": 11.2
+              },
+              {
+                "index": 1,
+                "family": "hush",
+                "tier": 1,
+                "boss": false,
+                "tx": 64,
+                "ty": 53,
+                "distanceToCastle": 16.3
+              },
+              {
+                "index": 2,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 34,
+                "ty": 39,
+                "distanceToCastle": 19.1
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 72,
+                "ty": 32,
+                "distanceToCastle": 21
+              },
+              {
+                "index": 4,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 49,
+                "ty": 65,
+                "distanceToCastle": 24.3
+              },
+              {
+                "index": 5,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 38,
+                "ty": 19,
+                "distanceToCastle": 26.6
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 89,
+                "ty": 53,
+                "distanceToCastle": 37.9
+              },
+              {
+                "index": 7,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 15,
+                "ty": 54,
+                "distanceToCastle": 40.2
+              },
+              {
+                "index": 8,
+                "family": "thorn",
+                "tier": 3,
+                "boss": true,
+                "tx": 76,
+                "ty": 10,
+                "distanceToCastle": 38.6
+              }
+            ]
+          },
+          {
+            "i": 1022,
+            "seed": "wave-map-1022",
+            "families": [
+              "rust",
+              "hush",
+              "thorn"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 54,
+                "ty": 53,
+                "distanceToCastle": 12
+              },
+              {
+                "index": 1,
+                "family": "hush",
+                "tier": 1,
+                "boss": false,
+                "tx": 43,
+                "ty": 32,
+                "distanceToCastle": 13.5
+              },
+              {
+                "index": 2,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 75,
+                "ty": 43,
+                "distanceToCastle": 22.1
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 34,
+                "ty": 54,
+                "distanceToCastle": 23
+              },
+              {
+                "index": 4,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 59,
+                "ty": 19,
+                "distanceToCastle": 22.8
+              },
+              {
+                "index": 5,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 71,
+                "ty": 64,
+                "distanceToCastle": 29.2
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 17,
+                "ty": 35,
+                "distanceToCastle": 36.5
+              },
+              {
+                "index": 7,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 88,
+                "ty": 29,
+                "distanceToCastle": 37
+              },
+              {
+                "index": 8,
+                "family": "thorn",
+                "tier": 3,
+                "boss": true,
+                "tx": 38,
+                "ty": 75,
+                "distanceToCastle": 37.2
+              }
+            ]
+          },
+          {
+            "i": 1023,
+            "seed": "wave-map-1023",
+            "families": [
+              "rust",
+              "hush",
+              "thorn"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 49,
+                "ty": 55,
+                "distanceToCastle": 14.6
+              },
+              {
+                "index": 1,
+                "family": "hush",
+                "tier": 1,
+                "boss": false,
+                "tx": 48,
+                "ty": 29,
+                "distanceToCastle": 13
+              },
+              {
+                "index": 2,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 76,
+                "ty": 50,
+                "distanceToCastle": 24.7
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 28,
+                "ty": 47,
+                "distanceToCastle": 25.7
+              },
+              {
+                "index": 4,
+                "family": "hush",
+                "tier": 2,
+                "boss": false,
+                "tx": 66,
+                "ty": 27,
+                "distanceToCastle": 19.1
+              },
+              {
+                "index": 5,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 60,
+                "ty": 68,
+                "distanceToCastle": 27.9
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 24,
+                "ty": 24,
+                "distanceToCastle": 33.6
+              },
+              {
+                "index": 7,
+                "family": "hush",
+                "tier": 3,
+                "boss": false,
+                "tx": 96,
+                "ty": 39,
+                "distanceToCastle": 43
+              },
+              {
+                "index": 8,
+                "family": "thorn",
+                "tier": 3,
+                "boss": true,
+                "tx": 22,
+                "ty": 68,
+                "distanceToCastle": 41.1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "combination": "rust+sky+spore",
+        "count": 3,
+        "maps": [
+          {
+            "i": 1000,
+            "seed": "wave-map-1000",
+            "families": [
+              "rust",
+              "sky",
+              "spore"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 62,
+                "ty": 34,
+                "distanceToCastle": 11.4
+              },
+              {
+                "index": 1,
+                "family": "sky",
+                "tier": 1,
+                "boss": false,
+                "tx": 54,
+                "ty": 56,
+                "distanceToCastle": 15
+              },
+              {
+                "index": 2,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 41,
+                "ty": 29,
+                "distanceToCastle": 17
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 79,
+                "ty": 44,
+                "distanceToCastle": 26.2
+              },
+              {
+                "index": 4,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 26,
+                "ty": 60,
+                "distanceToCastle": 33
+              },
+              {
+                "index": 5,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 61,
+                "ty": 16,
+                "distanceToCastle": 26.2
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 73,
+                "ty": 67,
+                "distanceToCastle": 32.8
+              },
+              {
+                "index": 7,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 14,
+                "ty": 33,
+                "distanceToCastle": 39.8
+              },
+              {
+                "index": 8,
+                "family": "spore",
+                "tier": 3,
+                "boss": true,
+                "tx": 97,
+                "ty": 27,
+                "distanceToCastle": 46.2
+              }
+            ]
+          },
+          {
+            "i": 1003,
+            "seed": "wave-map-1003",
+            "families": [
+              "rust",
+              "sky",
+              "spore"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 42,
+                "ty": 41,
+                "distanceToCastle": 11
+              },
+              {
+                "index": 1,
+                "family": "sky",
+                "tier": 1,
+                "boss": false,
+                "tx": 70,
+                "ty": 30,
+                "distanceToCastle": 20.2
+              },
+              {
+                "index": 2,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 48,
+                "ty": 59,
+                "distanceToCastle": 18.7
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 41,
+                "ty": 25,
+                "distanceToCastle": 20
+              },
+              {
+                "index": 4,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 84,
+                "ty": 48,
+                "distanceToCastle": 31.8
+              },
+              {
+                "index": 5,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 20,
+                "ty": 54,
+                "distanceToCastle": 35.5
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 67,
+                "ty": 15,
+                "distanceToCastle": 29.5
+              },
+              {
+                "index": 7,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 70,
+                "ty": 72,
+                "distanceToCastle": 35.4
+              },
+              {
+                "index": 8,
+                "family": "spore",
+                "tier": 3,
+                "boss": true,
+                "tx": 12,
+                "ty": 24,
+                "distanceToCastle": 44.4
+              }
+            ]
+          },
+          {
+            "i": 1005,
+            "seed": "wave-map-1005",
+            "families": [
+              "rust",
+              "spore",
+              "sky"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 61,
+                "ty": 51,
+                "distanceToCastle": 12.8
+              },
+              {
+                "index": 1,
+                "family": "spore",
+                "tier": 1,
+                "boss": false,
+                "tx": 38,
+                "ty": 40,
+                "distanceToCastle": 15
+              },
+              {
+                "index": 2,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 71,
+                "ty": 33,
+                "distanceToCastle": 19.7
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 46,
+                "ty": 62,
+                "distanceToCastle": 22.1
+              },
+              {
+                "index": 4,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 41,
+                "ty": 21,
+                "distanceToCastle": 23.3
+              },
+              {
+                "index": 5,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 85,
+                "ty": 51,
+                "distanceToCastle": 33.5
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 19,
+                "ty": 53,
+                "distanceToCastle": 36.1
+              },
+              {
+                "index": 7,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 72,
+                "ty": 13,
+                "distanceToCastle": 33.8
+              },
+              {
+                "index": 8,
+                "family": "sky",
+                "tier": 3,
+                "boss": true,
+                "tx": 68,
+                "ty": 76,
+                "distanceToCastle": 38.1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "combination": "rust+sky+thorn",
+        "count": 3,
+        "maps": [
+          {
+            "i": 1002,
+            "seed": "wave-map-1002",
+            "families": [
+              "rust",
+              "thorn",
+              "sky"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 43,
+                "ty": 47,
+                "distanceToCastle": 11.7
+              },
+              {
+                "index": 1,
+                "family": "thorn",
+                "tier": 1,
+                "boss": false,
+                "tx": 59,
+                "ty": 29,
+                "distanceToCastle": 13.4
+              },
+              {
+                "index": 2,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 62,
+                "ty": 58,
+                "distanceToCastle": 19.2
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 35,
+                "ty": 34,
+                "distanceToCastle": 19.3
+              },
+              {
+                "index": 4,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 82,
+                "ty": 35,
+                "distanceToCastle": 29.6
+              },
+              {
+                "index": 5,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 38,
+                "ty": 65,
+                "distanceToCastle": 28.3
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 45,
+                "ty": 14,
+                "distanceToCastle": 28.2
+              },
+              {
+                "index": 7,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 87,
+                "ty": 59,
+                "distanceToCastle": 38.5
+              },
+              {
+                "index": 8,
+                "family": "sky",
+                "tier": 3,
+                "boss": true,
+                "tx": 8,
+                "ty": 47,
+                "distanceToCastle": 45.4
+              }
+            ]
+          },
+          {
+            "i": 1010,
+            "seed": "wave-map-1010",
+            "families": [
+              "rust",
+              "sky",
+              "thorn"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 66,
+                "ty": 42,
+                "distanceToCastle": 13
+              },
+              {
+                "index": 1,
+                "family": "sky",
+                "tier": 1,
+                "boss": false,
+                "tx": 42,
+                "ty": 51,
+                "distanceToCastle": 14.9
+              },
+              {
+                "index": 2,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 56,
+                "ty": 25,
+                "distanceToCastle": 16.3
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 69,
+                "ty": 58,
+                "distanceToCastle": 23.3
+              },
+              {
+                "index": 4,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 22,
+                "ty": 41,
+                "distanceToCastle": 31
+              },
+              {
+                "index": 5,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 81,
+                "ty": 27,
+                "distanceToCastle": 31.3
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 44,
+                "ty": 70,
+                "distanceToCastle": 30.4
+              },
+              {
+                "index": 7,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 39,
+                "ty": 13,
+                "distanceToCastle": 31.3
+              },
+              {
+                "index": 8,
+                "family": "thorn",
+                "tier": 3,
+                "boss": true,
+                "tx": 100,
+                "ty": 57,
+                "distanceToCastle": 49.6
+              }
+            ]
+          },
+          {
+            "i": 1014,
+            "seed": "wave-map-1014",
+            "families": [
+              "rust",
+              "sky",
+              "thorn"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 65,
+                "ty": 46,
+                "distanceToCastle": 13
+              },
+              {
+                "index": 1,
+                "family": "sky",
+                "tier": 1,
+                "boss": false,
+                "tx": 39,
+                "ty": 46,
+                "distanceToCastle": 14.9
+              },
+              {
+                "index": 2,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 64,
+                "ty": 27,
+                "distanceToCastle": 17.8
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 60,
+                "ty": 62,
+                "distanceToCastle": 22.1
+              },
+              {
+                "index": 4,
+                "family": "sky",
+                "tier": 2,
+                "boss": false,
+                "tx": 29,
+                "ty": 29,
+                "distanceToCastle": 26.8
+              },
+              {
+                "index": 5,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 87,
+                "ty": 38,
+                "distanceToCastle": 34.1
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 31,
+                "ty": 64,
+                "distanceToCastle": 31.8
+              },
+              {
+                "index": 7,
+                "family": "sky",
+                "tier": 3,
+                "boss": false,
+                "tx": 51,
+                "ty": 10,
+                "distanceToCastle": 31.1
+              },
+              {
+                "index": 8,
+                "family": "thorn",
+                "tier": 3,
+                "boss": true,
+                "tx": 87,
+                "ty": 66,
+                "distanceToCastle": 42.2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "combination": "rust+spore+thorn",
+        "count": 3,
+        "maps": [
+          {
+            "i": 1012,
+            "seed": "wave-map-1012",
+            "families": [
+              "rust",
+              "thorn",
+              "spore"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 64,
+                "ty": 43,
+                "distanceToCastle": 11.2
+              },
+              {
+                "index": 1,
+                "family": "thorn",
+                "tier": 1,
+                "boss": false,
+                "tx": 38,
+                "ty": 45,
+                "distanceToCastle": 15.5
+              },
+              {
+                "index": 2,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 66,
+                "ty": 28,
+                "distanceToCastle": 18.4
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 58,
+                "ty": 62,
+                "distanceToCastle": 21.6
+              },
+              {
+                "index": 4,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 28,
+                "ty": 27,
+                "distanceToCastle": 28.7
+              },
+              {
+                "index": 5,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 87,
+                "ty": 41,
+                "distanceToCastle": 34
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 27,
+                "ty": 64,
+                "distanceToCastle": 34.7
+              },
+              {
+                "index": 7,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 55,
+                "ty": 10,
+                "distanceToCastle": 31.1
+              },
+              {
+                "index": 8,
+                "family": "spore",
+                "tier": 3,
+                "boss": true,
+                "tx": 84,
+                "ty": 69,
+                "distanceToCastle": 41.8
+              }
+            ]
+          },
+          {
+            "i": 1024,
+            "seed": "wave-map-1024",
+            "families": [
+              "rust",
+              "thorn",
+              "spore"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 48,
+                "ty": 31,
+                "distanceToCastle": 11.2
+              },
+              {
+                "index": 1,
+                "family": "thorn",
+                "tier": 1,
+                "boss": false,
+                "tx": 69,
+                "ty": 48,
+                "distanceToCastle": 17.5
+              },
+              {
+                "index": 2,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 34,
+                "ty": 44,
+                "distanceToCastle": 19.2
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 66,
+                "ty": 24,
+                "distanceToCastle": 21.4
+              },
+              {
+                "index": 4,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 61,
+                "ty": 65,
+                "distanceToCastle": 25.3
+              },
+              {
+                "index": 5,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 26,
+                "ty": 26,
+                "distanceToCastle": 30.9
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 91,
+                "ty": 38,
+                "distanceToCastle": 38.1
+              },
+              {
+                "index": 7,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 27,
+                "ty": 67,
+                "distanceToCastle": 36.8
+              },
+              {
+                "index": 8,
+                "family": "spore",
+                "tier": 3,
+                "boss": true,
+                "tx": 51,
+                "ty": 7,
+                "distanceToCastle": 34.1
+              }
+            ]
+          },
+          {
+            "i": 1025,
+            "seed": "wave-map-1025",
+            "families": [
+              "rust",
+              "thorn",
+              "spore"
+            ],
+            "lairs": [
+              {
+                "index": 0,
+                "family": "rust",
+                "tier": 1,
+                "boss": false,
+                "tx": 42,
+                "ty": 38,
+                "distanceToCastle": 11.4
+              },
+              {
+                "index": 1,
+                "family": "thorn",
+                "tier": 1,
+                "boss": false,
+                "tx": 69,
+                "ty": 37,
+                "distanceToCastle": 16.5
+              },
+              {
+                "index": 2,
+                "family": "spore",
+                "tier": 2,
+                "boss": false,
+                "tx": 45,
+                "ty": 53,
+                "distanceToCastle": 14.4
+              },
+              {
+                "index": 3,
+                "family": "rust",
+                "tier": 2,
+                "boss": false,
+                "tx": 48,
+                "ty": 23,
+                "distanceToCastle": 18.7
+              },
+              {
+                "index": 4,
+                "family": "thorn",
+                "tier": 2,
+                "boss": false,
+                "tx": 80,
+                "ty": 55,
+                "distanceToCastle": 30.4
+              },
+              {
+                "index": 5,
+                "family": "spore",
+                "tier": 3,
+                "boss": false,
+                "tx": 21,
+                "ty": 46,
+                "distanceToCastle": 32.4
+              },
+              {
+                "index": 6,
+                "family": "rust",
+                "tier": 3,
+                "boss": false,
+                "tx": 80,
+                "ty": 19,
+                "distanceToCastle": 34.8
+              },
+              {
+                "index": 7,
+                "family": "thorn",
+                "tier": 3,
+                "boss": false,
+                "tx": 57,
+                "ty": 74,
+                "distanceToCastle": 33.2
+              },
+              {
+                "index": 8,
+                "family": "spore",
+                "tier": 3,
+                "boss": true,
+                "tx": 20,
+                "ty": 18,
+                "distanceToCastle": 40.2
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "allScannedFamilyAssignments": [
+      {
+        "i": 1000,
+        "seed": "wave-map-1000",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "sky",
+          "spore"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1001,
+        "seed": "wave-map-1001",
+        "combination": "hush+rust+sky",
+        "families": [
+          "rust",
+          "sky",
+          "hush"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1002,
+        "seed": "wave-map-1002",
+        "combination": "rust+sky+thorn",
+        "families": [
+          "rust",
+          "thorn",
+          "sky"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1003,
+        "seed": "wave-map-1003",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "sky",
+          "spore"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1004,
+        "seed": "wave-map-1004",
+        "combination": "hush+rust+spore",
+        "families": [
+          "rust",
+          "hush",
+          "spore"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1005,
+        "seed": "wave-map-1005",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "spore",
+          "sky"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1006,
+        "seed": "wave-map-1006",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "spore",
+          "sky"
+        ],
+        "selected": false
+      },
+      {
+        "i": 1007,
+        "seed": "wave-map-1007",
+        "combination": "hush+rust+thorn",
+        "families": [
+          "rust",
+          "hush",
+          "thorn"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1008,
+        "seed": "wave-map-1008",
+        "combination": "hush+rust+spore",
+        "families": [
+          "rust",
+          "hush",
+          "spore"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1009,
+        "seed": "wave-map-1009",
+        "combination": "hush+rust+sky",
+        "families": [
+          "rust",
+          "sky",
+          "hush"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1010,
+        "seed": "wave-map-1010",
+        "combination": "rust+sky+thorn",
+        "families": [
+          "rust",
+          "sky",
+          "thorn"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1011,
+        "seed": "wave-map-1011",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "spore",
+          "sky"
+        ],
+        "selected": false
+      },
+      {
+        "i": 1012,
+        "seed": "wave-map-1012",
+        "combination": "rust+spore+thorn",
+        "families": [
+          "rust",
+          "thorn",
+          "spore"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1013,
+        "seed": "wave-map-1013",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "spore",
+          "sky"
+        ],
+        "selected": false
+      },
+      {
+        "i": 1014,
+        "seed": "wave-map-1014",
+        "combination": "rust+sky+thorn",
+        "families": [
+          "rust",
+          "sky",
+          "thorn"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1015,
+        "seed": "wave-map-1015",
+        "combination": "hush+rust+sky",
+        "families": [
+          "rust",
+          "hush",
+          "sky"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1016,
+        "seed": "wave-map-1016",
+        "combination": "hush+rust+spore",
+        "families": [
+          "rust",
+          "spore",
+          "hush"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1017,
+        "seed": "wave-map-1017",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "spore",
+          "sky"
+        ],
+        "selected": false
+      },
+      {
+        "i": 1018,
+        "seed": "wave-map-1018",
+        "combination": "hush+rust+sky",
+        "families": [
+          "rust",
+          "hush",
+          "sky"
+        ],
+        "selected": false
+      },
+      {
+        "i": 1019,
+        "seed": "wave-map-1019",
+        "combination": "rust+sky+thorn",
+        "families": [
+          "rust",
+          "sky",
+          "thorn"
+        ],
+        "selected": false
+      },
+      {
+        "i": 1020,
+        "seed": "wave-map-1020",
+        "combination": "rust+sky+spore",
+        "families": [
+          "rust",
+          "spore",
+          "sky"
+        ],
+        "selected": false
+      },
+      {
+        "i": 1021,
+        "seed": "wave-map-1021",
+        "combination": "rust+sky+thorn",
+        "families": [
+          "rust",
+          "thorn",
+          "sky"
+        ],
+        "selected": false
+      },
+      {
+        "i": 1022,
+        "seed": "wave-map-1022",
+        "combination": "hush+rust+thorn",
+        "families": [
+          "rust",
+          "hush",
+          "thorn"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1023,
+        "seed": "wave-map-1023",
+        "combination": "hush+rust+thorn",
+        "families": [
+          "rust",
+          "hush",
+          "thorn"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1024,
+        "seed": "wave-map-1024",
+        "combination": "rust+spore+thorn",
+        "families": [
+          "rust",
+          "thorn",
+          "spore"
+        ],
+        "selected": true
+      },
+      {
+        "i": 1025,
+        "seed": "wave-map-1025",
+        "combination": "rust+spore+thorn",
+        "families": [
+          "rust",
+          "thorn",
+          "spore"
+        ],
+        "selected": true
+      }
+    ]
+  }
+}

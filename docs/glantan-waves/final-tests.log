@@ -1,0 +1,297 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> skolarkaden@1.0.0 test:all
+> node tests/run.cjs --all
+
+RUN tests/app/answer-input.test.cjs
+  all ordinary tests
+RUN tests/app/assets.test.cjs
+  all ordinary tests
+RUN tests/app/game-contracts.test.cjs
+  all ordinary tests
+RUN tests/app/game-launch.test.cjs
+  all ordinary tests
+RUN tests/app/highscore-fireworks.test.cjs
+  all ordinary tests
+RUN tests/app/homework-page.test.cjs
+  all ordinary tests
+RUN tests/app/homework.test.cjs
+  all ordinary tests
+RUN tests/app/leaderboard.test.cjs
+  all ordinary tests
+RUN tests/app/math-speech.test.cjs
+  all ordinary tests
+RUN tests/app/menu.test.cjs
+  all ordinary tests
+RUN tests/app/navigation.test.cjs
+  all ordinary tests
+RUN tests/app/score-hud.test.cjs
+  all ordinary tests
+RUN tests/app/startup.test.cjs
+  all ordinary tests
+RUN tests/app/statistics.test.cjs
+  all ordinary tests
+RUN tests/games/bubblefish/app.test.cjs
+  all ordinary tests
+RUN tests/games/bubblefish/logic.test.cjs
+  all ordinary tests
+RUN tests/games/chess/app.test.cjs
+  all ordinary tests
+RUN tests/games/chess/logic.test.cjs
+  all ordinary tests
+RUN tests/games/chess/renderer.test.cjs
+  all ordinary tests
+RUN tests/games/chess/scoring.test.cjs
+  all ordinary tests
+RUN tests/games/city/logic.test.cjs
+  all ordinary tests
+RUN tests/games/city/waves.test.cjs
+  all ordinary tests
+RUN tests/games/dinosaur/app.test.cjs
+  all ordinary tests
+RUN tests/games/dinosaur/logic.test.cjs
+  all ordinary tests
+RUN tests/games/eggs/app.test.cjs
+  all ordinary tests
+RUN tests/games/eggs/logic.test.cjs
+  all ordinary tests
+RUN tests/games/ficklampan/game.test.cjs
+  all ordinary tests
+RUN tests/games/food/logic.test.cjs
+  all ordinary tests
+RUN tests/games/food/waves.test.cjs
+  all ordinary tests
+RUN tests/games/garden/balance.test.cjs
+  all ordinary tests
+RUN tests/games/garden/logic.test.cjs
+  all ordinary tests
+RUN tests/games/glantan/adapter.test.cjs
+  all ordinary tests
+RUN tests/games/glantan/app.test.cjs
+  all ordinary tests
+RUN tests/games/glantan/encounters.test.cjs
+  all ordinary tests
+RUN tests/games/glantan/movement.test.cjs
+  all ordinary tests
+RUN tests/games/glantan/orders.test.cjs
+  all ordinary tests
+RUN tests/games/glantan/renderer.test.cjs
+  all ordinary tests
+RUN tests/games/glantan/simulation.test.cjs
+  all ordinary tests
+RUN tests/games/glantan/sound.test.cjs
+  all ordinary tests
+RUN tests/games/glantan/tactics.test.cjs
+  all ordinary tests
+RUN tests/games/glantan/world.test.cjs
+  all ordinary tests
+RUN tests/games/hive/logic.test.cjs
+  all ordinary tests
+RUN tests/games/hive/rendering.test.cjs
+  all ordinary tests
+RUN tests/games/home/app.test.cjs
+  all ordinary tests
+RUN tests/games/home/logic.test.cjs
+  all ordinary tests
+RUN tests/games/klossar/app.test.cjs
+  all ordinary tests
+RUN tests/games/klossar/chinese.test.cjs
+  all ordinary tests
+RUN tests/games/klossar/creatures.test.cjs
+  all ordinary tests
+RUN tests/games/klossar/layouts.test.cjs
+  all ordinary tests
+RUN tests/games/klossar/logic.test.cjs
+  all ordinary tests
+RUN tests/games/klossar/pronunciation.test.cjs
+  all ordinary tests
+RUN tests/games/klossar/renderer.test.cjs
+  all ordinary tests
+RUN tests/games/marshmallows/app.test.cjs
+  all ordinary tests
+RUN tests/games/marshmallows/logic.test.cjs
+  all ordinary tests
+RUN tests/games/paint/logic.test.cjs
+  all ordinary tests
+RUN tests/games/reversi/app.test.cjs
+  all ordinary tests
+RUN tests/games/reversi/logic.test.cjs
+  all ordinary tests
+RUN tests/games/reversi/renderer.test.cjs
+  all ordinary tests
+RUN tests/games/studio/app.test.cjs
+  all ordinary tests
+RUN tests/games/studio/drawing.test.cjs
+  all ordinary tests
+RUN tests/games/trassel/app.test.cjs
+  all ordinary tests
+RUN tests/games/trassel/chinese.test.cjs
+  all ordinary tests
+RUN tests/games/trassel/layouts.test.cjs
+  all ordinary tests
+RUN tests/games/trassel/logic.test.cjs
+  all ordinary tests
+RUN tests/runner/selection.test.cjs
+  all ordinary tests
+RUN tests/server/artworks.test.cjs
+  all ordinary tests
+RUN tests/server/exercise-ranking.test.cjs
+  all ordinary tests
+RUN tests/server/game-scores.test.cjs
+  all ordinary tests
+RUN tests/server/highscores.test.cjs
+  all ordinary tests
+RUN tests/server/homework-counts.test.cjs
+  all ordinary tests
+RUN tests/server/math-migration.test.cjs
+  all ordinary tests
+RUN tests/server/score-dimensions.test.cjs
+  all ordinary tests
+RUN tests/server/statistics-rename.test.cjs
+  all ordinary tests
+RUN tests/server/statistics.test.cjs
+  all ordinary tests
+RUN tests/shared/bopomofo.test.cjs
+  all ordinary tests
+RUN tests/shared/browser-speech.test.cjs
+  all ordinary tests
+RUN tests/shared/camp-sounds.test.cjs
+  all ordinary tests
+RUN tests/shared/chinese-compounds.test.cjs
+  all ordinary tests
+RUN tests/shared/chinese-pinyin.test.cjs
+  all ordinary tests
+RUN tests/shared/chinese-translations.test.cjs
+  all ordinary tests
+RUN tests/shared/dinosaur-sounds.test.cjs
+  all ordinary tests
+RUN tests/shared/exercises.test.cjs
+  all ordinary tests
+RUN tests/shared/home-sounds.test.cjs
+  all ordinary tests
+RUN tests/shared/homework.test.cjs
+  all ordinary tests
+RUN tests/shared/input-focus.test.cjs
+  all ordinary tests
+RUN tests/shared/keyboard-practice.test.cjs
+  all ordinary tests
+RUN tests/shared/language-data.test.cjs
+  all ordinary tests
+RUN tests/shared/math-diagrams.test.cjs
+  all ordinary tests
+RUN tests/shared/math-simple-multiplication.test.cjs
+  all ordinary tests
+RUN tests/shared/microphone.test.cjs
+  all ordinary tests
+RUN tests/shared/mobile-speech.test.cjs
+  all ordinary tests
+RUN tests/shared/people.test.cjs
+  all ordinary tests
+RUN tests/shared/plants.test.cjs
+  all ordinary tests
+RUN tests/shared/queue.test.cjs
+  all ordinary tests
+RUN tests/shared/speech-stream.test.cjs
+  all ordinary tests
+RUN tests/shared/text-input.test.cjs
+  all ordinary tests
+RUN tests/shared/word-pairs.test.cjs
+  all ordinary tests
+PASS tests/app/answer-input.test.cjs (2.38 s)
+PASS tests/app/assets.test.cjs (0.36 s)
+PASS tests/app/game-contracts.test.cjs (6.21 s)
+PASS tests/app/game-launch.test.cjs (0.45 s)
+PASS tests/app/highscore-fireworks.test.cjs (0.21 s)
+PASS tests/app/homework-page.test.cjs (0.12 s)
+PASS tests/app/homework.test.cjs (1.43 s)
+PASS tests/app/leaderboard.test.cjs (0.21 s)
+PASS tests/app/math-speech.test.cjs (0.30 s)
+PASS tests/app/menu.test.cjs (0.24 s)
+PASS tests/app/navigation.test.cjs (0.07 s)
+PASS tests/app/score-hud.test.cjs (0.43 s)
+PASS tests/app/startup.test.cjs (0.67 s)
+PASS tests/app/statistics.test.cjs (0.23 s)
+PASS tests/games/bubblefish/app.test.cjs (0.43 s)
+PASS tests/games/bubblefish/logic.test.cjs (1.47 s)
+PASS tests/games/chess/app.test.cjs (4.84 s)
+PASS tests/games/chess/logic.test.cjs (5.11 s)
+PASS tests/games/chess/renderer.test.cjs (1.12 s)
+PASS tests/games/chess/scoring.test.cjs (0.26 s)
+PASS tests/games/city/logic.test.cjs (0.20 s)
+PASS tests/games/city/waves.test.cjs (0.57 s)
+PASS tests/games/dinosaur/app.test.cjs (1.38 s)
+PASS tests/games/dinosaur/logic.test.cjs (2.06 s)
+PASS tests/games/eggs/app.test.cjs (0.62 s)
+PASS tests/games/eggs/logic.test.cjs (4.10 s)
+PASS tests/games/ficklampan/game.test.cjs (0.71 s)
+PASS tests/games/food/logic.test.cjs (0.26 s)
+PASS tests/games/food/waves.test.cjs (0.36 s)
+PASS tests/games/garden/balance.test.cjs (0.36 s)
+PASS tests/games/garden/logic.test.cjs (0.75 s)
+PASS tests/games/glantan/adapter.test.cjs (0.98 s)
+PASS tests/games/glantan/app.test.cjs (0.39 s)
+PASS tests/games/glantan/encounters.test.cjs (0.33 s)
+PASS tests/games/glantan/movement.test.cjs (1.01 s)
+PASS tests/games/glantan/orders.test.cjs (0.17 s)
+PASS tests/games/glantan/renderer.test.cjs (0.18 s)
+PASS tests/games/glantan/simulation.test.cjs (0.44 s)
+PASS tests/games/glantan/sound.test.cjs (22.20 s)
+PASS tests/games/glantan/tactics.test.cjs (0.74 s)
+PASS tests/games/glantan/world.test.cjs (2.32 s)
+PASS tests/games/hive/logic.test.cjs (0.86 s)
+PASS tests/games/hive/rendering.test.cjs (1.12 s)
+PASS tests/games/home/app.test.cjs (0.83 s)
+PASS tests/games/home/logic.test.cjs (4.41 s)
+PASS tests/games/klossar/app.test.cjs (0.41 s)
+PASS tests/games/klossar/chinese.test.cjs (1.02 s)
+PASS tests/games/klossar/creatures.test.cjs (0.10 s)
+PASS tests/games/klossar/layouts.test.cjs (0.33 s)
+PASS tests/games/klossar/logic.test.cjs (1.32 s)
+PASS tests/games/klossar/pronunciation.test.cjs (0.22 s)
+PASS tests/games/klossar/renderer.test.cjs (1.62 s)
+PASS tests/games/marshmallows/app.test.cjs (0.64 s)
+PASS tests/games/marshmallows/logic.test.cjs (1.54 s)
+PASS tests/games/paint/logic.test.cjs (0.77 s)
+PASS tests/games/reversi/app.test.cjs (0.35 s)
+PASS tests/games/reversi/logic.test.cjs (0.86 s)
+PASS tests/games/reversi/renderer.test.cjs (0.24 s)
+PASS tests/games/studio/app.test.cjs (0.23 s)
+PASS tests/games/studio/drawing.test.cjs (0.77 s)
+PASS tests/games/trassel/app.test.cjs (0.32 s)
+PASS tests/games/trassel/chinese.test.cjs (0.41 s)
+PASS tests/games/trassel/layouts.test.cjs (8.90 s)
+PASS tests/games/trassel/logic.test.cjs (0.40 s)
+PASS tests/runner/selection.test.cjs (0.26 s)
+PASS tests/server/artworks.test.cjs (0.56 s)
+PASS tests/server/exercise-ranking.test.cjs (0.18 s)
+PASS tests/server/game-scores.test.cjs (0.12 s)
+PASS tests/server/highscores.test.cjs (0.29 s)
+PASS tests/server/homework-counts.test.cjs (0.12 s)
+PASS tests/server/math-migration.test.cjs (0.18 s)
+PASS tests/server/score-dimensions.test.cjs (0.15 s)
+PASS tests/server/statistics-rename.test.cjs (0.11 s)
+PASS tests/server/statistics.test.cjs (0.11 s)
+PASS tests/shared/bopomofo.test.cjs (0.40 s)
+PASS tests/shared/browser-speech.test.cjs (0.21 s)
+PASS tests/shared/camp-sounds.test.cjs (0.91 s)
+PASS tests/shared/chinese-compounds.test.cjs (0.46 s)
+PASS tests/shared/chinese-pinyin.test.cjs (0.26 s)
+PASS tests/shared/chinese-translations.test.cjs (0.63 s)
+PASS tests/shared/dinosaur-sounds.test.cjs (0.38 s)
+PASS tests/shared/exercises.test.cjs (3.15 s)
+PASS tests/shared/home-sounds.test.cjs (0.11 s)
+PASS tests/shared/homework.test.cjs (0.33 s)
+PASS tests/shared/input-focus.test.cjs (0.16 s)
+PASS tests/shared/keyboard-practice.test.cjs (0.19 s)
+PASS tests/shared/language-data.test.cjs (0.44 s)
+PASS tests/shared/math-diagrams.test.cjs (0.41 s)
+PASS tests/shared/math-simple-multiplication.test.cjs (0.11 s)
+PASS tests/shared/microphone.test.cjs (0.09 s)
+PASS tests/shared/mobile-speech.test.cjs (0.92 s)
+PASS tests/shared/people.test.cjs (0.06 s)
+PASS tests/shared/plants.test.cjs (0.21 s)
+PASS tests/shared/queue.test.cjs (0.22 s)
+PASS tests/shared/speech-stream.test.cjs (0.33 s)
+PASS tests/shared/text-input.test.cjs (0.18 s)
+PASS tests/shared/word-pairs.test.cjs (0.58 s)
+97/97 suites passed in 107.24 s.

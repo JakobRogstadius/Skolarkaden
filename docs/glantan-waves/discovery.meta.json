@@ -1,0 +1,850 @@
+{
+  "version": 1,
+  "casesSha256": "cc5c90da0d1aa4b0202d37ed93731d4189f64aaf018adcc97c7261c500201f79",
+  "cases": [
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "baseline/mixed/0",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "baseline/mixed/1",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "baseline/mixed/2",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "baseline/rangers/0",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "baseline/rangers/1",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "baseline/rangers/2",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "specialists",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "baseline/specialists/0",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "specialists",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "baseline/specialists/1",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "specialists",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "baseline/specialists/2",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "defense",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "baseline/defense/0",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "defense",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "baseline/defense/1",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "defense",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "baseline/defense/2",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "baseline/camp/0",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "baseline/camp/1",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "baseline/camp/2",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "cohesive/mixed/0",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "cohesive/mixed/1",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "cohesive/mixed/2",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "cohesive/rangers/0",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "cohesive/rangers/1",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "cohesive/rangers/2",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "specialists",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "cohesive/specialists/0",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "specialists",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "cohesive/specialists/1",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "specialists",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "cohesive/specialists/2",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "defense",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "cohesive/defense/0",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "defense",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "cohesive/defense/1",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "defense",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "cohesive/defense/2",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "cohesive/camp/0",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "cohesive/camp/1",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "cohesive/camp/2",
+      "variant": "cohesive"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "pressure/mixed/0",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "pressure/mixed/1",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "pressure/mixed/2",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "pressure/rangers/0",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "pressure/rangers/1",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "pressure/rangers/2",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "specialists",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "pressure/specialists/0",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "specialists",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "pressure/specialists/1",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "specialists",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "pressure/specialists/2",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "defense",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "pressure/defense/0",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "defense",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "pressure/defense/1",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "defense",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "pressure/defense/2",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "pressure/camp/0",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "pressure/camp/1",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "pressure/camp/2",
+      "variant": "pressure"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "severe/mixed/0",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "severe/mixed/1",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "severe/mixed/2",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "severe/rangers/0",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "severe/rangers/1",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "severe/rangers/2",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "specialists",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "severe/specialists/0",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "specialists",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "severe/specialists/1",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "specialists",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "severe/specialists/2",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "defense",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "severe/defense/0",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "defense",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "severe/defense/1",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "defense",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "severe/defense/2",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-0",
+        "trace": true
+      },
+      "id": "severe/camp/0",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-1",
+        "trace": true
+      },
+      "id": "severe/camp/1",
+      "variant": "severe"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1500,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-2",
+        "trace": true
+      },
+      "id": "severe/camp/2",
+      "variant": "severe"
+    }
+  ],
+  "sourceRef": "working-tree",
+  "sourceSha256": "af01db660d5e960fa0e8fc3b0a1d80349ee75320be616000e9c8bd07319fde18",
+  "campaignHarnessSha256": "fc32f077966221b52157a00b24a4b0bb62bac0377603cb1e148590e29a27bcd5",
+  "variantModuleSha256": "39d98440030735a75be5150b97cf87fe740cf0fd85d2787a1478e29b2f7b3278"
+}

@@ -1,0 +1,43 @@
+{
+  "assay": "defended-castle-numeric-final-confirmation",
+  "selectedKey": "siegebreaker+mender/fresh/support0.2/necromancy/x1/1/numericRaid75",
+  "stage": "validation",
+  "freshSeeds": 100,
+  "offset": 120000,
+  "seedPrefix": "enemy-siege-numeric-heldout-",
+  "deadline": 75,
+  "castleShots": true,
+  "endOnPartyDeath": false,
+  "caseFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-siege-final-confirmation-cases.json",
+  "caseSha256": "a080bc6e85c6a18ba924d25a2abd1a4d9cbd66f50bacebd0f7dbac6a5e0cee6d",
+  "harnessSha256": "30ecd4865a699c908a357094232d586637ba5b8b6f73576b77e30bd9ef609ef6",
+  "arms": {
+    "mixed": "4siegebreakers+2menders",
+    "pureA": "6siegebreakers",
+    "pureB": "8menders"
+  },
+  "sources": [
+    {
+      "name": "original",
+      "ref": "28ba8b8",
+      "stats": "unchanged165/23, no interception"
+    },
+    {
+      "name": "interception-control",
+      "ref": "working-tree",
+      "stats": {
+        "hp": 165,
+        "damage": 23
+      }
+    },
+    {
+      "name": "hp90-candidate",
+      "ref": "working-tree",
+      "stats": {
+        "hp": 90,
+        "damage": 42
+      }
+    }
+  ],
+  "predeclaredAssessment": "Attacker victory requires castle destruction by75seconds. Compare mixed against both conservatively funded pure armies. Pure siege performance against the same defender is the counter/weakness arm; report before/after all three sources and no further discovery."
+}

@@ -1,0 +1,78 @@
+{
+  "reference": "28ba8b8",
+  "allEightRuntimeModulesMatchReference": true,
+  "checks": [
+    {
+      "name": "tests/games/glantan/encounters.test.cjs",
+      "passed": true,
+      "coverage": "Guard patrols, replenishment, difficulty-specific boss garrisons/leash/demand, caps and save/resume."
+    },
+    {
+      "name": "tests/games/glantan/tactics.test.cjs",
+      "passed": true,
+      "coverage": "Shared actions/cooldowns, one owned skeleton per master, housing exclusion, no recursive corpse farming, skeleton ground combat and owner-death cleanup."
+    }
+  ],
+  "bossProbe": {
+    "command": "node dev/glantan-balance.cjs --boss",
+    "passed": true,
+    "cases": [
+      {
+        "difficulty": "gentle",
+        "combined": 10,
+        "recommended": 10,
+        "upgraded": false,
+        "cleared": true,
+        "duration": 17,
+        "fallen": 0
+      },
+      {
+        "difficulty": "gentle",
+        "combined": 5,
+        "recommended": 10,
+        "upgraded": false,
+        "cleared": false,
+        "duration": 600,
+        "fallen": 0
+      },
+      {
+        "difficulty": "steady",
+        "combined": 20,
+        "recommended": 20,
+        "upgraded": false,
+        "cleared": true,
+        "duration": 114,
+        "fallen": 0
+      },
+      {
+        "difficulty": "steady",
+        "combined": 10,
+        "recommended": 20,
+        "upgraded": false,
+        "cleared": false,
+        "duration": 600,
+        "fallen": 0
+      },
+      {
+        "difficulty": "brave",
+        "combined": 30,
+        "recommended": 30,
+        "upgraded": true,
+        "cleared": true,
+        "duration": 28,
+        "fallen": 0
+      },
+      {
+        "difficulty": "brave",
+        "combined": 15,
+        "recommended": 30,
+        "upgraded": true,
+        "cleared": false,
+        "duration": 600,
+        "fallen": 0
+      }
+    ]
+  },
+  "checkedAt": "2026-11-01T22:33:44.132Z",
+  "sourceCondition": "All eight runtime modules matched the stated baseline when these checks were executed; this is a historical baseline check, not a claim about later working-tree prototypes."
+}

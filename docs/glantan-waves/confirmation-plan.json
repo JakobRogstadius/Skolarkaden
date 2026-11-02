@@ -1,0 +1,144 @@
+{
+  "date": "2026-11-02",
+  "baseline": "f2c03de332401a62194ba4a6ea64ca88c570dca4",
+  "candidate": "recovery",
+  "prototypeCommit": "ddb8082",
+  "mechanism": "companies roster,150-second regular raid interval, no extra growth-triggered raids; hard only. Awakening,growth rates,ranks,damage,guardians and destruction waves retain their rules.",
+  "selectionBasis": "12 discovery maps stratified over all6 family combinations; coordinated12-hero9/12wins, eight-ranger8/12wins. Tests of more frequent or smaller waves failed to give a useful strategy contrast.",
+  "primary": {
+    "pace": "brave",
+    "seconds": 6,
+    "accuracy": 0.95,
+    "jitter": 0.25,
+    "limit": 1800,
+    "policies": [
+      "rangers",
+      "focused",
+      "coordinated",
+      "guarded"
+    ],
+    "maps": [
+      {
+        "seed": "wave-map-1001",
+        "family": "hush+rust+sky"
+      },
+      {
+        "seed": "wave-map-1009",
+        "family": "hush+rust+sky"
+      },
+      {
+        "seed": "wave-map-1015",
+        "family": "hush+rust+sky"
+      },
+      {
+        "seed": "wave-map-1004",
+        "family": "hush+rust+spore"
+      },
+      {
+        "seed": "wave-map-1008",
+        "family": "hush+rust+spore"
+      },
+      {
+        "seed": "wave-map-1016",
+        "family": "hush+rust+spore"
+      },
+      {
+        "seed": "wave-map-1007",
+        "family": "hush+rust+thorn"
+      },
+      {
+        "seed": "wave-map-1022",
+        "family": "hush+rust+thorn"
+      },
+      {
+        "seed": "wave-map-1023",
+        "family": "hush+rust+thorn"
+      },
+      {
+        "seed": "wave-map-1000",
+        "family": "rust+sky+spore"
+      },
+      {
+        "seed": "wave-map-1003",
+        "family": "rust+sky+spore"
+      },
+      {
+        "seed": "wave-map-1005",
+        "family": "rust+sky+spore"
+      },
+      {
+        "seed": "wave-map-1002",
+        "family": "rust+sky+thorn"
+      },
+      {
+        "seed": "wave-map-1010",
+        "family": "rust+sky+thorn"
+      },
+      {
+        "seed": "wave-map-1014",
+        "family": "rust+sky+thorn"
+      },
+      {
+        "seed": "wave-map-1012",
+        "family": "rust+spore+thorn"
+      },
+      {
+        "seed": "wave-map-1024",
+        "family": "rust+spore+thorn"
+      },
+      {
+        "seed": "wave-map-1025",
+        "family": "rust+spore+thorn"
+      }
+    ]
+  },
+  "paceChecks": {
+    "secondsAccuracy": [
+      [
+        3,
+        0.98
+      ],
+      [
+        9,
+        0.9
+      ]
+    ],
+    "policies": [
+      "rangers",
+      "coordinated"
+    ],
+    "maps": [
+      {
+        "seed": "wave-map-1001",
+        "family": "hush+rust+sky"
+      },
+      {
+        "seed": "wave-map-1004",
+        "family": "hush+rust+spore"
+      },
+      {
+        "seed": "wave-map-1007",
+        "family": "hush+rust+thorn"
+      },
+      {
+        "seed": "wave-map-1000",
+        "family": "rust+sky+spore"
+      },
+      {
+        "seed": "wave-map-1002",
+        "family": "rust+sky+thorn"
+      },
+      {
+        "seed": "wave-map-1012",
+        "family": "rust+spore+thorn"
+      }
+    ]
+  },
+  "targets": [
+    "At least half of primary coordinated campaigns win, with meaningful casualties or village pressure; no universal victory requirement.",
+    "At least two distinct policies win at least one third of primary maps.",
+    "Eight-ranger primary victory rate below85%; a cheap homogeneous army is viable but no longer a universal solution.",
+    "Fast coordinated policy wins at least5of6 maps. Slower/error-prone play is meaningfully harder.",
+    "No aggregate claims about human victory rates. Report each family, timeouts, costs and uncertainty; preserve failures."
+  ]
+}

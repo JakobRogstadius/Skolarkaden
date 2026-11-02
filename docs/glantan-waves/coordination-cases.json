@@ -1,0 +1,1010 @@
+[
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-101",
+      "trace": true
+    },
+    "id": "scheduled/focused/wave-map-101",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-107",
+      "trace": true
+    },
+    "id": "scheduled/focused/wave-map-107",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-105",
+      "trace": true
+    },
+    "id": "scheduled/focused/wave-map-105",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-106",
+      "trace": true
+    },
+    "id": "scheduled/focused/wave-map-106",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-114",
+      "trace": true
+    },
+    "id": "scheduled/focused/wave-map-114",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-115",
+      "trace": true
+    },
+    "id": "scheduled/focused/wave-map-115",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-100",
+      "trace": true
+    },
+    "id": "scheduled/focused/wave-map-100",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-102",
+      "trace": true
+    },
+    "id": "scheduled/focused/wave-map-102",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-108",
+      "trace": true
+    },
+    "id": "scheduled/focused/wave-map-108",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-109",
+      "trace": true
+    },
+    "id": "scheduled/focused/wave-map-109",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-111",
+      "trace": true
+    },
+    "id": "scheduled/focused/wave-map-111",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-113",
+      "trace": true
+    },
+    "id": "scheduled/focused/wave-map-113",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-101",
+      "trace": true
+    },
+    "id": "scheduled/coordinated/wave-map-101",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-107",
+      "trace": true
+    },
+    "id": "scheduled/coordinated/wave-map-107",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-105",
+      "trace": true
+    },
+    "id": "scheduled/coordinated/wave-map-105",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-106",
+      "trace": true
+    },
+    "id": "scheduled/coordinated/wave-map-106",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-114",
+      "trace": true
+    },
+    "id": "scheduled/coordinated/wave-map-114",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-115",
+      "trace": true
+    },
+    "id": "scheduled/coordinated/wave-map-115",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-100",
+      "trace": true
+    },
+    "id": "scheduled/coordinated/wave-map-100",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-102",
+      "trace": true
+    },
+    "id": "scheduled/coordinated/wave-map-102",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-108",
+      "trace": true
+    },
+    "id": "scheduled/coordinated/wave-map-108",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-109",
+      "trace": true
+    },
+    "id": "scheduled/coordinated/wave-map-109",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-111",
+      "trace": true
+    },
+    "id": "scheduled/coordinated/wave-map-111",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-113",
+      "trace": true
+    },
+    "id": "scheduled/coordinated/wave-map-113",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-101",
+      "trace": true
+    },
+    "id": "scheduled/phalanx/wave-map-101",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-107",
+      "trace": true
+    },
+    "id": "scheduled/phalanx/wave-map-107",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-105",
+      "trace": true
+    },
+    "id": "scheduled/phalanx/wave-map-105",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-106",
+      "trace": true
+    },
+    "id": "scheduled/phalanx/wave-map-106",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-114",
+      "trace": true
+    },
+    "id": "scheduled/phalanx/wave-map-114",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-115",
+      "trace": true
+    },
+    "id": "scheduled/phalanx/wave-map-115",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-100",
+      "trace": true
+    },
+    "id": "scheduled/phalanx/wave-map-100",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-102",
+      "trace": true
+    },
+    "id": "scheduled/phalanx/wave-map-102",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-108",
+      "trace": true
+    },
+    "id": "scheduled/phalanx/wave-map-108",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-109",
+      "trace": true
+    },
+    "id": "scheduled/phalanx/wave-map-109",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-111",
+      "trace": true
+    },
+    "id": "scheduled/phalanx/wave-map-111",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-113",
+      "trace": true
+    },
+    "id": "scheduled/phalanx/wave-map-113",
+    "variant": "scheduled"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-101",
+      "trace": true
+    },
+    "id": "recovery/focused/wave-map-101",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-107",
+      "trace": true
+    },
+    "id": "recovery/focused/wave-map-107",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-105",
+      "trace": true
+    },
+    "id": "recovery/focused/wave-map-105",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-106",
+      "trace": true
+    },
+    "id": "recovery/focused/wave-map-106",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-114",
+      "trace": true
+    },
+    "id": "recovery/focused/wave-map-114",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-115",
+      "trace": true
+    },
+    "id": "recovery/focused/wave-map-115",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-100",
+      "trace": true
+    },
+    "id": "recovery/focused/wave-map-100",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-102",
+      "trace": true
+    },
+    "id": "recovery/focused/wave-map-102",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-108",
+      "trace": true
+    },
+    "id": "recovery/focused/wave-map-108",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-109",
+      "trace": true
+    },
+    "id": "recovery/focused/wave-map-109",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-111",
+      "trace": true
+    },
+    "id": "recovery/focused/wave-map-111",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-113",
+      "trace": true
+    },
+    "id": "recovery/focused/wave-map-113",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-101",
+      "trace": true
+    },
+    "id": "recovery/coordinated/wave-map-101",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-107",
+      "trace": true
+    },
+    "id": "recovery/coordinated/wave-map-107",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-105",
+      "trace": true
+    },
+    "id": "recovery/coordinated/wave-map-105",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-106",
+      "trace": true
+    },
+    "id": "recovery/coordinated/wave-map-106",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-114",
+      "trace": true
+    },
+    "id": "recovery/coordinated/wave-map-114",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-115",
+      "trace": true
+    },
+    "id": "recovery/coordinated/wave-map-115",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-100",
+      "trace": true
+    },
+    "id": "recovery/coordinated/wave-map-100",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-102",
+      "trace": true
+    },
+    "id": "recovery/coordinated/wave-map-102",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-108",
+      "trace": true
+    },
+    "id": "recovery/coordinated/wave-map-108",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-109",
+      "trace": true
+    },
+    "id": "recovery/coordinated/wave-map-109",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-111",
+      "trace": true
+    },
+    "id": "recovery/coordinated/wave-map-111",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-113",
+      "trace": true
+    },
+    "id": "recovery/coordinated/wave-map-113",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-101",
+      "trace": true
+    },
+    "id": "recovery/phalanx/wave-map-101",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-107",
+      "trace": true
+    },
+    "id": "recovery/phalanx/wave-map-107",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-105",
+      "trace": true
+    },
+    "id": "recovery/phalanx/wave-map-105",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-106",
+      "trace": true
+    },
+    "id": "recovery/phalanx/wave-map-106",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-114",
+      "trace": true
+    },
+    "id": "recovery/phalanx/wave-map-114",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-115",
+      "trace": true
+    },
+    "id": "recovery/phalanx/wave-map-115",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-100",
+      "trace": true
+    },
+    "id": "recovery/phalanx/wave-map-100",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-102",
+      "trace": true
+    },
+    "id": "recovery/phalanx/wave-map-102",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-108",
+      "trace": true
+    },
+    "id": "recovery/phalanx/wave-map-108",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-109",
+      "trace": true
+    },
+    "id": "recovery/phalanx/wave-map-109",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-111",
+      "trace": true
+    },
+    "id": "recovery/phalanx/wave-map-111",
+    "variant": "recovery"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "phalanx",
+      "seconds": 6,
+      "seed": "wave-map-113",
+      "trace": true
+    },
+    "id": "recovery/phalanx/wave-map-113",
+    "variant": "recovery"
+  }
+]

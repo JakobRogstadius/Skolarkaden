@@ -1,0 +1,16 @@
+[
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1009",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1009",
+    "variant": "baseline"
+  }
+]

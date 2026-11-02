@@ -35,7 +35,7 @@
   };
   G.necromancerStrike = function(w, hero, target, damage) {
     let drained = G.damage(w, target, damage, hero);
-    for (const monster of w.monsters) if (monster !== target && G.alive(monster) && G.distance(monster, target) < 1.7 && G.attackLine(w, target, monster)) drained += G.damage(w, monster, damage * .65, hero);
+    for (const monster of w.monsters) if (monster !== target && G.alive(monster) && G.distance(monster, target) < 1.7 && G.attackLine(w, target, monster)) drained += G.damage(w, monster, damage * .65, hero, 'area');
     if (drained <= 0) return;
     const amount = Math.min(16 + hero.level, drained * .45);
     for (const friend of [hero, ...G.ownedSkeletons(w, hero)]) {

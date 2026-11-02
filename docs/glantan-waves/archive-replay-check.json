@@ -1,0 +1,14 @@
+{
+  "dataset": "parity",
+  "exactMatches": 12,
+  "excludedMetadata": [
+    "source"
+  ],
+  "baselineSourceReloadCheck": {
+    "case": "primary/coordinated/wave-map-1004",
+    "exactMatch": true,
+    "excludedMetadata": [
+      "source"
+    ]
+  }
+}

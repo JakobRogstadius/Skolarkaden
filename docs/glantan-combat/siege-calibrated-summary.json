@@ -1,0 +1,63 @@
+{
+  "n": 100,
+  "wins": [
+    32,
+    43,
+    0
+  ],
+  "rates": [
+    0.32,
+    0.43,
+    0
+  ],
+  "intervals": [
+    [
+      0.23669147324999093,
+      0.41662618610452384
+    ],
+    [
+      0.33733298524110106,
+      0.5278461045078768
+    ],
+    [
+      3.469446951953614e-18,
+      0.03699349820698568
+    ]
+  ],
+  "delta": -0.11,
+  "pairedBootstrap95": [
+    -0.24,
+    0.01
+  ],
+  "comparisons": [
+    {
+      "better": 16,
+      "worse": 27,
+      "oneSidedExactP": 0.9670029827721
+    },
+    {
+      "better": 32,
+      "worse": 0,
+      "oneSidedExactP": 2.328306436538698e-10
+    }
+  ],
+  "passes": false,
+  "winLossTimeout": [
+    [
+      32,
+      67,
+      1
+    ],
+    [
+      43,
+      57,
+      0
+    ],
+    [
+      0,
+      61,
+      39
+    ]
+  ],
+  "note": "Fresh100seed sensitivity at frozen calibrated equivalents; support-cost transfer is conditional."
+}

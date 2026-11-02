@@ -14,7 +14,7 @@
   G.profiles = {
     gentle: { lairs: 5, mapScale: 2, firstWake: 120, wake: 105, spawn: 1.32, damage: 0.72, growth: 1.3, bossLevels: 10, bossGuardCount: 1 },
     steady: { lairs: 7, mapScale: 2.5, firstWake: 105, wake: 88, spawn: 1, damage: 1, growth: 1, bossLevels: 20, bossGuardCount: 2 },
-    brave: { lairs: 9, mapScale: 3, firstWake: 90, wake: 78, spawn: 0.84, damage: 1.22, growth: 0.9, bossLevels: 30, bossGuardCount: 3 }
+    brave: { lairs: 9, mapScale: 3, firstWake: 90, wake: 78, spawn: 0.84, damage: 1.22, growth: 0.9, bossLevels: 30, bossGuardCount: 3, raidInterval: 150, growthWaves: false }
   };
   G.classes = {
     warrior: { name: 'Väktare', role: 'Skyddar andra i närstrid.', color: '#ecb85a', icon: 'shield', guild: 'hall', cost: 2, hp: 125, damage: 14, range: 1.1, speed: 1.5, cooldown: 1.05, courage: 1.2 },
@@ -50,11 +50,11 @@
     mastery: { name: 'Den åttonde tonen', icon: 'star', cost: 8, building: 'spire', requires: 'castle2', group: 'landmark', description: 'Unik. Klangvävare på nivå 5 får en mäktig gruppattack.' }
   };
   G.lairTypes = {
-    rust: { name: 'Skrammelbo', monster: 'rattler', support: 'mender', color: '#bd7350', icon: 'gear', description: 'Rusande skramlare. Från nivå 3 får de skrotläkare bakom fronten.', interval: 175 },
-    spore: { name: 'Sporkupa', monster: 'sporeling', support: 'broodcap', color: '#c582aa', icon: 'spore', description: 'Små fnyslingar. Från nivå 3 följer jättesvampar som odlar fler i strid.', interval: 205 },
-    hush: { name: 'Tystnadskvarn', monster: 'husher', support: 'binder', color: '#858fb2', icon: 'moon', description: 'Magiker på avstånd. Från nivå 3 följer rotbindare som binder hjältar och väcker röda skelett.', interval: 190 },
-    sky: { name: 'Vindnäste', monster: 'nightwing', support: 'siegebreaker', color: '#81b4c6', icon: 'wing', description: 'Flygare kräver avståndsattacker. Från nivå 3 följer murknäckare.', interval: 185 },
-    thorn: { name: 'Törnsnår', monster: 'thornling', support: 'bulwark', color: '#a1ab6e', icon: 'bow', description: 'Taggskyttar håller avstånd. Från nivå 3 skyddas de av skalväktare.', interval: 180 }
+    rust: { name: 'Skrammelbo', monster: 'rattler', support: 'mender', color: '#bd7350', icon: 'gear', description: 'Rusande skramlare. Starkare vågor får skrotläkare bakom fronten.', interval: 175 },
+    spore: { name: 'Sporkupa', monster: 'sporeling', support: 'broodcap', color: '#c582aa', icon: 'spore', description: 'Fnyslingar och jättesvampar som odlar fler i strid. På svår nivå följer även tystätare.', interval: 205 },
+    hush: { name: 'Tystnadskvarn', monster: 'husher', support: 'binder', color: '#858fb2', icon: 'moon', description: 'Avståndsmagiker med rotbindare i starkare vågor. På svår nivå skyddas de också av skalväktare.', interval: 190 },
+    sky: { name: 'Vindnäste', monster: 'nightwing', support: 'siegebreaker', color: '#81b4c6', icon: 'wing', description: 'Flygare med murknäckare i starkare vågor. På svår nivå följer även skrotläkare.', interval: 185 },
+    thorn: { name: 'Törnsnår', monster: 'thornling', support: 'bulwark', color: '#a1ab6e', icon: 'bow', description: 'Taggskyttar håller avstånd. Starkare vågor skyddas av skalväktare.', interval: 180 }
   };
   G.monsterTypes = {
     rattler: { name: 'Skramlare', role: 'Närstrid. Rusar den sista biten mot sitt mål.', hp: 39, damage: 7, speed: 1.15, range: 0.9, cooldown: 1.4, color: '#c98150', xp: 10, rush: true },
@@ -65,14 +65,29 @@
     mender: { name: 'Skrotläkare', role: 'Läker andra monster. Svag om frontlinjen faller.', hp: 78, damage: 4, speed: 1.05, range: 3.5, cooldown: 2, color: '#f2bd88', xp: 22, medic: true, spell: true },
     binder: { name: 'Rotbindare', role: 'Binder hjältar med rötter och väcker högst fyra röda skelett ur benrester. Skeletten faller när rotbindaren besegras.', hp: 82, damage: 4, speed: 1, range: 4.3, cooldown: 2.4, color: '#c6a3da', xp: 24, bind: true, spell: true, raises: 4 },
     boneservant: { name: 'Bensoldat', role: 'Rött fiendeskelett. Strider i närkamp och följer sin rotbindare. Lämnar inga nya benrester.', hp: 52, damage: 7.4, speed: 1.85, range: 1.05, cooldown: 1.3, color: '#e47770', xp: 4, skeletal: true },
-    siegebreaker: { name: 'Murknäckare', role: 'Tung belägrare. Prioriterar byggnader framför hjältar.', hp: 165, damage: 23, speed: .78, range: 1.35, cooldown: 2.5, color: '#b79869', xp: 28, siege: true },
-    broodcap: { name: 'Jättesporsvamp', role: 'Odlar upp till tre levande fnyslingar när den slåss.', hp: 145, damage: 10, speed: .8, range: 1.4, cooldown: 2, color: '#c880b5', xp: 28, brood: true },
+    siegebreaker: { name: 'Murknäckare', role: 'Slår hårt mot byggnader men tål lite. Närstridskämpar stoppar den; slår svagt tillbaka och behöver följe.', hp: 90, damage: 42, speed: .78, range: 1.35, cooldown: 2.5, color: '#b79869', xp: 28, siege: true, retaliation: .35 },
+    broodcap: { name: 'Jättesporsvamp', role: 'Odlar upp till tre fnyslingar. Svampen och ungarna tar dubbel skada från områdesattacker mot grannar.', hp: 145, damage: 10, speed: .8, range: 1.4, cooldown: 2, color: '#c880b5', xp: 28, brood: true, areaVulnerability: 2 },
     bulwark: { name: 'Skalväktare', role: 'Skyddar andra monster i närheten från 25 % av skadan.', hp: 145, damage: 10, speed: .85, range: 1.2, cooldown: 1.8, color: '#9fae80', xp: 26, ward: true },
     guardian: { name: 'Klockväktare', role: 'Bossvakt med tung närstridsattack. Lämnar inte sitt bo.', hp: 230, damage: 35, speed: 1.12, range: 1.35, cooldown: 1.55, color: '#9b647e', xp: 55 }
   };
   // Guardians are present from birth. Awakening releases separate raiding parties.
   G.lairGuards = lair => Array(lair.guardCount).fill(lair.boss ? 'guardian' : G.lairTypes[lair.type].monster);
   G.lairWave = lair => ({ basic: lair.level + 1 + (lair.tier === 3 ? 1 : 0), advanced: Math.max(0, lair.level - 2) });
+  // Columns are ranks 1–6 (tier + level - 1). Cohorts remain at most 13
+  // bodies so their existing three-column march stays within the rally radius.
+  G.hardWaves = {
+    rust: { rattler: [4,6,8,10,11,11], mender: [0,1,1,2,2,2] },
+    spore: { sporeling: [4,6,6,7,8,8], broodcap: [0,0,1,2,2,2], husher: [0,1,2,2,2,3] },
+    hush: { husher: [2,4,5,6,7,8], bulwark: [0,1,1,1,1,1], binder: [0,0,0,0,1,1] },
+    sky: { nightwing: [3,5,7,9,9,10], mender: [0,1,1,1,2,2], siegebreaker: [0,0,0,1,1,1] },
+    thorn: { thornling: [2,4,6,8,9,10], bulwark: [0,1,1,1,1,2] }
+  };
+  G.waveRoster = (w, lair) => {
+    if (w.pace === 'brave') return Object.entries(G.hardWaves[lair.type]).flatMap(([type, counts]) => Array(counts[Math.min(5, lair.tier + lair.level - 2)]).fill(type));
+    const family = G.lairTypes[lair.type], sizes = G.lairWave(lair);
+    return [...Array(sizes.basic).fill(family.monster), ...Array(sizes.advanced).fill(family.support)];
+  };
+  G.waveInterval = (w, lair) => G.profiles[w.pace].raidInterval || Math.max(50, (82 - lair.level * 5 + (lair.level >= 2 ? 22 : 0)) * G.profiles[w.pace].spawn);
   // Per-guardian stats; difficulty also controls their number.
   // Use dev/glantan-balance.cjs --boss when changing combat or retreat rules.
   G.bossGuards = { gentle: { hp: 230, damage: 35 }, steady: { hp: 360, damage: 43 }, brave: { hp: 500, damage: 50 } };

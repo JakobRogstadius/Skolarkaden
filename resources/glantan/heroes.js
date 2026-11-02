@@ -149,7 +149,7 @@
     else G.damage(w, target, damage, hero);
     if (hero.classId === 'mage') {
       for (const monster of w.monsters) if (G.alive(monster) && G.distance(monster, target) < (w.research.echo || mastery ? 2.6 : 1.5) && G.attackLine(w, target, monster)) {
-        if (monster !== target) G.damage(w, monster, damage * (w.research.echo ? 0.8 : 0.5), hero);
+        if (monster !== target) G.damage(w, monster, damage * (w.research.echo ? 0.8 : 0.5), hero, 'area');
         if (w.research.frost) monster.slowUntil = w.time + 3.5;
       }
     }

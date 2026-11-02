@@ -1,0 +1,5034 @@
+{
+  "purpose": "Closed bounded before/after test of siege interception candidate; no qualifying >=15pp pair-superiority context found.",
+  "baselineRef": "28ba8b8a447182e495ae869777539f4d6abe363d",
+  "baselineSourceSha256": "1fd02790388858335372499ccd5e04df43af9be2c3cf1cdc86fe23fcbf9c4369",
+  "candidateSourceSha256": "3847875d37cbcc7ab1c85a87a1f1d42779c7a3d2e4e32cd721c13bc4d8727b2c",
+  "sourceStable": true,
+  "identicalCaseInputSha256": "cce964e040c2317f5e389b19613fa104851050e57088bcd4f44edde75480e041",
+  "casesPerSource": 1782,
+  "eligibleContexts": 99,
+  "qualifyingContexts": 0,
+  "pureEscortParity": {
+    "cases": 594,
+    "mismatches": 0
+  },
+  "stopDecision": "No100-seed confirmation is authorized by the predeclared gate because no candidate context reaches +15 percentage points; stop this iteration.",
+  "byHero": [
+    {
+      "army": "warrior_mage",
+      "contexts": 33,
+      "positiveCandidateContexts": 0,
+      "candidateMixedRates": [
+        0,
+        0.166667,
+        0.333333,
+        0.5,
+        0.666667
+      ]
+    },
+    {
+      "army": "warriors",
+      "contexts": 33,
+      "positiveCandidateContexts": 0,
+      "candidateMixedRates": [
+        0,
+        0.166667,
+        0.333333,
+        0.5,
+        0.666667,
+        1
+      ]
+    },
+    {
+      "army": "ranger_mage",
+      "contexts": 33,
+      "positiveCandidateContexts": 0,
+      "candidateMixedRates": [
+        0,
+        0.166667,
+        0.5,
+        0.666667,
+        0.833333,
+        1
+      ]
+    }
+  ],
+  "totals": {
+    "baseline": {
+      "mixed": {
+        "n": 594,
+        "monsterWins": 140,
+        "heroWins": 439,
+        "timeouts": 15,
+        "castleDamage": 151100.3199999999
+      },
+      "pureSiege": {
+        "n": 594,
+        "monsterWins": 87,
+        "heroWins": 507,
+        "timeouts": 0,
+        "castleDamage": 287607.83999999997
+      },
+      "pureEscort": {
+        "n": 594,
+        "monsterWins": 272,
+        "heroWins": 322,
+        "timeouts": 0,
+        "castleDamage": 35410.239999999954
+      }
+    },
+    "candidate": {
+      "mixed": {
+        "n": 594,
+        "monsterWins": 157,
+        "heroWins": 425,
+        "timeouts": 12,
+        "castleDamage": 68529.28000000003
+      },
+      "pureSiege": {
+        "n": 594,
+        "monsterWins": 27,
+        "heroWins": 567,
+        "timeouts": 0,
+        "castleDamage": 67671.35999999999
+      },
+      "pureEscort": {
+        "n": 594,
+        "monsterWins": 272,
+        "heroWins": 322,
+        "timeouts": 0,
+        "castleDamage": 35410.239999999954
+      }
+    }
+  },
+  "largestInteractionChanges": [
+    {
+      "key": "siegebreaker+husher/escort0.25/ranger_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.280899,
+      "eligible": true,
+      "budgets": {
+        "mixed": 32.04,
+        "pureA": 34.56,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 13,
+        "mixedA": 8,
+        "mixedB": 5,
+        "pureA": 12,
+        "pureB": 18
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.5,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -1,
+      "candidateDelta": -0.5,
+      "deltaChange": 0.5,
+      "mixedWinRateChange": 0.5,
+      "baselineCastleDamage": 327.84,
+      "candidateCastleDamage": 259.92
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warriors/x1/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.272727,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.84,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 8,
+        "mixedA": 4,
+        "mixedB": 4,
+        "pureA": 6,
+        "pureB": 15
+      },
+      "baselineRates": {
+        "mixed": 0.5,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.5,
+      "candidateDelta": 0,
+      "deltaChange": 0.5,
+      "mixedWinRateChange": 0.5,
+      "baselineCastleDamage": 538.32,
+      "candidateCastleDamage": 61.92
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/ranger_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.252336,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.408,
+        "pureA": 17.28,
+        "pureB": 15.552
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 4,
+        "mixedB": 3,
+        "pureA": 6,
+        "pureB": 12
+      },
+      "baselineRates": {
+        "mixed": 0.333333,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.666667,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.666667,
+      "candidateDelta": -0.333333,
+      "deltaChange": 0.333334,
+      "mixedWinRateChange": 0.333334,
+      "baselineCastleDamage": 528.72,
+      "candidateCastleDamage": 355.2
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warriors/x1/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.473684,
+      "eligible": true,
+      "budgets": {
+        "mixed": 16.416,
+        "pureA": 17.28,
+        "pureB": 16.848
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 3,
+        "mixedB": 6,
+        "pureA": 6,
+        "pureB": 13
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.333333,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -1,
+      "candidateDelta": -0.666667,
+      "deltaChange": 0.333333,
+      "mixedWinRateChange": 0.333333,
+      "baselineCastleDamage": 121.44,
+      "candidateCastleDamage": 22.08
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/ranger_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.452055,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.536,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 17,
+        "mixedA": 6,
+        "mixedB": 11,
+        "pureA": 11,
+        "pureB": 25
+      },
+      "baselineRates": {
+        "mixed": 0.166667,
+        "pureA": 0,
+        "pureB": 0.666667
+      },
+      "candidateRates": {
+        "mixed": 0.5,
+        "pureA": 0,
+        "pureB": 0.666667
+      },
+      "baselineDelta": -0.5,
+      "candidateDelta": -0.166667,
+      "deltaChange": 0.333333,
+      "mixedWinRateChange": 0.333333,
+      "baselineCastleDamage": 395.28,
+      "candidateCastleDamage": 330.24
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/ranger_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.507042,
+      "eligible": true,
+      "budgets": {
+        "mixed": 40.896,
+        "pureA": 43.2,
+        "pureB": 41.472
+      },
+      "counts": {
+        "mixed": 23,
+        "mixedA": 7,
+        "mixedB": 16,
+        "pureA": 15,
+        "pureB": 32
+      },
+      "baselineRates": {
+        "mixed": 0.5,
+        "pureA": 0.333333,
+        "pureB": 0.833333
+      },
+      "candidateRates": {
+        "mixed": 0.833333,
+        "pureA": 0.333333,
+        "pureB": 0.833333
+      },
+      "baselineDelta": -0.333333,
+      "candidateDelta": 0,
+      "deltaChange": 0.333333,
+      "mixedWinRateChange": 0.333333,
+      "baselineCastleDamage": 695.253333,
+      "candidateCastleDamage": 691.2
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warrior_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.234783,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.4,
+        "pureA": 43.2,
+        "pureB": 42.12
+      },
+      "counts": {
+        "mixed": 20,
+        "mixedA": 11,
+        "mixedB": 9,
+        "pureA": 15,
+        "pureB": 39
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.333333,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": -0.333333,
+      "candidateDelta": 0,
+      "deltaChange": 0.333333,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 292.56,
+      "candidateCastleDamage": 44.16
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warrior_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.517241,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.76,
+        "pureA": 43.2,
+        "pureB": 42.12
+      },
+      "counts": {
+        "mixed": 27,
+        "mixedA": 7,
+        "mixedB": 20,
+        "pureA": 15,
+        "pureB": 39
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.333333,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": -0.333333,
+      "candidateDelta": 0,
+      "deltaChange": 0.333333,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 22.08,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warrior_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.438596,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.52,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 4,
+        "mixedB": 5,
+        "pureA": 8,
+        "pureB": 12
+      },
+      "baselineRates": {
+        "mixed": 0.5,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.666667,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.5,
+      "candidateDelta": -0.333333,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0.166667,
+      "baselineCastleDamage": 299.28,
+      "candidateCastleDamage": 617.973333
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warriors/x2/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.280899,
+      "eligible": true,
+      "budgets": {
+        "mixed": 32.04,
+        "pureA": 34.56,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 13,
+        "mixedA": 8,
+        "mixedB": 5,
+        "pureA": 12,
+        "pureB": 18
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.166667,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": 0,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 436.08,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/ranger_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.454545,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.84,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 3,
+        "mixedB": 4,
+        "pureA": 6,
+        "pureB": 9
+      },
+      "baselineRates": {
+        "mixed": 0.833333,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": 0,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0.166667,
+      "baselineCastleDamage": 422.4,
+      "candidateCastleDamage": 252.24
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warrior_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.440559,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.592,
+        "pureA": 23.04,
+        "pureB": 20.736
+      },
+      "counts": {
+        "mixed": 11,
+        "mixedA": 4,
+        "mixedB": 7,
+        "pureA": 8,
+        "pureB": 16
+      },
+      "baselineRates": {
+        "mixed": 0.333333,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.5,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.666667,
+      "candidateDelta": -0.5,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0.166667,
+      "baselineCastleDamage": 426.96,
+      "candidateCastleDamage": 572.4
+    }
+  ],
+  "bestCandidateContexts": [
+    {
+      "key": "siegebreaker+husher/escort0.25/ranger_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.454545,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.84,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 3,
+        "mixedB": 4,
+        "pureA": 6,
+        "pureB": 9
+      },
+      "baselineRates": {
+        "mixed": 0.833333,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": 0,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0.166667,
+      "baselineCastleDamage": 422.4,
+      "candidateCastleDamage": 252.24
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/ranger_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.438596,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.52,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 4,
+        "mixedB": 5,
+        "pureA": 8,
+        "pureB": 12
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.666667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0.5,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 651.36,
+      "candidateCastleDamage": 543.226667
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/ranger_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.304348,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.4,
+        "pureA": 43.2,
+        "pureB": 41.4
+      },
+      "counts": {
+        "mixed": 17,
+        "mixedA": 10,
+        "mixedB": 7,
+        "pureA": 15,
+        "pureB": 23
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.333333,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0.333333,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 1000,
+      "candidateCastleDamage": 671.253333
+    },
+    {
+      "key": "siegebreaker+husher/escort0.5/ranger_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.517241,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.76,
+        "pureA": 43.2,
+        "pureB": 43.2
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 7,
+        "mixedB": 12,
+        "pureA": 15,
+        "pureB": 24
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.333333,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0.333333,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 826.533333,
+      "candidateCastleDamage": 489.12
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/ranger_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.473684,
+      "eligible": true,
+      "budgets": {
+        "mixed": 16.416,
+        "pureA": 17.28,
+        "pureB": 16.848
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 3,
+        "mixedB": 6,
+        "pureA": 6,
+        "pureB": 13
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 493.786667,
+      "candidateCastleDamage": 240.24
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/ranger_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.310345,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.88,
+        "pureA": 23.04,
+        "pureB": 22.032
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 5,
+        "mixedB": 5,
+        "pureA": 8,
+        "pureB": 17
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.666667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0.5,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 792.56,
+      "candidateCastleDamage": 339.6
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/ranger_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.246575,
+      "eligible": true,
+      "budgets": {
+        "mixed": 42.048,
+        "pureA": 43.2,
+        "pureB": 42.768
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 11,
+        "mixedB": 8,
+        "pureA": 15,
+        "pureB": 33
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.333333,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0.333333,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 1000,
+      "candidateCastleDamage": 715.653333
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warriors/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 11.16,
+        "pureA": 11.52,
+        "pureB": 11.88
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 2,
+        "mixedB": 5,
+        "pureA": 4,
+        "pureB": 11
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 34.08,
+      "candidateCastleDamage": 7.2
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warriors/x1/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.272727,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.84,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 8,
+        "mixedA": 4,
+        "mixedB": 4,
+        "pureA": 6,
+        "pureB": 15
+      },
+      "baselineRates": {
+        "mixed": 0.5,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.5,
+      "candidateDelta": 0,
+      "deltaChange": 0.5,
+      "mixedWinRateChange": 0.5,
+      "baselineCastleDamage": 538.32,
+      "candidateCastleDamage": 61.92
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warriors/x1/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.466667,
+      "eligible": true,
+      "budgets": {
+        "mixed": 16.2,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 3,
+        "mixedB": 7,
+        "pureA": 6,
+        "pureB": 15
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 194.64,
+      "candidateCastleDamage": 198.48
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warriors/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.310345,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.88,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 11,
+        "mixedA": 5,
+        "mixedB": 6,
+        "pureA": 8,
+        "pureB": 20
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.166667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 542.266667,
+      "candidateCastleDamage": 56.64
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warriors/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.457627,
+      "eligible": true,
+      "budgets": {
+        "mixed": 21.24,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 13,
+        "mixedA": 4,
+        "mixedB": 9,
+        "pureA": 8,
+        "pureB": 20
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.166667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 301.68,
+      "candidateCastleDamage": 64.8
+    }
+  ],
+  "comparisons": [
+    {
+      "key": "siegebreaker+husher/escort0.25/warrior_mage/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 11.16,
+        "pureA": 11.52,
+        "pureB": 12.6
+      },
+      "counts": {
+        "mixed": 5,
+        "mixedA": 2,
+        "mixedB": 3,
+        "pureA": 4,
+        "pureB": 7
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 5.52,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warrior_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.454545,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.84,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 3,
+        "mixedB": 4,
+        "pureA": 6,
+        "pureB": 9
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.166667
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.166667
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": -0.166667,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 60.72,
+      "candidateCastleDamage": 22.08
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warrior_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.438596,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.52,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 4,
+        "mixedB": 5,
+        "pureA": 8,
+        "pureB": 12
+      },
+      "baselineRates": {
+        "mixed": 0.5,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.666667,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.5,
+      "candidateDelta": -0.333333,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0.166667,
+      "baselineCastleDamage": 299.28,
+      "candidateCastleDamage": 617.973333
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warrior_mage/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.238095,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.68,
+        "pureA": 23.04,
+        "pureB": 23.4
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 6,
+        "mixedB": 3,
+        "pureA": 8,
+        "pureB": 13
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 38.64,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.5/warrior_mage/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.32,
+        "pureA": 23.04,
+        "pureB": 23.4
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 4,
+        "mixedB": 6,
+        "pureA": 8,
+        "pureB": 13
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 16.56,
+      "candidateCastleDamage": 5.52
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warrior_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.280899,
+      "eligible": true,
+      "budgets": {
+        "mixed": 32.04,
+        "pureA": 34.56,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 13,
+        "mixedA": 8,
+        "mixedB": 5,
+        "pureA": 12,
+        "pureB": 18
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 121.44,
+      "candidateCastleDamage": 16.56
+    },
+    {
+      "key": "siegebreaker+husher/escort0.5/warrior_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.454545,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.68,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 14,
+        "mixedA": 6,
+        "mixedB": 8,
+        "pureA": 11,
+        "pureB": 18
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 44.16,
+      "candidateCastleDamage": 33.12
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warrior_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.304348,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.4,
+        "pureA": 43.2,
+        "pureB": 41.4
+      },
+      "counts": {
+        "mixed": 17,
+        "mixedA": 10,
+        "mixedB": 7,
+        "pureA": 15,
+        "pureB": 23
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.333333,
+        "pureB": 0.833333
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.833333
+      },
+      "baselineDelta": -0.833333,
+      "candidateDelta": -0.833333,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 410.64,
+      "candidateCastleDamage": 132.48
+    },
+    {
+      "key": "siegebreaker+husher/escort0.5/warrior_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.517241,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.76,
+        "pureA": 43.2,
+        "pureB": 43.2
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 7,
+        "mixedB": 12,
+        "pureA": 15,
+        "pureB": 24
+      },
+      "baselineRates": {
+        "mixed": 0.666667,
+        "pureA": 0.333333,
+        "pureB": 0.833333
+      },
+      "candidateRates": {
+        "mixed": 0.166667,
+        "pureA": 0,
+        "pureB": 0.833333
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": -0.666667,
+      "deltaChange": -0.5,
+      "mixedWinRateChange": -0.5,
+      "baselineCastleDamage": 363.84,
+      "candidateCastleDamage": 355.92
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warriors/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 11.16,
+        "pureA": 11.52,
+        "pureB": 12.6
+      },
+      "counts": {
+        "mixed": 5,
+        "mixedA": 2,
+        "mixedB": 3,
+        "pureA": 4,
+        "pureB": 7
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 27.6,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warriors/x1/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.454545,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.84,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 3,
+        "mixedB": 4,
+        "pureA": 6,
+        "pureB": 9
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 82.8,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warriors/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.438596,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.52,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 4,
+        "mixedB": 5,
+        "pureA": 8,
+        "pureB": 12
+      },
+      "baselineRates": {
+        "mixed": 0.166667,
+        "pureA": 0.166667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.166667,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.833333,
+      "candidateDelta": -0.833333,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 244.8,
+      "candidateCastleDamage": 65.04
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warriors/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.238095,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.68,
+        "pureA": 23.04,
+        "pureB": 23.4
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 6,
+        "mixedB": 3,
+        "pureA": 8,
+        "pureB": 13
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 215.28,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.5/warriors/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.32,
+        "pureA": 23.04,
+        "pureB": 23.4
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 4,
+        "mixedB": 6,
+        "pureA": 8,
+        "pureB": 13
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 88.32,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warriors/x2/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.280899,
+      "eligible": true,
+      "budgets": {
+        "mixed": 32.04,
+        "pureA": 34.56,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 13,
+        "mixedA": 8,
+        "mixedB": 5,
+        "pureA": 12,
+        "pureB": 18
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.166667,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": 0,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 436.08,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.5/warriors/x2/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.454545,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.68,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 14,
+        "mixedA": 6,
+        "mixedB": 8,
+        "pureA": 11,
+        "pureB": 18
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 259.44,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/warriors/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.304348,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.4,
+        "pureA": 43.2,
+        "pureB": 41.4
+      },
+      "counts": {
+        "mixed": 17,
+        "mixedA": 10,
+        "mixedB": 7,
+        "pureA": 15,
+        "pureB": 23
+      },
+      "baselineRates": {
+        "mixed": 0.166667,
+        "pureA": 1,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.833333,
+      "candidateDelta": -1,
+      "deltaChange": -0.166667,
+      "mixedWinRateChange": -0.166667,
+      "baselineCastleDamage": 699.84,
+      "candidateCastleDamage": 51.6
+    },
+    {
+      "key": "siegebreaker+husher/escort0.5/warriors/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.517241,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.76,
+        "pureA": 43.2,
+        "pureB": 43.2
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 7,
+        "mixedB": 12,
+        "pureA": 15,
+        "pureB": 24
+      },
+      "baselineRates": {
+        "mixed": 0.166667,
+        "pureA": 1,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.333333,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.833333,
+      "candidateDelta": -0.666667,
+      "deltaChange": 0.166666,
+      "mixedWinRateChange": 0.166666,
+      "baselineCastleDamage": 462.48,
+      "candidateCastleDamage": 148.08
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/ranger_mage/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 11.16,
+        "pureA": 11.52,
+        "pureB": 12.6
+      },
+      "counts": {
+        "mixed": 5,
+        "mixedA": 2,
+        "mixedB": 3,
+        "pureA": 4,
+        "pureB": 7
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.5
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.5
+      },
+      "baselineDelta": -0.5,
+      "candidateDelta": -0.5,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 11.04,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/ranger_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.454545,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.84,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 3,
+        "mixedB": 4,
+        "pureA": 6,
+        "pureB": 9
+      },
+      "baselineRates": {
+        "mixed": 0.833333,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": 0,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0.166667,
+      "baselineCastleDamage": 422.4,
+      "candidateCastleDamage": 252.24
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/ranger_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.438596,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.52,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 4,
+        "mixedB": 5,
+        "pureA": 8,
+        "pureB": 12
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.666667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0.5,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 651.36,
+      "candidateCastleDamage": 543.226667
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/ranger_mage/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.238095,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.68,
+        "pureA": 23.04,
+        "pureB": 23.4
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 6,
+        "mixedB": 3,
+        "pureA": 8,
+        "pureB": 13
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.166667
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.166667
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": -0.166667,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 33.12,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.5/ranger_mage/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.32,
+        "pureA": 23.04,
+        "pureB": 23.4
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 4,
+        "mixedB": 6,
+        "pureA": 8,
+        "pureB": 13
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.166667
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.166667
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": -0.166667,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 16.56,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/ranger_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.280899,
+      "eligible": true,
+      "budgets": {
+        "mixed": 32.04,
+        "pureA": 34.56,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 13,
+        "mixedA": 8,
+        "mixedB": 5,
+        "pureA": 12,
+        "pureB": 18
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.5,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -1,
+      "candidateDelta": -0.5,
+      "deltaChange": 0.5,
+      "mixedWinRateChange": 0.5,
+      "baselineCastleDamage": 327.84,
+      "candidateCastleDamage": 259.92
+    },
+    {
+      "key": "siegebreaker+husher/escort0.5/ranger_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.454545,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.68,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 14,
+        "mixedA": 6,
+        "mixedB": 8,
+        "pureA": 11,
+        "pureB": 18
+      },
+      "baselineRates": {
+        "mixed": 0.666667,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.833333,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.333333,
+      "candidateDelta": -0.166667,
+      "deltaChange": 0.166666,
+      "mixedWinRateChange": 0.166666,
+      "baselineCastleDamage": 393.946667,
+      "candidateCastleDamage": 346.186667
+    },
+    {
+      "key": "siegebreaker+husher/escort0.25/ranger_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.304348,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.4,
+        "pureA": 43.2,
+        "pureB": 41.4
+      },
+      "counts": {
+        "mixed": 17,
+        "mixedA": 10,
+        "mixedB": 7,
+        "pureA": 15,
+        "pureB": 23
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.333333,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0.333333,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 1000,
+      "candidateCastleDamage": 671.253333
+    },
+    {
+      "key": "siegebreaker+husher/escort0.5/ranger_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "husher"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.517241,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.76,
+        "pureA": 43.2,
+        "pureB": 43.2
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 7,
+        "mixedB": 12,
+        "pureA": 15,
+        "pureB": 24
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.333333,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0.333333,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 826.533333,
+      "candidateCastleDamage": 489.12
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/warrior_mage/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.230769,
+      "eligible": true,
+      "budgets": {
+        "mixed": 11.232,
+        "pureA": 11.52,
+        "pureB": 11.664
+      },
+      "counts": {
+        "mixed": 5,
+        "mixedA": 3,
+        "mixedB": 2,
+        "pureA": 4,
+        "pureB": 9
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 33.12,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warrior_mage/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.473684,
+      "eligible": true,
+      "budgets": {
+        "mixed": 10.944,
+        "pureA": 11.52,
+        "pureB": 11.664
+      },
+      "counts": {
+        "mixed": 6,
+        "mixedA": 2,
+        "mixedB": 4,
+        "pureA": 4,
+        "pureB": 9
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 16.56,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/warrior_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.252336,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.408,
+        "pureA": 17.28,
+        "pureB": 15.552
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 4,
+        "mixedB": 3,
+        "pureA": 6,
+        "pureB": 12
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.166667
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.166667
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": -0.166667,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 138,
+      "candidateCastleDamage": 27.6
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warrior_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.473684,
+      "eligible": true,
+      "budgets": {
+        "mixed": 16.416,
+        "pureA": 17.28,
+        "pureB": 16.848
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 3,
+        "mixedB": 6,
+        "pureA": 6,
+        "pureB": 13
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.833333
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.833333
+      },
+      "baselineDelta": -0.833333,
+      "candidateDelta": -0.833333,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 220.8,
+      "candidateCastleDamage": 198.72
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/warrior_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.310345,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.88,
+        "pureA": 23.04,
+        "pureB": 22.032
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 5,
+        "mixedB": 5,
+        "pureA": 8,
+        "pureB": 17
+      },
+      "baselineRates": {
+        "mixed": 0.166667,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.166667,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.833333,
+      "candidateDelta": -0.833333,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 451.44,
+      "candidateCastleDamage": 336.72
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warrior_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.440559,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.592,
+        "pureA": 23.04,
+        "pureB": 20.736
+      },
+      "counts": {
+        "mixed": 11,
+        "mixedA": 4,
+        "mixedB": 7,
+        "pureA": 8,
+        "pureB": 16
+      },
+      "baselineRates": {
+        "mixed": 0.333333,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.5,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.666667,
+      "candidateDelta": -0.5,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0.166667,
+      "baselineCastleDamage": 426.96,
+      "candidateCastleDamage": 572.4
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/warrior_mage/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.230769,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.464,
+        "pureA": 23.04,
+        "pureB": 23.328
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 6,
+        "mixedB": 4,
+        "pureA": 8,
+        "pureB": 18
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 27.6,
+      "candidateCastleDamage": 5.52
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warrior_mage/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.473684,
+      "eligible": true,
+      "budgets": {
+        "mixed": 21.888,
+        "pureA": 23.04,
+        "pureB": 22.032
+      },
+      "counts": {
+        "mixed": 12,
+        "mixedA": 4,
+        "mixedB": 8,
+        "pureA": 8,
+        "pureB": 17
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 16.56,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/warrior_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.282511,
+      "eligible": true,
+      "budgets": {
+        "mixed": 32.112,
+        "pureA": 34.56,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 15,
+        "mixedA": 8,
+        "mixedB": 7,
+        "pureA": 12,
+        "pureB": 25
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 193.2,
+      "candidateCastleDamage": 33.12
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warrior_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.452055,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.536,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 17,
+        "mixedA": 6,
+        "mixedB": 11,
+        "pureA": 11,
+        "pureB": 25
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 82.8,
+      "candidateCastleDamage": 38.64
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/warrior_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.246575,
+      "eligible": true,
+      "budgets": {
+        "mixed": 42.048,
+        "pureA": 43.2,
+        "pureB": 42.768
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 11,
+        "mixedB": 8,
+        "pureA": 15,
+        "pureB": 33
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.333333,
+        "pureB": 0.833333
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.833333
+      },
+      "baselineDelta": -0.833333,
+      "candidateDelta": -0.833333,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 463.68,
+      "candidateCastleDamage": 55.2
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warrior_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.507042,
+      "eligible": true,
+      "budgets": {
+        "mixed": 40.896,
+        "pureA": 43.2,
+        "pureB": 41.472
+      },
+      "counts": {
+        "mixed": 23,
+        "mixedA": 7,
+        "mixedB": 16,
+        "pureA": 15,
+        "pureB": 32
+      },
+      "baselineRates": {
+        "mixed": 0.333333,
+        "pureA": 0.333333,
+        "pureB": 0.833333
+      },
+      "candidateRates": {
+        "mixed": 0.333333,
+        "pureA": 0,
+        "pureB": 0.833333
+      },
+      "baselineDelta": -0.5,
+      "candidateDelta": -0.5,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 405.12,
+      "candidateCastleDamage": 269.28
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/warriors/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.230769,
+      "eligible": true,
+      "budgets": {
+        "mixed": 11.232,
+        "pureA": 11.52,
+        "pureB": 11.664
+      },
+      "counts": {
+        "mixed": 5,
+        "mixedA": 3,
+        "mixedB": 2,
+        "pureA": 4,
+        "pureB": 9
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 93.84,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warriors/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.473684,
+      "eligible": true,
+      "budgets": {
+        "mixed": 10.944,
+        "pureA": 11.52,
+        "pureB": 11.664
+      },
+      "counts": {
+        "mixed": 6,
+        "mixedA": 2,
+        "mixedB": 4,
+        "pureA": 4,
+        "pureB": 9
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 33.12,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/warriors/x1/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.252336,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.408,
+        "pureA": 17.28,
+        "pureB": 15.552
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 4,
+        "mixedB": 3,
+        "pureA": 6,
+        "pureB": 12
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.5
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.5
+      },
+      "baselineDelta": -0.5,
+      "candidateDelta": -0.5,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 226.32,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warriors/x1/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.473684,
+      "eligible": true,
+      "budgets": {
+        "mixed": 16.416,
+        "pureA": 17.28,
+        "pureB": 16.848
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 3,
+        "mixedB": 6,
+        "pureA": 6,
+        "pureB": 13
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.333333,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -1,
+      "candidateDelta": -0.666667,
+      "deltaChange": 0.333333,
+      "mixedWinRateChange": 0.333333,
+      "baselineCastleDamage": 121.44,
+      "candidateCastleDamage": 22.08
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/warriors/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.310345,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.88,
+        "pureA": 23.04,
+        "pureB": 22.032
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 5,
+        "mixedB": 5,
+        "pureA": 8,
+        "pureB": 17
+      },
+      "baselineRates": {
+        "mixed": 0.333333,
+        "pureA": 0.166667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.5,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.666667,
+      "candidateDelta": -0.5,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0.166667,
+      "baselineCastleDamage": 425.28,
+      "candidateCastleDamage": 240.72
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warriors/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.440559,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.592,
+        "pureA": 23.04,
+        "pureB": 20.736
+      },
+      "counts": {
+        "mixed": 11,
+        "mixedA": 4,
+        "mixedB": 7,
+        "pureA": 8,
+        "pureB": 16
+      },
+      "baselineRates": {
+        "mixed": 0.5,
+        "pureA": 0.166667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.666667,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.5,
+      "candidateDelta": -0.333333,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0.166667,
+      "baselineCastleDamage": 380.88,
+      "candidateCastleDamage": 279.466667
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/warriors/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.230769,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.464,
+        "pureA": 23.04,
+        "pureB": 23.328
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 6,
+        "mixedB": 4,
+        "pureA": 8,
+        "pureB": 18
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 215.28,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warriors/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.473684,
+      "eligible": true,
+      "budgets": {
+        "mixed": 21.888,
+        "pureA": 23.04,
+        "pureB": 22.032
+      },
+      "counts": {
+        "mixed": 12,
+        "mixedA": 4,
+        "mixedB": 8,
+        "pureA": 8,
+        "pureB": 17
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 99.36,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/warriors/x2/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.282511,
+      "eligible": true,
+      "budgets": {
+        "mixed": 32.112,
+        "pureA": 34.56,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 15,
+        "mixedA": 8,
+        "mixedB": 7,
+        "pureA": 12,
+        "pureB": 25
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.166667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -1,
+      "candidateDelta": -1,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 485.76,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warriors/x2/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.452055,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.536,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 17,
+        "mixedA": 6,
+        "mixedB": 11,
+        "pureA": 11,
+        "pureB": 25
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -1,
+      "candidateDelta": -1,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 287.04,
+      "candidateCastleDamage": 55.2
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/warriors/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.246575,
+      "eligible": true,
+      "budgets": {
+        "mixed": 42.048,
+        "pureA": 43.2,
+        "pureB": 42.768
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 11,
+        "mixedB": 8,
+        "pureA": 15,
+        "pureB": 33
+      },
+      "baselineRates": {
+        "mixed": 0.333333,
+        "pureA": 1,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.333333,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.666667,
+      "candidateDelta": -0.666667,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 896.373333,
+      "candidateCastleDamage": 305.386667
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/warriors/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.507042,
+      "eligible": true,
+      "budgets": {
+        "mixed": 40.896,
+        "pureA": 43.2,
+        "pureB": 41.472
+      },
+      "counts": {
+        "mixed": 23,
+        "mixedA": 7,
+        "mixedB": 16,
+        "pureA": 15,
+        "pureB": 32
+      },
+      "baselineRates": {
+        "mixed": 0.666667,
+        "pureA": 1,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.666667,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.333333,
+      "candidateDelta": -0.333333,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 751.653333,
+      "candidateCastleDamage": 287.866667
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/ranger_mage/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.230769,
+      "eligible": true,
+      "budgets": {
+        "mixed": 11.232,
+        "pureA": 11.52,
+        "pureB": 11.664
+      },
+      "counts": {
+        "mixed": 5,
+        "mixedA": 3,
+        "mixedB": 2,
+        "pureA": 4,
+        "pureB": 9
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.166667
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.166667
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": -0.166667,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 55.2,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/ranger_mage/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.473684,
+      "eligible": true,
+      "budgets": {
+        "mixed": 10.944,
+        "pureA": 11.52,
+        "pureB": 11.664
+      },
+      "counts": {
+        "mixed": 6,
+        "mixedA": 2,
+        "mixedB": 4,
+        "pureA": 4,
+        "pureB": 9
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.166667
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0.166667
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": -0.166667,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 27.6,
+      "candidateCastleDamage": 5.52
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/ranger_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.252336,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.408,
+        "pureA": 17.28,
+        "pureB": 15.552
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 4,
+        "mixedB": 3,
+        "pureA": 6,
+        "pureB": 12
+      },
+      "baselineRates": {
+        "mixed": 0.333333,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.666667,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.666667,
+      "candidateDelta": -0.333333,
+      "deltaChange": 0.333334,
+      "mixedWinRateChange": 0.333334,
+      "baselineCastleDamage": 528.72,
+      "candidateCastleDamage": 355.2
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/ranger_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.473684,
+      "eligible": true,
+      "budgets": {
+        "mixed": 16.416,
+        "pureA": 17.28,
+        "pureB": 16.848
+      },
+      "counts": {
+        "mixed": 9,
+        "mixedA": 3,
+        "mixedB": 6,
+        "pureA": 6,
+        "pureB": 13
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 493.786667,
+      "candidateCastleDamage": 240.24
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/ranger_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.310345,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.88,
+        "pureA": 23.04,
+        "pureB": 22.032
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 5,
+        "mixedB": 5,
+        "pureA": 8,
+        "pureB": 17
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.666667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0.5,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 792.56,
+      "candidateCastleDamage": 339.6
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/ranger_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.440559,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.592,
+        "pureA": 23.04,
+        "pureB": 20.736
+      },
+      "counts": {
+        "mixed": 11,
+        "mixedA": 4,
+        "mixedB": 7,
+        "pureA": 8,
+        "pureB": 16
+      },
+      "baselineRates": {
+        "mixed": 0.833333,
+        "pureA": 0.666667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0.833333,
+        "pureA": 0.5,
+        "pureB": 1
+      },
+      "baselineDelta": -0.166667,
+      "candidateDelta": -0.166667,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 396,
+      "candidateCastleDamage": 213.84
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/ranger_mage/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.230769,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.464,
+        "pureA": 23.04,
+        "pureB": 23.328
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 6,
+        "mixedB": 4,
+        "pureA": 8,
+        "pureB": 18
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 38.64,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/ranger_mage/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.473684,
+      "eligible": true,
+      "budgets": {
+        "mixed": 21.888,
+        "pureA": 23.04,
+        "pureB": 22.032
+      },
+      "counts": {
+        "mixed": 12,
+        "mixedA": 4,
+        "mixedB": 8,
+        "pureA": 8,
+        "pureB": 17
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 0,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/ranger_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.282511,
+      "eligible": true,
+      "budgets": {
+        "mixed": 32.112,
+        "pureA": 34.56,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 15,
+        "mixedA": 8,
+        "mixedB": 7,
+        "pureA": 12,
+        "pureB": 25
+      },
+      "baselineRates": {
+        "mixed": 0.166667,
+        "pureA": 0,
+        "pureB": 0.666667
+      },
+      "candidateRates": {
+        "mixed": 0.166667,
+        "pureA": 0,
+        "pureB": 0.666667
+      },
+      "baselineDelta": -0.5,
+      "candidateDelta": -0.5,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 459.466667,
+      "candidateCastleDamage": 258.72
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/ranger_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.452055,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.536,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 17,
+        "mixedA": 6,
+        "mixedB": 11,
+        "pureA": 11,
+        "pureB": 25
+      },
+      "baselineRates": {
+        "mixed": 0.166667,
+        "pureA": 0,
+        "pureB": 0.666667
+      },
+      "candidateRates": {
+        "mixed": 0.5,
+        "pureA": 0,
+        "pureB": 0.666667
+      },
+      "baselineDelta": -0.5,
+      "candidateDelta": -0.166667,
+      "deltaChange": 0.333333,
+      "mixedWinRateChange": 0.333333,
+      "baselineCastleDamage": 395.28,
+      "candidateCastleDamage": 330.24
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.25/ranger_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.246575,
+      "eligible": true,
+      "budgets": {
+        "mixed": 42.048,
+        "pureA": 43.2,
+        "pureB": 42.768
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 11,
+        "mixedB": 8,
+        "pureA": 15,
+        "pureB": 33
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.333333,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0.333333,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 1000,
+      "candidateCastleDamage": 715.653333
+    },
+    {
+      "key": "siegebreaker+thornling/escort0.5/ranger_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "thornling"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.507042,
+      "eligible": true,
+      "budgets": {
+        "mixed": 40.896,
+        "pureA": 43.2,
+        "pureB": 41.472
+      },
+      "counts": {
+        "mixed": 23,
+        "mixedA": 7,
+        "mixedB": 16,
+        "pureA": 15,
+        "pureB": 32
+      },
+      "baselineRates": {
+        "mixed": 0.5,
+        "pureA": 0.333333,
+        "pureB": 0.833333
+      },
+      "candidateRates": {
+        "mixed": 0.833333,
+        "pureA": 0.333333,
+        "pureB": 0.833333
+      },
+      "baselineDelta": -0.333333,
+      "candidateDelta": 0,
+      "deltaChange": 0.333333,
+      "mixedWinRateChange": 0.333333,
+      "baselineCastleDamage": 695.253333,
+      "candidateCastleDamage": 691.2
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warrior_mage/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.2,
+      "eligible": true,
+      "budgets": {
+        "mixed": 10.8,
+        "pureA": 11.52,
+        "pureB": 10.8
+      },
+      "counts": {
+        "mixed": 5,
+        "mixedA": 3,
+        "mixedB": 2,
+        "pureA": 4,
+        "pureB": 10
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 33.12,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warrior_mage/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 11.16,
+        "pureA": 11.52,
+        "pureB": 11.88
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 2,
+        "mixedB": 5,
+        "pureA": 4,
+        "pureB": 11
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 11.04,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warrior_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.272727,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.84,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 8,
+        "mixedA": 4,
+        "mixedB": 4,
+        "pureA": 6,
+        "pureB": 15
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 104.88,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warrior_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.466667,
+      "eligible": true,
+      "budgets": {
+        "mixed": 16.2,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 3,
+        "mixedB": 7,
+        "pureA": 6,
+        "pureB": 15
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 60.72,
+      "candidateCastleDamage": 16.56
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warrior_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.310345,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.88,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 11,
+        "mixedA": 5,
+        "mixedB": 6,
+        "pureA": 8,
+        "pureB": 20
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 264.96,
+      "candidateCastleDamage": 49.68
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warrior_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.457627,
+      "eligible": true,
+      "budgets": {
+        "mixed": 21.24,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 13,
+        "mixedA": 4,
+        "mixedB": 9,
+        "pureA": 8,
+        "pureB": 20
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 198.72,
+      "candidateCastleDamage": 33.12
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warrior_mage/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.238095,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.68,
+        "pureA": 23.04,
+        "pureB": 22.68
+      },
+      "counts": {
+        "mixed": 11,
+        "mixedA": 6,
+        "mixedB": 5,
+        "pureA": 8,
+        "pureB": 21
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 22.08,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warrior_mage/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.32,
+        "pureA": 23.04,
+        "pureB": 22.68
+      },
+      "counts": {
+        "mixed": 14,
+        "mixedA": 4,
+        "mixedB": 10,
+        "pureA": 8,
+        "pureB": 21
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 0,
+      "candidateCastleDamage": 5.52
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warrior_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.272727,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.68,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 16,
+        "mixedA": 8,
+        "mixedB": 8,
+        "pureA": 11,
+        "pureB": 30
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 115.92,
+      "candidateCastleDamage": 33.12
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warrior_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.545455,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.68,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 21,
+        "mixedA": 5,
+        "mixedB": 16,
+        "pureA": 11,
+        "pureB": 30
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 0,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warrior_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.234783,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.4,
+        "pureA": 43.2,
+        "pureB": 42.12
+      },
+      "counts": {
+        "mixed": 20,
+        "mixedA": 11,
+        "mixedB": 9,
+        "pureA": 15,
+        "pureB": 39
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.333333,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": -0.333333,
+      "candidateDelta": 0,
+      "deltaChange": 0.333333,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 292.56,
+      "candidateCastleDamage": 44.16
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warrior_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warrior_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.517241,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.76,
+        "pureA": 43.2,
+        "pureB": 42.12
+      },
+      "counts": {
+        "mixed": 27,
+        "mixedA": 7,
+        "mixedB": 20,
+        "pureA": 15,
+        "pureB": 39
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.333333,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": -0.333333,
+      "candidateDelta": 0,
+      "deltaChange": 0.333333,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 22.08,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warriors/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.2,
+      "eligible": true,
+      "budgets": {
+        "mixed": 10.8,
+        "pureA": 11.52,
+        "pureB": 10.8
+      },
+      "counts": {
+        "mixed": 5,
+        "mixedA": 3,
+        "mixedB": 2,
+        "pureA": 4,
+        "pureB": 10
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -1,
+      "candidateDelta": -1,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 60.72,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warriors/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 11.16,
+        "pureA": 11.52,
+        "pureB": 11.88
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 2,
+        "mixedB": 5,
+        "pureA": 4,
+        "pureB": 11
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 34.08,
+      "candidateCastleDamage": 7.2
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warriors/x1/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.272727,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.84,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 8,
+        "mixedA": 4,
+        "mixedB": 4,
+        "pureA": 6,
+        "pureB": 15
+      },
+      "baselineRates": {
+        "mixed": 0.5,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -0.5,
+      "candidateDelta": 0,
+      "deltaChange": 0.5,
+      "mixedWinRateChange": 0.5,
+      "baselineCastleDamage": 538.32,
+      "candidateCastleDamage": 61.92
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warriors/x1/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.466667,
+      "eligible": true,
+      "budgets": {
+        "mixed": 16.2,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 3,
+        "mixedB": 7,
+        "pureA": 6,
+        "pureB": 15
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 194.64,
+      "candidateCastleDamage": 198.48
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warriors/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.310345,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.88,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 11,
+        "mixedA": 5,
+        "mixedB": 6,
+        "pureA": 8,
+        "pureB": 20
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.166667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 542.266667,
+      "candidateCastleDamage": 56.64
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warriors/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.457627,
+      "eligible": true,
+      "budgets": {
+        "mixed": 21.24,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 13,
+        "mixedA": 4,
+        "mixedB": 9,
+        "pureA": 8,
+        "pureB": 20
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0.166667,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 301.68,
+      "candidateCastleDamage": 64.8
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warriors/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.238095,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.68,
+        "pureA": 23.04,
+        "pureB": 22.68
+      },
+      "counts": {
+        "mixed": 11,
+        "mixedA": 6,
+        "mixedB": 5,
+        "pureA": 8,
+        "pureB": 21
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": -1,
+      "candidateDelta": -1,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 149.04,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warriors/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.32,
+        "pureA": 23.04,
+        "pureB": 22.68
+      },
+      "counts": {
+        "mixed": 14,
+        "mixedA": 4,
+        "mixedB": 10,
+        "pureA": 8,
+        "pureB": 21
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 204.586667,
+      "candidateCastleDamage": 15.84
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warriors/x2/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.272727,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.68,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 16,
+        "mixedA": 8,
+        "mixedB": 8,
+        "pureA": 11,
+        "pureB": 30
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 377.76,
+      "candidateCastleDamage": 367.173333
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warriors/x2/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.545455,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.68,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 21,
+        "mixedA": 5,
+        "mixedB": 16,
+        "pureA": 11,
+        "pureB": 30
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 210.346667,
+      "candidateCastleDamage": 31.68
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/warriors/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.234783,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.4,
+        "pureA": 43.2,
+        "pureB": 42.12
+      },
+      "counts": {
+        "mixed": 20,
+        "mixedA": 11,
+        "mixedB": 9,
+        "pureA": 15,
+        "pureB": 39
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 1,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 808.053333,
+      "candidateCastleDamage": 74.16
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/warriors/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "warriors",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.517241,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.76,
+        "pureA": 43.2,
+        "pureB": 42.12
+      },
+      "counts": {
+        "mixed": 27,
+        "mixedA": 7,
+        "mixedB": 20,
+        "pureA": 15,
+        "pureB": 39
+      },
+      "baselineRates": {
+        "mixed": 1,
+        "pureA": 1,
+        "pureB": 1
+      },
+      "candidateRates": {
+        "mixed": 1,
+        "pureA": 0,
+        "pureB": 1
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 354,
+      "candidateCastleDamage": 136.32
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/ranger_mage/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.2,
+      "eligible": true,
+      "budgets": {
+        "mixed": 10.8,
+        "pureA": 11.52,
+        "pureB": 10.8
+      },
+      "counts": {
+        "mixed": 5,
+        "mixedA": 3,
+        "mixedB": 2,
+        "pureA": 4,
+        "pureB": 10
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 38.64,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/ranger_mage/x1/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 11.16,
+        "pureA": 11.52,
+        "pureB": 11.88
+      },
+      "counts": {
+        "mixed": 7,
+        "mixedA": 2,
+        "mixedB": 5,
+        "pureA": 4,
+        "pureB": 11
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 16.56,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/ranger_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.272727,
+      "eligible": true,
+      "budgets": {
+        "mixed": 15.84,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 8,
+        "mixedA": 4,
+        "mixedB": 4,
+        "pureA": 6,
+        "pureB": 15
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 165.6,
+      "candidateCastleDamage": 5.52
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/ranger_mage/x1/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1,
+      "escortShare": 0.466667,
+      "eligible": true,
+      "budgets": {
+        "mixed": 16.2,
+        "pureA": 17.28,
+        "pureB": 16.2
+      },
+      "counts": {
+        "mixed": 10,
+        "mixedA": 3,
+        "mixedB": 7,
+        "pureA": 6,
+        "pureB": 15
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 88.32,
+      "candidateCastleDamage": 22.08
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/ranger_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.310345,
+      "eligible": true,
+      "budgets": {
+        "mixed": 20.88,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 11,
+        "mixedA": 5,
+        "mixedB": 6,
+        "pureA": 8,
+        "pureB": 20
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.666667,
+        "pureB": 0.5
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0.5,
+        "pureB": 0.5
+      },
+      "baselineDelta": -0.666667,
+      "candidateDelta": -0.5,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 336.72,
+      "candidateCastleDamage": 121.44
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/ranger_mage/x1/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "ranger_mage",
+      "scale": 1,
+      "ratio": 1.3,
+      "escortShare": 0.457627,
+      "eligible": true,
+      "budgets": {
+        "mixed": 21.24,
+        "pureA": 23.04,
+        "pureB": 21.6
+      },
+      "counts": {
+        "mixed": 13,
+        "mixedA": 4,
+        "mixedB": 9,
+        "pureA": 8,
+        "pureB": 20
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.666667,
+        "pureB": 0.5
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0.5,
+        "pureB": 0.5
+      },
+      "baselineDelta": -0.666667,
+      "candidateDelta": -0.5,
+      "deltaChange": 0.166667,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 215.28,
+      "candidateCastleDamage": 104.88
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/ranger_mage/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.238095,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.68,
+        "pureA": 23.04,
+        "pureB": 22.68
+      },
+      "counts": {
+        "mixed": 11,
+        "mixedA": 6,
+        "mixedB": 5,
+        "pureA": 8,
+        "pureB": 21
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 16.56,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/ranger_mage/x2/0.7",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 0.7,
+      "escortShare": 0.483871,
+      "eligible": true,
+      "budgets": {
+        "mixed": 22.32,
+        "pureA": 23.04,
+        "pureB": 22.68
+      },
+      "counts": {
+        "mixed": 14,
+        "mixedA": 4,
+        "mixedB": 10,
+        "pureA": 8,
+        "pureB": 21
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 0,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/ranger_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.272727,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.68,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 16,
+        "mixedA": 8,
+        "mixedB": 8,
+        "pureA": 11,
+        "pureB": 30
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 93.84,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/ranger_mage/x2/1",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1,
+      "escortShare": 0.545455,
+      "eligible": true,
+      "budgets": {
+        "mixed": 31.68,
+        "pureA": 31.68,
+        "pureB": 32.4
+      },
+      "counts": {
+        "mixed": 21,
+        "mixedA": 5,
+        "mixedB": 16,
+        "pureA": 11,
+        "pureB": 30
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "baselineDelta": 0,
+      "candidateDelta": 0,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 0,
+      "candidateCastleDamage": 0
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.25/ranger_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.234783,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.4,
+        "pureA": 43.2,
+        "pureB": 42.12
+      },
+      "counts": {
+        "mixed": 20,
+        "mixedA": 11,
+        "mixedB": 9,
+        "pureA": 15,
+        "pureB": 39
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.333333,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0.333333,
+        "pureB": 0
+      },
+      "baselineDelta": -0.333333,
+      "candidateDelta": -0.333333,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 325.68,
+      "candidateCastleDamage": 82.8
+    },
+    {
+      "key": "siegebreaker+nightwing/escort0.5/ranger_mage/x2/1.3",
+      "pair": [
+        "siegebreaker",
+        "nightwing"
+      ],
+      "army": "ranger_mage",
+      "scale": 2,
+      "ratio": 1.3,
+      "escortShare": 0.517241,
+      "eligible": true,
+      "budgets": {
+        "mixed": 41.76,
+        "pureA": 43.2,
+        "pureB": 42.12
+      },
+      "counts": {
+        "mixed": 27,
+        "mixedA": 7,
+        "mixedB": 20,
+        "pureA": 15,
+        "pureB": 39
+      },
+      "baselineRates": {
+        "mixed": 0,
+        "pureA": 0.333333,
+        "pureB": 0
+      },
+      "candidateRates": {
+        "mixed": 0,
+        "pureA": 0.333333,
+        "pureB": 0
+      },
+      "baselineDelta": -0.333333,
+      "candidateDelta": -0.333333,
+      "deltaChange": 0,
+      "mixedWinRateChange": 0,
+      "baselineCastleDamage": 49.68,
+      "candidateCastleDamage": 0
+    }
+  ],
+  "pooledCountsAreDescriptive": true,
+  "pooledCountNote": "Homogeneous controls can repeat across different escort recipes; pooled counts describe the experiment and are not treated as independent trials for inference.",
+  "candidateSnapshotFile": "enemy-siege-interception-source.json",
+  "fixedInputFile": "enemy-siege-escort-discovery-cases.json"
+}

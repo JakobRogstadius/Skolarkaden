@@ -109,6 +109,57 @@ for (const type of Object.keys(G.monsterTypes)) {
   assert.equal(w.monsters.filter(m => m.broodParent === giant.id).length, 1, 'striking delays the next otherwise ready brood');
 }
 {
+  const { w, lair } = arena(), caster = hero(w, 'necromancer'), giant = enemy(w, lair, 'broodcap');
+  const child = G.spawnMonster(w, lair, { type: 'sporeling', at: giant, broodParent: giant.id });
+  const ordinary = enemy(w, lair, 'sporeling'); Object.assign(child, { x: giant.x, y: giant.y });
+  for (const target of [giant, child, ordinary]) {
+    target.hp = target.maxHp = 100;
+    assert.equal(G.damage(w, target, 10, caster), 10, 'four-argument direct damage is unchanged, including caster credit');
+    assert.equal(G.damage(w, target, 10, caster, 'area'), target === ordinary ? 10 : 20, 'only the brood family takes double secondary area damage');
+  }
+  enemy(w, lair, 'bulwark', 20, 15); enemy(w, lair, 'bulwark', 20, 16);
+  for (const target of [giant, child, ordinary]) {
+    target.hp = 100;
+    assert.equal(G.damage(w, target, 10, caster, 'area'), target === ordinary ? 7.5 : 15, 'one nonstacking ward multiplies the area vulnerability');
+  }
+  giant.hp = 0; w.monsters = [child];
+  const loaded = new G.Simulation({ saved: JSON.parse(JSON.stringify(w)) }).world;
+  assert.equal(G.damage(loaded, loaded.monsters[0], 4, loaded.heroes[0], 'area'), 8, 'old broodParent data retains the weakness after saving and losing its parent');
+}
+for (const role of ['mage', 'necromancer']) {
+  const { w, lair } = arena(), caster = hero(w, role, 9, 9), primary = enemy(w, lair, 'broodcap', 10, 9);
+  const secondary = enemy(w, lair, 'broodcap', 10.4, 9.4), ordinary = enemy(w, lair, 'sporeling', 10.8, 9.6);
+  const child = G.spawnMonster(w, lair, { type: 'sporeling', at: primary, broodParent: primary.id }); Object.assign(child, { x: 10.7, y: 9.5 });
+  for (const monster of w.monsters) monster.targetId = caster.id;
+  w.time = 10; w.tick = 3;
+  const damage = G.heroStats(w, caster).damage, splash = damage * (role === 'mage' ? .5 : .65);
+  G.updateHeroes(w, .1);
+  assert.equal(caster.targetId, primary.id); assert.equal(primary.hp, primary.maxHp - damage, role + ' primary hit stays unchanged');
+  assert.equal(secondary.hp, secondary.maxHp - splash * 2, role + ' secondary hit doubles against a broodcap');
+  assert.equal(child.hp, child.maxHp - splash * 2, role + ' secondary hit doubles against brood offspring');
+  assert.equal(ordinary.hp, ordinary.maxHp - splash, role + ' normal sporelings retain normal splash damage');
+  assert.equal(caster.cooldown, G.classes[role].cooldown, role + ' spends only the normal attack action');
+}
+{
+  const { w, lair } = arena(), master = hero(w, 'necromancer'), giant = enemy(w, lair, 'broodcap', 17.2, 15);
+  bones(w, 16.5, 15, 2); const skeleton = G.raiseSkeleton(w, master); Object.assign(skeleton, { x: 16.5, y: 15 }); master.targetId = giant.id;
+  const damage = (5 + skeleton.level * 2.4) * G.offenseBoost(w, skeleton);
+  G.updateSkeletons(w, .1);
+  assert.equal(giant.hp, giant.maxHp - damage, 'a skeleton strike credited to its necromancer remains direct physical damage');
+  const kills = master.kills; giant.hp = 1; elapse(w, 2); G.updateSkeletons(w, .1);
+  assert.equal(master.kills, kills + 1, 'the same physical strike still credits its master');
+}
+{
+  const { w, lair } = arena(), beacon = G.addBuilding(w, 'beacon', 15, 9), primary = enemy(w, lair, 'broodcap', 18, 10);
+  const secondary = enemy(w, lair, 'broodcap', 18.5, 10), ordinary = enemy(w, lair, 'sporeling', 18.5, 10.5);
+  G.castle(w).shotAt = 1e6;
+  G.updateBuildings(w, .1);
+  assert.equal(primary.hp, primary.maxHp - 28, 'beacon primary damage is unchanged');
+  assert.equal(secondary.hp, secondary.maxHp - 28 * .6 * 2, 'beacon secondary area damage uses the brood vulnerability');
+  assert.equal(ordinary.hp, ordinary.maxHp - 28 * .6, 'ordinary monsters retain normal beacon splash');
+  assert.equal(beacon.shotAt, w.time + 1.4, 'area vulnerability does not add another building action');
+}
+{
   const { w, lair } = arena(), ranger = hero(w, 'ranger'); w.research.traps = true;
   const goal = G.trapSites(w, lair)[0]; Object.assign(ranger, { x: goal.x, y: goal.y, trapGoal: { ...goal, lair: lair.id } });
   G.rangerTrapWork(w, ranger, 2, .1); assert.equal(w.traps.length, 1); assert.equal(ranger.actionCue.kind, 'trap');
@@ -249,7 +300,7 @@ for (const type of Object.keys(G.lairTypes)) for (const tier of [1, 2, 3]) {
   enemy(w, lair, 'binder', 18, 16); w.time += 1; G.updateMonsters(w, .1);
   assert.equal(victim.rootedUntil, rootedUntil, 'several binders cannot extend a root into a permanent lock');
   const siege = enemy(w, lair, 'siegebreaker', 17, 15); G.updateMonsters(w, .1);
-  assert(w.buildings.some(b => b.id === siege.targetId), 'siege monster ignores a closer hero to attack a building');
+  assert.equal(siege.targetId, victim.id, 'a nearby warrior intercepts the siege monster before it attacks a building');
   const giant = enemy(w, lair, 'broodcap', 17, 15);
   for (let i = 0; i < 6; i++) { elapse(w, 10); G.updateMonsters(w, .1); victim.hp = victim.maxHp; }
   assert.equal(w.monsters.filter(m => G.alive(m) && m.broodParent === giant.id).length, 3, 'brood growth is useful but bounded');
@@ -343,5 +394,47 @@ for (const type of ['sporeling', 'rattler']) {
   new G.Simulation({ saved: w });
   assert.equal(G.ownedSkeletons(w, necro).length, 1); assert.equal(G.ownedSkeletons(w, necro)[0].level, 4);
   assert.equal(healer.cooldown, 1.8); assert(!('healCooldown' in healer)); assert.equal(w.corpses.length, 0);
+}
+{
+  const { w, lair } = arena(), castle = G.castle(w), siege = enemy(w, lair, 'siegebreaker', castle.x + 2, castle.y), blocker = hero(w, 'warrior', castle.x + 3, castle.y);
+  const castleHp = castle.hp, heroHp = blocker.hp, expectedRetaliation = G.monsterDamage(w, siege);
+  assert.equal(expectedRetaliation, G.monsterDamage(w, siege, true) * .35, 'antihero threat is 35% of building damage');
+  G.updateMonsters(w, .1);
+  assert.equal(siege.targetId, blocker.id, 'a nearby warrior intercepts the siege engine');
+  assert.equal(blocker.hp, heroHp - expectedRetaliation, 'interception deals only the weak retaliation');
+  assert.equal(castle.hp, castleHp, 'the castle is safe while a warrior blocks');
+  assert.equal(siege.actionCue.kind, 'attack');
+  assert.equal(siege.cooldown, G.monsterTypes.siegebreaker.cooldown, 'the interception spends the normal shared cooldown');
+  assert.equal(G.useAbility(w, siege, castle, 'raise'), false, 'the siege engine cannot bypass its attack cooldown');
+  w.time += .5; G.updateMonsters(w, .1);
+  assert.equal(blocker.hp, heroHp - expectedRetaliation, 'a blocked second action does not deal duplicate damage');
+}
+for (const caseName of ['out-of-range', 'dead', 'wall']) {
+  const { w, lair } = arena(), castle = G.castle(w), siege = enemy(w, lair, 'siegebreaker', castle.x + 2, castle.y);
+  const blocker = hero(w, 'warrior', siege.x + (caseName === 'out-of-range' ? 2 : 1), siege.y);
+  if (caseName === 'dead') blocker.hp = 0;
+  if (caseName === 'wall') { w.terrain[G.index(w, Math.floor(blocker.x), Math.floor(blocker.y))] = 2; w.navRevision++; }
+  const castleHp = castle.hp, heroHp = blocker.hp, expectedDamage = G.monsterDamage(w, siege, true);
+  G.updateMonsters(w, .1);
+  assert.equal(siege.targetId, castle.id, caseName + ' blocker leaves the siege engine targeting the castle');
+  assert.equal(castle.hp, castleHp - expectedDamage, caseName + ' blocker allows normal siege damage');
+  if (caseName === 'wall') assert.equal(blocker.hp, heroHp, 'an interceptor behind a wall is not attacked');
+}
+{
+  const { w, lair } = arena(), oldSiege = enemy(w, lair, 'siegebreaker', 19, 17), deadSiege = enemy(w, lair, 'siegebreaker', 21, 17), rattler = enemy(w, lair, 'rattler', 23, 17);
+  assert.equal(oldSiege.siegeRevision, 1, 'new spawns already have the current siege stats');
+  Object.assign(oldSiege, { hp: 82.5, maxHp: 165, attackDamage: 23, strength: 1, cooldown: 1.6 }); delete oldSiege.siegeRevision;
+  Object.assign(deadSiege, { hp: 0, maxHp: 165, attackDamage: 23, strength: 1, cooldown: .7 }); delete deadSiege.siegeRevision;
+  Object.assign(rattler, { hp: 13, maxHp: 39, attackDamage: 7, strength: 1, cooldown: .4 });
+  const oldPosition = { x: oldSiege.x, y: oldSiege.y }, deadPosition = { x: deadSiege.x, y: deadSiege.y }, rattlerState = { hp: rattler.hp, maxHp: rattler.maxHp, attackDamage: rattler.attackDamage, strength: rattler.strength, cooldown: rattler.cooldown };
+  const firstLoad = new G.Simulation({ saved: JSON.parse(JSON.stringify(w)) }).world;
+  const migrated = firstLoad.monsters.find(m => m.id === oldSiege.id), dead = firstLoad.monsters.find(m => m.id === deadSiege.id), untouched = firstLoad.monsters.find(m => m.id === rattler.id);
+  assert.equal(migrated.maxHp, 90); assert.equal(migrated.hp, 45, 'old siege health fraction is retained'); assert.equal(migrated.attackDamage, 42);
+  assert.equal(migrated.siegeRevision, 1); assert.deepEqual({ x: migrated.x, y: migrated.y }, oldPosition); assert.equal(migrated.cooldown, 1.6);
+  assert.equal(dead.maxHp, 90); assert.equal(dead.hp, 0, 'a dead old siege stays dead'); assert.equal(dead.attackDamage, 42); assert.deepEqual({ x: dead.x, y: dead.y }, deadPosition); assert.equal(dead.cooldown, .7);
+  assert.deepEqual({ hp: untouched.hp, maxHp: untouched.maxHp, attackDamage: untouched.attackDamage, strength: untouched.strength, cooldown: untouched.cooldown }, rattlerState, 'other monster types are not migrated');
+  const secondLoad = new G.Simulation({ saved: JSON.parse(JSON.stringify(firstLoad)) }).world;
+  const reloaded = secondLoad.monsters.find(m => m.id === oldSiege.id);
+  assert.equal(reloaded.maxHp, 90); assert.equal(reloaded.hp, 45); assert.equal(reloaded.attackDamage, 42); assert.equal(reloaded.siegeRevision, 1, 'a second load is idempotent');
 }
 console.log('tactics: exclusive movement/actions, shared ability cooldowns, summons, traps, mixed waves and save migration');

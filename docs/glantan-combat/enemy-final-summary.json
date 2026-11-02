@@ -1,0 +1,648 @@
+{
+  "reference": "28ba8b8a447182e495ae869777539f4d6abe363d",
+  "harnessSha256": "14998344142b9dc255c1113f2891317fe82792f92454cb5b2ead613e07caf52b",
+  "driverSha256": "2daa4d52ac3c925fc6c128b684e1a300594105f5a468df4e73d0331fd11c1d1b",
+  "productionChangesByThisStudy": false,
+  "scope": "Bounded real-engine baseline discovery, fresh-seed confirmation, objective siege follow-up and actual-role checks.",
+  "completedArenaRuns": 14700,
+  "batches": [
+    {
+      "name": "enemy-baseline",
+      "cases": 2916,
+      "wallSeconds": 253.965,
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-baseline-cases.json",
+      "caseInputSha256": "44e525cacae9440ce5281fef33f3b965669a31229beb5687d629ce3766ff1a02"
+    },
+    {
+      "name": "enemy-expanded",
+      "cases": 1944,
+      "wallSeconds": 84.818,
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-expanded-cases.json",
+      "caseInputSha256": "368d45f9a5920333500d43d23a763859cb277873fb6158ad8aa1554874533652"
+    },
+    {
+      "name": "enemy-validation",
+      "cases": 1500,
+      "wallSeconds": 96.241,
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-validation-cases.json",
+      "caseInputSha256": "6fe22c15431fc3a04568d55baa4e0453444587174bf061609ce8bd564cff05e9"
+    },
+    {
+      "name": "enemy-expanded-validation",
+      "cases": 900,
+      "wallSeconds": 72.521,
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-expanded-validation-cases.json",
+      "caseInputSha256": "38f273fe2ed9ce1d87abcb1d35386b2fbc39f1c8f71c937bcda7757863b68bd6"
+    },
+    {
+      "name": "enemy-roles",
+      "cases": 1800,
+      "wallSeconds": 113.393,
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-roles-cases.json",
+      "caseInputSha256": "fddad721218aac66184ded2cb0d3eba89312ae7a95744fefa4d4e027cc586537"
+    },
+    {
+      "name": "enemy-roles-extra",
+      "cases": 1170,
+      "wallSeconds": 83.747,
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-roles-extra-cases.json",
+      "caseInputSha256": "d54a0294bd7c7d0be18d287a191d18ceaf03d0a4b935edc708318675a1f10044"
+    },
+    {
+      "name": "enemy-roles-validation",
+      "cases": 1800,
+      "wallSeconds": 107.231,
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-roles-validation-cases.json",
+      "caseInputSha256": "7afba7217172a61e74f96ed5a5f983794669a89204d29fb77dd72140ad4ff526"
+    },
+    {
+      "name": "enemy-natural-brood-validation",
+      "cases": 300,
+      "wallSeconds": 16.048,
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-natural-brood-validation-cases.json",
+      "caseInputSha256": "fbc81adf8108cd1c837fd2b7c10d891df75040c00f92ad6a67ffb01a1e54ee18"
+    },
+    {
+      "name": "enemy-confirmation-300",
+      "cases": 1800,
+      "wallSeconds": 130.903,
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-confirmation-300-cases.json",
+      "caseInputSha256": "9254422f029daf0691ddb57167bbb83a14705090ff5924e7e85de96cad0c6abb"
+    },
+    {
+      "name": "enemy-siege-focused",
+      "cases": 270,
+      "wallSeconds": 24.41,
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-siege-focused-cases.json",
+      "caseInputSha256": "cbb7251feed8a16ac51c5cd9f8dd12fabca93f8bab2bb95e66e7bdb30e9b63e6"
+    },
+    {
+      "name": "enemy-siege-validation",
+      "cases": 300,
+      "wallSeconds": 26.223,
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-siege-validation-cases.json",
+      "caseInputSha256": "aa6caef8c62b5fb3dec8b5142f96385773e5df4b74d06d737c57ce313909923d"
+    }
+  ],
+  "heldoutCorrection": {
+    "contexts": 18,
+    "comparisons": 36,
+    "method": "Bonferroni across every paired comparator in all held-out batches, including earlier samples subsequently confirmed on new seeds.",
+    "alphaPerComparator": 0.001388888888888889,
+    "allSelectedConfirmedPairsPass": true
+  },
+  "confirmedPairs": [
+    {
+      "pair": [
+        "rattler",
+        "mender"
+      ],
+      "key": "rattler+mender/balanced/x1/1.3",
+      "source": "enemy-validation.json",
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-validation-cases.json",
+      "n": 100,
+      "monsterWins": {
+        "mixed": 42,
+        "pureA": 6,
+        "pureB": 0
+      },
+      "timeouts": {
+        "mixed": 56,
+        "pureA": 3,
+        "pureB": 100
+      },
+      "deltaOverBestPure": 0.36,
+      "budgets": {
+        "mixed": 17.64,
+        "pureA": 18.36,
+        "pureB": 18.144
+      },
+      "counts": {
+        "mixed": 12,
+        "mixedA": 7,
+        "mixedB": 5,
+        "pureA": 17,
+        "pureB": 9
+      },
+      "mode": "field",
+      "actualSupportShare": null,
+      "preexistingCorpses": 0,
+      "pairedTests": {
+        "pureA": {
+          "better": 41,
+          "worse": 5,
+          "discordant": 46,
+          "pOneSided": 2.202968119036086e-8,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        },
+        "pureB": {
+          "better": 42,
+          "worse": 0,
+          "discordant": 42,
+          "pOneSided": 2.2737367544323193e-13,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        }
+      },
+      "passesGlobalHeldoutBonferroni": true
+    },
+    {
+      "pair": [
+        "sporeling",
+        "mender"
+      ],
+      "key": "sporeling+mender/fresh/support0.3/balanced/x1/1.3",
+      "source": "enemy-confirmation-300.json",
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-confirmation-300-cases.json",
+      "n": 300,
+      "monsterWins": {
+        "mixed": 126,
+        "pureA": 46,
+        "pureB": 7
+      },
+      "timeouts": {
+        "mixed": 68,
+        "pureA": 13,
+        "pureB": 293
+      },
+      "deltaOverBestPure": 0.266667,
+      "budgets": {
+        "mixed": 17.568,
+        "pureA": 18,
+        "pureB": 18.144
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 16,
+        "mixedB": 3,
+        "pureA": 25,
+        "pureB": 9
+      },
+      "mode": "field",
+      "actualSupportShare": 0.344262,
+      "preexistingCorpses": 0,
+      "pairedTests": {
+        "pureA": {
+          "better": 98,
+          "worse": 18,
+          "discordant": 116,
+          "pOneSided": 8.245527912526272e-15,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        },
+        "pureB": {
+          "better": 123,
+          "worse": 4,
+          "discordant": 127,
+          "pOneSided": 6.274864664075001e-32,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        }
+      },
+      "passesGlobalHeldoutBonferroni": true
+    },
+    {
+      "pair": [
+        "husher",
+        "bulwark"
+      ],
+      "key": "husher+bulwark/fresh/support0.15/necromancy/x2/1",
+      "source": "enemy-confirmation-300.json",
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-confirmation-300-cases.json",
+      "n": 300,
+      "monsterWins": {
+        "mixed": 94,
+        "pureA": 36,
+        "pureB": 1
+      },
+      "timeouts": {
+        "mixed": 2,
+        "pureA": 2,
+        "pureB": 1
+      },
+      "deltaOverBestPure": 0.193333,
+      "budgets": {
+        "mixed": 29.16,
+        "pureA": 30.6,
+        "pureB": 31.68
+      },
+      "counts": {
+        "mixed": 15,
+        "mixedA": 13,
+        "mixedB": 2,
+        "pureA": 17,
+        "pureB": 11
+      },
+      "mode": "field",
+      "actualSupportShare": 0.197531,
+      "preexistingCorpses": 0,
+      "pairedTests": {
+        "pureA": {
+          "better": 79,
+          "worse": 21,
+          "discordant": 100,
+          "pOneSided": 2.1686833167108196e-9,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        },
+        "pureB": {
+          "better": 94,
+          "worse": 1,
+          "discordant": 95,
+          "pOneSided": 2.4233807008389472e-27,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        }
+      },
+      "passesGlobalHeldoutBonferroni": true
+    },
+    {
+      "pair": [
+        "nightwing",
+        "mender"
+      ],
+      "key": "nightwing+mender/balanced/x1/1.3",
+      "source": "enemy-expanded-validation.json",
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-expanded-validation-cases.json",
+      "n": 100,
+      "monsterWins": {
+        "mixed": 74,
+        "pureA": 24,
+        "pureB": 1
+      },
+      "timeouts": {
+        "mixed": 26,
+        "pureA": 3,
+        "pureB": 99
+      },
+      "deltaOverBestPure": 0.5,
+      "budgets": {
+        "mixed": 17.64,
+        "pureA": 18.36,
+        "pureB": 18.144
+      },
+      "counts": {
+        "mixed": 12,
+        "mixedA": 7,
+        "mixedB": 5,
+        "pureA": 17,
+        "pureB": 9
+      },
+      "mode": "field",
+      "actualSupportShare": null,
+      "preexistingCorpses": 0,
+      "pairedTests": {
+        "pureA": {
+          "better": 59,
+          "worse": 9,
+          "discordant": 68,
+          "pOneSided": 1.9570615985534288e-10,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        },
+        "pureB": {
+          "better": 74,
+          "worse": 1,
+          "discordant": 75,
+          "pOneSided": 2.011703249728962e-21,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        }
+      },
+      "passesGlobalHeldoutBonferroni": true
+    },
+    {
+      "pair": [
+        "thornling",
+        "bulwark"
+      ],
+      "key": "thornling+bulwark/necromancy/x2/1",
+      "source": "enemy-validation.json",
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-validation-cases.json",
+      "n": 100,
+      "monsterWins": {
+        "mixed": 60,
+        "pureA": 27,
+        "pureB": 0
+      },
+      "timeouts": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "deltaOverBestPure": 0.33,
+      "budgets": {
+        "mixed": 28.656,
+        "pureA": 29.808,
+        "pureB": 28.8
+      },
+      "counts": {
+        "mixed": 16,
+        "mixedA": 11,
+        "mixedB": 5,
+        "pureA": 23,
+        "pureB": 10
+      },
+      "mode": "field",
+      "actualSupportShare": null,
+      "preexistingCorpses": 0,
+      "pairedTests": {
+        "pureA": {
+          "better": 45,
+          "worse": 12,
+          "discordant": 57,
+          "pOneSided": 0.000006563721582142356,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        },
+        "pureB": {
+          "better": 60,
+          "worse": 0,
+          "discordant": 60,
+          "pOneSided": 8.673617379884037e-19,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        }
+      },
+      "passesGlobalHeldoutBonferroni": true
+    },
+    {
+      "pair": [
+        "binder",
+        "thornling"
+      ],
+      "key": "binder+thornling/fresh/support0.15/ranged/x2/1",
+      "source": "enemy-roles-validation.json",
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-roles-validation-cases.json",
+      "n": 100,
+      "monsterWins": {
+        "mixed": 88,
+        "pureA": 0,
+        "pureB": 72
+      },
+      "timeouts": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 0
+      },
+      "deltaOverBestPure": 0.16,
+      "budgets": {
+        "mixed": 26.496,
+        "pureA": 28.512,
+        "pureB": 27.216
+      },
+      "counts": {
+        "mixed": 19,
+        "mixedA": 1,
+        "mixedB": 18,
+        "pureA": 9,
+        "pureB": 21
+      },
+      "mode": "field",
+      "actualSupportShare": 0.119565,
+      "preexistingCorpses": 0,
+      "pairedTests": {
+        "pureA": {
+          "better": 88,
+          "worse": 0,
+          "discordant": 88,
+          "pOneSided": 3.231174267785266e-27,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        },
+        "pureB": {
+          "better": 19,
+          "worse": 3,
+          "discordant": 22,
+          "pOneSided": 0.0004277229309082031,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        }
+      },
+      "passesGlobalHeldoutBonferroni": true
+    },
+    {
+      "pair": [
+        "binder",
+        "broodcap"
+      ],
+      "key": "binder+broodcap/ranged/x1/1.3",
+      "source": "enemy-natural-brood-validation.json",
+      "inputFile": "/workspace/scratch/23d09e66c6fe/experiments/enemy-natural-brood-validation-cases.json",
+      "n": 100,
+      "monsterWins": {
+        "mixed": 52,
+        "pureA": 6,
+        "pureB": 11
+      },
+      "timeouts": {
+        "mixed": 0,
+        "pureA": 0,
+        "pureB": 2
+      },
+      "deltaOverBestPure": 0.41,
+      "budgets": {
+        "mixed": 17.136,
+        "pureA": 19.008,
+        "pureB": 18
+      },
+      "counts": {
+        "mixed": 5,
+        "mixedA": 2,
+        "mixedB": 3,
+        "pureA": 6,
+        "pureB": 5
+      },
+      "mode": "field",
+      "actualSupportShare": null,
+      "preexistingCorpses": 0,
+      "pairedTests": {
+        "pureA": {
+          "better": 47,
+          "worse": 1,
+          "discordant": 48,
+          "pOneSided": 1.7408297026122462e-13,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        },
+        "pureB": {
+          "better": 43,
+          "worse": 2,
+          "discordant": 45,
+          "pOneSided": 2.944489096989855e-11,
+          "method": "Exact one-sided paired discordance binomial test; timeout is not a monster victory."
+        }
+      },
+      "passesGlobalHeldoutBonferroni": true
+    }
+  ],
+  "acceptanceMatrix": [
+    {
+      "type": "rattler",
+      "role": "Cheap rushing frontline",
+      "partnerStatus": "replicated-positive",
+      "confirmedPartners": [
+        "mender"
+      ],
+      "pureStrongAtNearEqualBudget": false,
+      "pureWeakAtNearEqualBudget": true,
+      "strongWeakEvidenceFile": "enemy-unit-audit.json",
+      "note": "Confirmed medic partnership, but no pure >=75% victory context at achieved threat ratio 0.85–1.15; fixed initial weight may overvalue this trash unit."
+    },
+    {
+      "type": "sporeling",
+      "role": "Fast frail frontline",
+      "partnerStatus": "replicated-positive",
+      "confirmedPartners": [
+        "mender"
+      ],
+      "pureStrongAtNearEqualBudget": true,
+      "pureWeakAtNearEqualBudget": true,
+      "strongWeakEvidenceFile": "enemy-unit-audit.json",
+      "note": "Confirmed medic partnership on a separate 300-seed sample. Actual medic fraction 34.43%, explicitly recorded rather than labelled 30%."
+    },
+    {
+      "type": "husher",
+      "role": "Fragile ranged splash damage",
+      "partnerStatus": "replicated-positive",
+      "confirmedPartners": [
+        "bulwark"
+      ],
+      "pureStrongAtNearEqualBudget": true,
+      "pureWeakAtNearEqualBudget": true,
+      "strongWeakEvidenceFile": "enemy-unit-audit.json",
+      "note": "Confirmed bulwark partnership on 300 fresh seeds. No healing-suppression production change is included."
+    },
+    {
+      "type": "nightwing",
+      "role": "Flying attacker requiring ranged counters",
+      "partnerStatus": "replicated-positive",
+      "confirmedPartners": [
+        "mender"
+      ],
+      "pureStrongAtNearEqualBudget": true,
+      "pureWeakAtNearEqualBudget": true,
+      "strongWeakEvidenceFile": "enemy-unit-audit.json",
+      "note": "Confirmed medic partnership; flyers already create a clear melee/ranged counter distinction."
+    },
+    {
+      "type": "thornling",
+      "role": "Kiting ranged attacker",
+      "partnerStatus": "replicated-positive",
+      "confirmedPartners": [
+        "bulwark",
+        "binder"
+      ],
+      "pureStrongAtNearEqualBudget": true,
+      "pureWeakAtNearEqualBudget": false,
+      "strongWeakEvidenceFile": "enemy-unit-audit.json",
+      "note": "Confirmed bulwark and binder partnerships. Lowest near-equal-budget pure held-out victory rate 27% narrowly misses the 25% weakness target; its Wilson interval includes 25%."
+    },
+    {
+      "type": "mender",
+      "role": "Healing support",
+      "partnerStatus": "replicated-positive",
+      "confirmedPartners": [
+        "rattler",
+        "sporeling",
+        "nightwing"
+      ],
+      "pureStrongAtNearEqualBudget": true,
+      "pureWeakAtNearEqualBudget": true,
+      "strongWeakEvidenceFile": "enemy-unit-audit.json",
+      "note": "Multiple confirmed frontline partnerships. Many pure-mender outcomes are healing stalemates; timeouts are not counted as monster victories or hero victories."
+    },
+    {
+      "type": "binder",
+      "role": "Root control and corpse raising",
+      "partnerStatus": "replicated-positive",
+      "confirmedPartners": [
+        "thornling",
+        "broodcap"
+      ],
+      "pureStrongAtNearEqualBudget": false,
+      "pureWeakAtNearEqualBudget": true,
+      "strongWeakEvidenceFile": "enemy-unit-audit.json",
+      "note": "Confirmed thornling partnership near equal threat, and natural broodcap partnership without preexisting corpses. Pure >=75% victory threshold is unmet; low direct damage is consistent with a control/raising role."
+    },
+    {
+      "type": "boneservant",
+      "role": "Owned/raised skeletal body",
+      "partnerStatus": "role-exception-verified",
+      "confirmedPartners": [],
+      "pureStrongAtNearEqualBudget": true,
+      "pureWeakAtNearEqualBudget": true,
+      "strongWeakEvidenceFile": "enemy-unit-audit.json",
+      "note": "Role exception: summoned/owned bodies are not independently purchased enemies. Accept via corpse use, owner cap, melee limits, combat and owner-death cleanup tests; synthetic ally superiority is not required."
+    },
+    {
+      "type": "siegebreaker",
+      "role": "Building specialist",
+      "partnerStatus": "unresolved",
+      "confirmedPartners": [],
+      "pureStrongAtNearEqualBudget": true,
+      "pureWeakAtNearEqualBudget": true,
+      "strongWeakEvidenceFile": "enemy-unit-audit.json",
+      "note": "Objective pressure and pure counters are demonstrated. Tested medic/protection mixtures have not established conservative-cost superiority; final focused medic holdout 50% versus 59% pure siege."
+    },
+    {
+      "type": "broodcap",
+      "role": "Persistent spawning frontline",
+      "partnerStatus": "replicated-positive",
+      "confirmedPartners": [
+        "binder"
+      ],
+      "pureStrongAtNearEqualBudget": false,
+      "pureWeakAtNearEqualBudget": true,
+      "strongWeakEvidenceFile": "enemy-unit-audit.json",
+      "note": "Confirmed natural binder partnership without seeded corpses. Pure >=75% victory context near equal threat remains unobserved; spawning is not equivalent to high direct damage."
+    },
+    {
+      "type": "bulwark",
+      "role": "Nearby damage protection",
+      "partnerStatus": "replicated-positive",
+      "confirmedPartners": [
+        "husher",
+        "thornling"
+      ],
+      "pureStrongAtNearEqualBudget": true,
+      "pureWeakAtNearEqualBudget": true,
+      "strongWeakEvidenceFile": "enemy-unit-audit.json",
+      "note": "Confirmed fragile ranged partnerships with husher/thornling; protection role demonstrated without changing abilities."
+    },
+    {
+      "type": "guardian",
+      "role": "Difficulty-specific boss garrison",
+      "partnerStatus": "role-exception-verified",
+      "confirmedPartners": [],
+      "pureStrongAtNearEqualBudget": true,
+      "pureWeakAtNearEqualBudget": true,
+      "strongWeakEvidenceFile": "enemy-unit-audit.json",
+      "note": "Role exception: validate the actual boss gate rather than independently priced field mixtures. All six real boss probes passed; speculative medic/bulwark mixtures failed held-out superiority."
+    }
+  ],
+  "roleCheckFile": "enemy-role-checks.json",
+  "mechanismNotesFile": "enemy-mechanism-notes.json",
+  "unresolved": [
+    "Siegebreaker partner superiority remains unproven despite objective-pressure-preserving tests.",
+    "Pure near-equal-budget strong thresholds remain unmet for rattler, binder and broodcap under the frozen initial weights. Binder has a strong marginal control partnership; do not equate low solo victory with an inactive ability.",
+    "Thornling pure weak threshold remains narrowly unmet at 27%, with uncertainty overlapping 25%.",
+    "Several absolute strength/counter examples still rely on six-seed discovery. Do not call the entire balance specification validated."
+  ],
+  "limitations": [
+    "THREAT values are frozen estimates; monster types have no in-game recruitment price.",
+    "Flat fully explored arenas, fixed trait, no XP/recruitment/world escalation and finite 100-second encounter windows; game targeting/actions/movement/retreat are preserved.",
+    "Pure mender timeouts are stalemates, not losses.",
+    "Raised enemy skeleton initial/maxHP instrumentation can be stale because production applies stats after the spawn wrapper; outcomes, finalHP, actions and damage are unaffected.",
+    "No unsupported support fraction is relabelled as 15–30%; actual shares and integer rounding are retained in exact case files."
+  ],
+  "rerunExample": "node dev/glantan-enemy-study.cjs --ref 28ba8b8 --cases /workspace/scratch/23d09e66c6fe/experiments/enemy-confirmation-300-cases.json --jobs 2 --stage validation --out /workspace/scratch/23d09e66c6fe/experiments/enemy-confirmation-300-rerun.json",
+  "subsequentCandidateEvaluation": {
+    "name": "Siege interception with weak retaliation",
+    "baselineRef": "28ba8b8a447182e495ae869777539f4d6abe363d",
+    "candidateSourceSha256": "3847875d37cbcc7ab1c85a87a1f1d42779c7a3d2e4e32cd721c13bc4d8727b2c",
+    "comparisonFile": "enemy-siege-escort-comparison.json",
+    "sourceSnapshotFile": "enemy-siege-interception-source.json",
+    "fixedInputFile": "enemy-siege-escort-discovery-cases.json",
+    "identicalCaseInputSha256": "cce964e040c2317f5e389b19613fa104851050e57088bcd4f44edde75480e041",
+    "casesPerSource": 1782,
+    "eligibleContexts": 99,
+    "qualifyingContexts": 0,
+    "predeclaredQualification": "At least 15 percentage points of positive mixed-over-best-homogeneous victory rate.",
+    "result": "Failed the qualification gate; stopped without 100-seed confirmation. No acceptance of the prototype is implied.",
+    "runtimeSourcesStable": true,
+    "pureEscortParity": {
+      "cases": 594,
+      "mismatches": 0
+    }
+  },
+  "totalArenasIncludingSubsequentCandidateEvaluation": 18264
+}

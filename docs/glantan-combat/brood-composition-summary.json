@@ -1,0 +1,1994 @@
+{
+  "sourceSha256": "4939595f304f67f2de17d7616352b4b59f348dd354f884f659c2265f1c1d10dc",
+  "sourceStable": true,
+  "overrides": null,
+  "protocol": {
+    "sourceSha256": "4939595f304f67f2de17d7616352b4b59f348dd354f884f659c2265f1c1d10dc",
+    "sourceRef": "Frozen current production siege90/42; no configure overrides.",
+    "modelFile": "/workspace/scratch/23d09e66c6fe/experiments/calibration-v2/calibration-frozen-model.json",
+    "modelSha256": "14bf6fd91d2e85f43b106f02d68f1aa76ed1e328bfe1a92796256166587fcc3b",
+    "driverSha256": "aaf4a6d799949f5964d1d813a89a7dbcc1eb75d5a566a2ce07728ae231e91a20",
+    "compositionRule": "All integer counts W,R,H,M,N >=0 with2(W+R)+3(H+M+N)=12;46 total.",
+    "compositions": [
+      {
+        "key": "w0-r0-h0-m0-n4",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 0,
+          "mage": 0,
+          "necromancer": 4
+        },
+        "party": [
+          "necromancer",
+          "necromancer",
+          "necromancer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r0-h0-m1-n3",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 0,
+          "mage": 1,
+          "necromancer": 3
+        },
+        "party": [
+          "mage",
+          "necromancer",
+          "necromancer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r0-h0-m2-n2",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 0,
+          "mage": 2,
+          "necromancer": 2
+        },
+        "party": [
+          "mage",
+          "mage",
+          "necromancer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r0-h0-m3-n1",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 0,
+          "mage": 3,
+          "necromancer": 1
+        },
+        "party": [
+          "mage",
+          "mage",
+          "mage",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r0-h0-m4-n0",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 0,
+          "mage": 4,
+          "necromancer": 0
+        },
+        "party": [
+          "mage",
+          "mage",
+          "mage",
+          "mage"
+        ]
+      },
+      {
+        "key": "w0-r0-h1-m0-n3",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 1,
+          "mage": 0,
+          "necromancer": 3
+        },
+        "party": [
+          "healer",
+          "necromancer",
+          "necromancer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r0-h1-m1-n2",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 1,
+          "mage": 1,
+          "necromancer": 2
+        },
+        "party": [
+          "healer",
+          "mage",
+          "necromancer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r0-h1-m2-n1",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 1,
+          "mage": 2,
+          "necromancer": 1
+        },
+        "party": [
+          "healer",
+          "mage",
+          "mage",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r0-h1-m3-n0",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 1,
+          "mage": 3,
+          "necromancer": 0
+        },
+        "party": [
+          "healer",
+          "mage",
+          "mage",
+          "mage"
+        ]
+      },
+      {
+        "key": "w0-r0-h2-m0-n2",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 2,
+          "mage": 0,
+          "necromancer": 2
+        },
+        "party": [
+          "healer",
+          "healer",
+          "necromancer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r0-h2-m1-n1",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 2,
+          "mage": 1,
+          "necromancer": 1
+        },
+        "party": [
+          "healer",
+          "healer",
+          "mage",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r0-h2-m2-n0",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 2,
+          "mage": 2,
+          "necromancer": 0
+        },
+        "party": [
+          "healer",
+          "healer",
+          "mage",
+          "mage"
+        ]
+      },
+      {
+        "key": "w0-r0-h3-m0-n1",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 3,
+          "mage": 0,
+          "necromancer": 1
+        },
+        "party": [
+          "healer",
+          "healer",
+          "healer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r0-h3-m1-n0",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 3,
+          "mage": 1,
+          "necromancer": 0
+        },
+        "party": [
+          "healer",
+          "healer",
+          "healer",
+          "mage"
+        ]
+      },
+      {
+        "key": "w0-r0-h4-m0-n0",
+        "counts": {
+          "warrior": 0,
+          "ranger": 0,
+          "healer": 4,
+          "mage": 0,
+          "necromancer": 0
+        },
+        "party": [
+          "healer",
+          "healer",
+          "healer",
+          "healer"
+        ]
+      },
+      {
+        "key": "w0-r3-h0-m0-n2",
+        "counts": {
+          "warrior": 0,
+          "ranger": 3,
+          "healer": 0,
+          "mage": 0,
+          "necromancer": 2
+        },
+        "party": [
+          "ranger",
+          "ranger",
+          "ranger",
+          "necromancer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r3-h0-m1-n1",
+        "counts": {
+          "warrior": 0,
+          "ranger": 3,
+          "healer": 0,
+          "mage": 1,
+          "necromancer": 1
+        },
+        "party": [
+          "ranger",
+          "ranger",
+          "ranger",
+          "mage",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r3-h0-m2-n0",
+        "counts": {
+          "warrior": 0,
+          "ranger": 3,
+          "healer": 0,
+          "mage": 2,
+          "necromancer": 0
+        },
+        "party": [
+          "ranger",
+          "ranger",
+          "ranger",
+          "mage",
+          "mage"
+        ]
+      },
+      {
+        "key": "w0-r3-h1-m0-n1",
+        "counts": {
+          "warrior": 0,
+          "ranger": 3,
+          "healer": 1,
+          "mage": 0,
+          "necromancer": 1
+        },
+        "party": [
+          "ranger",
+          "ranger",
+          "ranger",
+          "healer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w0-r3-h1-m1-n0",
+        "counts": {
+          "warrior": 0,
+          "ranger": 3,
+          "healer": 1,
+          "mage": 1,
+          "necromancer": 0
+        },
+        "party": [
+          "ranger",
+          "ranger",
+          "ranger",
+          "healer",
+          "mage"
+        ]
+      },
+      {
+        "key": "w0-r3-h2-m0-n0",
+        "counts": {
+          "warrior": 0,
+          "ranger": 3,
+          "healer": 2,
+          "mage": 0,
+          "necromancer": 0
+        },
+        "party": [
+          "ranger",
+          "ranger",
+          "ranger",
+          "healer",
+          "healer"
+        ]
+      },
+      {
+        "key": "w0-r6-h0-m0-n0",
+        "counts": {
+          "warrior": 0,
+          "ranger": 6,
+          "healer": 0,
+          "mage": 0,
+          "necromancer": 0
+        },
+        "party": [
+          "ranger",
+          "ranger",
+          "ranger",
+          "ranger",
+          "ranger",
+          "ranger"
+        ]
+      },
+      {
+        "key": "w1-r2-h0-m0-n2",
+        "counts": {
+          "warrior": 1,
+          "ranger": 2,
+          "healer": 0,
+          "mage": 0,
+          "necromancer": 2
+        },
+        "party": [
+          "warrior",
+          "ranger",
+          "ranger",
+          "necromancer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w1-r2-h0-m1-n1",
+        "counts": {
+          "warrior": 1,
+          "ranger": 2,
+          "healer": 0,
+          "mage": 1,
+          "necromancer": 1
+        },
+        "party": [
+          "warrior",
+          "ranger",
+          "ranger",
+          "mage",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w1-r2-h0-m2-n0",
+        "counts": {
+          "warrior": 1,
+          "ranger": 2,
+          "healer": 0,
+          "mage": 2,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "ranger",
+          "ranger",
+          "mage",
+          "mage"
+        ]
+      },
+      {
+        "key": "w1-r2-h1-m0-n1",
+        "counts": {
+          "warrior": 1,
+          "ranger": 2,
+          "healer": 1,
+          "mage": 0,
+          "necromancer": 1
+        },
+        "party": [
+          "warrior",
+          "ranger",
+          "ranger",
+          "healer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w1-r2-h1-m1-n0",
+        "counts": {
+          "warrior": 1,
+          "ranger": 2,
+          "healer": 1,
+          "mage": 1,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "ranger",
+          "ranger",
+          "healer",
+          "mage"
+        ]
+      },
+      {
+        "key": "w1-r2-h2-m0-n0",
+        "counts": {
+          "warrior": 1,
+          "ranger": 2,
+          "healer": 2,
+          "mage": 0,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "ranger",
+          "ranger",
+          "healer",
+          "healer"
+        ]
+      },
+      {
+        "key": "w1-r5-h0-m0-n0",
+        "counts": {
+          "warrior": 1,
+          "ranger": 5,
+          "healer": 0,
+          "mage": 0,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "ranger",
+          "ranger",
+          "ranger",
+          "ranger",
+          "ranger"
+        ]
+      },
+      {
+        "key": "w2-r1-h0-m0-n2",
+        "counts": {
+          "warrior": 2,
+          "ranger": 1,
+          "healer": 0,
+          "mage": 0,
+          "necromancer": 2
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "ranger",
+          "necromancer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w2-r1-h0-m1-n1",
+        "counts": {
+          "warrior": 2,
+          "ranger": 1,
+          "healer": 0,
+          "mage": 1,
+          "necromancer": 1
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "ranger",
+          "mage",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w2-r1-h0-m2-n0",
+        "counts": {
+          "warrior": 2,
+          "ranger": 1,
+          "healer": 0,
+          "mage": 2,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "ranger",
+          "mage",
+          "mage"
+        ]
+      },
+      {
+        "key": "w2-r1-h1-m0-n1",
+        "counts": {
+          "warrior": 2,
+          "ranger": 1,
+          "healer": 1,
+          "mage": 0,
+          "necromancer": 1
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "ranger",
+          "healer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w2-r1-h1-m1-n0",
+        "counts": {
+          "warrior": 2,
+          "ranger": 1,
+          "healer": 1,
+          "mage": 1,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "ranger",
+          "healer",
+          "mage"
+        ]
+      },
+      {
+        "key": "w2-r1-h2-m0-n0",
+        "counts": {
+          "warrior": 2,
+          "ranger": 1,
+          "healer": 2,
+          "mage": 0,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "ranger",
+          "healer",
+          "healer"
+        ]
+      },
+      {
+        "key": "w2-r4-h0-m0-n0",
+        "counts": {
+          "warrior": 2,
+          "ranger": 4,
+          "healer": 0,
+          "mage": 0,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "ranger",
+          "ranger",
+          "ranger",
+          "ranger"
+        ]
+      },
+      {
+        "key": "w3-r0-h0-m0-n2",
+        "counts": {
+          "warrior": 3,
+          "ranger": 0,
+          "healer": 0,
+          "mage": 0,
+          "necromancer": 2
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "necromancer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w3-r0-h0-m1-n1",
+        "counts": {
+          "warrior": 3,
+          "ranger": 0,
+          "healer": 0,
+          "mage": 1,
+          "necromancer": 1
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "mage",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w3-r0-h0-m2-n0",
+        "counts": {
+          "warrior": 3,
+          "ranger": 0,
+          "healer": 0,
+          "mage": 2,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "mage",
+          "mage"
+        ]
+      },
+      {
+        "key": "w3-r0-h1-m0-n1",
+        "counts": {
+          "warrior": 3,
+          "ranger": 0,
+          "healer": 1,
+          "mage": 0,
+          "necromancer": 1
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "healer",
+          "necromancer"
+        ]
+      },
+      {
+        "key": "w3-r0-h1-m1-n0",
+        "counts": {
+          "warrior": 3,
+          "ranger": 0,
+          "healer": 1,
+          "mage": 1,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "healer",
+          "mage"
+        ]
+      },
+      {
+        "key": "w3-r0-h2-m0-n0",
+        "counts": {
+          "warrior": 3,
+          "ranger": 0,
+          "healer": 2,
+          "mage": 0,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "healer",
+          "healer"
+        ]
+      },
+      {
+        "key": "w3-r3-h0-m0-n0",
+        "counts": {
+          "warrior": 3,
+          "ranger": 3,
+          "healer": 0,
+          "mage": 0,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "ranger",
+          "ranger",
+          "ranger"
+        ]
+      },
+      {
+        "key": "w4-r2-h0-m0-n0",
+        "counts": {
+          "warrior": 4,
+          "ranger": 2,
+          "healer": 0,
+          "mage": 0,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "warrior",
+          "ranger",
+          "ranger"
+        ]
+      },
+      {
+        "key": "w5-r1-h0-m0-n0",
+        "counts": {
+          "warrior": 5,
+          "ranger": 1,
+          "healer": 0,
+          "mage": 0,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "warrior",
+          "warrior",
+          "ranger"
+        ]
+      },
+      {
+        "key": "w6-r0-h0-m0-n0",
+        "counts": {
+          "warrior": 6,
+          "ranger": 0,
+          "healer": 0,
+          "mage": 0,
+          "necromancer": 0
+        },
+        "party": [
+          "warrior",
+          "warrior",
+          "warrior",
+          "warrior",
+          "warrior",
+          "warrior"
+        ]
+      }
+    ],
+    "heroLevel": 3,
+    "monsterRank": 3,
+    "monsterArmy": {
+      "broodcap": 11
+    },
+    "achievedMonsterBudget": 12.375,
+    "research": [],
+    "initialCorpses": [],
+    "initialSkeletons": [],
+    "geometry": "Same18legal distance × spacing × mirror cells for every composition; independent seeded layout streams; no natural world escalation/recruitment/XP.",
+    "screen": {
+      "seeds": 18,
+      "prefix": "brood-composition-screen-490000+",
+      "cases": 828,
+      "inputSha256": "e35feaede2081c56624091d40a5e9eba17cc2aa9a24757760464042a605ecdf0"
+    },
+    "selection": "Largest actual hero victory count out of18, then fewer timeouts, then lexicographic fixed composition key; timeouts count as unresolved.",
+    "confirmation": {
+      "selectedContexts": 1,
+      "minimumScreenHeroWinRate": 0.65,
+      "ordinaryScreenThreshold": 0.75,
+      "seeds": 100,
+      "prefix": "brood-composition-confirm-500000+",
+      "finalActualHeroWinThreshold": 0.75
+    },
+    "frozenAt": "2026-11-02T00:31:01.506Z"
+  },
+  "screen": [
+    {
+      "key": "w0-r0-h0-m2-n2",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 0,
+        "mage": 2,
+        "necromancer": 2
+      },
+      "party": [
+        "mage",
+        "mage",
+        "necromancer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 6,
+      "heroWins": 9,
+      "timeouts": 3,
+      "heroWilson95": [
+        0.29031021505169974,
+        0.7096897849483003
+      ]
+    },
+    {
+      "key": "w0-r0-h0-m4-n0",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 0,
+        "mage": 4,
+        "necromancer": 0
+      },
+      "party": [
+        "mage",
+        "mage",
+        "mage",
+        "mage"
+      ],
+      "n": 18,
+      "monsterWins": 11,
+      "heroWins": 7,
+      "timeouts": 0,
+      "heroWilson95": [
+        0.2030524657216362,
+        0.613809583977621
+      ]
+    },
+    {
+      "key": "w0-r0-h0-m1-n3",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 0,
+        "mage": 1,
+        "necromancer": 3
+      },
+      "party": [
+        "mage",
+        "necromancer",
+        "necromancer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 8,
+      "heroWins": 6,
+      "timeouts": 4,
+      "heroWilson95": [
+        0.1627877475083369,
+        0.5625053270405489
+      ]
+    },
+    {
+      "key": "w0-r0-h0-m0-n4",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 0,
+        "mage": 0,
+        "necromancer": 4
+      },
+      "party": [
+        "necromancer",
+        "necromancer",
+        "necromancer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 3,
+      "heroWins": 5,
+      "timeouts": 10,
+      "heroWilson95": [
+        0.12499753379553993,
+        0.5087265656029746
+      ]
+    },
+    {
+      "key": "w0-r0-h0-m3-n1",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 0,
+        "mage": 3,
+        "necromancer": 1
+      },
+      "party": [
+        "mage",
+        "mage",
+        "mage",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 11,
+      "heroWins": 4,
+      "timeouts": 3,
+      "heroWilson95": [
+        0.09000928108601694,
+        0.45214584316212625
+      ]
+    },
+    {
+      "key": "w0-r0-h1-m3-n0",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 1,
+        "mage": 3,
+        "necromancer": 0
+      },
+      "party": [
+        "healer",
+        "mage",
+        "mage",
+        "mage"
+      ],
+      "n": 18,
+      "monsterWins": 5,
+      "heroWins": 4,
+      "timeouts": 9,
+      "heroWilson95": [
+        0.09000928108601694,
+        0.45214584316212625
+      ]
+    },
+    {
+      "key": "w0-r3-h0-m2-n0",
+      "counts": {
+        "warrior": 0,
+        "ranger": 3,
+        "healer": 0,
+        "mage": 2,
+        "necromancer": 0
+      },
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "mage",
+        "mage"
+      ],
+      "n": 18,
+      "monsterWins": 11,
+      "heroWins": 3,
+      "timeouts": 4,
+      "heroWilson95": [
+        0.05836576805861446,
+        0.39222038103915724
+      ]
+    },
+    {
+      "key": "w0-r0-h1-m2-n1",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 1,
+        "mage": 2,
+        "necromancer": 1
+      },
+      "party": [
+        "healer",
+        "mage",
+        "mage",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 7,
+      "heroWins": 2,
+      "timeouts": 9,
+      "heroWilson95": [
+        0.03101952264561239,
+        0.32799765130178804
+      ]
+    },
+    {
+      "key": "w0-r3-h0-m1-n1",
+      "counts": {
+        "warrior": 0,
+        "ranger": 3,
+        "healer": 0,
+        "mage": 1,
+        "necromancer": 1
+      },
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "mage",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 11,
+      "heroWins": 1,
+      "timeouts": 6,
+      "heroWilson95": [
+        0.009875190978303097,
+        0.25757300781872594
+      ]
+    },
+    {
+      "key": "w2-r1-h0-m2-n0",
+      "counts": {
+        "warrior": 2,
+        "ranger": 1,
+        "healer": 0,
+        "mage": 2,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "ranger",
+        "mage",
+        "mage"
+      ],
+      "n": 18,
+      "monsterWins": 11,
+      "heroWins": 1,
+      "timeouts": 6,
+      "heroWilson95": [
+        0.009875190978303097,
+        0.25757300781872594
+      ]
+    },
+    {
+      "key": "w1-r2-h0-m2-n0",
+      "counts": {
+        "warrior": 1,
+        "ranger": 2,
+        "healer": 0,
+        "mage": 2,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "ranger",
+        "ranger",
+        "mage",
+        "mage"
+      ],
+      "n": 18,
+      "monsterWins": 10,
+      "heroWins": 1,
+      "timeouts": 7,
+      "heroWilson95": [
+        0.009875190978303097,
+        0.25757300781872594
+      ]
+    },
+    {
+      "key": "w1-r2-h1-m1-n0",
+      "counts": {
+        "warrior": 1,
+        "ranger": 2,
+        "healer": 1,
+        "mage": 1,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "ranger",
+        "ranger",
+        "healer",
+        "mage"
+      ],
+      "n": 18,
+      "monsterWins": 10,
+      "heroWins": 1,
+      "timeouts": 7,
+      "heroWilson95": [
+        0.009875190978303097,
+        0.25757300781872594
+      ]
+    },
+    {
+      "key": "w3-r0-h0-m1-n1",
+      "counts": {
+        "warrior": 3,
+        "ranger": 0,
+        "healer": 0,
+        "mage": 1,
+        "necromancer": 1
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "mage",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 9,
+      "heroWins": 1,
+      "timeouts": 8,
+      "heroWilson95": [
+        0.009875190978303097,
+        0.25757300781872594
+      ]
+    },
+    {
+      "key": "w0-r3-h0-m0-n2",
+      "counts": {
+        "warrior": 0,
+        "ranger": 3,
+        "healer": 0,
+        "mage": 0,
+        "necromancer": 2
+      },
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "necromancer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 8,
+      "heroWins": 1,
+      "timeouts": 9,
+      "heroWilson95": [
+        0.009875190978303097,
+        0.25757300781872594
+      ]
+    },
+    {
+      "key": "w0-r0-h1-m1-n2",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 1,
+        "mage": 1,
+        "necromancer": 2
+      },
+      "party": [
+        "healer",
+        "mage",
+        "necromancer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 7,
+      "heroWins": 1,
+      "timeouts": 10,
+      "heroWilson95": [
+        0.009875190978303097,
+        0.25757300781872594
+      ]
+    },
+    {
+      "key": "w1-r2-h0-m1-n1",
+      "counts": {
+        "warrior": 1,
+        "ranger": 2,
+        "healer": 0,
+        "mage": 1,
+        "necromancer": 1
+      },
+      "party": [
+        "warrior",
+        "ranger",
+        "ranger",
+        "mage",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 6,
+      "heroWins": 1,
+      "timeouts": 11,
+      "heroWilson95": [
+        0.009875190978303097,
+        0.25757300781872594
+      ]
+    },
+    {
+      "key": "w5-r1-h0-m0-n0",
+      "counts": {
+        "warrior": 5,
+        "ranger": 1,
+        "healer": 0,
+        "mage": 0,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "ranger"
+      ],
+      "n": 18,
+      "monsterWins": 18,
+      "heroWins": 0,
+      "timeouts": 0,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w6-r0-h0-m0-n0",
+      "counts": {
+        "warrior": 6,
+        "ranger": 0,
+        "healer": 0,
+        "mage": 0,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior"
+      ],
+      "n": 18,
+      "monsterWins": 18,
+      "heroWins": 0,
+      "timeouts": 0,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w0-r6-h0-m0-n0",
+      "counts": {
+        "warrior": 0,
+        "ranger": 6,
+        "healer": 0,
+        "mage": 0,
+        "necromancer": 0
+      },
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger"
+      ],
+      "n": 18,
+      "monsterWins": 16,
+      "heroWins": 0,
+      "timeouts": 2,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w2-r4-h0-m0-n0",
+      "counts": {
+        "warrior": 2,
+        "ranger": 4,
+        "healer": 0,
+        "mage": 0,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger"
+      ],
+      "n": 18,
+      "monsterWins": 16,
+      "heroWins": 0,
+      "timeouts": 2,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w4-r2-h0-m0-n0",
+      "counts": {
+        "warrior": 4,
+        "ranger": 2,
+        "healer": 0,
+        "mage": 0,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "warrior",
+        "ranger",
+        "ranger"
+      ],
+      "n": 18,
+      "monsterWins": 15,
+      "heroWins": 0,
+      "timeouts": 3,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w3-r0-h2-m0-n0",
+      "counts": {
+        "warrior": 3,
+        "ranger": 0,
+        "healer": 2,
+        "mage": 0,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "healer",
+        "healer"
+      ],
+      "n": 18,
+      "monsterWins": 14,
+      "heroWins": 0,
+      "timeouts": 4,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w3-r3-h0-m0-n0",
+      "counts": {
+        "warrior": 3,
+        "ranger": 3,
+        "healer": 0,
+        "mage": 0,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "ranger",
+        "ranger",
+        "ranger"
+      ],
+      "n": 18,
+      "monsterWins": 14,
+      "heroWins": 0,
+      "timeouts": 4,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w0-r0-h3-m0-n1",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 3,
+        "mage": 0,
+        "necromancer": 1
+      },
+      "party": [
+        "healer",
+        "healer",
+        "healer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 13,
+      "heroWins": 0,
+      "timeouts": 5,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w0-r0-h4-m0-n0",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 4,
+        "mage": 0,
+        "necromancer": 0
+      },
+      "party": [
+        "healer",
+        "healer",
+        "healer",
+        "healer"
+      ],
+      "n": 18,
+      "monsterWins": 13,
+      "heroWins": 0,
+      "timeouts": 5,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w1-r2-h2-m0-n0",
+      "counts": {
+        "warrior": 1,
+        "ranger": 2,
+        "healer": 2,
+        "mage": 0,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "ranger",
+        "ranger",
+        "healer",
+        "healer"
+      ],
+      "n": 18,
+      "monsterWins": 13,
+      "heroWins": 0,
+      "timeouts": 5,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w1-r5-h0-m0-n0",
+      "counts": {
+        "warrior": 1,
+        "ranger": 5,
+        "healer": 0,
+        "mage": 0,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger",
+        "ranger"
+      ],
+      "n": 18,
+      "monsterWins": 13,
+      "heroWins": 0,
+      "timeouts": 5,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w2-r1-h2-m0-n0",
+      "counts": {
+        "warrior": 2,
+        "ranger": 1,
+        "healer": 2,
+        "mage": 0,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "ranger",
+        "healer",
+        "healer"
+      ],
+      "n": 18,
+      "monsterWins": 12,
+      "heroWins": 0,
+      "timeouts": 6,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w3-r0-h1-m1-n0",
+      "counts": {
+        "warrior": 3,
+        "ranger": 0,
+        "healer": 1,
+        "mage": 1,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "healer",
+        "mage"
+      ],
+      "n": 18,
+      "monsterWins": 12,
+      "heroWins": 0,
+      "timeouts": 6,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w2-r1-h1-m1-n0",
+      "counts": {
+        "warrior": 2,
+        "ranger": 1,
+        "healer": 1,
+        "mage": 1,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "ranger",
+        "healer",
+        "mage"
+      ],
+      "n": 18,
+      "monsterWins": 10,
+      "heroWins": 0,
+      "timeouts": 8,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w0-r0-h2-m0-n2",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 2,
+        "mage": 0,
+        "necromancer": 2
+      },
+      "party": [
+        "healer",
+        "healer",
+        "necromancer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 9,
+      "heroWins": 0,
+      "timeouts": 9,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w2-r1-h0-m1-n1",
+      "counts": {
+        "warrior": 2,
+        "ranger": 1,
+        "healer": 0,
+        "mage": 1,
+        "necromancer": 1
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "ranger",
+        "mage",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 9,
+      "heroWins": 0,
+      "timeouts": 9,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w3-r0-h1-m0-n1",
+      "counts": {
+        "warrior": 3,
+        "ranger": 0,
+        "healer": 1,
+        "mage": 0,
+        "necromancer": 1
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "healer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 9,
+      "heroWins": 0,
+      "timeouts": 9,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w0-r3-h1-m1-n0",
+      "counts": {
+        "warrior": 0,
+        "ranger": 3,
+        "healer": 1,
+        "mage": 1,
+        "necromancer": 0
+      },
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "healer",
+        "mage"
+      ],
+      "n": 18,
+      "monsterWins": 8,
+      "heroWins": 0,
+      "timeouts": 10,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w0-r3-h2-m0-n0",
+      "counts": {
+        "warrior": 0,
+        "ranger": 3,
+        "healer": 2,
+        "mage": 0,
+        "necromancer": 0
+      },
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "healer",
+        "healer"
+      ],
+      "n": 18,
+      "monsterWins": 8,
+      "heroWins": 0,
+      "timeouts": 10,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w3-r0-h0-m2-n0",
+      "counts": {
+        "warrior": 3,
+        "ranger": 0,
+        "healer": 0,
+        "mage": 2,
+        "necromancer": 0
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "mage",
+        "mage"
+      ],
+      "n": 18,
+      "monsterWins": 8,
+      "heroWins": 0,
+      "timeouts": 10,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w0-r3-h1-m0-n1",
+      "counts": {
+        "warrior": 0,
+        "ranger": 3,
+        "healer": 1,
+        "mage": 0,
+        "necromancer": 1
+      },
+      "party": [
+        "ranger",
+        "ranger",
+        "ranger",
+        "healer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 7,
+      "heroWins": 0,
+      "timeouts": 11,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w1-r2-h0-m0-n2",
+      "counts": {
+        "warrior": 1,
+        "ranger": 2,
+        "healer": 0,
+        "mage": 0,
+        "necromancer": 2
+      },
+      "party": [
+        "warrior",
+        "ranger",
+        "ranger",
+        "necromancer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 7,
+      "heroWins": 0,
+      "timeouts": 11,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w2-r1-h0-m0-n2",
+      "counts": {
+        "warrior": 2,
+        "ranger": 1,
+        "healer": 0,
+        "mage": 0,
+        "necromancer": 2
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "ranger",
+        "necromancer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 7,
+      "heroWins": 0,
+      "timeouts": 11,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w1-r2-h1-m0-n1",
+      "counts": {
+        "warrior": 1,
+        "ranger": 2,
+        "healer": 1,
+        "mage": 0,
+        "necromancer": 1
+      },
+      "party": [
+        "warrior",
+        "ranger",
+        "ranger",
+        "healer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 6,
+      "heroWins": 0,
+      "timeouts": 12,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w2-r1-h1-m0-n1",
+      "counts": {
+        "warrior": 2,
+        "ranger": 1,
+        "healer": 1,
+        "mage": 0,
+        "necromancer": 1
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "ranger",
+        "healer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 6,
+      "heroWins": 0,
+      "timeouts": 12,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w0-r0-h2-m1-n1",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 2,
+        "mage": 1,
+        "necromancer": 1
+      },
+      "party": [
+        "healer",
+        "healer",
+        "mage",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 5,
+      "heroWins": 0,
+      "timeouts": 13,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w0-r0-h1-m0-n3",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 1,
+        "mage": 0,
+        "necromancer": 3
+      },
+      "party": [
+        "healer",
+        "necromancer",
+        "necromancer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 4,
+      "heroWins": 0,
+      "timeouts": 14,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w3-r0-h0-m0-n2",
+      "counts": {
+        "warrior": 3,
+        "ranger": 0,
+        "healer": 0,
+        "mage": 0,
+        "necromancer": 2
+      },
+      "party": [
+        "warrior",
+        "warrior",
+        "warrior",
+        "necromancer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 4,
+      "heroWins": 0,
+      "timeouts": 14,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w0-r0-h2-m2-n0",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 2,
+        "mage": 2,
+        "necromancer": 0
+      },
+      "party": [
+        "healer",
+        "healer",
+        "mage",
+        "mage"
+      ],
+      "n": 18,
+      "monsterWins": 3,
+      "heroWins": 0,
+      "timeouts": 15,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    },
+    {
+      "key": "w0-r0-h3-m1-n0",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 3,
+        "mage": 1,
+        "necromancer": 0
+      },
+      "party": [
+        "healer",
+        "healer",
+        "healer",
+        "mage"
+      ],
+      "n": 18,
+      "monsterWins": 1,
+      "heroWins": 0,
+      "timeouts": 17,
+      "heroWilson95": [
+        0,
+        0.17587922364665765
+      ]
+    }
+  ],
+  "selection": {
+    "selectionRule": "Largest actual hero victory count out of18, then fewer timeouts, then lexicographic fixed composition key; timeouts count as unresolved.",
+    "selected": {
+      "key": "w0-r0-h0-m2-n2",
+      "counts": {
+        "warrior": 0,
+        "ranger": 0,
+        "healer": 0,
+        "mage": 2,
+        "necromancer": 2
+      },
+      "party": [
+        "mage",
+        "mage",
+        "necromancer",
+        "necromancer"
+      ],
+      "n": 18,
+      "monsterWins": 6,
+      "heroWins": 9,
+      "timeouts": 3,
+      "heroWilson95": [
+        0.29031021505169974,
+        0.7096897849483003
+      ]
+    },
+    "screenOrdinaryThreshold": false,
+    "borderlineOnly": false,
+    "eligibleForFreshConfirmation": false,
+    "selectedAt": "2026-11-02T00:35:57.442Z"
+  },
+  "confirmation": null,
+  "definition": "Actual hero victories / all starts. Timeouts remain unresolved; low monster wins are not evidence of a decisive counter.",
+  "conclusion": "No composition reached the65% screen gate; no confirmation or redesign performed.",
+  "confidenceNote": "Screen intervals are nominal descriptive Wilson95%, not simultaneous coverage across46selected compositions. No context reached the predeclared65% fresh-confirmation gate."
+}

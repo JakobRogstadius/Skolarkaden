@@ -1,0 +1,25 @@
+{
+  "source": "7394d37",
+  "costModelFrozenAt": "2026-11-01T23:30:56.341Z",
+  "unitCost": {
+    "siegebreaker": 1.2972972972972974,
+    "mender": 2.071428571428571
+  },
+  "budgets": {
+    "mixed": 9.332046332046332,
+    "pureA": 10.378378378378379,
+    "pureB": 10.357142857142856
+  },
+  "counts": {
+    "mixed": [
+      4,
+      2
+    ],
+    "pureA": 8,
+    "pureB": 5
+  },
+  "freshSeeds": 100,
+  "offset": 230000,
+  "selection": "Preserve the selected mixed army/opponent/75s objective; conservatively round pure controls upward under frozen fitted equivalents. No outcome-based selection or cost refit.",
+  "limitation": "Mender equivalent is conditional on rattlers, not a validated universal cost. This checks sensitivity to that transfer assumption."
+}

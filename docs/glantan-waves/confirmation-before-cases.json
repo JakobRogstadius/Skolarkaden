@@ -1,0 +1,1346 @@
+[
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1001",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1001",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1009",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1009",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1015",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1015",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1004",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1004",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1008",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1008",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1016",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1016",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1007",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1007",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1022",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1022",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1023",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1023",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1000",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1000",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1003",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1003",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1005",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1005",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1002",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1002",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1010",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1010",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1014",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1014",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1012",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1012",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1024",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1024",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 6,
+      "seed": "wave-map-1025",
+      "trace": true
+    },
+    "id": "primary/rangers/wave-map-1025",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1001",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1001",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1009",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1009",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1015",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1015",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1004",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1004",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1008",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1008",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1016",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1016",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1007",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1007",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1022",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1022",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1023",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1023",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1000",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1000",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1003",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1003",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1005",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1005",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1002",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1002",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1010",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1010",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1014",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1014",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1012",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1012",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1024",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1024",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "focused",
+      "seconds": 6,
+      "seed": "wave-map-1025",
+      "trace": true
+    },
+    "id": "primary/focused/wave-map-1025",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1001",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1001",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1009",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1009",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1015",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1015",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1004",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1004",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1008",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1008",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1016",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1016",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1007",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1007",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1022",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1022",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1023",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1023",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1000",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1000",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1003",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1003",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1005",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1005",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1002",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1002",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1010",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1010",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1014",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1014",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1012",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1012",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1024",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1024",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 6,
+      "seed": "wave-map-1025",
+      "trace": true
+    },
+    "id": "primary/coordinated/wave-map-1025",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1001",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1001",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1009",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1009",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1015",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1015",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1004",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1004",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1008",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1008",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1016",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1016",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1007",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1007",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1022",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1022",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1023",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1023",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1000",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1000",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1003",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1003",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1005",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1005",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1002",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1002",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1010",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1010",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1014",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1014",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1012",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1012",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1024",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1024",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.95,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "guarded",
+      "seconds": 6,
+      "seed": "wave-map-1025",
+      "trace": true
+    },
+    "id": "primary/guarded/wave-map-1025",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.98,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 3,
+      "seed": "wave-map-1001",
+      "trace": true
+    },
+    "id": "pace/3/rangers/wave-map-1001",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.98,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 3,
+      "seed": "wave-map-1004",
+      "trace": true
+    },
+    "id": "pace/3/rangers/wave-map-1004",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.98,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 3,
+      "seed": "wave-map-1007",
+      "trace": true
+    },
+    "id": "pace/3/rangers/wave-map-1007",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.98,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 3,
+      "seed": "wave-map-1000",
+      "trace": true
+    },
+    "id": "pace/3/rangers/wave-map-1000",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.98,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 3,
+      "seed": "wave-map-1002",
+      "trace": true
+    },
+    "id": "pace/3/rangers/wave-map-1002",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.98,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 3,
+      "seed": "wave-map-1012",
+      "trace": true
+    },
+    "id": "pace/3/rangers/wave-map-1012",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.98,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 3,
+      "seed": "wave-map-1001",
+      "trace": true
+    },
+    "id": "pace/3/coordinated/wave-map-1001",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.98,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 3,
+      "seed": "wave-map-1004",
+      "trace": true
+    },
+    "id": "pace/3/coordinated/wave-map-1004",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.98,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 3,
+      "seed": "wave-map-1007",
+      "trace": true
+    },
+    "id": "pace/3/coordinated/wave-map-1007",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.98,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 3,
+      "seed": "wave-map-1000",
+      "trace": true
+    },
+    "id": "pace/3/coordinated/wave-map-1000",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.98,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 3,
+      "seed": "wave-map-1002",
+      "trace": true
+    },
+    "id": "pace/3/coordinated/wave-map-1002",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.98,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 3,
+      "seed": "wave-map-1012",
+      "trace": true
+    },
+    "id": "pace/3/coordinated/wave-map-1012",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.9,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 9,
+      "seed": "wave-map-1001",
+      "trace": true
+    },
+    "id": "pace/9/rangers/wave-map-1001",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.9,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 9,
+      "seed": "wave-map-1004",
+      "trace": true
+    },
+    "id": "pace/9/rangers/wave-map-1004",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.9,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 9,
+      "seed": "wave-map-1007",
+      "trace": true
+    },
+    "id": "pace/9/rangers/wave-map-1007",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.9,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 9,
+      "seed": "wave-map-1000",
+      "trace": true
+    },
+    "id": "pace/9/rangers/wave-map-1000",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.9,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 9,
+      "seed": "wave-map-1002",
+      "trace": true
+    },
+    "id": "pace/9/rangers/wave-map-1002",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.9,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "rangers",
+      "seconds": 9,
+      "seed": "wave-map-1012",
+      "trace": true
+    },
+    "id": "pace/9/rangers/wave-map-1012",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.9,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 9,
+      "seed": "wave-map-1001",
+      "trace": true
+    },
+    "id": "pace/9/coordinated/wave-map-1001",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.9,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 9,
+      "seed": "wave-map-1004",
+      "trace": true
+    },
+    "id": "pace/9/coordinated/wave-map-1004",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.9,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 9,
+      "seed": "wave-map-1007",
+      "trace": true
+    },
+    "id": "pace/9/coordinated/wave-map-1007",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.9,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 9,
+      "seed": "wave-map-1000",
+      "trace": true
+    },
+    "id": "pace/9/coordinated/wave-map-1000",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.9,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 9,
+      "seed": "wave-map-1002",
+      "trace": true
+    },
+    "id": "pace/9/coordinated/wave-map-1002",
+    "variant": "baseline"
+  },
+  {
+    "config": {
+      "accuracy": 0.9,
+      "jitter": 0.25,
+      "limit": 1800,
+      "pace": "brave",
+      "policy": "coordinated",
+      "seconds": 9,
+      "seed": "wave-map-1012",
+      "trace": true
+    },
+    "id": "pace/9/coordinated/wave-map-1012",
+    "variant": "baseline"
+  }
+]

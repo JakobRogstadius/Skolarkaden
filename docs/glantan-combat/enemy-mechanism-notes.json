@@ -1,0 +1,114 @@
+{
+  "reference": "28ba8b8",
+  "dataSources": [
+    "enemy-baseline.json",
+    "enemy-validation.json",
+    "enemy-expanded-validation.json"
+  ],
+  "observations": [
+    {
+      "topic": "Husher/binder failure is not absence of raising",
+      "data": "In 100 held-out runs, mixed husher/binder averaged 3.82 raised boneservants; pure binders averaged 5.83, yet achieved 5%/0% wins vs 12% pure husher.",
+      "sources": [
+        "resources/glantan/summons.js:G.raiseEnemySkeleton",
+        "resources/glantan/monsters.js:G.updateMonsters"
+      ],
+      "interpretation": "Raising has real opportunity cost. It occurs before ordinary attacks and consumes shared cooldown. Root binding occurs only on a normal attack, so raising and control compete for actions.",
+      "nextTest": "Binder 15–30% with thornling damage dealers; labelled shared-corpse context with broodcap."
+    },
+    {
+      "topic": "Brood/spore pair partly substitutes the same function",
+      "data": "Held-out mixed brood/spore averaged 8.06 brood spawns; pure brood averaged 22.49. Wins were 5% mixed versus 7% pure spore and 2% pure brood.",
+      "sources": [
+        "resources/glantan/monsters.js:G.spawnMonster",
+        "resources/glantan/monsters.js:brood ability"
+      ],
+      "interpretation": "Broodcap already creates sporelings. Its children are rank 1/strength 1 even when the parent is rank 3; initial rank 3 sporelings front-load stronger bodies. This is timing and sustain substitution, not an automatic superadditive pair.",
+      "nextTest": "Broodcap+mender at low support fraction; consecutive-wave persistence with equal timing and explicit corpse resources."
+    },
+    {
+      "topic": "Guardian pair comparator is saturated and chunky",
+      "data": "Held-out guardian/bulwark won 82% versus 96% pure guardian. In small discovery guardian+mender often tied 100% pure guardian.",
+      "sources": [
+        "resources/glantan/content.js:G.bossGuards",
+        "resources/glantan/engine.js:G.addLair",
+        "resources/glantan/monsters.js:G.spawnMonster"
+      ],
+      "interpretation": "At the frozen threat weight, pure guardians often saturate victory. A guardian costs 5.76 threat at rank 3, so rounding can add a large body to the pure comparator. Larger scales and lower threat bands are needed for a meaningful boundary.",
+      "nextTest": "Guardian+mender at scales 3/4, threat ratios.4/.7, medic share 15–30%."
+    },
+    {
+      "topic": "Field guardians are not the full boss-gate encounter",
+      "sources": [
+        "resources/glantan/content.js:G.lairGuards",
+        "resources/glantan/content.js:G.bossGuards",
+        "resources/glantan/heroes.js:G.bossDemand",
+        "dev/glantan-combat.cjs:control header"
+      ],
+      "interpretation": "Natural guardians are difficulty-specific boss garrisons with leash, regeneration and party-readiness behaviour. Arena rank 3 guardian uses the actual generic monster archetype, without those gate controls. Hypothetical allied-pair superiority is not a required property of the natural boss encounter."
+    },
+    {
+      "topic": "Support stalemate is different from defeat",
+      "data": "Pure menders timed out 100/100 in the first held-out field context and 99/100 in two later field contexts.",
+      "sources": [
+        "resources/glantan/monsters.js:support"
+      ],
+      "interpretation": "Low monster victory alone does not mean a weak support. Menders can deny clearing while failing to finish heroes. Report hero wins, monster wins, timeouts and effective healing independently."
+    },
+    {
+      "topic": "Equal initial threat is an experimental assumption",
+      "sources": [
+        "dev/glantan-study.cjs:THREAT",
+        "resources/glantan/content.js:G.classes",
+        "resources/glantan/content.js:G.monsterTypes",
+        "resources/glantan/content.js:G.lairWave"
+      ],
+      "interpretation": "Heroes have observable recruitment costs; monsters do not have a purchase price. THREAT values are fixed estimates, not game prices. Actual lairs produce basic/support recipes with level-dependent counts. It is inappropriate to recalibrate those weights after seeing outcomes just to force every pair to beat both homogeneous controls.",
+      "nextTest": "Keep frozen weights; test role-appropriate support fractions and resource/timing conditions, then validate selected contexts on fresh seeds."
+    }
+  ],
+  "completedFollowups": {
+    "naturalBinderBrood": {
+      "monsterWins": [
+        52,
+        6,
+        11
+      ],
+      "seeds": 100,
+      "preexistingCorpses": 0,
+      "source": "enemy-natural-brood-validation.json"
+    },
+    "husherBulwark": {
+      "monsterWins": [
+        94,
+        36,
+        1
+      ],
+      "seeds": 300,
+      "source": "enemy-confirmation-300.json"
+    },
+    "sporeMender": {
+      "monsterWins": [
+        126,
+        46,
+        7
+      ],
+      "seeds": 300,
+      "source": "enemy-confirmation-300.json"
+    },
+    "focusedSiegeMedic": {
+      "monsterWins": [
+        50,
+        59,
+        0
+      ],
+      "seeds": 100,
+      "source": "enemy-siege-validation.json"
+    },
+    "siegeInterceptionCandidate": {
+      "qualifyingContexts": 0,
+      "testedContexts": 99,
+      "source": "enemy-siege-escort-comparison.json"
+    }
+  }
+}

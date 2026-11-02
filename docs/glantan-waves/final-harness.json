@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "ref": "working-tree",
+  "basicDuration": 2.6,
+  "basicDamage": 28,
+  "broodSpawns": 1,
+  "binderSummons": 1,
+  "siegeOutcome": "loss"
+}

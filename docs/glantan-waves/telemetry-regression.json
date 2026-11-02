@@ -1,0 +1,13 @@
+{
+  "case": "primary/guarded/wave-map-1009",
+  "exactGameplayAndOtherTelemetry": true,
+  "excludedWaveFields": [
+    "roster",
+    "ranks",
+    "sent",
+    "deferredSpawns"
+  ],
+  "oldBinderSummonsInCohortCount": 25,
+  "newBinderSummonsInCohortCount": 0,
+  "originalWaveCohortCountsMatch": true
+}

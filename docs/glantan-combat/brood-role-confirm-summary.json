@@ -1,0 +1,146 @@
+{
+  "fit": {
+    "ref": "626eaa0c3040e12778c55b694bf13800482146b5",
+    "variant": {
+      "area": 2
+    },
+    "points": [
+      {
+        "count": 4,
+        "n": 54,
+        "monsterWinRate": 0,
+        "monsterWins": 0,
+        "heroWins": 54,
+        "timeouts": 0,
+        "fittedMonsterWinRate": 0
+      },
+      {
+        "count": 6,
+        "n": 54,
+        "monsterWinRate": 0.05555555555555555,
+        "monsterWins": 3,
+        "heroWins": 38,
+        "timeouts": 13,
+        "fittedMonsterWinRate": 0.05555555555555555
+      },
+      {
+        "count": 8,
+        "n": 54,
+        "monsterWinRate": 0.09259259259259259,
+        "monsterWins": 5,
+        "heroWins": 31,
+        "timeouts": 18,
+        "fittedMonsterWinRate": 0.09259259259259259
+      },
+      {
+        "count": 10,
+        "n": 54,
+        "monsterWinRate": 0.3148148148148148,
+        "monsterWins": 17,
+        "heroWins": 18,
+        "timeouts": 19,
+        "fittedMonsterWinRate": 0.3148148148148148
+      },
+      {
+        "count": 12,
+        "n": 54,
+        "monsterWinRate": 0.46296296296296297,
+        "monsterWins": 25,
+        "heroWins": 13,
+        "timeouts": 16,
+        "fittedMonsterWinRate": 0.46296296296296297
+      },
+      {
+        "count": 14,
+        "n": 54,
+        "monsterWinRate": 0.6851851851851852,
+        "monsterWins": 37,
+        "heroWins": 4,
+        "timeouts": 13,
+        "fittedMonsterWinRate": 0.6851851851851852
+      },
+      {
+        "count": 18,
+        "n": 54,
+        "monsterWinRate": 0.8518518518518519,
+        "monsterWins": 46,
+        "heroWins": 0,
+        "timeouts": 8,
+        "fittedMonsterWinRate": 0.8518518518518519
+      }
+    ],
+    "threshold": {
+      "status": "identified",
+      "value": 12.333333333333334,
+      "bracket": [
+        12,
+        14
+      ]
+    },
+    "cost": 0.9729729729729729
+  },
+  "count": 12,
+  "contexts": [
+    {
+      "army": "strong",
+      "n": 100,
+      "monsterWins": 100,
+      "heroWins": 0,
+      "timeouts": 0,
+      "wilson95": [
+        0.9630065017930143,
+        1
+      ],
+      "population75Pass": true
+    },
+    {
+      "army": "weak",
+      "n": 500,
+      "monsterWins": 32,
+      "heroWins": 439,
+      "timeouts": 29,
+      "wilson95": [
+        0.8463952769261602,
+        0.9038407216849063
+      ],
+      "population75Pass": true
+    },
+    {
+      "army": "balanced",
+      "n": 36,
+      "monsterWins": 21,
+      "heroWins": 4,
+      "timeouts": 11,
+      "wilson95": [
+        0.4220025157487166,
+        0.7285943794855394
+      ],
+      "population75Pass": false
+    },
+    {
+      "army": "assault",
+      "n": 36,
+      "monsterWins": 13,
+      "heroWins": 22,
+      "timeouts": 1,
+      "wilson95": [
+        0.22475592946515371,
+        0.5242492451444196
+      ],
+      "population75Pass": false
+    },
+    {
+      "army": "skirmish",
+      "n": 36,
+      "monsterWins": 25,
+      "heroWins": 0,
+      "timeouts": 11,
+      "wilson95": [
+        0.5314372714948966,
+        0.8199554840517008
+      ],
+      "population75Pass": false
+    }
+  ],
+  "referenceMonsterWinRate": 0.5462962962962963
+}

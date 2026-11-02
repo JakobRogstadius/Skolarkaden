@@ -247,6 +247,7 @@
         if (bounty) { const status = el('div', 'g-expedition'); this.panel.append(status); this.live.push(() => this.expeditionStatus(status, bounty)); }
         if (!bounty || bounty.level < 3) this.panel.append(this.action({ type: 'bounty', id: 'attack', target: target.id, level: bounty ? bounty.level + 1 : 1 }, { name: bounty ? 'Höj flaggan' : 'Anfall här' }));
         const details = [isLair ? spec.description : spec.role];
+        if (!isLair && target.broodParent) details.push('Odlad av en jättesporsvamp. Tar dubbel skada från områdesattacker mot grannar.');
         if (target.boss && isLair) details.push('Tystnadens hjärta. Samla cirka ' + target.suggestedLevels + ' hjältenivåer' + (w.pace === 'brave' ? ' med rustning, fanor och gruppläkning.' : '.'));
         const numbers = el('p'); this.live.push(() => { numbers.textContent = 'Liv ' + Math.ceil(target.hp) + '/' + target.maxHp; }); details.push(numbers);
         if (isLair) { const growth = el('p'); this.live.push(() => { growth.textContent = target.awake && target.level < 4 ? (target.type === 'spore' && !target.spread ? 'Nytt bo om ' : 'Växer om ') + G.clockText(Math.max(0, target.nextGrowth - w.time)) : ''; }); details.push(growth); }
@@ -262,8 +263,11 @@
       if (target.boss) { const goal = el('p', 'g-boss-warning'); goal.append(icon('crown'), el('span', '', 'Förstör boet för att vinna')); this.panel.append(goal); }
       const timer = el('div', 'g-lair-timer'), clock = el('strong'); timer.append(icon('clock'), el('span', '', target.awake ? 'Anfall' : 'Vaknar'), clock); this.panel.append(timer);
       this.live.push(() => { clock.textContent = G.clockText(Math.max(0, (target.awake ? target.nextSpawn : target.wakeAt) - w.time)); });
-      const wave = G.lairWave(target), formation = el('div', 'g-wave'); formation.setAttribute('aria-label', 'Anfall: ' + wave.basic + ' ' + G.monsterTypes[spec.monster].name + (wave.advanced ? ' och ' + wave.advanced + ' ' + G.monsterTypes[spec.support].name : ''));
-      for (const [type, count] of [[spec.monster, wave.basic], [spec.support, wave.advanced]]) if (count) {
+      const roster = G.waveRoster(w, target), counts = new Map();
+      for (const type of roster) counts.set(type, (counts.get(type) || 0) + 1);
+      const groups = [...counts], formation = el('div', 'g-wave');
+      formation.setAttribute('aria-label', 'Anfall: ' + groups.map(([type, count]) => count + ' ' + G.monsterTypes[type].name).join(', '));
+      for (const [type, count] of groups) {
         const group = el('span', 'g-wave-group'); group.append(U.portrait(w, 'monster', type, { entity: { rank: target.tier + target.level - 1, strength: G.monsterStrength(target) } }), el('strong', '', '× ' + count)); formation.append(group);
       }
       this.panel.append(formation);
