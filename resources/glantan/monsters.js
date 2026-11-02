@@ -44,16 +44,13 @@
     return sent;
   }
   G.launchWave = function(w, lair) {
-    const profile = G.profiles[w.pace];
     lair.waveCount = (lair.waveCount || 0) + 1;
-    const family = G.lairTypes[lair.type];
-    const sizes = G.lairWave(lair);
-    const formation = [...Array(sizes.basic).fill(family.monster), ...Array(sizes.advanced).fill(family.support)];
+    const formation = G.waveRoster(w, lair);
     const sent = sendWave(w, lair, formation);
     // A final wave must not disappear when the live-monster limit is full.
     if (!G.alive(lair) && formation.length) lair.pendingWave = formation;
     // Preserve the regrouping interval for larger waves after the first upgrade.
-    lair.nextSpawn = w.time + Math.max(50, (82 - lair.level * 5 + (lair.level >= 2 ? 22 : 0)) * profile.spawn);
+    lair.nextSpawn = w.time + G.waveInterval(w, lair);
     w.revision++;
     return sent;
   };
@@ -124,7 +121,9 @@
         if (lair.level < 4) {
           lair.level++; lair.maxHp += 45; lair.hp += 45;
           if (lair.seen) G.notify(w, G.lairTypes[lair.type].name + ' · nivå ' + lair.level, 'warn', lair);
-          G.launchWave(w, lair);
+          // Hard-mode upgrades strengthen the next scheduled attack. They do
+          // not insert another cohort just after the advertised raid timer.
+          if (profile.growthWaves !== false) G.launchWave(w, lair);
         }
         lair.nextGrowth = w.time + G.lairTypes[lair.type].interval * profile.growth;
         w.revision++;

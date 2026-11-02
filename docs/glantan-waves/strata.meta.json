@@ -1,0 +1,1354 @@
+{
+  "version": 1,
+  "casesSha256": "555a411ff7d8836c3f96460a557aadf4c294e7013d19cf34f479720ccb2b2bfa",
+  "cases": [
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "measured/mixed/wave-map-101",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "measured/mixed/wave-map-107",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "measured/mixed/wave-map-105",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "measured/mixed/wave-map-106",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "measured/mixed/wave-map-114",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "measured/mixed/wave-map-115",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "measured/mixed/wave-map-100",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "measured/mixed/wave-map-102",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "measured/mixed/wave-map-108",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "measured/mixed/wave-map-109",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "measured/mixed/wave-map-111",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "measured/mixed/wave-map-113",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "measured/rangers/wave-map-101",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "measured/rangers/wave-map-107",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "measured/rangers/wave-map-105",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "measured/rangers/wave-map-106",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "measured/rangers/wave-map-114",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "measured/rangers/wave-map-115",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "measured/rangers/wave-map-100",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "measured/rangers/wave-map-102",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "measured/rangers/wave-map-108",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "measured/rangers/wave-map-109",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "measured/rangers/wave-map-111",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "measured/rangers/wave-map-113",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "measured/reserves/wave-map-101",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "measured/reserves/wave-map-107",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "measured/reserves/wave-map-105",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "measured/reserves/wave-map-106",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "measured/reserves/wave-map-114",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "measured/reserves/wave-map-115",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "measured/reserves/wave-map-100",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "measured/reserves/wave-map-102",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "measured/reserves/wave-map-108",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "measured/reserves/wave-map-109",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "measured/reserves/wave-map-111",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "measured/reserves/wave-map-113",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "arcane",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "measured/arcane/wave-map-101",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "arcane",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "measured/arcane/wave-map-107",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "arcane",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "measured/arcane/wave-map-105",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "arcane",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "measured/arcane/wave-map-106",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "arcane",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "measured/arcane/wave-map-114",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "arcane",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "measured/arcane/wave-map-115",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "arcane",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "measured/arcane/wave-map-100",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "arcane",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "measured/arcane/wave-map-102",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "arcane",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "measured/arcane/wave-map-108",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "arcane",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "measured/arcane/wave-map-109",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "arcane",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "measured/arcane/wave-map-111",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "arcane",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "measured/arcane/wave-map-113",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "measured/camp/wave-map-101",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "measured/camp/wave-map-107",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "measured/camp/wave-map-105",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "measured/camp/wave-map-106",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "measured/camp/wave-map-114",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "measured/camp/wave-map-115",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "measured/camp/wave-map-100",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "measured/camp/wave-map-102",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "measured/camp/wave-map-108",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "measured/camp/wave-map-109",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "measured/camp/wave-map-111",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "camp",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "measured/camp/wave-map-113",
+      "variant": "measured"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "earlier/mixed/wave-map-101",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "earlier/mixed/wave-map-107",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "earlier/mixed/wave-map-105",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "earlier/mixed/wave-map-106",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "earlier/mixed/wave-map-114",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "earlier/mixed/wave-map-115",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "earlier/mixed/wave-map-100",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "earlier/mixed/wave-map-102",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "earlier/mixed/wave-map-108",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "earlier/mixed/wave-map-109",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "earlier/mixed/wave-map-111",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "mixed",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "earlier/mixed/wave-map-113",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "earlier/rangers/wave-map-101",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "earlier/rangers/wave-map-107",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "earlier/rangers/wave-map-105",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "earlier/rangers/wave-map-106",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "earlier/rangers/wave-map-114",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "earlier/rangers/wave-map-115",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "earlier/rangers/wave-map-100",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "earlier/rangers/wave-map-102",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "earlier/rangers/wave-map-108",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "earlier/rangers/wave-map-109",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "earlier/rangers/wave-map-111",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "rangers",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "earlier/rangers/wave-map-113",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "earlier/reserves/wave-map-101",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "earlier/reserves/wave-map-107",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "earlier/reserves/wave-map-105",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "earlier/reserves/wave-map-106",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "earlier/reserves/wave-map-114",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "earlier/reserves/wave-map-115",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "earlier/reserves/wave-map-100",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "earlier/reserves/wave-map-102",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "earlier/reserves/wave-map-108",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "earlier/reserves/wave-map-109",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "earlier/reserves/wave-map-111",
+      "variant": "earlier"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "reserves",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "earlier/reserves/wave-map-113",
+      "variant": "earlier"
+    }
+  ],
+  "sourceRef": "working-tree",
+  "sourceSha256": "07dd36b7b4f31917ca83eaf2a1e79639016fc9ad7437dca07f62ffe2a8e6cc0e",
+  "campaignHarnessSha256": "e67e3800bb24635937ccc7439a7464a8e3f4dc9a6cf2170c67e85541759c0577",
+  "variantModuleSha256": "973b4113e6125c7ac270b0738a1f9128cf09a397cbf5e7e52769dd0d526ccb6e"
+}

@@ -1,0 +1,6 @@
+{"sourceRef":"working-tree","pace":"gentle","combined":10,"upgraded":false,"recommended":10,"cleared":true,"seconds":17,"fallen":0,"passed":true}
+{"sourceRef":"working-tree","pace":"gentle","combined":5,"upgraded":false,"recommended":10,"cleared":false,"seconds":600,"fallen":0,"passed":true}
+{"sourceRef":"working-tree","pace":"steady","combined":20,"upgraded":false,"recommended":20,"cleared":true,"seconds":114,"fallen":0,"passed":true}
+{"sourceRef":"working-tree","pace":"steady","combined":10,"upgraded":false,"recommended":20,"cleared":false,"seconds":600,"fallen":0,"passed":true}
+{"sourceRef":"working-tree","pace":"brave","combined":30,"upgraded":true,"recommended":30,"cleared":true,"seconds":28,"fallen":0,"passed":true}
+{"sourceRef":"working-tree","pace":"brave","combined":15,"upgraded":true,"recommended":30,"cleared":false,"seconds":600,"fallen":0,"passed":true}

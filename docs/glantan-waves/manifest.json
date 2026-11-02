@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "description": "Actual-engine paid campaigns. Discovery, production parity and held-out confirmation are separate; timeouts remain unresolved. Snapshot source is sufficient without unpublished local experiment commits.",
+  "datasets": [
+    {
+      "id": "discovery",
+      "phase": "discovery",
+      "records": 60,
+      "data": "discovery.jsonl.gz",
+      "metadata": "discovery.meta.json",
+      "cases": "discovery-cases.json",
+      "snapshot": "discovery",
+      "rawSha256": "6feae22cd206350a60c310e3843d19f26bb19177acd0a94eb10d16677cdcd1fa",
+      "compressedSha256": "c6dcb771a4280cac3e5fc3bddf06ac08a34624af991507329c7ad5579afd33a9",
+      "sourceSha256": "af01db660d5e960fa0e8fc3b0a1d80349ee75320be616000e9c8bd07319fde18"
+    },
+    {
+      "id": "second",
+      "phase": "discovery",
+      "records": 48,
+      "data": "second.jsonl.gz",
+      "metadata": "second.meta.json",
+      "cases": "second-cases.json",
+      "snapshot": "second",
+      "rawSha256": "732445f2c4885fcacfb65139ec9c032778d58e1554c99b7e441424bb7d9a659e",
+      "compressedSha256": "12cc924fd0b07f057f6804246171539d5ac419bb3b7ab4f4c90dd46572ccb19e",
+      "sourceSha256": "07dd36b7b4f31917ca83eaf2a1e79639016fc9ad7437dca07f62ffe2a8e6cc0e"
+    },
+    {
+      "id": "strata",
+      "phase": "discovery",
+      "records": 96,
+      "data": "strata.jsonl.gz",
+      "metadata": "strata.meta.json",
+      "cases": "strata-cases.json",
+      "snapshot": "strata",
+      "rawSha256": "585ec9280e414338078f140bbbafe2924e26a62b850989d2bb51c96d120028c4",
+      "compressedSha256": "b86b932cfa22ee7ad324d78e37ef450376961ce59f5144e13affc6931ebc99a6",
+      "sourceSha256": "07dd36b7b4f31917ca83eaf2a1e79639016fc9ad7437dca07f62ffe2a8e6cc0e"
+    },
+    {
+      "id": "escorts",
+      "phase": "discovery",
+      "records": 96,
+      "data": "escorts.jsonl.gz",
+      "metadata": "escorts.meta.json",
+      "cases": "escorts-cases.json",
+      "snapshot": "escorts",
+      "rawSha256": "21f66e1ef460f1662b397c159c61bc68b2580f447c24a45072b0e0ce023d0272",
+      "compressedSha256": "252b1141ab59c71d3d897f3ce714e6ecb7dc4795f08f1341a401e187a226c0ab",
+      "sourceSha256": "07dd36b7b4f31917ca83eaf2a1e79639016fc9ad7437dca07f62ffe2a8e6cc0e"
+    },
+    {
+      "id": "companies",
+      "phase": "discovery",
+      "records": 96,
+      "data": "companies.jsonl.gz",
+      "metadata": "companies.meta.json",
+      "cases": "companies-cases.json",
+      "snapshot": "companies",
+      "rawSha256": "a272bf92f6fd4ad20e2e6c5a7708ec37400f56229feec35ddff9cc419171e123",
+      "compressedSha256": "f9d81a514db0b51d6f7d04d5c1416765701a2c86c96b51834f1070754d8cc383",
+      "sourceSha256": "07dd36b7b4f31917ca83eaf2a1e79639016fc9ad7437dca07f62ffe2a8e6cc0e"
+    },
+    {
+      "id": "scheduled",
+      "phase": "discovery",
+      "records": 72,
+      "data": "scheduled.jsonl.gz",
+      "metadata": "scheduled.meta.json",
+      "cases": "scheduled-cases.json",
+      "snapshot": "scheduled",
+      "rawSha256": "afa68526c9a9d70197d33f70125b6e3e7785a0ffe3c7107332dde78404b58841",
+      "compressedSha256": "c33e8c8f03cf0d3cb24fd8ce9cd4982bc92cc943ca20ff797b8468aeb49f0a1b",
+      "sourceSha256": "463dbfd313b4bad17ae6ef9551f89e6106d1a1febb16368e172cd29c79f4369b"
+    },
+    {
+      "id": "coordination",
+      "phase": "discovery",
+      "records": 72,
+      "data": "coordination.jsonl.gz",
+      "metadata": "coordination.meta.json",
+      "cases": "coordination-cases.json",
+      "snapshot": "coordination",
+      "rawSha256": "ddb653f53422ed3bbb35dd59b874ef1acc731a512014272f5d0e3c79168d2da8",
+      "compressedSha256": "0d13edb4db5488d67a28ce6a9d07e784781ed32ca7a52361290586885e8f11b8",
+      "sourceSha256": "24cf6f642cfbfcc1f255f5c081d2384be57942a24f914ff1bfa160e3daf3301a"
+    },
+    {
+      "id": "parity",
+      "phase": "parity",
+      "records": 12,
+      "data": "parity.jsonl.gz",
+      "metadata": "parity.meta.json",
+      "cases": "parity-cases.json",
+      "snapshot": "parity",
+      "rawSha256": "60c77792dd5ed49c9062550573e3979f20b4d12c7001b4633ddd520dc8450c8b",
+      "compressedSha256": "4d811eab0565943f7e1340e6f3af852b3b702dd1b6d807cc7ac67fadb6d7c138",
+      "sourceSha256": "5739446584f8f22b4330c58faed60fda7b0dfc5a39d329658b96bdc6646d4909"
+    },
+    {
+      "id": "confirmation-before",
+      "phase": "confirmation",
+      "records": 96,
+      "data": "confirmation-before.jsonl.gz",
+      "metadata": "confirmation-before.meta.json",
+      "cases": "confirmation-before-cases.json",
+      "snapshot": "confirmation-before",
+      "rawSha256": "e1eec5fe6d88953e3bc0c573a0192fbf0d535e2fb26852c2d98977e15e3a8a4a",
+      "compressedSha256": "42f120d5651989d0645f161e01c75e00b9a4c0228970f5d74424fc84e98da771",
+      "sourceSha256": "1823b5f124e795633707f080bdf63b93fc3c837336a51f7b89b8a03159245429"
+    },
+    {
+      "id": "confirmation-after",
+      "phase": "confirmation",
+      "records": 96,
+      "data": "confirmation-after.jsonl.gz",
+      "metadata": "confirmation-after.meta.json",
+      "cases": "confirmation-after-cases.json",
+      "snapshot": "confirmation-after",
+      "rawSha256": "6f1d3eff28ea78781905a4e7c319b3030be8a9affc18952bcaeef9a556be94b1",
+      "compressedSha256": "4d849696cd663365f2a1c6b4559a40a96679efa5bcc6fa68def3adb688058e87",
+      "sourceSha256": "5739446584f8f22b4330c58faed60fda7b0dfc5a39d329658b96bdc6646d4909"
+    },
+    {
+      "id": "telemetry-check",
+      "phase": "telemetry-check",
+      "records": 1,
+      "data": "telemetry-check.jsonl.gz",
+      "metadata": "telemetry-check.meta.json",
+      "cases": "telemetry-check-cases.json",
+      "snapshot": "telemetry-check",
+      "rawSha256": "918a689f161847346413532ead7cbf99b6d62059677f976cbf8b91a9c863e91b",
+      "compressedSha256": "cb4ad47b0992f29fde3650ab29a5f8d2349c77a567eeeaba9332dfab158e2918",
+      "sourceSha256": "0bf2e6b205c53fa8ef1778778c84464396f55d18c86df1995d9a3e1a9cb1deae"
+    }
+  ],
+  "sourceBundle": {
+    "file": "source-snapshots.json.gz",
+    "sha256": "0438afa881a22a324da31678b714bad278607fe4a9b9912683ee68ada5724e2a",
+    "uniqueFiles": 29
+  },
+  "campaignExecutions": 745,
+  "phaseCounts": {
+    "discovery": 540,
+    "parity": 12,
+    "confirmation": 192,
+    "telemetry-check": 1
+  }
+}

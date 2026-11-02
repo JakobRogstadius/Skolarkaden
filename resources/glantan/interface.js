@@ -263,8 +263,11 @@
       if (target.boss) { const goal = el('p', 'g-boss-warning'); goal.append(icon('crown'), el('span', '', 'Förstör boet för att vinna')); this.panel.append(goal); }
       const timer = el('div', 'g-lair-timer'), clock = el('strong'); timer.append(icon('clock'), el('span', '', target.awake ? 'Anfall' : 'Vaknar'), clock); this.panel.append(timer);
       this.live.push(() => { clock.textContent = G.clockText(Math.max(0, (target.awake ? target.nextSpawn : target.wakeAt) - w.time)); });
-      const wave = G.lairWave(target), formation = el('div', 'g-wave'); formation.setAttribute('aria-label', 'Anfall: ' + wave.basic + ' ' + G.monsterTypes[spec.monster].name + (wave.advanced ? ' och ' + wave.advanced + ' ' + G.monsterTypes[spec.support].name : ''));
-      for (const [type, count] of [[spec.monster, wave.basic], [spec.support, wave.advanced]]) if (count) {
+      const roster = G.waveRoster(w, target), counts = new Map();
+      for (const type of roster) counts.set(type, (counts.get(type) || 0) + 1);
+      const groups = [...counts], formation = el('div', 'g-wave');
+      formation.setAttribute('aria-label', 'Anfall: ' + groups.map(([type, count]) => count + ' ' + G.monsterTypes[type].name).join(', '));
+      for (const [type, count] of groups) {
         const group = el('span', 'g-wave-group'); group.append(U.portrait(w, 'monster', type, { entity: { rank: target.tier + target.level - 1, strength: G.monsterStrength(target) } }), el('strong', '', '× ' + count)); formation.append(group);
       }
       this.panel.append(formation);

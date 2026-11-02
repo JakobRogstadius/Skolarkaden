@@ -75,6 +75,30 @@ for (const type of ['spore', 'sky']) {
   assert.notEqual(G.monsterSpeed(wave[0]), G.monsterSpeed(wave.at(-1)), 'individual combat speeds remain distinct');
 }
 {
+  const w = G.createMap('hard-thirteen-wave-cohesion', 'brave');
+  w.terrain.fill(0); w.explored.fill(1); delete w.lairSites;
+  G.addBuilding(w, 'castle', 4, 22);
+  const lair = G.addLair(w, { type: 'rust', tier: 3, tx: 52, ty: 22 }, 1e6);
+  w.monsters = []; lair.level = 4;
+  // The hard rank-six rust roster has thirteen bodies. A river with one pass
+  // checks that the larger formation still regroups and follows the same route.
+  for (let y = 1; y < w.height - 1; y++) if (y < 8 || y > 10) w.terrain[G.index(w, 25, y)] = 2;
+  w.navRevision++; G.launchWave(w, lair);
+  const wave = [...w.monsters];
+  assert.equal(wave.length, 13, 'hard rust rank-six cohort remains within the intended formation bound');
+  let widest = 0, crossed = false;
+  for (let step = 0; step < 4000 && !wave.some(m => m.waveEngaged); step++) {
+    w.time += .1; G.updateMonsters(w, .1);
+    if (wave.some(m => m.waveEngaged)) break;
+    for (const a of wave) for (const b of wave) widest = Math.max(widest, G.distance(a,b));
+    assert(wave.every(m => G.open(w,m.x,m.y)), 'all hard-cohort members follow open terrain around the pass');
+    crossed ||= wave.every(m => m.x < 25);
+  }
+  assert(crossed, 'the full thirteen-body hard wave reaches the far side of the obstacle');
+  assert(widest < 9, 'the thirteen-body wave stays a coherent march: ' + widest);
+  assert(wave.every(m => m.waveEngaged), 'contact releases all thirteen members together');
+}
+{
   const sim = quiet('wave-ambush'), w = sim.world, lair = w.lairs.find(l => !l.boss);
   w.monsters = []; lair.level = 3; G.launchWave(w,lair);
   const wave = [...w.monsters]; G.damage(w,wave[0],1);

@@ -2,6 +2,11 @@
 
 2026-11-01–02. Baseline: `28ba8b8a447182e495ae869777539f4d6abe363d`.
 
+The subsequent [hard-mode wave calibration](glantan-waves-report.md) tests actual
+paid campaign progression and changes wave rosters/timing. Campaign observations
+below describe the earlier wave schedule; the unit-combat findings remain
+separate from that follow-up.
+
 The completed, role-aware benchmark gives all five hero classes a confirmed
 partner and all ten ordinary monster types a confirmed partner, favorable
 matchup and unfavorable matchup. Eight distinct calibrated monster partnerships

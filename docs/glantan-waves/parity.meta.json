@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "casesSha256": "3d9712dd62ffcff1641dc4580e08d5ebfcd511e2f0cf27cd0fb9b32061064718",
+  "cases": [
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "coordinated",
+        "seconds": 6,
+        "seed": "wave-map-101",
+        "trace": true
+      },
+      "id": "recovery/coordinated/wave-map-101",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "coordinated",
+        "seconds": 6,
+        "seed": "wave-map-107",
+        "trace": true
+      },
+      "id": "recovery/coordinated/wave-map-107",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "coordinated",
+        "seconds": 6,
+        "seed": "wave-map-114",
+        "trace": true
+      },
+      "id": "recovery/coordinated/wave-map-114",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "coordinated",
+        "seconds": 6,
+        "seed": "wave-map-115",
+        "trace": true
+      },
+      "id": "recovery/coordinated/wave-map-115",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "coordinated",
+        "seconds": 6,
+        "seed": "wave-map-106",
+        "trace": true
+      },
+      "id": "recovery/coordinated/wave-map-106",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "coordinated",
+        "seconds": 6,
+        "seed": "wave-map-108",
+        "trace": true
+      },
+      "id": "recovery/coordinated/wave-map-108",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "coordinated",
+        "seconds": 6,
+        "seed": "wave-map-102",
+        "trace": true
+      },
+      "id": "recovery/coordinated/wave-map-102",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "coordinated",
+        "seconds": 6,
+        "seed": "wave-map-109",
+        "trace": true
+      },
+      "id": "recovery/coordinated/wave-map-109",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "coordinated",
+        "seconds": 6,
+        "seed": "wave-map-100",
+        "trace": true
+      },
+      "id": "recovery/coordinated/wave-map-100",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "coordinated",
+        "seconds": 6,
+        "seed": "wave-map-105",
+        "trace": true
+      },
+      "id": "recovery/coordinated/wave-map-105",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "coordinated",
+        "seconds": 6,
+        "seed": "wave-map-113",
+        "trace": true
+      },
+      "id": "recovery/coordinated/wave-map-113",
+      "variant": "baseline"
+    },
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "coordinated",
+        "seconds": 6,
+        "seed": "wave-map-111",
+        "trace": true
+      },
+      "id": "recovery/coordinated/wave-map-111",
+      "variant": "baseline"
+    }
+  ],
+  "sourceRef": "working-tree",
+  "sourceSha256": "5739446584f8f22b4330c58faed60fda7b0dfc5a39d329658b96bdc6646d4909",
+  "campaignHarnessSha256": "d2cb0b2cb801be7b9b266d06fb6502c93ed54f6a3aca18a40bba0cb55b63e772",
+  "variantModuleSha256": null
+}

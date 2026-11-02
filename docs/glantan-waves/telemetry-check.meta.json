@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "casesSha256": "645407941fc7842fb063bcf39123fdc045e7ba66fdb0fd50bddc578899567e09",
+  "cases": [
+    {
+      "config": {
+        "accuracy": 0.95,
+        "jitter": 0.25,
+        "limit": 1800,
+        "pace": "brave",
+        "policy": "guarded",
+        "seconds": 6,
+        "seed": "wave-map-1009",
+        "trace": true
+      },
+      "id": "primary/guarded/wave-map-1009",
+      "variant": "baseline"
+    }
+  ],
+  "sourceRef": "working-tree",
+  "sourceSha256": "0bf2e6b205c53fa8ef1778778c84464396f55d18c86df1995d9a3e1a9cb1deae",
+  "campaignHarnessSha256": "d7125cf6e244863f672d2af891bbe072b418aceb6af8879627c2c20d8c2eab1e",
+  "variantModuleSha256": null
+}

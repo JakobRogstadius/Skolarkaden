@@ -31,6 +31,8 @@ See [the combat protocol](../docs/glantan-combat-protocol.md) for actual-engine
 arenas, paired-seed validation, campaign comparisons and replaying the committed
 evidence. `node dev/glantan-combat.cjs --self-test` checks the experiment runner;
 the normal game regressions do not rerun tens of thousands of balance trials.
+The [wave study](../docs/glantan-waves-protocol.md) separately tests complete paid
+campaigns and archives exact sources, policies, outcomes and response timings.
 
 `--help` lists areas and options. Tests run serially, report individual timings,
 and fail the command on an assertion, crash or 120-second per-suite timeout.
