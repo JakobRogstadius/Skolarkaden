@@ -317,7 +317,7 @@
     if (hero.shieldUntil > time) { c.strokeStyle = '#bedeca90'; c.lineWidth = 2; c.beginPath(); c.ellipse(0, -10, 13, 19, 0, 0, Math.PI * 2); c.stroke(); }
     c.save(); A.actionBody(c, hero, pose, pose?.kind === 'trap' ? 'work' : hero.classId === 'warrior' ? 'melee' : hero.classId === 'ranger' ? 'bow' : 'cast');
     let bodyPower = pose?.power || 0;
-    if (cache) bodyPower = cache.body(c, 'hero', hero, w, time, reduced, pose);
+    if (cache && !corroded(hero, time)) bodyPower = cache.body(c, 'hero', hero, w, time, reduced, pose);
     else A.heroBody(c, hero, w, time, reduced, pose);
     c.restore();
     if (hero.level >= 3) { c.fillStyle = '#ffe5a3'; c.strokeStyle = ink; c.lineWidth = 2.5; c.font = 'bold 9px sans-serif'; c.textAlign = 'center'; const dots = '•'.repeat(Math.min(3, Math.floor(hero.level / 2))), y = path === 'banner' ? -64 : ['mage', 'necromancer'].includes(hero.classId) ? -55 : -46; c.strokeText(dots, 0, y); c.fillText(dots, 0, y); }
@@ -345,7 +345,16 @@
       line(c, [[-8, -18], [-8, -8]], '#fff1bb', 2); line(c, [[-11, -14], [-5, -14]], '#fff1bb', 1.5);
       c.save(); c.translate(8, -16); c.rotate(pose?.swing || 0); c.translate(-8, 16);
       line(c, [[5, -20], [10, -12]], '#d6a575', 3);
-      line(c, [[10, -3], [10, -27]], ink, 4); line(c, [[10, -8], [10, -27]], '#f0f3df', 2.5); line(c, [[6, -9], [14, -9]], '#d9aa51', 2); c.restore();
+      line(c, [[10, -3], [10, -27]], ink, 4); line(c, [[10, -8], [10, -27]], '#f0f3df', 2.5); line(c, [[6, -9], [14, -9]], '#d9aa51', 2);
+      if (corroded(hero, time)) {
+        for (let i = 0; i < hero.corrosionStacks; i++) {
+          const yy = -24 + i * 5;
+          line(c, [[9, yy], [11, yy + 1], [9, yy + 3]], '#de773e', 2.5);
+          const drift = reduced ? .4 : (time * 2 + i * .29) % 1;
+          polygon(c, [[12 + drift * 5, yy + drift * 5], [15 + drift * 5, yy + 1 + drift * 5], [13 + drift * 5, yy + 3 + drift * 5]], '#f19f53');
+        }
+      }
+      c.restore();
     } else if (hero.classId === 'ranger') {
       if (path === 'traps') {
         round(c, -15, -23, 10, 18, 3, '#7a5636', ink);
@@ -487,15 +496,17 @@
     if (!lair.awake) { c.fillStyle = '#e1ddbd'; c.font = 'italic 13px Georgia'; c.textAlign = 'center'; c.fillText('z z', 28, lair.boss ? -74 : -49 - Math.sin(time) * 2); }
     c.restore();
   };
-  A.monsterScale = m => ({ guardian: 1.65, husher: 1.16, sporeling: .94, broodcap: 1.6, siegebreaker: 1.5, bulwark: 1.35, mender: 1.15, binder: 1.15 }[m.type] || 1) * (1 + Math.min(.5, Math.max(0, (m.strength || 1) - 1) * .22));
+  const corroded = (unit, time) => unit.classId === 'warrior' && unit.corrosionStacks > 0 && (unit.corrosionUntil ?? Infinity) > time;
+  A.monsterScale = m => ({ guardian: 1.65, husher: 1.16, sporeling: .94, broodcap: 1.6, siegebreaker: 1.5, bulwark: 1.35, mender: 1.15, binder: 1.15, windcaller: 1.12 }[m.type] || 1) * (1 + Math.min(.5, Math.max(0, (m.strength || 1) - 1) * .22));
   // Blend the original badge anchor with the full attack-clearance position.
   // The midpoint keeps labels closer to the unit without bobbing each frame.
-  const monsterHeights = { rattler: 32, sporeling: 36, husher: 40, nightwing: 52, thornling: 44, mender: 48, binder: 48, boneservant: 50, siegebreaker: 35, broodcap: 44, bulwark: 40, guardian: 64 };
+  const monsterHeights = { rattler: 32, sporeling: 36, husher: 40, nightwing: 52, windcaller: 52, thornling: 44, mender: 48, binder: 48, boneservant: 50, siegebreaker: 35, broodcap: 44, bulwark: 40, guardian: 64 };
   A.monsterBadgeY = function(m) {
     const skeletal = G.monsterTypes[m.type].skeletal;
     const armourHeight = m.rank >= 3 ? (['siegebreaker', 'bulwark'].includes(m.type) ? 42 : 39) : 0;
-    const height = Math.max(monsterHeights[m.type], armourHeight), scale = skeletal ? 1 : A.monsterScale(m);
-    const originalHeight = m.boss || m.type === 'guardian' ? 57 : m.type === 'nightwing' ? 53 : ['husher', 'binder', 'mender', 'thornling'].includes(m.type) ? 43 : m.type === 'broodcap' ? 38 : 31;
+    const folded = m.type === 'nightwing' && m.grounded;
+    const height = Math.max(folded ? 32 : monsterHeights[m.type], armourHeight), scale = skeletal ? 1 : A.monsterScale(m);
+    const originalHeight = m.boss || m.type === 'guardian' ? 57 : m.type === 'nightwing' ? folded ? 32 : 53 : ['husher', 'binder', 'mender', 'thornling', 'windcaller'].includes(m.type) ? 43 : m.type === 'broodcap' ? 38 : 31;
     const originalY = skeletal ? -53 : -originalHeight * scale;
     const raisedY = -height * scale - 6 - (skeletal ? 13 : 15);
     return (originalY + raisedY) / 2;
@@ -507,12 +518,13 @@
     const rank = Math.max(1, m.rank || 1), scale = A.monsterScale(m), boss = m.boss || m.type === 'guardian';
     const pose = A.actionPose(m, time, reduced), power = pose?.power || 0, idleTime = reduced ? 0 : time;
     const bob = pose ? 0 : Math.sin(idleTime * (boss ? 3.5 : 7) + m.id) * (boss ? 0.65 : 1.5);
-    ellipse(c, 1, 3, 11 * scale, 4 * scale, '#29353b66');
+    const folded = m.type === 'nightwing' && m.grounded;
+    ellipse(c, 1, 3, (folded ? 14 : 11) * scale, (folded ? 5 : 4) * scale, folded ? '#29353b94' : '#29353b66');
     c.save(); c.scale(scale, scale);
     const spec = G.monsterTypes[m.type];
-    A.actionBody(c, m, pose, spec.flying ? 'dive' : spec.spell ? 'cast' : spec.kite ? 'bow' : ['sporeling', 'broodcap'].includes(m.type) ? 'cap' : boss || spec.siege || spec.ward ? 'heavy' : 'melee');
+    A.actionBody(c, m, pose, folded ? 'melee' : spec.flying ? 'dive' : spec.spell ? 'cast' : spec.kite ? 'bow' : ['sporeling', 'broodcap'].includes(m.type) ? 'cap' : boss || spec.siege || spec.ward ? 'heavy' : 'melee');
     let bodyPower = power;
-    if (cache) bodyPower = cache.body(c, 'monster', m, w, time, reduced, pose, scale);
+    if (cache && !folded) bodyPower = cache.body(c, 'monster', m, w, time, reduced, pose, scale);
     else A.monsterBody(c, m, w, time, reduced, pose);
     c.restore();
     const badgeY = A.monsterBadgeY(m);
@@ -527,7 +539,30 @@
     const rank = Math.max(1, m.rank || 1), boss = m.boss || m.type === 'guardian';
     const idleTime = reduced ? 0 : time, power = pose?.power || 0;
     const bob = m.artBob ?? (pose ? 0 : Math.sin(idleTime * (boss ? 3.5 : 7) + m.id) * (boss ? .65 : 1.5));
-    if (A.specialMonster(c, m, bob, idleTime, pose)) {
+    if (m.type === 'nightwing' && m.grounded) {
+      for (const side of [-1, 1]) {
+        line(c, [[side * 4, -6], [side * 6, 1], [side * 9, 1]], '#8ba3ac', 2);
+        polygon(c, [[side * 4, -18], [side * 12, -18], [side * 16, -8], [side * 7, -3], [side * 5, -8]], '#37596f', '#243b4a');
+        line(c, [[side * 6, -15], [side * 11, -12], [side * 13, -8]], '#9bcce1', 1.4);
+      }
+      ellipse(c, 0, -12, 7, 10, '#9dc9df');
+      polygon(c, [[-7, -15], [-8, -26], [-2, -19], [3, -19], [8, -26], [7, -15]], '#4b7893');
+      for (const x of [-3, 3]) ellipse(c, x, -15, 1.5, 2, '#ffcb8c');
+    } else if (m.type === 'windcaller') {
+      polygon(c, [[-9, -24 + bob], [8, -24 + bob], [12, -2], [2, 1], [-13, -2]], '#466e71', '#243c44');
+      polygon(c, [[-8, -25 + bob], [-9, -35 + bob], [-4, -42 + bob], [5, -35 + bob], [9, -25 + bob]], '#7599a0', '#243c44');
+      polygon(c, [[2, -32 + bob], [12, -29 + bob], [5, -26 + bob]], '#eddbad', '#243c44');
+      ellipse(c, 1, -34 + bob, 1.5, 1.5, '#ffdb94');
+      line(c, [[-5, -20], [0, -15], [4, -19]], '#b7dcd3', 2);
+      c.save(); c.translate(11 + power * 4, -14 - power * 4); c.rotate(-power * .32);
+      line(c, [[-5, 4], [5, 0], [9, 3]], '#b99d72', 3);
+      for (let i = 0; i < 5; i++) {
+        c.save(); c.rotate(-1.4 + i * .43);
+        polygon(c, [[0, 2], [-4, -12], [-1, -23 + Math.abs(i - 2) * 2], [4, -16], [4, -9]], i % 2 ? '#d1ebe0' : '#8fc0c2', '#304954');
+        line(c, [[0, -1], [0, -16]], '#f5f0db', 1); c.restore();
+      }
+      ellipse(c, 0, 1, 3, 3, '#e4c87f'); c.restore();
+    } else if (A.specialMonster(c, m, bob, idleTime, pose)) {
       // New families share the same scale, rank badge and health conventions.
     } else if (m.type === 'rattler') {
       for (const side of [-1, 1]) line(c, [[side * 5, -8], [side * 12, -4 + bob], [side * 11, 2]], '#6d6950', 2);
@@ -560,6 +595,73 @@
     if (rank >= 3 && !boss) {
       for (const side of [-1, 1]) polygon(c, [[side * 8, -21 + bob], [side * 15, -30 + bob], [side * 13, -16 + bob]], '#e1b380');
       line(c, [[-7, -5], [0, -2], [7, -5]], '#e7bd82', 2);
+    }
+  };
+  A.counterStatus = function(c, unit, w, time, reduced) {
+    const echo = unit.echoHp > 0 && unit.echoUntil > w.time;
+    const guarding = unit.arrowGuardUntil > w.time;
+    const blighted = unit.blightUntil > w.time;
+    if (!echo && !guarding && !blighted) return;
+    c.save(); c.translate(unit.x * A.tile, unit.y * A.tile);
+    if (echo) {
+      const pulse = Math.max(0, 1 - (w.time - (unit.lastEchoAt ?? -10)) * 3);
+      const scale = 1 + pulse * .19;
+      ellipse(c, 0, -17, 15 * scale, 21 * scale, '#82c4ff32');
+      c.strokeStyle = pulse > .5 ? '#dff7ff' : '#9dd9f6'; c.lineWidth = 1.6 + pulse * 1.3;
+      c.beginPath(); c.ellipse(0, -17, 15 * scale, 21 * scale, 0, 0, Math.PI * 2); c.stroke();
+      line(c, [[-11, -25], [-8, -31], [-4, -33]], '#dff7ff', 1.5);
+    }
+    if (guarding) {
+      const x = -11 * (unit.facing || 1);
+      if (unit.skeleton) {
+        for (let i = 0; i < 3; i++) line(c, [[x - 4, -24 + i * 5], [x, -22 + i * 5], [x + 5, -25 + i * 5]], '#f1e3b7', 2.5);
+      } else {
+        polygon(c, [[x - 7, -24], [x + 7, -24], [x + 6, -12], [x, -7], [x - 6, -12]], '#f1c65770', '#ffec9c');
+        line(c, [[x - 4, -19], [x + 3, -13]], '#fff5cb', 2.4);
+      }
+    }
+    if (blighted) for (let i = 0; i < 4; i++) {
+      const p = reduced ? i / 4 : (time * .9 + i / 4) % 1;
+      const x = (i % 2 ? -1 : 1) * (8 + i * 1.4);
+      ellipse(c, x, -7 - p * 25, 2.4 + i * .25, 2.4 + i * .25, '#7dc265b0');
+      ellipse(c, x - 1, -8 - p * 25, .85, .85, '#dcf1a3');
+    }
+    c.restore();
+  };
+  A.counterEffect = function(c, e, p, reduced, origin) {
+    const x = e.x * A.tile, y = e.y * A.tile, q = reduced ? .45 : G.clamp(p, 0, 1);
+    const tx = (e.toX ?? e.x) * A.tile, ty = (e.toY ?? e.y) * A.tile;
+    if (e.type === 'gust') {
+      const angle = Math.atan2(ty - y, tx - x);
+      const radius = (e.radius || 4) * A.tile;
+      for (let i = 0; i < 8; i++) {
+        const a = angle + i * Math.PI / 4, r = radius * Math.min(1, .18 + q * .82 + (i % 3) * .07);
+        const xx = x + Math.cos(a) * r, yy = y + Math.sin(a) * r;
+        c.strokeStyle = i % 2 ? '#a6dcd2' : '#ecfff5'; c.lineWidth = i % 2 ? 2 : 3;
+        c.beginPath(); c.moveTo(xx - Math.sin(a) * 15, yy + Math.cos(a) * 15);
+        c.quadraticCurveTo(xx + Math.cos(a) * 9, yy + Math.sin(a) * 9, xx + Math.sin(a) * 21, yy - Math.cos(a) * 21); c.stroke();
+      }
+    } else if (e.type === 'cleanse') {
+      const radius = (e.radius || .65) * A.tile;
+      const glow = c.createRadialGradient(tx, ty - 16, 0, tx, ty - 16, radius);
+      glow.addColorStop(0, '#fffbe0d0'); glow.addColorStop(.5, '#d5ffcc65'); glow.addColorStop(1, '#adf3b500');
+      ellipse(c, tx, ty - 16, radius, radius, glow);
+      for (const side of [-1, 1]) line(c, [[tx + side * 12, ty - 4], [tx + side * 9, ty - 14 - q * 12], [tx + side * 14, ty - 20 - q * 14]], '#ecfff0', 2);
+    } else if (e.type === 'unbind') {
+      for (const side of [-1, 1]) {
+        c.save(); c.translate(tx + side * (6 + q * 15), ty - 17 - q * 9); c.rotate(side * (.65 + q));
+        c.strokeStyle = '#ffefc8'; c.lineWidth = 2.4;
+        c.beginPath(); c.ellipse(0, 0, 4, 8, 0, .55, Math.PI * 2 - .55); c.stroke(); c.restore();
+      }
+      line(c, [[tx - 3, ty - 16], [tx + 2, ty - 22], [tx - 1, ty - 25]], '#fff7de', 2);
+    } else {
+      const sx = origin?.x ?? x, sy = origin?.y ?? y - 22, endY = ty - 13;
+      const midX = (sx + tx) / 2, midY = (sy + endY) / 2 - (reduced ? 5 : Math.sin(q * Math.PI) * 12);
+      for (const [color, width] of [['#2b493d8c', 10], [e.color || '#94f1ca', 4], ['#ecffdd', 1.6]]) {
+        c.strokeStyle = color; c.lineWidth = width; c.beginPath(); c.moveTo(sx, sy); c.quadraticCurveTo(midX, midY, tx, endY); c.stroke();
+      }
+      const f = q, t = 1 - f;
+      ellipse(c, t*t*sx + 2*t*f*midX + f*f*tx, t*t*sy + 2*t*f*midY + f*f*endY, 4, 3, '#ecffdd');
     }
   };
 })(globalThis);

@@ -5,8 +5,8 @@
   const el = (tag, className = '', text) => { const n = document.createElement(tag); n.className = className; if (text !== undefined) n.textContent = text; return n; };
   const icon = (name, className = '') => { const n = el('span', 'g-icon ' + className); n.innerHTML = G.icon(name); return n; };
   const roles = { warrior: 'Närstrid', ranger: 'Skjuter pilar', healer: 'Läker hjältar', mage: 'Anfaller med magi', necromancer: 'Väcker skelett' };
-  const buildingLabels = { house: 'Bostad', hall: 'Väktare', lodge: 'Spejare', garden: 'Läkare', spire: 'Magiker', crypt: 'Skelettmästare', tower: 'Vindtorn', beacon: 'Gryningsfyr', conservatory: 'Klockträdgård', castle: 'Klockborgen' };
-  const techLabels = { castle2: 'Större borg', armor: 'Mer liv', boots: 'Spring snabbare', guardian: 'Sköldvänner', banner: 'Fanbärare', marksman: 'Starkare pilar', traps: 'Fällor', bloom: 'Läk flera', ward: 'Läk och skydda', echo: 'Studsande magi', frost: 'Bromsa monster', mastery: 'Stark gruppmagi' };
+  const buildingLabels = Object.fromEntries(Object.entries(G.buildings).map(([id, spec]) => [id, Object.values(G.classes).find(role => role.guild === id)?.name || spec.name]));
+  const techLabels = { castle2: 'Större borg', armor: 'Mer liv', boots: 'Spring snabbare', guardian: 'Sköldvänner', banner: 'Stridsflagga', marksman: 'Starkare pilar', traps: 'Fällor', bloom: 'Läk flera', ward: 'Läk och skydda', echo: 'Studsande magi', frost: 'Bromsa monster', mastery: 'Stark gruppmagi' };
   const techEffects = {
     castle2: ['tower', 'plus', 'heart'], armor: ['people', 'plus', 'heart'], boots: ['people', 'arrow', 'boot'],
     guardian: ['people', 'shield'], banner: ['people', 'sword', 'plus'], marksman: ['bow', 'plus'], traps: ['trap', 'lock'],
@@ -15,8 +15,8 @@
   const techBrief = { castle2: 'Fler förbättringar', armor: 'Alla hjältar', boots: 'Alla hjältar', guardian: 'Skyddar gruppen', banner: 'Stärker gruppens anfall', marksman: 'Mer skada · längre räckvidd', traps: 'Fångar och skadar', bloom: 'Flera hjältar samtidigt', ward: 'Skydd efter läkning', echo: 'Träffar flera monster', frost: 'Monster går långsammare', mastery: 'Magiker på nivå 5' };
   const monsters = {
     rattler: ['sword', 'Rusande närstrid'], sporeling: ['people', 'Anfaller i grupp'], husher: ['chime', 'Anfaller med magi'],
-    nightwing: ['wing', 'Flyger'], thornling: ['bow', 'Skjuter och backar'], mender: ['heal', 'Läker monster'],
-    binder: ['skull', 'Väcker skelett · binder hjältar'], boneservant: ['sword', 'Fiendeskelett'], siegebreaker: ['hammer', 'Krossar hus · stoppas i närstrid'], broodcap: ['spore', 'Odlar ungar · svag i klunga'],
+    nightwing: ['wing', 'Flyger · landar efter dyk'], windcaller: ['wing', 'Blåser bort ben'], thornling: ['bow', 'Skjuter och backar'], mender: ['heal', 'Läker monster'],
+    binder: ['skull', 'Väcker skelett · binder hjältar'], boneservant: ['sword', 'Fiendeskelett'], siegebreaker: ['hammer', 'Krossar hus · stoppas i närstrid'], broodcap: ['spore', 'Giftig dimma · små svampar'],
     bulwark: ['shield', 'Skyddar monster'], guardian: ['crown', 'Stark bossvakt']
   };
   function portrait(w, kind, type, options = {}) {

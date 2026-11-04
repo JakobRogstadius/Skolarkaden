@@ -21,29 +21,61 @@
     G.soundEvent(w, 'mage', master); w.revision++;
     return skeleton;
   };
+  function createSkeleton(w, hero, source, level, hp, starter = false) {
+    const skeleton = { id: w.nextId++, skeleton: true, owner: hero.id, sourceType: source.monsterType || source.type, level, ...G.freeNear(w, source), hp, maxHp: hp, cooldown: 0, route: [], routeKey: '', facing: 1, born: w.time };
+    if (starter) skeleton.starter = true;
+    w.skeletons.push(skeleton); w.revision++;
+    G.soundEvent(w, 'recruit', skeleton);
+    return skeleton;
+  }
+  const starterHp = level => 32 + 10 * (level - 1);
+  G.growStarterSkeleton = function(owner, skeleton) {
+    if (!skeleton.starter || skeleton.level === owner.level) return;
+    const hp = starterHp(owner.level);
+    skeleton.hp += hp - skeleton.maxHp; skeleton.maxHp = hp; skeleton.level = owner.level;
+  };
+  G.grantStarterSkeleton = function(w, hero) {
+    if (hero.classId !== 'necromancer' || hero.starterSkeletonGranted || G.ownedSkeletons(w, hero).length || !G.useAbility(w, hero, hero, 'raise')) return null;
+    hero.starterSkeletonGranted = true; hero.raiseAt = w.time + 3;
+    const skeleton = createSkeleton(w, hero, hero, hero.level, starterHp(hero.level), true);
+    G.effect(w, 'raise', skeleton.x, skeleton.y, { duration: 1.2, color: '#b6ffe2' });
+    return skeleton;
+  };
   G.raiseSkeleton = function(w, hero) {
     if (hero.classId !== 'necromancer' || !G.abilityReady(w, hero) || (hero.raiseAt || 0) > w.time || G.ownedSkeletons(w, hero).length >= G.NECROMANCER_LIMIT) return null;
     const corpse = w.corpses.filter(b => G.freshCorpse(w, b) && G.distance(b, hero) < 4 && G.clearLine(w, hero, b)).sort((a, b) => G.distance(a, hero) - G.distance(b, hero) || a.id - b.id)[0];
     if (!corpse) return null;
-    const level = corpse.level, hp = 36 + level * 16, point = G.freeNear(w, corpse);
-    const skeleton = { id: w.nextId++, skeleton: true, owner: hero.id, sourceType: corpse.monsterType, level, ...point, hp, maxHp: hp, cooldown: 0, route: [], routeKey: '', facing: 1, born: w.time };
-    w.corpses.splice(w.corpses.indexOf(corpse), 1); w.skeletons.push(skeleton); hero.raiseAt = w.time + 3;
+    const level = corpse.level;
+    const skeleton = createSkeleton(w, hero, corpse, level, 36 + level * 16);
+    w.corpses.splice(w.corpses.indexOf(corpse), 1); hero.raiseAt = w.time + 3;
     G.useAbility(w, hero, corpse, 'raise');
     G.effect(w, 'raise', corpse.x, corpse.y, { duration: 1.2, color: '#b6ffe2' });
-    G.soundEvent(w, 'recruit', skeleton); w.revision++;
     return skeleton;
   };
   G.necromancerStrike = function(w, hero, target, damage) {
-    let drained = G.damage(w, target, damage, hero);
-    for (const monster of w.monsters) if (monster !== target && G.alive(monster) && G.distance(monster, target) < 1.7 && G.attackLine(w, target, monster)) drained += G.damage(w, monster, damage * .65, hero, 'area');
-    if (drained <= 0) return;
+    if (!G.alive(target) || w.outcome) return 0;
+    if (target.echoHp > 0 && target.echoUntil > w.time) {
+      target.echoHp = 0; target.echoUntil = 0;
+      G.effect(w, 'unbind', target.x, target.y, { duration: .85, color: '#b6ffe2' });
+    }
+    const servant = target.type === 'boneservant';
+    if (servant && G.ownedSkeletons(w, hero).length < G.NECROMANCER_LIMIT) {
+      const level = target.rank || 1;
+      target.hp = 0; target.hurtAt = w.time; target.unbound = true;
+      const skeleton = createSkeleton(w, hero, target, level, 36 + level * 16);
+      G.effect(w, 'unbind', skeleton.x, skeleton.y, { duration: 1.2, color: '#b6ffe2' });
+      return 0;
+    }
+    const drained = G.damage(w, target, servant ? 3 * damage : damage, hero);
+    if (drained <= 0) return 0;
     const amount = Math.min(16 + hero.level, drained * .45);
     for (const friend of [hero, ...G.ownedSkeletons(w, hero)]) {
-      const healed = Math.min(friend.maxHp - friend.hp, amount);
+      const healed = G.healHealth(w, friend, amount);
       if (healed <= 0) continue;
-      friend.hp += healed; hero.healing += healed; w.stats.healed += healed;
-      G.effect(w, 'spell', target.x, target.y, { toX: friend.x, toY: friend.y, school: 'drain', color: '#b6ffe2', radius: .4, duration: .95 });
+      hero.healing += healed; w.stats.healed += healed;
+      G.effect(w, 'spell', target.x, target.y, { toX: friend.x, toY: friend.y, school: 'drain', color: '#b6ffe2', focused: true, duration: .95 });
     }
+    return drained;
   };
   G.updateSkeletons = function(w, dt) {
     for (const skeleton of w.skeletons) {
@@ -51,9 +83,10 @@
       const owner = w.heroes.find(h => h.id === skeleton.owner && G.alive(h));
       if (!owner) { skeleton.hp = 0; continue; }
       if (!G.alive(skeleton)) continue;
+      G.growStarterSkeleton(owner, skeleton);
       skeleton.cooldown = Math.max(0, skeleton.cooldown - dt);
       if (G.acting(w, skeleton) || skeleton.stunnedUntil > w.time) continue;
-      const enemies = w.monsters.filter(m => G.alive(m) && G.canHit(skeleton, m) && G.distance(m, owner) < 6);
+      const enemies = w.monsters.filter(m => G.alive(m) && G.canHit(skeleton, m, w) && G.distance(m, owner) < 6 && G.visibleTarget(w, skeleton, m));
       enemies.sort((a, b) => (a.id === owner.targetId ? -10 : G.distance(a, skeleton)) - (b.id === owner.targetId ? -10 : G.distance(b, skeleton)));
       const buildingTarget = w.lairs.find(l => l.id === owner.targetId && G.alive(l));
       const target = enemies[0] || buildingTarget;
@@ -69,7 +102,8 @@
           skeleton.attackAt = w.time; owner.contributedAt = w.time;
           G.effect(w, 'slash', skeleton.x, skeleton.y, { toX: target.x, toY: target.y, color: '#ddf4c7', duration: .48 });
           // Credit belongs to the master, but the melee targeting check belongs to the skeleton.
-          G.damage(w, target, (5 + skeleton.level * 2.4) * G.offenseBoost(w, skeleton), owner);
+          const damage = skeleton.starter ? 4.5 + .9 * (skeleton.level - 1) : 5 + skeleton.level * 2.4;
+          G.damage(w, target, damage * G.offenseBoost(w, skeleton), owner, 'skeleton');
           G.soundEvent(w, 'warrior', skeleton);
         }
       } else {

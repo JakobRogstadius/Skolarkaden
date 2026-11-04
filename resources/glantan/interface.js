@@ -260,6 +260,12 @@
     }
     lairStatus(target, spec) {
       const w = this.game.world;
+      const counters = G.lairCounters?.[target.type];
+      if (counters) {
+        const row = el('div', 'g-wave g-counter-hint'); row.setAttribute('aria-label', 'Hjältar som hjälper');
+        row.append(el('span', '', '✓'), U.portrait(w, 'hero', counters.primary, {small:true}), el('span', '', 'eller'), U.portrait(w, 'hero', counters.secondary, {small:true}));
+        this.panel.append(row);
+      }
       if (target.boss) { const goal = el('p', 'g-boss-warning'); goal.append(icon('crown'), el('span', '', 'Förstör boet för att vinna')); this.panel.append(goal); }
       const timer = el('div', 'g-lair-timer'), clock = el('strong'); timer.append(icon('clock'), el('span', '', target.awake ? 'Anfall' : 'Vaknar'), clock); this.panel.append(timer);
       this.live.push(() => { clock.textContent = G.clockText(Math.max(0, (target.awake ? target.nextSpawn : target.wakeAt) - w.time)); });

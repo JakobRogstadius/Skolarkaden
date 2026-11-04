@@ -5,7 +5,7 @@
   G.heroSight = (w, hero) => hero.classId === 'ranger' ? 6 : 3.3;
   G.heroPower = (w, h) => {
     const s = G.heroStats(w, h);
-    return (s.damage * 1.5 + h.hp * 0.12 + (h.classId === 'healer' ? 15 : h.classId === 'necromancer' ? G.ownedSkeletons(w, h).reduce((n, s) => n + 10 + s.hp * .1, 0) : 0)) * G.traits[h.trait].courage;
+    return (s.damage * G.corrosion(w, h) * 1.5 + h.hp * 0.12 + (h.classId === 'healer' ? 15 : h.classId === 'necromancer' ? G.ownedSkeletons(w, h).reduce((n, s) => n + 10 + s.hp * .1, 0) : 0)) * G.traits[h.trait].courage;
   };
   G.threat = (w, target) => (target.wakeAt !== undefined ? 35 + target.hp * 0.13 + target.tier * 12 : 15) + w.monsters.filter(m => G.alive(m) && (G.distance(m, target) < 6 || m.guard && m.lair === target.id)).reduce((n, m) => n + m.hp * 0.18 + G.monsterDamage(w, m), 0);
   G.bountyTarget = (w, bounty) => bounty.type === 'attack' ? [...w.lairs, ...w.monsters].find(t => t.id === bounty.target && G.alive(t)) : bounty;
@@ -48,9 +48,14 @@
         expedition = { id: w.nextId++, bounty: bounty.id, members: [], state: 'gather', created: w.time, progressAt: w.time, targetHp: target.hp, ...point, reason: 'Samlar vänner' };
         w.expeditions.push(expedition);
       }
+      const counter = bounty.type === 'attack' && G.lairCounters?.[target.wakeAt !== undefined ? target.type : w.lairs.find(l => l.id === target.lair)?.type];
       while (candidates.length && expedition.members.length < max) {
         const roles = expedition.members.map(id => w.heroes.find(h => h.id === id)?.classId);
-        const preference = h => (bounty.type === 'explore' ? (h.classId === 'ranger' ? 100 : 0) : !roles.includes(h.classId) ? 30 : 0) + (h.classId === 'warrior' ? 20 : h.classId === 'healer' ? 15 : 0) + h.level * 2 - G.distance(h, expedition) * 0.4;
+        const preference = h => {
+          const first = !roles.includes(h.classId);
+          const counterFit = first && counter ? h.classId === counter.primary ? 1000 : h.classId === counter.secondary ? 900 : 0 : 0;
+          return counterFit + (bounty.type === 'explore' ? (h.classId === 'ranger' ? 100 : 0) : first ? 30 : 0) + (h.classId === 'warrior' ? 20 : h.classId === 'healer' ? 15 : 0) + h.level * 2 - G.distance(h, expedition) * 0.4;
+        };
         candidates.sort((a, b) => preference(b) - preference(a));
         const hero = candidates.shift(); hero.expedition = expedition.id; hero.routeKey = ''; expedition.members.push(hero.id);
       }
@@ -108,7 +113,7 @@
           if (row >= 0 && row < w.height) unseen += visibility.rows[row * stride + Math.min(w.width, x + dx + 1)] - visibility.rows[row * stride + Math.max(0, x - dx)];
         }
         if (!unseen) continue;
-        const danger = w.monsters.some(m => G.alive(m) && G.distance(m, position) < 5) ? 20 : 0;
+        const danger = w.monsters.some(m => G.alive(m) && G.distance(m, position) < 5 && G.visibleTarget(w, hero, m)) ? 20 : 0;
         const score = distance + danger - Math.min(30, unseen) * .08;
         if (score < bestScore || score === bestScore && (!best || y < best.y - .5 || y === best.y - .5 && x < best.x - .5)) { best = position; bestScore = score; }
       }
@@ -118,15 +123,27 @@
     if (!best || bestScore >= reach - 3) scan(1,w.width-2,1,w.height-2);
     return best;
   }
+  const afflicted = (w, hero) => hero.corrosionUntil > w.time || hero.blightUntil > w.time || G.inMist(w, hero);
   function heal(w, hero) {
     if (hero.classId !== 'healer' || !G.abilityReady(w, hero)) return false;
-    const patients = w.heroes.filter(h => G.alive(h) && h.hp < h.maxHp * 0.94 && G.distance(h, hero) < 4.2 && G.clearLine(w, hero, h)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
+    const patients = w.heroes.filter(h => G.alive(h) && G.distance(h, hero) < 4.2 && G.clearLine(w, hero, h))
+      .map(h => ({ h, status: afflicted(w, h), health: h.hp / G.healthCap(w, h) }))
+      .filter(p => p.status || p.health < .94)
+      .sort((a, b) => Number(b.status) - Number(a.status) || a.health - b.health || a.h.id - b.h.id);
     if (!patients.length) return false;
-    G.useAbility(w, hero, patients[0], 'heal', 2.1); hero.castAt = w.time;
+    const front = patients[0].h;
+    if (!G.useAbility(w, hero, front, 'heal', 2.1)) return false;
+    hero.castAt = w.time;
+    if (G.inMist(w, front)) G.clearMist(w, front.x, front.y);
+    if (patients[0].status) {
+      G.cleanse(w, front);
+      G.effect(w, 'cleanse', front.x, front.y, { color: '#c3ff9c', duration: .85 });
+    }
     G.soundEvent(w, 'heal', hero);
-    for (const patient of patients.slice(0, w.research.bloom ? 4 : 1)) {
-      const amount = Math.min(patient.maxHp - patient.hp, 16 + hero.level * 3);
-      patient.hp += amount; hero.healing += amount; w.stats.healed += amount;
+    const bloom = w.research.bloom ? patients.slice(1).filter(p => p.health < .94).slice(0, 3) : [];
+    for (const [i, patient] of [front, ...bloom.map(p => p.h)].entries()) {
+      const amount = G.healHealth(w, patient, (16 + hero.level * 3) * (i ? .45 : 1));
+      hero.healing += amount; w.stats.healed += amount;
       hero.contributedAt = w.time;
       if (w.research.ward) patient.shieldUntil = w.time + 4;
       const learning = Math.min(amount * 0.13, Math.max(0, 30 + w.destroyed * 20 - (hero.supportXp || 0)));
@@ -137,13 +154,13 @@
     hero.task = 'Läker vänner'; return true;
   }
   function strike(w, hero, target, stats) {
-    if (!G.canHit(hero, target) || !G.attackLine(w, hero, target) || !G.useAbility(w, hero, target)) return false;
+    if (!G.canHit(hero, target, w) || !G.visibleTarget(w, hero, target) || !G.attackLine(w, hero, target) || !G.useAbility(w, hero, target)) return false;
     hero.attackAt = w.time; hero.contributedAt = w.time;
     let damage = stats.damage;
     const mastery = hero.classId === 'mage' && w.research.mastery && hero.level >= 5 && (hero.masteryAt || 0) < w.time;
     if (mastery) { damage *= 3; hero.masteryAt = w.time + 8; G.effect(w, 'bell', target.x, target.y, { duration: 1.3, color: '#cfbcff' }); }
     const magic = ['mage', 'healer', 'necromancer'].includes(hero.classId);
-    G.effect(w, magic ? 'spell' : hero.classId === 'warrior' ? 'slash' : 'bolt', hero.x, hero.y, { toX: target.x, toY: target.y, school: hero.classId === 'necromancer' ? 'soul' : 'arcane', color: G.classes[hero.classId].color, radius: hero.classId === 'necromancer' ? 1.7 : mastery ? 2.6 : 1.5, duration: magic ? .8 : .48, heavy: hero.classId === 'ranger' && w.research.marksman }, hero);
+    G.effect(w, magic ? 'spell' : hero.classId === 'warrior' ? 'slash' : 'bolt', hero.x, hero.y, { toX: target.x, toY: target.y, school: hero.classId === 'necromancer' ? 'soul' : 'arcane', color: G.classes[hero.classId].color, radius: hero.classId === 'necromancer' ? 0 : mastery ? 2.6 : 1.5, focused: hero.classId === 'necromancer', duration: magic ? .8 : .48, heavy: hero.classId === 'ranger' && w.research.marksman }, hero);
     G.soundEvent(w, magic ? 'mage' : hero.classId, hero);
     if (hero.classId === 'necromancer') G.necromancerStrike(w, hero, target, damage);
     else G.damage(w, target, damage, hero);
@@ -160,7 +177,7 @@
     for (let n = 0; n < 16; n++) {
       const a = angle + n * Math.PI / 8;
       const point = { x: anchor.x + Math.cos(a) * radius, y: anchor.y + Math.sin(a) * radius };
-      if (G.open(w, point.x, point.y) && G.clearLine(w, anchor, point) && !w.monsters.some(m => G.alive(m) && G.distance(m, point) < 3)) return point;
+      if (G.open(w, point.x, point.y) && G.clearLine(w, anchor, point) && !w.monsters.some(m => G.alive(m) && G.distance(m, point) < 3 && G.visibleTarget(w, hero, m))) return point;
     }
     return G.freeNear(w, anchor);
   }
@@ -208,7 +225,7 @@
         hero.scouting += explored; w.stats.explored += explored; G.gainXp(w, hero, explored * 0.045);
       }
       const sheltered = G.distance(hero, castle) < 5;
-      if (w.time - (hero.hurtAt || -10) > 3) hero.hp = Math.min(hero.maxHp, hero.hp + dt * (sheltered ? 4 : sanctuary ? 2 : 0.5));
+      if (w.time - (hero.hurtAt ?? -10) > 3) G.healHealth(w, hero, dt * (sheltered ? 4 : sanctuary ? 2 : 0.5));
       if (hero.hp < hero.maxHp * (G.traits[hero.trait].id === 'careful' ? 0.38 : 0.25)) {
         hero.retreating = true; hero.expedition = null;
         // Fleeing cancels the remaining animation, never the shared cooldown.
@@ -218,7 +235,7 @@
       hero.targetId = null;
       if (hero.retreating) {
         hero.task = 'Återhämtar sig';
-        if (hero.hp >= hero.maxHp * 0.86 && w.time >= (hero.retreatUntil || 0)) { hero.retreating = false; hero.routeKey = ''; }
+        if (hero.hp >= G.healthCap(w, hero) * 0.86 && w.time >= (hero.retreatUntil || 0)) { hero.retreating = false; hero.routeKey = ''; }
         else {
           if (heal(w, hero)) continue;
           const refuges = w.buildings.filter(b => G.alive(b) && ['castle', 'garden'].includes(b.type));
@@ -229,28 +246,33 @@
         }
       }
       if (heal(w, hero)) continue;
-      if (G.raiseSkeleton(w, hero)) { hero.task = 'Väcker skelett'; continue; }
+      if (G.grantStarterSkeleton(w, hero) || G.raiseSkeleton(w, hero)) { hero.task = 'Väcker skelett'; continue; }
       const expedition = w.expeditions.find(e => e.id === hero.expedition);
       const bounty = expedition && w.bounties.find(b => b.id === expedition.bounty);
       const guarding = !expedition && hero.classId !== 'ranger';
       // A paid village guard or an assembling party still hears the castle alarm.
       const canIntercept = !expedition || expedition.state === 'gather' || bounty?.type === 'defend' || w.bellUntil > w.time;
+      const canTarget = m => G.alive(m) && G.canHit(hero, m, w) && G.visibleTarget(w, hero, m);
+      const keyTarget = hero.classId === 'ranger' && G.best(enemies, m => {
+        if (m.type !== 'husher' && m.type !== 'binder') return Infinity;
+        const d = G.distanceSquared(hero, m);
+        return d <= (stats.range + .2) ** 2 && canTarget(m) && G.attackLine(w, hero, m) ? d : Infinity;
+      });
       const emergency = canIntercept && G.distance(hero, castle) < 14
         ? G.best(enemies, m => {
-          if (!G.alive(m) || !G.canHit(hero,m)) return Infinity;
           const d = G.distanceSquared(m,castle);
-          return m.targetId === castle.id && d < 64 || d < 16 || buildings.has(m.targetId) && d < 81 ? m.targetId === castle.id ? -100 : d : Infinity;
+          return (m.targetId === castle.id && d < 64 || d < 16 || buildings.has(m.targetId) && d < 81) && canTarget(m) ? m.targetId === castle.id ? -100 : d : Infinity;
         }) : null;
       const nearbyAllies = !emergency && guarding ? new Set(G.allies(w).filter(h => G.distanceSquared(hero,h) < 30.25).map(h => h.id)) : null;
       // The home radius limits unsolicited pursuit, never local self-defence or
       // helping a friend after an expedition's objective has disappeared.
-      let target = emergency || G.best(enemies, m => {
-        if (!G.alive(m) || !G.canHit(hero,m)) return Infinity;
+      const target = keyTarget || emergency || G.best(enemies, m => {
         const d = G.distanceSquared(hero,m);
-        return d < (hero.classId === 'warrior' ? 25 : 30.25) && (!guarding || G.distanceSquared(m,castle) < 64 || nearbyAllies.has(m.targetId)) ? d : Infinity;
+        return d < (hero.classId === 'warrior' ? 25 : 30.25) && (!guarding || G.distanceSquared(m,castle) < 64 || nearbyAllies.has(m.targetId)) && canTarget(m) ? d : Infinity;
       });
       if (target) {
         hero.targetId = target.id;
+        hero.lastContact = { id: target.id, x: target.x, y: target.y, until: w.time + 4 };
         const distance = G.distance(hero, target);
         // Reacting to a visible enemy must reveal it now, not wait for the
         // next once-per-second scouting update after the hero has escaped.
@@ -269,11 +291,18 @@
         } else if (distance > stats.range || !G.attackLine(w, hero, target)) G.move(w, hero, target, stats.speed, dt);
         continue;
       }
-      const destination = bounty && G.bountyTarget(w, bounty);
+      const contact = hero.lastContact;
+      if (contact?.until > w.time && G.distance(hero, contact) > .5 && G.inMist(w, contact)) {
+        hero.task = 'Undersöker dimman'; G.move(w, hero, contact, stats.speed, dt); continue;
+      }
+      if (contact && contact.until <= w.time) hero.lastContact = null;
+      const objective = bounty && G.bountyTarget(w, bounty);
+      const obscured = objective?.monster && !G.visibleTarget(w, hero, objective);
+      const destination = obscured ? (contact?.id === objective.id && contact.until > w.time ? contact : bounty) : objective;
       if (G.rangerTrapWork(w, hero, stats.speed, dt, !!expedition)) continue;
       if (expedition && destination) {
-        if (bounty.type === 'attack' && !G.canHit(hero, destination)) {
-          const archer = expedition.members.map(id => w.heroes.find(h => h.id === id)).find(h => h && G.alive(h) && G.canHit(h, destination));
+        if (bounty.type === 'attack' && !obscured && !G.canHit(hero, destination, w)) {
+          const archer = expedition.members.map(id => w.heroes.find(h => h.id === id)).find(h => h && G.alive(h) && G.canHit(h, destination, w));
           hero.task = 'Skyddar avståndskämpar'; patrol(w, hero, archer || expedition, 1.5, stats.speed, dt); continue;
         }
         if (expedition.state === 'gather') {
@@ -288,10 +317,10 @@
         }
         hero.task = bounty.type === 'attack' ? 'På expedition' : bounty.type === 'explore' ? 'Utforskar' : 'Vaktar platsen';
         const distance = G.distance(hero, destination);
-        const range = stats.range + (destination.w ? 0.9 : 0);
+        const range = obscured ? .5 : stats.range + (destination.w ? 0.9 : 0);
         if (bounty.type === 'defend' && distance < 3) {
           patrol(w, hero, destination, 1.5, stats.speed * 0.65, dt);
-        } else if (bounty.type === 'attack' && distance <= range && G.attackLine(w, hero, destination)) {
+        } else if (bounty.type === 'attack' && !obscured && distance <= range && G.attackLine(w, hero, destination)) {
           hero.targetId = destination.id;
           strike(w, hero, destination, stats);
         } else if (distance > (bounty.type === 'defend' ? 1.5 : bounty.type === 'explore' ? 0.8 : range) || !G.attackLine(w, hero, destination)) {
@@ -305,11 +334,11 @@
       }
       hero.expedition = null;
       if (hero.classId === 'necromancer' && G.ownedSkeletons(w, hero).length < G.NECROMANCER_LIMIT) {
-        const corpse = w.corpses.filter(b => w.explored[G.index(w, b.x, b.y)] && G.distance(hero, b) < 8 && !enemies.some(m => G.alive(m) && G.distance(m, b) < 2)).sort((a, b) => G.distance(a, hero) - G.distance(b, hero))[0];
+        const corpse = w.corpses.filter(b => w.explored[G.index(w, b.x, b.y)] && G.distance(hero, b) < 8 && !enemies.some(m => G.alive(m) && G.distance(m, b) < 2 && G.visibleTarget(w, hero, m))).sort((a, b) => G.distance(a, hero) - G.distance(b, hero))[0];
         if (corpse) { hero.task = 'Söker benrester'; G.move(w, hero, corpse, stats.speed, dt); continue; }
       }
       if (hero.classId === 'healer') {
-        const patient = w.heroes.filter(h => G.alive(h) && h.classId !== 'healer' && h.hp < h.maxHp * 0.75).sort((a, b) => G.distance(a, hero) - G.distance(b, hero))[0];
+        const patient = w.heroes.filter(h => G.alive(h) && h.classId !== 'healer' && (h.hp < G.healthCap(w, h) * 0.75 || afflicted(w, h))).sort((a, b) => G.distance(a, hero) - G.distance(b, hero))[0];
         if (patient && G.distance(patient, castle) < 9) { hero.task = 'Följer ' + patient.name; if (G.distance(hero, patient) > 2) G.move(w, hero, patient, stats.speed, dt); continue; }
       }
       if (hero.classId === 'ranger' && (w.time > hero.rethinkAt || w.tick % 10 === 0 && hero.scoutGoal && G.distance(hero, hero.scoutGoal) < .5)) {

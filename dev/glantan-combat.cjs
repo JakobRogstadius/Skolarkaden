@@ -95,10 +95,11 @@ function createHarness({ ref = null, configure, transformSource } = {}) {
   }
   G.damage = function(w, target, amount, attacker, ...extra) {
     const recipient = track(target, w), source = track(attacker, w);
-    const dealt = damage(w, target, amount, attacker, ...extra);
+    const hpBefore = target?.hp || 0;
+    const dealt = damage(w, target, amount, attacker, ...extra), lost = Math.max(0, hpBefore - (target?.hp || 0));
     if (active) {
-      if (recipient) recipient.damageTaken += dealt;
-      if (source) source.damageDealt += dealt;
+      if (recipient) recipient.damageTaken += lost;
+      if (source) source.damageDealt += lost;
     }
     return dealt;
   };
@@ -111,7 +112,7 @@ function createHarness({ ref = null, configure, transformSource } = {}) {
     }
     return used;
   };
-  G.gainXp = function(w, hero, amount) { if (!active || active.allowLevelUps) return gainXp(w, hero, amount); };
+  G.gainXp = function(w, hero, amount) { if (active) track(hero, w).xpEarned = (track(hero, w).xpEarned || 0) + amount; if (!active || active.allowLevelUps) return gainXp(w, hero, amount); };
   G.planExpeditions = function(w) { if (!active) return plan(w); };
   G.spawnMonster = function(w, lair, options) { const m = spawn(w, lair, options); if (m) track(m, w); return m; };
   G.raiseEnemySkeleton = function(w, master) {
@@ -123,7 +124,7 @@ function createHarness({ ref = null, configure, transformSource } = {}) {
 
   function runArena(input = {}) {
     if (active) throw Error('runArena is synchronous and cannot be nested on one harness.');
-    const config = { seed: '0', difficulty: 'steady', layout: 'line', distance: 5, spacing: 1.25, mirror: false, mode: 'field', castleShots: false, endOnPartyDeath: true, maxSeconds: 180, trait: 'loyal', heroes: [], monsters: [], research: [], reinforcements: [], waves: [], corpses: [], skeletons: [], ...copy(input) };
+    const config = { seed: '0', difficulty: 'steady', layout: 'line', distance: 5, spacing: 1.25, mirror: false, mode: 'field', castleShots: false, endOnPartyDeath: true, maxSeconds: 180, trait: 'loyal', heroes: [], monsters: [], research: [], reinforcements: [], waves: [], corpses: [], skeletons: [], towers: [], ...copy(input) };
     if (!G.profiles[config.difficulty]) throw Error('Unknown difficulty: ' + config.difficulty);
     if (!['line', 'staggered', 'scatter'].includes(config.layout)) throw Error('Unknown layout: ' + config.layout);
     if (!['field', 'objective'].includes(config.mode)) throw Error('Unknown mode: ' + config.mode);
@@ -162,11 +163,19 @@ function createHarness({ ref = null, configure, transformSource } = {}) {
     const reflect = point => ({ x: config.mirror ? w.width - point.x : point.x, y: point.y });
     const castlePoint = reflect({ x: Math.floor(heroX - (config.mode === 'objective' ? 4 : 12)), y: center.y });
     const castle = G.addBuilding(w, 'castle', castlePoint.x - 1, castlePoint.y - 1);
+    if (research.castle2) { castle.hp += 400; castle.maxHp += 400; }
+    for (const tower of config.towers) {
+      const type = tower.type || 'tower';
+      if (!['tower','beacon'].includes(type)) throw Error('Unknown defensive building');
+      const spec = G.buildings[type], point = reflect({x:tower.x ?? heroX - 2, y:tower.y ?? center.y - 3});
+      const building = G.addBuilding(w, type, point.x - spec.w / 2, point.y - spec.h / 2);
+      if (tower.shots === false) building.shotAt = 1e12;
+    }
     castle.shotAt = config.castleShots ? 0 : 1e12;
     if (config.mode === 'field') castle.hp = castle.maxHp = 1e12;
     w.home = { tx: castle.tx, ty: castle.ty, x: castle.x, y: castle.y };
     const sourcePoint = reflect({ x: 58, y: center.y });
-    const source = { id: w.nextId++, type: 'rust', tx: sourcePoint.x - 1, ty: sourcePoint.y - 1, x: sourcePoint.x, y: sourcePoint.y, w: 2, h: 2, hp: 170, maxHp: 170, tier: 1, level: 1, guardCount: 1, suggestedLevels: 0, guardsSeeded: true, awake: true, defendersRaised: true, seen: true, wakeAt: 1e12, nextSpawn: 1e12, nextGrowth: 1e12, nextGuardAt: 1e12 };
+    const source = { id: w.nextId++, type: config.lairType || 'rust', tx: sourcePoint.x - 1, ty: sourcePoint.y - 1, x: sourcePoint.x, y: sourcePoint.y, w: 2, h: 2, hp: 170, maxHp: 170, tier: 1, level: 1, guardCount: 1, suggestedLevels: 0, guardsSeeded: true, awake: true, defendersRaised: true, seen: true, wakeAt: 1e12, nextSpawn: 1e12, nextGrowth: 1e12, nextGuardAt: 1e12 };
     w.lairs.push(source); w.navRevision++;
     // Separate seeded layout streams keep enemy formations independent of hero count.
     const layoutStates = { heroes: G.seedNumber(config.seed + ':heroes-layout'), monsters: G.seedNumber(config.seed + ':monsters-layout') };
@@ -275,9 +284,9 @@ function createHarness({ ref = null, configure, transformSource } = {}) {
       });
       const total = (side, filter = () => true) => {
         const entries = units.filter(u => u.side === side && filter(u)), sum = key => round(entries.reduce((n, u) => n + u[key], 0));
-        return { count: entries.length, survivors: entries.filter(u => u.alive).length, deaths: entries.filter(u => !u.alive).length, hp: sum('hp'), maxHp: sum('maxHp'), damage: sum('damageDealt'), healingReceived: sum('healingReceived'), healingCredited: sum('healingCredited'), actions: entries.reduce((n, u) => n + Object.values(u.actions).reduce((a, b) => a + b, 0), 0), movement: sum('movement'), byClass: Object.fromEntries([...new Set(entries.map(u => u.type))].map(type => [type, { count: entries.filter(u => u.type === type).length, survivors: entries.filter(u => u.type === type && u.alive).length }])) };
+        return { count: entries.length, survivors: entries.filter(u => u.alive).length, deaths: entries.filter(u => !u.alive).length, hp: sum('hp'), maxHp: sum('maxHp'), xpEarned: entries.reduce((n,u) => n + (u.xpEarned || 0), 0), damage: sum('damageDealt'), healingReceived: sum('healingReceived'), healingCredited: sum('healingCredited'), actions: entries.reduce((n, u) => n + Object.values(u.actions).reduce((a, b) => a + b, 0), 0), movement: sum('movement'), byClass: Object.fromEntries([...new Set(entries.map(u => u.type))].map(type => [type, { count: entries.filter(u => u.type === type).length, survivors: entries.filter(u => u.type === type && u.alive).length }])) };
       };
-      return { controlVersion: CONTROL_VERSION, instrumentationVersion: 2, ref: ref || 'working-tree', id: config.id || null, seed: String(config.seed), difficulty: config.difficulty, layout: config.layout, mirror: config.mirror, mode: config.mode, distance: config.distance, outcome, reason, firstAllRetreatAt, allRetreatSeconds: round(allRetreatSeconds), duration: round(w.time), steps: w.tick, completedWaves, requestedMonsters, castleHp: round(castle.hp), castleDamage: round(castle.maxHp - castle.hp), heroes: total('heroes', u => u.type !== 'skeleton'), summons: total('heroes', u => u.type === 'skeleton'), allies: total('heroes'), monsters: total('monsters'), units, starts, config, wallMs: round(performance.now() - begin) };
+      return { controlVersion: CONTROL_VERSION, instrumentationVersion: 3, ref: ref || 'working-tree', id: config.id || null, seed: String(config.seed), difficulty: config.difficulty, layout: config.layout, mirror: config.mirror, mode: config.mode, distance: config.distance, outcome, reason, firstAllRetreatAt, allRetreatSeconds: round(allRetreatSeconds), duration: round(w.time), steps: w.tick, completedWaves, requestedMonsters, castleHp: round(castle.hp), castleDamage: round(castle.maxHp - castle.hp), heroes: total('heroes', u => u.type !== 'skeleton'), summons: total('heroes', u => u.type === 'skeleton'), allies: total('heroes'), monsters: total('monsters'), units, starts, config, wallMs: round(performance.now() - begin) };
     } finally { active = null; }
   }
   return { G, context: loaded.context, runArena, runBatch: cases => cases.map(runArena) };

@@ -159,7 +159,7 @@
       if (skeleton) { this.ui.inspect({ kind: 'skeleton', id: skeleton.id }); return; }
       // Visible silhouettes stay clickable even when their upper pixels, or a
       // discovered lair's centre, extend into an unrevealed tile.
-      const monster = w.monsters.filter(m => G.alive(m) && w.explored[G.index(w, m.x, m.y)]).sort((a, b) => b.y - a.y).find(m => Math.abs(m.x - point.x) < (G.flying(m) ? .7 : .43) * A.monsterScale(m) && point.y > m.y - (m.boss || G.flying(m) ? 1.1 : ['husher', 'binder', 'mender', 'thornling', 'boneservant'].includes(m.type) ? .95 : .7) * A.monsterScale(m) && point.y < m.y + 0.35);
+      const monster = w.monsters.filter(m => G.alive(m) && w.explored[G.index(w, m.x, m.y)]).sort((a, b) => b.y - a.y).find(m => Math.abs(m.x - point.x) < (G.flying(m, w) ? .7 : .43) * A.monsterScale(m) && point.y > m.y - (m.boss || G.flying(m, w) ? 1.1 : ['husher', 'binder', 'mender', 'thornling', 'boneservant', 'windcaller'].includes(m.type) ? .95 : .7) * A.monsterScale(m) && point.y < m.y + 0.35);
       if (monster) { this.ui.inspect({ kind: 'monster', id: monster.id }); return; }
       const buildings = w.buildings.filter(b => G.footprint(b, point.x, point.y) ||
         G.alive(b) && Math.abs(point.x - b.x) < b.w * .38 && point.y > b.y - (b.type === 'castle' ? 1.9 : ['spire', 'beacon'].includes(b.type) ? 1.8 : 1.4) && point.y < b.y + .4);
@@ -219,6 +219,14 @@
       const width = entity.boss ? entity.w ? 62 : 36 : entity.w ? 44 : 23;
       A.round(c, x - width / 2 - 1, y, width + 2, 5, 2, '#24423ed9');
       A.round(c, x - width / 2, y + 1, Math.max(0, width * entity.hp / entity.maxHp), 3, 1, color);
+      if (entity.thornWound > 0) {
+        const wound = width * (entity.maxHp - G.healthCap(this.game.world, entity)) / entity.maxHp;
+        const left = x + width / 2 - wound;
+        c.save(); c.beginPath(); c.rect(left, y + 1, wound, 3); c.clip();
+        c.fillStyle = '#929c9a'; c.fillRect(left, y + 1, wound, 3);
+        for (let xx = left - 2; xx < x + width / 2; xx += 3) A.line(c, [[xx, y + 4], [xx + 3, y + 1]], '#424e50', 1);
+        c.restore();
+      }
     }
     drawBackdrop() {
       const w = this.game.world, key = [this.camera.x,this.camera.y,this.camera.zoom,w.fogRevision,w.navRevision].join(':');
@@ -249,10 +257,33 @@
         c.fillStyle = '#3b4e3e'; c.font = 'bold 9px sans-serif'; c.textAlign = 'center'; c.fillText('•'.repeat(bounty.level), x + 11, y - 38);
       }
     }
+    drawBroodMist(view, time) {
+      const c = this.ctx, w = this.game.world, radius = G.counterRules?.mistRadius ?? 3.5;
+      const broods = w.monsters.filter(m => G.alive(m) && G.monsterTypes[m.type].brood && m.x + radius >= view.x0 && m.x - radius <= view.x1 && m.y + radius >= view.y0 && m.y - radius <= view.y1 && w.explored[G.index(w, m.x, m.y)]);
+      if (!broods.length) return;
+      c.save();
+      // Intersect inverse circles so overlapping clearings stay clear.
+      for (const spot of w.mistClears || []) {
+        if (spot.until <= w.time || !broods.some(m => G.distance(m, spot) < radius + spot.radius)) continue;
+        c.beginPath(); c.rect(view.x0 * T, view.y0 * T, (view.x1 - view.x0) * T, (view.y1 - view.y0) * T);
+        c.moveTo((spot.x + spot.radius) * T, spot.y * T); c.arc(spot.x * T, spot.y * T, spot.radius * T, 0, Math.PI * 2); c.clip('evenodd');
+      }
+      for (const brood of broods) {
+        const m = this.renderUnit(brood), x = m.x * T, y = m.y * T, r = radius * T;
+        const gradient = c.createRadialGradient(x, y, 0, x, y, r);
+        gradient.addColorStop(0, '#a9ce6390'); gradient.addColorStop(.65, '#8ab65c60'); gradient.addColorStop(1, '#8ab65c00');
+        A.ellipse(c, x, y, r, r, gradient);
+        for (let i = 0; i < 9; i++) {
+          const a = i * 2.39996 + (this.reduced ? 0 : time * .12), distance = r * (.18 + i * .078);
+          A.ellipse(c, x + Math.cos(a) * distance, y + Math.sin(a) * distance, 2 + (i % 3), 2 + (i % 2), '#d5ec9655');
+        }
+      }
+      c.restore();
+    }
     drawEffects(view) {
       const c = this.ctx, w = this.game.world;
       for (const e of w.effects) {
-        const padding = e.type === 'bell' ? 10 : 3;
+        const padding = e.type === 'bell' ? 10 : Math.max(3, e.radius || 0);
         if (Math.max(e.x, e.toX ?? e.x) + padding < view.x0 || Math.min(e.x, e.toX ?? e.x) - padding > view.x1 || Math.max(e.y, e.toY ?? e.y) + padding < view.y0 || Math.min(e.y, e.toY ?? e.y) - padding > view.y1) continue;
         const p = Math.max(0, e.age - this.renderDelay) / e.duration, x = e.x * T, y = e.y * T;
         c.save(); c.globalAlpha = Math.min(1, (1 - p) * 2); c.strokeStyle = c.fillStyle = e.color || '#f3dfab';
@@ -262,8 +293,10 @@
             const caster = { ...e.caster, x:e.x, y:e.y };
             origin = A.castOrigin(caster, A.actionPose(caster, Math.max(0,w.time-this.renderDelay), this.reduced));
           }
-          A.spell(c, e, p, this.reduced, origin);
+          if (e.focused || ['soul', 'drain'].includes(e.school) && !e.radius) A.counterEffect(c, e, p, this.reduced, origin);
+          else A.spell(c, e, p, this.reduced, origin);
         }
+        else if (['gust', 'cleanse', 'unbind'].includes(e.type)) A.counterEffect(c, e, p, this.reduced);
         else if (e.type === 'raise' || e.type === 'snare') A.ritual(c, e, p, this.reduced);
         else if (e.type === 'bolt') A.bolt(c, e, p, this.reduced);
         else if (e.type === 'slash') A.slash(c, e, p, this.reduced);
@@ -324,6 +357,7 @@
       c.save(); c.translate(this.width / 2, this.height / 2); c.scale(this.camera.zoom, this.camera.zoom); c.translate(-this.camera.x, -this.camera.y);
       const view = this.viewBounds(3);
       const visible = entity => entity.x >= view.x0 && entity.x <= view.x1 && entity.y >= view.y0 && entity.y <= view.y1;
+      this.drawBroodMist(view, time);
       for (const corpse of w.corpses) if (visible(corpse) && w.explored[G.index(w, corpse.x, corpse.y)]) A.corpse(c, corpse);
       for (const trap of w.traps) if (visible(trap)) A.trap(c, trap, w);
       const entities = this.entities; entities.length = 0;
@@ -341,9 +375,9 @@
           const origin = A[type](c, value, w, this.reduced && !['hero', 'monster', 'skeleton'].includes(type) ? 0 : time, this.reduced, this.sprites);
           if (origin) this.castOrigins.set(value.id, origin);
         }
-        if (G.alive(value) && !value.w) A.status(c, value, w);
+        if (G.alive(value) && !value.w) { A.status(c, value, w); A.counterStatus(c, value, w, time, this.reduced); }
         const selected = this.selection?.id === value.id;
-        if (G.alive(value) && (selected || value.hp < value.maxHp * 0.98)) this.drawBar(value, type === 'building' || type === 'lair' ? 29 : 8, type === 'monster' || type === 'lair' ? '#e7aa8d' : '#c7e2a6');
+        if (G.alive(value) && (selected || value.thornWound > 0 || value.hp < value.maxHp * 0.98)) this.drawBar(value, type === 'building' || type === 'lair' ? 29 : 8, type === 'monster' || type === 'lair' ? '#e7aa8d' : '#c7e2a6');
         if (type === 'hero' && selected) { const y = value.y * T - (value.classId === 'mage' ? 66 : 57); c.font = 'bold 12px Trebuchet MS'; c.textAlign = 'center'; c.fillStyle = '#fff1ce'; c.strokeStyle = '#20372e'; c.lineWidth = 3; c.strokeText(value.name, value.x * T, y); c.fillText(value.name, value.x * T, y); }
       }
       this.drawFlags(); this.drawBlueprint(); this.drawEffects(view);

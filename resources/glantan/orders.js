@@ -153,10 +153,11 @@
         const hp = G.heroStats(world, hero).hp;
         if (G.alive(hero)) hero.hp += hp - hero.maxHp;
         hero.maxHp = hp;
+        hero.hp = Math.min(hero.hp, G.healthCap(world, hero));
       }
     } else if (action.type === 'resurrect') {
       entity = world.heroes.find(h => h.id === action.target);
-      Object.assign(entity, G.freeNear(world, G.castle(world)), { hp: entity.maxHp, retreating: false, expedition: null, task: 'Tillbaka', routeKey: '', route: [], shieldUntil: world.time + 4 });
+      Object.assign(entity, G.freeNear(world, G.castle(world)), { hp: entity.maxHp, thornWound: 0, corrosionStacks: 0, corrosionUntil: 0, blightUntil: 0, retreating: false, expedition: null, task: 'Tillbaka', routeKey: '', route: [], shieldUntil: world.time + 4 });
       G.effect(world, 'summon', entity.x, entity.y, { duration: 1.6, color: G.classes[entity.classId].color });
     } else if (action.type === 'repair') {
       entity = world.buildings.find(b => b.id === action.target);

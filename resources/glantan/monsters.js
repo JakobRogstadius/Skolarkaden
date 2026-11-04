@@ -9,7 +9,7 @@
     return (monster.attackDamage ?? spec.damage * monster.strength) * G.profiles[w.pace].damage * (spec.siege && !building ? (spec.retaliation ?? .35) : 1);
   };
   G.monsterSpeed = monster => G.monsterTypes[monster.type].speed;
-  G.spawnMonster = function(w, lair, { type = G.lairTypes[lair.type].monster, guard = false, wave = 0, at = null, broodParent = null } = {}) {
+  G.spawnMonster = function(w, lair, { type = G.lairTypes[lair.type].monster, guard = false, wave = 0, at = null, broodParent = null, raisedBy = null } = {}) {
     const living = w.monsters.filter(G.alive);
     // Raid capacity leaves room for every original or spreading lair's garrison.
     if (living.length >= G.MAX_MONSTERS || !guard && living.filter(m => !m.guard).length >= G.MAX_RAIDERS) return null;
@@ -17,7 +17,7 @@
     const point = G.freeNear(w, at || lair), strength = broodParent ? 1 : G.monsterStrength(lair);
     const bossStats = boss ? G.bossGuards[w.pace] : null;
     const hp = bossStats ? bossStats.hp : spec.hp * strength;
-    const monster = { id: w.nextId++, type, monster: true, ...point, hp, maxHp: hp, strength, attackDamage: bossStats ? bossStats.damage : spec.damage * strength, rank: broodParent ? 1 : boss ? 3 + ['gentle', 'steady', 'brave'].indexOf(w.pace) : lair.tier + lair.level - 1, boss, guard, wave, broodParent, lair: lair.id, cooldown: 0, route: [], routeKey: '', raidAt: w.time, patrolAt: w.time, stunnedUntil: 0, slowUntil: 0, born: w.time, facing: 1 };
+    const monster = { id: w.nextId++, type, monster: true, ...point, hp, maxHp: hp, strength, attackDamage: bossStats ? bossStats.damage : spec.damage * strength, rank: broodParent ? 1 : boss ? 3 + ['gentle', 'steady', 'brave'].indexOf(w.pace) : lair.tier + lair.level - 1, boss, guard, wave, broodParent, raisedBy, lair: lair.id, cooldown: 0, route: [], routeKey: '', raidAt: w.time, patrolAt: w.time, stunnedUntil: 0, slowUntil: 0, born: w.time, facing: 1 };
     if (spec.siege) monster.siegeRevision = 1;
     w.monsters.push(monster); return monster;
   };
@@ -148,7 +148,7 @@
   }
   G.moveMonster = function(w, monster, destination, speed, dt) {
     if (monster.rootedUntil > w.time || monster.stunnedUntil > w.time || G.acting(w, monster)) return;
-    if (!G.flying(monster)) return G.move(w, monster, destination, speed, dt);
+    if (!G.flying(monster, w)) return G.move(w, monster, destination, speed, dt);
     const dx = destination.x - monster.x, dy = destination.y - monster.y, distance = Math.hypot(dx, dy);
     if (!distance) return;
     const step = Math.min(distance, speed * dt);
@@ -169,9 +169,50 @@
       G.soundEvent(w, 'heal', monster); return true;
     }
     const castle = G.castle(w);
-    const front = G.best(w.monsters, m => m !== monster && G.alive(m) && m.lair === monster.lair && m.wave === monster.wave && !G.monsterTypes[m.type].medic && !m.guard ? G.distance(m,castle) : Infinity);
-    if (front && G.distance(front, monster) > 2.5) { G.moveMonster(w, monster, front, spec.speed, dt); return true; }
+    const cohort = w.monsters.filter(m => m !== monster && G.alive(m) && m.lair === monster.lair && m.wave === monster.wave && m.guard === monster.guard && !G.monsterTypes[m.type].medic);
+    const rattlers = cohort.filter(m => m.type === 'rattler');
+    const front = G.best(rattlers.length ? rattlers : cohort, m => G.distance(m, castle));
+    if (front && G.distance(front, monster) > 2.5) { G.moveMonster(w, monster, front, spec.speed * (monster.slowUntil > w.time ? .45 : 1), dt); return true; }
     return false;
+  }
+  function pushFrom(w, source, unit, distance) {
+    if (!G.open(w, unit.x, unit.y)) return;
+    const dx = unit.x - source.x, dy = unit.y - source.y, length = Math.hypot(dx, dy);
+    const x = length ? dx / length : source.facing || 1, y = length ? dy / length : 0;
+    // Walk the ray outward and stop before the first blocked tile or corner.
+    let safe = unit;
+    const steps = Math.ceil(distance / .15);
+    for (let i = 1; i <= steps; i++) {
+      const point = { x: unit.x + x * distance * i / steps, y: unit.y + y * distance * i / steps };
+      if (!G.open(w, point.x, point.y) || !G.clearLine(w, safe, point)) break;
+      safe = point;
+    }
+    if (safe !== unit) {
+      unit.x = safe.x; unit.y = safe.y; unit.route = []; unit.routeKey = ''; unit.movedAt = w.time;
+    }
+  }
+  function gust(w, monster, allies) {
+    const radius = 4;
+    if ((monster.gustAt || 0) > w.time || !G.abilityReady(w, monster)) return false;
+    const victims = allies.filter(unit => G.alive(unit) && (unit.gustGraceUntil || 0) <= w.time && G.distanceSquared(monster, unit) <= radius * radius && G.clearLine(w, monster, unit));
+    const corpses = w.corpses.filter(corpse => G.distanceSquared(monster, corpse) <= radius * radius);
+    if (!victims.length && !corpses.length) return false;
+    const focus = G.best(victims, unit => G.distanceSquared(monster, unit)) || corpses[0];
+    if (!G.useAbility(w, monster, focus, 'gust')) return false;
+    monster.gustAt = w.time + 7;
+    if (corpses.length) {
+      const scattered = new Set(corpses);
+      w.corpses = w.corpses.filter(corpse => !scattered.has(corpse)); w.revision++;
+    }
+    for (const unit of victims) {
+      const distance = unit.skeleton ? 2.2 : unit.classId === 'warrior' ? .25 : unit.classId === 'ranger' ? .8 : 1.1;
+      unit.gustGraceUntil = w.time + 3.5;
+      if (unit.skeleton) unit.stunnedUntil = Math.max(unit.stunnedUntil || 0, w.time + 1.6);
+      pushFrom(w, monster, unit, distance);
+    }
+    G.effect(w, 'gust', monster.x, monster.y, { toX: focus.x, toY: focus.y, radius, duration: 1, color: '#dbf5ef' });
+    G.soundEvent?.(w, 'mage', monster);
+    return true;
   }
   function waveFormations(w, heroes, buildings) {
     const groups = new Map();
@@ -185,19 +226,27 @@
       const engaged = members.some(m => m.waveEngaged || heroes.some(h => G.alive(h) && G.distance(m, h) < 5.5 && G.attackLine(w, m, h)) || buildings.some(b => G.distance(m, b) <= G.monsterTypes[m.type].range + Math.max(b.w,b.h) * .45 && G.attackLine(w, m, b)));
       if (engaged) { for (const m of members) m.waveEngaged = true; continue; }
       if (members.length < 2) continue;
-      // The slowest member leads. Flying escorts use the ground route until
-      // contact, so rivers and mountain passes cannot split a mixed wave.
-      const leader = members.reduce((a,b) => G.monsterSpeed(a) <= G.monsterSpeed(b) ? a : b);
+      // Flying escorts use the ground route until contact, so crossings
+      // cannot split a mixed wave. Thorn archers spread behind their shield.
+      const thorn = members.some(m => m.type === 'thornling');
+      const leader = (thorn && members.find(m => m.type === 'bulwark')) || members.reduce((a,b) => G.monsterSpeed(a) <= G.monsterSpeed(b) ? a : b);
       const anchor = { x: leader.x, y: leader.y };
-      const waiting = members.some(m => m !== leader && G.distance(m, anchor) > 4);
       const heading = leader.route?.[0] || G.castle(w), dx = heading.x - leader.x, dy = heading.y - leader.y, length = Math.hypot(dx,dy) || 1;
-      let slot = 0;
+      let slot = 0, waiting = false;
       for (const m of members) {
-        if (m === leader) { formations.set(m.id, { leader: true, waiting }); continue; }
-        const side = (slot % 3 - 1) * .8, back = 1.1 + Math.floor(slot / 3) * .8; slot++;
+        if (m === leader) continue;
+        const col = slot % (thorn ? 5 : 3), row = Math.floor(slot / (thorn ? 5 : 3));
+        const side = thorn ? (col - 2) * 1.5 : (col - 1) * .8;
+        const back = thorn ? 1.35 + row * 1.15 + (col % 2) * .55 : 1.1 + row * .8;
+        slot++;
         const point = { x: anchor.x - dx/length*back - dy/length*side, y: anchor.y - dy/length*back + dx/length*side };
-        formations.set(m.id, { point: G.open(w,point.x,point.y) && G.clearLine(w,anchor,point) ? point : anchor });
+        const destination = G.open(w, point.x, point.y) && G.clearLine(w, anchor, point) ? point : anchor;
+        formations.set(m.id, { point: destination });
+        // A wide slot is an intended position. Hold only for allies behind
+        // both the formation's footprint and their current reachable slot.
+        if (G.distance(m, anchor) > (thorn ? 6 : 4) && (!thorn || G.distance(m, destination) > 4)) waiting = true;
       }
+      formations.set(leader.id, { leader: true, waiting });
     }
     return formations;
   }
@@ -206,6 +255,7 @@
     const formations = waveFormations(w, heroes, buildings);
     for (const monster of [...w.monsters]) {
       if (w.outcome) break;
+      if (monster.grounded && monster.groundedUntil <= w.time) monster.grounded = false;
       if (!G.alive(monster) || monster.stunnedUntil > w.time) continue;
       const spec = G.monsterTypes[monster.type]; monster.cooldown = Math.max(0, monster.cooldown - dt);
       if (G.acting(w, monster)) continue;
@@ -243,6 +293,7 @@
       monster.targetId = target.id;
       if (spec.raises && G.raiseEnemySkeleton(w, monster)) continue;
       if (support(w, monster, spec, dt)) continue;
+      if (spec.wind && gust(w, monster, heroes)) continue;
       if (spec.brood && G.abilityReady(w, monster) && G.distance(monster, target) < 4.5 && (monster.broodAt || 0) <= w.time) {
         const count = w.monsters.filter(m => G.alive(m) && m.broodParent === monster.id).length;
         const lair = w.lairs.find(l => l.id === monster.lair);
@@ -273,7 +324,10 @@
           G.effect(w, 'snare', target.x, target.y, { duration: 1, color: '#c7a3e6' });
         }
         G.soundEvent?.(w, monster.boss ? 'guardian' : spec.spell ? 'mage' : 'monster', monster);
-        G.damage(w, target, G.monsterDamage(w, monster, !!target.w), monster);
+        if (G.damage(w, target, G.monsterDamage(w, monster, !!target.w), monster) > 0 && monster.type === 'rattler' && G.alive(target)) G.corrode(w, target);
+        // A dive exposes the nightwing only where it can touch down. Keep its
+        // real position over blocked terrain rather than snapping it ashore.
+        if (spec.flying && G.open(w, monster.x, monster.y)) { monster.grounded = true; monster.groundedUntil = w.time + .55; }
         if (monster.type === 'husher') for (const friend of heroes) if (friend !== target && G.alive(friend) && G.distance(friend, target) < 1.25 && G.attackLine(w, target, friend)) G.damage(w, friend, G.monsterDamage(w, monster) * .35, monster, 'area');
       }
     }
