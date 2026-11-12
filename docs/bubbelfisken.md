@@ -45,10 +45,10 @@ Yellow opaque balls award 5 points. A match awards 150 plus a consecutive-match 
 | --- | --- |
 | Agile fins | Faster movement and acceleration for 8 s |
 | Large fish | Enlarged hitbox and animated eating of smaller fish for 8 s |
-| Armor scales | Reduced agility, smash rocks and entire wall obstacles for 8 s |
+| Armor scales | Reduced agility, break individual rocks (including wall stones) and sea urchins for 8 s |
 | Magnet | Attract yellow bonus balls only for 8 s |
 | Life | Restore 25 percentage points |
-| Heightened senses | Blinking directional warnings for approaching threats for 10 s |
+| Heightened senses | Blinking entry warnings for offscreen threats arriving within 1.25 s for 10 s |
 
 Different timed effects coexist. Repeated pickups refresh their duration. Growth/armor expire visibly. Eating and smashing retain the held question and do not stun. Single-item practice never invents an incorrect answer. Correct-answer labels and diagrams use the existing exercise data; Chinese display can switch between pinyin and translations.
 
@@ -63,3 +63,5 @@ Rendering and audio are separate from the simulation. Scenery is cached; particl
 Run `npm test -- --area=bubblefish --extended` for rules, sound samples, application integration and seeded layout sweeps. Layout tests replay the generated steering routes through the actual simulation, check all three question choices, protect bonus trails from later hazards, and cover portrait/landscape screens, moving threats, expiring boosts and very high speeds. The area also selects homework and score-HUD coverage. `node tests/server/game-scores.test.cjs` checks the new score type against the Worker. Use `dev/bubblefish-fixture.html` → **Bygg bana** to inspect generated sections. For deployment regenerate hashes with `npm run assets` and the Worker with `node cloudflare/build.cjs`.
 
 The deployed score Worker must include the new `bubblefish` game and click-input whitelist; deploy the generated `cloudflare/worker.mjs` along with the frontend. Existing games retain their score versions. No database migration is required.
+
+Walls consist of separate regular rocks, so armor breaks the stones it touches. Currents vary in width and flow angle, and their force exceeds even boosted steering; their horizontal displacement also enters collectible interception planning. Enemy fish show wide eyes and a startled mouth during the growth boost. Collected pairs overlap diagonally and build up in overlapping rows along the bottom. The renderer preserves full elapsed frame time for uncapped acceleration and resets its clock on pause/resume.

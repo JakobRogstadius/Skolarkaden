@@ -94,3 +94,10 @@ for(const [width,height] of [[360,640],[1000,620],[850,320]])for(const mode of [
   assert(b.x-a.x>(a.r+b.r)*1.5,'predator silhouettes stay separate on a phone');
 }
 console.log('PASS Bubbelfisken layouts: actual-route replay, moving hazards, reserved paths, reachable questions/answers/balls and fixed world coordinates.',sweepResult);
+// Horizontal current drift must change when a fixed answer meets the fish.
+for(const seed of [1,2,3,4]){
+ const g=fresh({seed,elapsed:300});g.makeQuestionWave();g.collectQuestion(g.questions[0]);g.layout.reservations=[];
+ assert(g.spawnHazard('current'));
+ const b=g.bubble(g.held.pair,'answer',g.width+400,g.fish.y),route=g.layout.place(b);assert(route);
+ g.answers=[b];replay(g,g.layout.points(route),'answer beyond angled current');assert.equal(g.hits,1);
+}
