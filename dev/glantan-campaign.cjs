@@ -18,6 +18,7 @@ const POLICIES={
   assault:{roles:['warrior','mage','warrior','healer','warrior','mage','mage','healer'],research:['armor','castle2','banner','bloom','frost']}
 };
 POLICIES.counter={roles:['warrior','healer','ranger','mage','necromancer','warrior','ranger','healer','mage','necromancer'],research:['armor','boots','castle2','banner','marksman','bloom','echo'],towers:1,coordinated:true};
+POLICIES.counterAlt={...POLICIES.counter,research:['armor','boots','castle2','guardian','traps','ward','frost']};
 POLICIES.focused={...POLICIES.mixed,coordinated:true};
 POLICIES.coordinated={...POLICIES.guarded,coordinated:true};
 POLICIES.phalanx={...POLICIES.assault,coordinated:true};
@@ -30,7 +31,10 @@ function createCampaign({ref,configure}={}){
   if(ref)for(const name of ['content','world','engine','orders','summons','traps','heroes','monsters','game']){const file='resources/glantan/'+name+'.js';vm.runInContext(execFileSync('git',['show',ref+':'+file],{cwd:ROOT,encoding:'utf8'}),loaded.context,{filename:file});}
   const SC=loaded.context.Starlight,G=SC.Glantan;if(configure)configure(G);
   const count=items=>items.reduce((r,x)=>(r[x]=(r[x]||0)+1,r),{});
-  let telemetry=null;
+  let telemetry=null,trapPhase=false;
+  const trapWork=G.rangerTrapWork;G.rangerTrapWork=function(w,...args){const before=w.nextId,result=trapWork(w,...args);if(telemetry)telemetry.trapsPlaced+=w.traps.filter(t=>t.id>=before).length;return result;};
+  const updateTraps=G.updateTraps;G.updateTraps=function(w){trapPhase=true;try{return updateTraps(w);}finally{trapPhase=false;}};
+  const effect=G.effect;G.effect=function(w,type,...args){if(telemetry&&trapPhase&&type==='snare')telemetry.trapsTriggered++;return effect(w,type,...args);};
   const snapshot=w=>({time:+w.time.toFixed(1),heroes:w.heroes.filter(G.alive).map(h=>({id:h.id,type:h.classId,level:h.level,hp:+(h.hp/h.maxHp).toFixed(3),x:+h.x.toFixed(1),y:+h.y.toFixed(1)})),upgrades:Object.keys(w.research).filter(k=>w.research[k]),buildings:count(w.buildings.filter(G.alive).map(b=>b.type)),castleHp:+G.castle(w).hp.toFixed(1),lairs:w.lairs.filter(G.alive).length,awake:w.lairs.filter(l=>G.alive(l)&&l.awake).length,raiders:w.monsters.filter(m=>G.alive(m)&&!m.guard).length,fallen:w.fallen,cleared:w.destroyed});
   const capture=(w,unit)=>{const entry=telemetry?.byWave.get(unit?.lair+':'+unit?.wave);if(!entry||entry.contact)return;const members=w.monsters.filter(m=>G.alive(m)&&m.lair+':'+m.wave===entry.key);entry.contact={...snapshot(w),distanceToCastle:+G.distance(unit,G.castle(w)).toFixed(1),survivingRoster:count(members.map(m=>m.type)),nearbyHeroes:w.heroes.filter(h=>G.alive(h)&&G.distance(h,unit)<10).map(h=>h.id),nearbyMonsters:w.monsters.filter(m=>G.alive(m)&&G.distance(m,unit)<10).length};};
   // Binder summons inherit the wave key, but are not deferred cohort members.
@@ -49,7 +53,7 @@ function createCampaign({ref,configure}={}){
     const {seed='0',pace='brave',policy='mixed',seconds=6,accuracy=.95,jitter=.25,limit=1800,trace=true}=config;
     const rng=random('answers:'+seed),latency=()=>seconds*(1+jitter*(2*rng()-1));
     const plan=planFor(policy),waves=[],purchases=[],samples=[],attemptTimes=[];
-    telemetry={waves,byWave:new Map(),damageToHeroes:0,damageToBuildings:0,castleDamage:0};
+    telemetry={trapsPlaced:0,trapsTriggered:0,waves,byWave:new Map(),damageToHeroes:0,damageToBuildings:0,castleDamage:0};
     let paid=0,chosenCost=0,planIndex=0,nextAnswer=Infinity,nextDecision=0,nextSample=0,nextContact=0,bells=0,lastBell=-100,invalidChoices=0,stalledSeconds=0;
     const game=new SC.GlantanGame({random:()=>.37,onEvent:event=>{if(event.type==='glantan-purchase'){paid+=chosenCost;purchases.push({time:+game.world.time.toFixed(1),action:event.action,cost:chosenCost});}}});
     game.start({seed,pace,mode:'swedish',items:[{label:'sol',answer:'sol'}],fresh:true});const w=game.world;
@@ -81,7 +85,7 @@ function createCampaign({ref,configure}={}){
       }
       if(w.time>=nextSample){nextSample=w.time+60;samples.push(snapshot(w));}
     }
-    const result={config,source:ref||'working-tree',outcome:w.outcome||'timeout',seconds:+w.time.toFixed(1),shots:game.shots,hits:game.hits,errors:game.shots-game.hits,paid,planIndex,planLength:plan.length,invalidChoices,idleBeforePlanCompleteSeconds:+stalledSeconds.toFixed(1),extremaSamplingSeconds:1,bells,fallen:w.fallen,firstLoss,cleared:w.destroyed,castleHp:+G.castle(w).hp.toFixed(1),minCastleFraction,maxRaiders,maxNearCastle,heroes:snapshot(w).heroes,upgrades:Object.keys(w.research).filter(k=>w.research[k]),damageToHeroes:+telemetry.damageToHeroes.toFixed(1),damageToBuildings:+telemetry.damageToBuildings.toFixed(1),castleDamage:+telemetry.castleDamage.toFixed(1),purchases,waves,samples};
+    const result={config,source:ref||'working-tree',outcome:w.outcome||'timeout',seconds:+w.time.toFixed(1),shots:game.shots,hits:game.hits,errors:game.shots-game.hits,paid,planIndex,planLength:plan.length,invalidChoices,idleBeforePlanCompleteSeconds:+stalledSeconds.toFixed(1),extremaSamplingSeconds:1,bells,fallen:w.fallen,firstLoss,cleared:w.destroyed,castleHp:+G.castle(w).hp.toFixed(1),minCastleFraction,maxRaiders,maxNearCastle,heroes:snapshot(w).heroes,upgrades:Object.keys(w.research).filter(k=>w.research[k]),damageToHeroes:+telemetry.damageToHeroes.toFixed(1),damageToBuildings:+telemetry.damageToBuildings.toFixed(1),castleDamage:+telemetry.castleDamage.toFixed(1),trapsPlaced:telemetry.trapsPlaced,trapsTriggered:telemetry.trapsTriggered,purchases,waves,samples};
     if(!trace){delete result.samples;delete result.waves;delete result.purchases;}telemetry=null;return result;
   };
 }

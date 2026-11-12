@@ -7,7 +7,7 @@ const fs=require('fs'),path=require('path'),zlib=require('zlib'),crypto=require(
 const {runStudy}=require('./glantan-study.cjs'),{createHarness}=require('./glantan-combat.cjs');
 const ROOT=path.resolve(__dirname,'..'),T=['warrior','ranger','healer','mage','necromancer'],C={warrior:2,ranger:2,healer:3,mage:3,necromancer:3};
 const hash=s=>crypto.createHash('sha256').update(s).digest('hex');
-const files=[...['content','world','engine','orders','summons','traps','heroes','monsters','game'].map(n=>'resources/glantan/'+n+'.js'),...['cycle','study','combat','campaign','wave-study'].map(n=>'dev/glantan-'+n+'.cjs'),'dev/experiments/glantan-wave-variants.cjs','tests/games/glantan/helpers.cjs'];
+const files=[...['content','world','engine','orders','summons','traps','heroes','monsters','game'].map(n=>'resources/glantan/'+n+'.js'),...['cycle','study','combat','campaign','wave-study'].map(n=>'dev/glantan-'+n+'.cjs'),'dev/glantan-cycle-campaign.cjs','dev/experiments/glantan-wave-variants.cjs','tests/games/glantan/helpers.cjs'];
 function snapshot(){const sources=Object.fromEntries(files.map(f=>[f,fs.readFileSync(path.join(ROOT,f),'utf8')]));return {sha256:hash(JSON.stringify(sources)),sources};}
 function roster(types,budget,level){
  if(types.length===1)return Array.from({length:Math.floor(budget/C[types[0]])},()=>({type:types[0],level}));
@@ -19,6 +19,7 @@ function roster(types,budget,level){
  return [...Array.from({length:best.a},()=>({type:types[0],level})),...Array.from({length:best.b},()=>({type:types[1],level}))];
 }
 function makeCases(suite='probe'){
+ if(!['probe','confirm','branches'].includes(suite))throw Error('Unknown combat suite '+suite);
  const {G}=createHarness(),families=Object.keys(G.lairCounters),cases=[];
  const arms=T.map(t=>[t]);for(let i=0;i<T.length;i++)for(let j=i+1;j<T.length;j++)arms.push([T[i],T[j]]);
  const starts=suite==='confirm'?60:0,seeds=suite==='confirm'?6:suite==='branches'?3:3;

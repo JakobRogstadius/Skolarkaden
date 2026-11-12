@@ -14,7 +14,7 @@ const world = () => {
   assert.deepEqual(Array.from(w.buildings, b => b.type).sort(), ['castle', 'house']);
   assert.equal(w.heroes.length, 0, 'a kingdom starts without heroes');
   assert.equal(G.capacity(w), 4);
-  assert.match(G.availability(w, {type:'recruit', id:'warrior'}), /Väktarhus|väktarhus/);
+  assert.match(G.availability(w, {type:'recruit', id:'warrior'}), /Riddarhus|riddarhus/);
 }
 {
   const w = world();

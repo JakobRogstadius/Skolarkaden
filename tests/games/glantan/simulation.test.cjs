@@ -26,7 +26,7 @@ const make = seed => {
   const sim = make('shared-alarm'), w = sim.world, castle = G.castle(w), hero = w.heroes[0];
   w.heroes.slice(1).forEach(h => { h.hp = 0; });
   Object.assign(hero, { x: castle.x - 3.5, y: castle.y }); castle.shotAt = 9999;
-  const enemy = G.spawnMonster(w, w.lairs[0], { type: 'husher' });
+  const enemy = G.spawnMonster(w, w.lairs[0], { type: 'mender' });
   Object.assign(enemy, { x: castle.x + 3.5, y: castle.y, targetId: castle.id, raidAt: 0 });
   assert(G.distance(hero, enemy) > 5, 'attacker starts outside the old personal detection radius');
   advance(sim, 9);
@@ -57,7 +57,7 @@ for (const assignment of ['defend', 'gather']) {
   G.planExpeditions(w);
   const group = w.expeditions.find(e => e.bounty === bounty.id);
   if (assignment === 'defend') group.state = 'march';
-  const enemy = G.spawnMonster(w, w.lairs[0], { type: 'husher' });
+  const enemy = G.spawnMonster(w, w.lairs[0], { type: 'mender' });
   Object.assign(enemy, { x: castle.x + 2, y: castle.y, targetId: castle.id, raidAt: 0 });
   assert(G.distance(hero, enemy) > 5);
   advance(sim, 9);

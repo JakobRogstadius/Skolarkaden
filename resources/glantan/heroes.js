@@ -48,7 +48,7 @@
         expedition = { id: w.nextId++, bounty: bounty.id, members: [], state: 'gather', created: w.time, progressAt: w.time, targetHp: target.hp, ...point, reason: 'Samlar vänner' };
         w.expeditions.push(expedition);
       }
-      const counter = bounty.type === 'attack' && G.lairCounters?.[target.wakeAt !== undefined ? target.type : w.lairs.find(l => l.id === target.lair)?.type];
+      const counter = bounty.type === 'attack' && !target.boss && G.lairCounters?.[target.wakeAt !== undefined ? target.type : w.lairs.find(l => l.id === target.lair)?.type];
       while (candidates.length && expedition.members.length < max) {
         const roles = expedition.members.map(id => w.heroes.find(h => h.id === id)?.classId);
         const preference = h => {
@@ -136,8 +136,10 @@
     hero.castAt = w.time;
     if (G.inMist(w, front)) G.clearMist(w, front.x, front.y);
     if (patients[0].status) {
-      G.cleanse(w, front);
-      G.effect(w, 'cleanse', front.x, front.y, { color: '#c3ff9c', duration: .85 });
+      for (const patient of patients) if (G.distance(patient.h, front) <= G.counterRules.cleanseRadius) {
+        G.cleanse(w, patient.h);
+        G.effect(w, 'cleanse', patient.h.x, patient.h.y, { color: '#c3ff9c', duration: .85 });
+      }
     }
     G.soundEvent(w, 'heal', hero);
     const bloom = w.research.bloom ? patients.slice(1).filter(p => p.health < .94).slice(0, 3) : [];

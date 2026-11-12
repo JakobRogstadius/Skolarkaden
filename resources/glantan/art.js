@@ -631,7 +631,14 @@
   A.counterEffect = function(c, e, p, reduced, origin) {
     const x = e.x * A.tile, y = e.y * A.tile, q = reduced ? .45 : G.clamp(p, 0, 1);
     const tx = (e.toX ?? e.x) * A.tile, ty = (e.toY ?? e.y) * A.tile;
-    if (e.type === 'gust') {
+    if (e.type === 'rust') {
+      const radius = (e.radius || 4.5) * A.tile;
+      ellipse(c, x, y, radius * q, radius * q * .6, '#bd735020', '#d49b5f80', 1.5);
+      for (let i = 0; i < 10; i++) {
+        const a = i * Math.PI / 5;
+        ellipse(c, x + Math.cos(a) * radius * q, y + Math.sin(a) * radius * q * .6, 3, 2, '#c38a55');
+      }
+    } else if (e.type === 'gust') {
       const angle = Math.atan2(ty - y, tx - x);
       const radius = (e.radius || 4) * A.tile;
       for (let i = 0; i < 8; i++) {

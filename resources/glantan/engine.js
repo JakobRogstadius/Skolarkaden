@@ -21,13 +21,14 @@
     unit.hp = Math.min(unit.hp, G.healthCap(w, unit));
   };
   G.corrode = function(w, hero) {
-    if (!hero.classId || !G.alive(hero)) return;
+    if (!['warrior', 'ranger'].includes(hero.classId) || !G.alive(hero) || hero.cleanseUntil > w.time) return;
     hero.corrosionStacks = Math.min(rule('corrosionMaxStacks', 3), (hero.corrosionUntil > w.time ? hero.corrosionStacks || 0 : 0) + 1);
     hero.corrosionUntil = w.time + rule('corrosionDuration', 7);
   };
   G.corrosion = (w, hero) => hero.corrosionUntil > w.time ? 1 - (hero.corrosionStacks || 0) * rule('corrosionPerStack', .26) : 1;
   G.cleanse = function(w, hero) {
     hero.corrosionStacks = 0; hero.corrosionUntil = 0;
+    hero.cleanseUntil = w.time + rule('cleanseProtection', 2.5);
     hero.blightUntil = 0; hero.blightDamage = 0; hero.blightSource = null;
   };
   const mistCleared = (w, point) => (w.mistClears || []).some(p => p.until > w.time && G.distanceSquared(p, point) <= p.radius ** 2);
@@ -156,7 +157,7 @@
   };
   G.damage = function(world, target, amount, attacker, kind = 'direct') {
     if (world.outcome || !(amount > 0) || !target || !G.alive(target) || attacker && !G.canHit(attacker, target, world)) return 0;
-    if (attacker?.classId && kind !== 'skeleton') amount *= G.corrosion(world, attacker);
+    if (['warrior', 'ranger'].includes(attacker?.classId) && kind !== 'skeleton') amount *= G.corrosion(world, attacker);
     const thorn = attacker?.type === 'thornling';
     let wound = thorn && target.classId && kind !== 'thornGuard';
     if (wound) {
@@ -183,10 +184,10 @@
     }
     if (target.monster) {
       const radius = rule('echoRadius', 3.5);
-      if (kind === 'area') {
+      if (kind === 'area' || attacker?.classId === 'mage' && kind === 'direct') {
         const field = G.best(world.monsters, m => (m.type === 'husher' || m.type === 'binder') && G.alive(m) && G.distanceSquared(m, target) <= radius ** 2 ? G.distanceSquared(m, target) : Infinity);
         if (field) {
-          const absorbed = amount * rule('echoAbsorb', .65);
+          const absorbed = amount * (kind === 'area' ? rule('echoAbsorb', .65) : rule('echoDirectAbsorb', .45));
           amount -= absorbed;
           target.echoHp = Math.min(target.maxHp * rule('echoCap', .25), (target.echoUntil > world.time ? target.echoHp || 0 : 0) + absorbed);
           target.echoUntil = world.time + rule('echoDuration', 4);

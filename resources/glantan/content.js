@@ -12,9 +12,9 @@
   G.CORPSE_LIFETIME = 45;
   G.NECROMANCER_LIMIT = 1;
   G.counterRules = {
-    corrosionMaxStacks: 3, corrosionPerStack: .26, corrosionDuration: 7,
-    mistRadius: 3.5, mistSpotRadius: 1.7, mistClearDuration: 5, sporeDamage: 3.5,
-    echoRadius: 3.5, echoAbsorb: .65, echoCap: .25, echoDuration: 4,
+    corrosionMaxStacks: 3, corrosionPerStack: .26, corrosionDuration: 7, rustRadius: 4.5, cleanseRadius: 2.8, cleanseProtection: 2.5,
+    mistRadius: 3.5, mistSpotRadius: 1.7, mistClearDuration: 5, sporeDamage: 2,
+    echoRadius: 3.5, echoAbsorb: .65, echoDirectAbsorb: .45, echoCap: .25, echoDuration: 4,
     thornWoundCap: .5, thornRecoveryDelay: 5, thornRecoveryRate: .1, thornWoundFraction: .4,
     arrowGuardRadius: 2.8, arrowInterceptDamage: .45, arrowSelfDamage: .5, boneArrowDamage: .35
   };
@@ -28,7 +28,7 @@
   G.profiles = {
     gentle: { lairs: 5, mapScale: 2, firstWake: 120, wake: 105, spawn: 1.32, damage: 0.72, growth: 1.3, bossLevels: 10, bossGuardCount: 1 },
     steady: { lairs: 7, mapScale: 2.5, firstWake: 105, wake: 88, spawn: 1, damage: 1, growth: 1, bossLevels: 20, bossGuardCount: 2 },
-    brave: { lairs: 9, mapScale: 3, firstWake: 90, wake: 78, spawn: 0.84, damage: 1.22, growth: 0.9, bossLevels: 30, bossGuardCount: 3, raidInterval: 150, growthWaves: false }
+    brave: { lairs: 9, mapScale: 3, firstWake: 150, wake: 105, spawn: 0.84, damage: 1.22, growth: 0.9, bossLevels: 30, bossGuardCount: 3, raidInterval: 210, growthWaves: false }
   };
   G.classes = {
     warrior: { name: 'Riddare', role: 'Slåss nära och stoppar pilar med sin sköld.', color: '#ecb85a', icon: 'shield', guild: 'hall', cost: 2, hp: 125, damage: 14, range: 1.1, speed: 1.5, cooldown: 1.05, courage: 1.2 },
@@ -64,25 +64,25 @@
     mastery: { name: 'Stor magi', icon: 'star', cost: 8, building: 'spire', requires: 'castle2', group: 'landmark', description: 'Unik. Trollkarl på nivå 5 får en mäktig gruppattack.' }
   };
   G.lairTypes = {
-    rust: { name: 'Skrotbo', monster: 'rattler', support: 'mender', color: '#bd7350', icon: 'gear', description: 'Rost gör hjältars slag svaga. Läkare tvättar bort den. Gruppmagi träffar klungan.', interval: 175 },
+    rust: { name: 'Skrotbo', monster: 'rattler', support: 'mender', color: '#bd7350', icon: 'gear', description: 'Rost gör slag och pilar svaga. Läkare tvättar bort den. Gruppmagi träffar klungan.', interval: 175 },
     spore: { name: 'Svampbo', monster: 'sporeling', support: 'broodcap', color: '#c582aa', icon: 'spore', description: 'Svampar gömmer sig i giftig dimma. Läkare blåser bort dimman. Riddare tål att gå nära.', interval: 205 },
-    hush: { name: 'Spökbo', monster: 'husher', support: 'binder', color: '#858fb2', icon: 'moon', description: 'Spöksköldar äter magi som studsar. Skelettmagiker bryter skyddet. Pilar träffar ett mål i taget.', interval: 190 },
+    hush: { name: 'Spökbo', monster: 'husher', support: 'binder', color: '#858fb2', icon: 'moon', description: 'Spöksköldar äter trollmagi. Skelettmagiker bryter skyddet. Pilar träffar ett mål i taget.', interval: 190 },
     sky: { name: 'Fågelbo', monster: 'nightwing', support: 'windcaller', color: '#81b4c6', icon: 'wing', description: 'Fåglar flyger och dyker. Vind blåser bort ben och skelett. Pilar når fåglarna, gruppmagi träffar flocken.', interval: 185 },
     thorn: { name: 'Taggbo', monster: 'thornling', support: 'bulwark', color: '#a1ab6e', icon: 'bow', description: 'Taggar fastnar och hindrar läkning en stund. Riddare stoppar pilar. Skelett får inga taggsår.', interval: 180 }
   };
   G.monsterTypes = {
     rattler: { name: 'Skramlare', role: 'Närstrid. Rusar den sista biten mot sitt mål.', hp: 48, damage: 7, speed: 1.15, range: 0.9, cooldown: 1.4, color: '#c98150', xp: 10, rush: true },
     sporeling: { name: 'Liten svamp', role: 'Snabb, svag närstridskämpe. Farlig i grupp.', hp: 28, damage: 5, speed: 1.35, range: 1, cooldown: 1.5, color: '#cc88b1', xp: 8 },
-    husher: { name: 'Sköldspöke', role: 'Avståndsmagiker. Viker undan från närstrid.', hp: 60, damage: 8, speed: 1, range: 4.1, cooldown: 2.4, color: '#929cbb', xp: 16, spell: true, kite: true },
-    nightwing: { name: 'Nattfågel', role: 'Flyger och dyker. Svärd når fåglar som landat.', hp: 44, damage: 8, speed: 1.5, range: 1.2, cooldown: 1.7, color: '#9dc9df', xp: 12, flying: true },
+    husher: { name: 'Sköldspöke', role: 'Avståndsmagiker. Viker undan från närstrid.', hp: 60, damage: 8, speed: 1.8, range: 4.1, cooldown: 2.4, color: '#929cbb', xp: 16, spell: true, kite: true },
+    nightwing: { name: 'Nattfågel', role: 'Flyger och dyker. Landar ibland så att svärd kan nå den.', hp: 44, damage: 8, speed: 1.5, range: 1.2, cooldown: 1.7, color: '#9dc9df', xp: 12, flying: true },
     windcaller: { name: 'Vindfågel', role: 'Blåser bort ben och knuffar skelett.', hp: 80, damage: 5, speed: 1.1, range: 3.8, cooldown: 2.2, color: '#8ccbd9', xp: 20, wind: true, spell: true, kite: true },
-    thornling: { name: 'Taggskytt', role: 'Rörlig skytt. Backar när hjältar kommer nära.', hp: 34, damage: 8, speed: 1.25, range: 3.6, cooldown: 1.6, color: '#bdd084', xp: 12, kite: true },
+    thornling: { name: 'Taggskytt', role: 'Rörlig skytt. Backar när hjältar kommer nära.', hp: 34, damage: 8, speed: 1.25, range: 5.4, cooldown: 1.6, color: '#bdd084', xp: 12, kite: true },
     mender: { name: 'Skrotläkare', role: 'Läker andra monster. Svag om frontlinjen faller.', hp: 78, damage: 4, speed: 1.05, range: 3.5, cooldown: 2, color: '#f2bd88', xp: 22, medic: true, spell: true },
     binder: { name: 'Benspöke', role: 'Binder hjältar med rötter och väcker högst fyra röda skelett ur benrester. Skeletten faller när benspöken besegras.', hp: 82, damage: 4, speed: 1, range: 4.3, cooldown: 2.4, color: '#c6a3da', xp: 24, bind: true, spell: true, raises: 4 },
     boneservant: { name: 'Bensoldat', role: 'Rött fiendeskelett. Strider i närkamp och följer sin benspöke. Lämnar inga nya benrester.', hp: 52, damage: 7.4, speed: 1.85, range: 1.05, cooldown: 1.3, color: '#e47770', xp: 4, skeletal: true },
     siegebreaker: { name: 'Murknäckare', role: 'Slår hårt mot byggnader men tål lite. Närstridskämpar stoppar den; slår svagt tillbaka och behöver följe.', hp: 90, damage: 42, speed: .78, range: 1.35, cooldown: 2.5, color: '#b79869', xp: 28, siege: true, retaliation: .35 },
-    broodcap: { name: 'Stor svamp', role: 'Gömmer vänner i giftig dimma och odlar små svampar.', hp: 190, damage: 18, speed: .8, range: 1.4, cooldown: 2, color: '#c880b5', xp: 24, brood: true },
-    bulwark: { name: 'Skalriddare', role: 'Skyddar andra monster i närheten från 25 % av skadan.', hp: 190, damage: 18, speed: .85, range: 1.2, cooldown: 1.8, color: '#9fae80', xp: 26, ward: true },
+    broodcap: { name: 'Stor svamp', role: 'Gömmer vänner i giftig dimma och odlar små svampar.', hp: 150, damage: 14, speed: .8, range: 1.4, cooldown: 2, color: '#c880b5', xp: 24, brood: true },
+    bulwark: { name: 'Skalriddare', role: 'Skyddar andra monster i närheten från 25 % av skadan.', hp: 150, damage: 14, speed: .85, range: 1.2, cooldown: 1.8, color: '#9fae80', xp: 26, ward: true },
     guardian: { name: 'Klockriddare', role: 'Bossvakt med tung närstridsattack. Lämnar inte sitt bo.', hp: 230, damage: 35, speed: 1.12, range: 1.35, cooldown: 1.55, color: '#9b647e', xp: 55 }
   };
   // Guardians are present from birth. Awakening releases separate raiding parties.
@@ -107,7 +107,7 @@
   G.waveInterval = (w, lair) => G.profiles[w.pace].raidInterval || Math.max(50, (82 - lair.level * 5 + (lair.level >= 2 ? 22 : 0)) * G.profiles[w.pace].spawn);
   // Per-guardian stats; difficulty also controls their number.
   // Use dev/glantan-balance.cjs --boss when changing combat or retreat rules.
-  G.bossGuards = { gentle: { hp: 230, damage: 35 }, steady: { hp: 360, damage: 43 }, brave: { hp: 500, damage: 50 } };
+  G.bossGuards = { gentle: { hp: 230, damage: 35 }, steady: { hp: 360, damage: 43 }, brave: { hp: 400, damage: 40 } };
   G.lairHitPoints = (site, pace) => site.boss ? { gentle: 550, steady: 850, brave: 1150 }[pace] : 100 + (site.tier || 1) ** 2 * 70;
   G.monsterStrength = lair => 1 + (lair.tier - 1) * 0.22 + (lair.level - 1) * 0.2;
   G.names = ['Alva', 'Bosse', 'Cilla', 'Dag', 'Edda', 'Folke', 'Gry', 'Hjalmar', 'Iris', 'Juni', 'Knut', 'Lo', 'Mio', 'Nora', 'Otto', 'Pim', 'Rut', 'Siv', 'Tage', 'Una', 'Vega', 'Vide', 'Ylva', 'Östen'];

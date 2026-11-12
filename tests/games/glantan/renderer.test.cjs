@@ -59,6 +59,6 @@ const shown=[...wavePreview.children].map(group=>[group.children[0].monsterType,
 G.launchWave(previewWorld,lair);
 const spawned=previewWorld.monsters.filter(m=>!m.guard&&m.lair===lair.id&&m.wave===lair.waveCount).reduce((counts,m)=>(counts[m.type]=(counts[m.type]||0)+1,counts),{});
 assert.deepEqual(shown.map(([type,count])=>[type,Number(count.replace('× ',''))]),Object.entries(spawned),'preview counts match a spawned three-species wave');
-assert.equal(wavePreview.attributes['aria-label'],'Anfall: 2 Skramlare, 1 Skrotläkare, 2 Nattvinge');
+assert.equal(wavePreview.attributes['aria-label'],'Anfall: 2 Skramlare, 1 Skrotläkare, 2 Nattfågel');
 G.waveRoster=originalRoster;
 console.log('renderer: sprite reuse, upgrade invalidation, continuous direction, interpolation ownership and bounded bitmap lifetime');

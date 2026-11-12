@@ -48,7 +48,7 @@ game('klossar','creatures',['resources/klossar-creatures.js']);
 game('klossar','pronunciation',[...gameSources.klossar,...resource('klossar-speech.js','audio/bopomofo/')]);
 game('trassel','chinese');
 game('trassel','layouts',resource('trassel-engine.js','trassel-layouts.js').concat('dev/trassel-layouts.cjs','dev/trassel-generate.cjs'));
-for(const domain of ['world','orders','simulation','adapter','encounters','tactics','movement'])game('glantan',domain,[...glantanCore,'tests/games/glantan/helpers.cjs','tests/games/glantan/run.cjs',...(domain==='adapter'?[...input,'resources/glantan/game.js']:[])]);
+for(const domain of ['world','orders','simulation','adapter','encounters','tactics','counters','movement'])game('glantan',domain,[...glantanCore,'tests/games/glantan/helpers.cjs','tests/games/glantan/run.cjs',...(domain==='adapter'?[...input,'resources/glantan/game.js']:[])]);
 game('glantan','renderer',[...glantanCore,...resource('glantan/art.js','glantan/combat-art.js','glantan/sprites.js','glantan/renderer.js'),'tests/games/glantan/helpers.cjs']);
 add('games/glantan/sound.test.cjs',['glantan','sounds'],[...glantanCore,...input,'resources/glantan/game.js','resources/glantan/sound.js','resources/glantan/music.js','tests/games/glantan/helpers.cjs','tests/games/glantan/run.cjs']);
 for(const area of ['dinosaur','home','eggs','marshmallows'])game(area,'app',[...app,...gameSources[area]]);

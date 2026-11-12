@@ -11,7 +11,7 @@ function arena(type = 'rust') {
   return { w, lair };
 }
 function hero(w, role, x = 16, y = 15) {
-  const h = G.addHero(w, role); Object.assign(h, { x, y, trait: 2 }); return h;
+  const h = G.addHero(w, role); Object.assign(h, { x, y, trait: 2, starterSkeletonGranted: true }); return h;
 }
 function enemy(w, lair, type = 'rattler', x = 19, y = 15) {
   const m = G.spawnMonster(w, lair, { type }); Object.assign(m, { x, y }); return m;
@@ -115,16 +115,16 @@ for (const type of Object.keys(G.monsterTypes)) {
   for (const target of [giant, child, ordinary]) {
     target.hp = target.maxHp = 100;
     assert.equal(G.damage(w, target, 10, caster), 10, 'four-argument direct damage is unchanged, including caster credit');
-    assert.equal(G.damage(w, target, 10, caster, 'area'), target === ordinary ? 10 : 20, 'only the brood family takes double secondary area damage');
+    assert.equal(G.damage(w, target, 10, caster, 'area'), 10, 'brood counters use mist visibility rather than a hidden damage multiplier');
   }
   enemy(w, lair, 'bulwark', 20, 15); enemy(w, lair, 'bulwark', 20, 16);
   for (const target of [giant, child, ordinary]) {
     target.hp = 100;
-    assert.equal(G.damage(w, target, 10, caster, 'area'), target === ordinary ? 7.5 : 15, 'one nonstacking ward multiplies the area vulnerability');
+    assert.equal(G.damage(w, target, 10, caster, 'area'), 7.5, 'one nonstacking ward reduces area damage');
   }
   giant.hp = 0; w.monsters = [child];
   const loaded = new G.Simulation({ saved: JSON.parse(JSON.stringify(w)) }).world;
-  assert.equal(G.damage(loaded, loaded.monsters[0], 4, loaded.heroes[0], 'area'), 8, 'old broodParent data retains the weakness after saving and losing its parent');
+  assert.equal(G.damage(loaded, loaded.monsters[0], 4, loaded.heroes[0], 'area'), 4, 'old broodParent data does not restore the removed vulnerability');
 }
 for (const role of ['mage', 'necromancer']) {
   const { w, lair } = arena(), caster = hero(w, role, 9, 9), primary = enemy(w, lair, 'broodcap', 10, 9);
@@ -132,11 +132,11 @@ for (const role of ['mage', 'necromancer']) {
   const child = G.spawnMonster(w, lair, { type: 'sporeling', at: primary, broodParent: primary.id }); Object.assign(child, { x: 10.7, y: 9.5 });
   for (const monster of w.monsters) monster.targetId = caster.id;
   w.time = 10; w.tick = 3;
-  const damage = G.heroStats(w, caster).damage, splash = damage * (role === 'mage' ? .5 : .65);
+  const damage = G.heroStats(w, caster).damage, splash = damage * (role === 'mage' ? .5 : 0);
   G.updateHeroes(w, .1);
   assert.equal(caster.targetId, primary.id); assert.equal(primary.hp, primary.maxHp - damage, role + ' primary hit stays unchanged');
-  assert.equal(secondary.hp, secondary.maxHp - splash * 2, role + ' secondary hit doubles against a broodcap');
-  assert.equal(child.hp, child.maxHp - splash * 2, role + ' secondary hit doubles against brood offspring');
+  assert.equal(secondary.hp, secondary.maxHp - splash, role + ' secondary hit uses normal splash against a broodcap');
+  assert.equal(child.hp, child.maxHp - splash, role + ' secondary hit uses normal splash against brood offspring');
   assert.equal(ordinary.hp, ordinary.maxHp - splash, role + ' normal sporelings retain normal splash damage');
   assert.equal(caster.cooldown, G.classes[role].cooldown, role + ' spends only the normal attack action');
 }
@@ -153,9 +153,10 @@ for (const role of ['mage', 'necromancer']) {
   const { w, lair } = arena(), beacon = G.addBuilding(w, 'beacon', 15, 9), primary = enemy(w, lair, 'broodcap', 18, 10);
   const secondary = enemy(w, lair, 'broodcap', 18.5, 10), ordinary = enemy(w, lair, 'sporeling', 18.5, 10.5);
   G.castle(w).shotAt = 1e6;
+  G.clearMist(w, primary.x, primary.y);
   G.updateBuildings(w, .1);
   assert.equal(primary.hp, primary.maxHp - 28, 'beacon primary damage is unchanged');
-  assert.equal(secondary.hp, secondary.maxHp - 28 * .6 * 2, 'beacon secondary area damage uses the brood vulnerability');
+  assert.equal(secondary.hp, secondary.maxHp - 28 * .6, 'beacon secondary area damage uses normal splash');
   assert.equal(ordinary.hp, ordinary.maxHp - 28 * .6, 'ordinary monsters retain normal beacon splash');
   assert.equal(beacon.shotAt, w.time + 1.4, 'area vulnerability does not add another building action');
 }
@@ -214,7 +215,7 @@ for (const role of ['mage', 'necromancer']) {
   const victim = enemy(w, lair), neighbour = enemy(w, lair, 'sporeling', 19.5, 15), far = enemy(w, lair, 'sporeling', 23, 15);
   const before = [necro.hp, own.hp, other.hp, unrelated.hp, friend.hp];
   G.necromancerStrike(w, necro, victim, 7);
-  assert.equal(victim.hp, victim.maxHp - 7); assert.equal(neighbour.hp, neighbour.maxHp - 7 * .65); assert.equal(far.hp, far.maxHp);
+  assert.equal(victim.hp, victim.maxHp - 7); assert.equal(neighbour.hp, neighbour.maxHp, 'focused soul magic does not splash'); assert.equal(far.hp, far.maxHp);
   assert(necro.hp > before[0] && own.hp > before[1]);
   assert.deepEqual([other.hp, unrelated.hp, friend.hp], before.slice(2), 'life drain never heals another hero or their minions');
   assert(w.effects.some(e => e.type === 'spell' && e.school === 'drain'));
@@ -285,8 +286,8 @@ for (const type of Object.keys(G.lairTypes)) for (const tier of [1, 2, 3]) {
     if (level > 1) { w.time = lair.nextGrowth; G.updateLairs(w); }
     assert.equal(lair.level, level);
     const wave = w.monsters.filter(m => m.lair === lair.id && !m.guard && m.wave === lair.waveCount);
-    assert.equal(wave.filter(m => m.type === G.lairTypes[type].monster).length, basic + (tier === 3 ? 1 : 0), type + ' basic wave at level ' + level);
-    assert.equal(wave.filter(m => m.type === G.lairTypes[type].support).length, advanced, type + ' advanced wave at level ' + level);
+    assert.equal(wave.filter(m => m.type === G.lairTypes[type].monster).length, Math.max(1, basic + (tier === 3 ? 1 : 0) - (type === 'spore' ? 1 : 0)), type + ' basic wave at level ' + level);
+    assert.equal(wave.filter(m => m.type === G.lairTypes[type].support).length, type === 'spore' ? Math.max(1, advanced) : advanced, type + ' advanced wave at level ' + level);
     assert(wave.every(m => m.strength === G.monsterStrength(lair)), 'wave members use the current lair strength');
   }
 }
@@ -306,7 +307,7 @@ for (const type of Object.keys(G.lairTypes)) for (const tier of [1, 2, 3]) {
   assert.equal(w.monsters.filter(m => G.alive(m) && m.broodParent === giant.id).length, 3, 'brood growth is useful but bounded');
   const shield = enemy(w, lair, 'bulwark', 20, 15); patient.x = 20.5; patient.hp = 100;
   G.damage(w, patient, 20, victim); assert.equal(patient.hp, 85, 'armoured escort protects nearby allies');
-  shield.hp = 0; G.damage(w, patient, 20, victim); assert.equal(patient.hp, 65, 'killing the escort removes its protection');
+  shield.hp = 0; G.cleanse(w, victim); G.damage(w, patient, 20, victim); assert.equal(patient.hp, 65, 'killing the escort removes its protection');
 }
 {
   const { w, lair } = arena(), boss = G.addLair(w, { tx: 39, ty: 20, type: 'hush', tier: 3, boss: true, suggestedLevels: 10 }, 1e6);

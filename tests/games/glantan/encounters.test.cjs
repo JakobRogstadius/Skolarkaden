@@ -182,13 +182,13 @@ for (const level of [1, 2, 3, 4]) for (const tier of [1, 3]) {
   for (let i = 0; i < G.MAX_RAIDERS; i++) blockers.push(G.spawnMonster(w, lair));
   assert.equal(blockers.length, G.MAX_RAIDERS);
   G.damage(w, lair, lair.hp);
-  const expected = { sporeling: 8, broodcap: 2, husher: 3 };
-  assert.deepEqual(lair.pendingWave.reduce((counts, type) => (counts[type] = (counts[type] || 0) + 1, counts), {}), expected, 'hard spore destruction roster retains all three species while capped');
+  const expected = { sporeling: 5, broodcap: 3 };
+  assert.deepEqual(lair.pendingWave.reduce((counts, type) => (counts[type] = (counts[type] || 0) + 1, counts), {}), expected, 'hard spore destruction roster retains both mushroom species while capped');
   assert.equal(lair.waveCount, 1, 'destroying a dormant hard lair releases one final wave');
   blockers.slice(0, 4).forEach(m => { m.hp = 0; }); G.updateLairs(w);
   const saved = new G.Simulation({ saved: JSON.parse(JSON.stringify(w)) }).world;
   const resumedLair = saved.lairs[0];
-  assert.equal(resumedLair.pendingWave.length, 9, 'save preserves the unsent hard-wave suffix');
+  assert.equal(resumedLair.pendingWave.length, 4, 'save preserves the unsent hard-wave suffix');
   saved.monsters.filter(m => G.alive(m) && !m.guard && !m.wave).slice(0, 9).forEach(m => { m.hp = 0; });
   G.updateLairs(saved);
   const finalWave = saved.monsters.filter(m => G.alive(m) && m.wave === 1);
@@ -197,7 +197,7 @@ for (const level of [1, 2, 3, 4]) for (const tier of [1, 3]) {
   assert.equal(resumedLair.pendingWave, undefined);
   G.updateLairs(saved);
   assert.equal(saved.lairs[0].waveCount, 1, 'a completed destruction wave does not create another cohort');
-  assert.equal(saved.monsters.filter(m => G.alive(m) && m.wave === 1).length, 13);
+  assert.equal(saved.monsters.filter(m => G.alive(m) && m.wave === 1).length, 8);
 }
 {
   const { w, lair } = fixture(); w.time = 25; w.monsters[0].hp = 0;

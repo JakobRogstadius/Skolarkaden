@@ -296,7 +296,7 @@
           if (e.focused || ['soul', 'drain'].includes(e.school) && !e.radius) A.counterEffect(c, e, p, this.reduced, origin);
           else A.spell(c, e, p, this.reduced, origin);
         }
-        else if (['gust', 'cleanse', 'unbind'].includes(e.type)) A.counterEffect(c, e, p, this.reduced);
+        else if (['gust', 'cleanse', 'unbind', 'rust'].includes(e.type)) A.counterEffect(c, e, p, this.reduced);
         else if (e.type === 'raise' || e.type === 'snare') A.ritual(c, e, p, this.reduced);
         else if (e.type === 'bolt') A.bolt(c, e, p, this.reduced);
         else if (e.type === 'slash') A.slash(c, e, p, this.reduced);

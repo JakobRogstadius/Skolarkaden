@@ -310,9 +310,9 @@
       const clear = G.attackLine(w, monster, target), distance = G.distance(monster, target);
       if (spec.rush && distance > 2 && distance < 5 && (monster.rushAt || 0) <= w.time) { monster.rushUntil = w.time + .8; monster.rushAt = w.time + 6; }
       const speed = spec.speed * (monster.slowUntil > w.time ? .45 : 1) * (monster.rushUntil > w.time ? 1.7 : 1);
-      if (spec.kite && !target.w && distance < 1.8 && (monster.kiteAt || 0) <= w.time) {
+      if (spec.kite && !target.w && distance < (monster.type === 'husher' ? 3 : 1.8) && (monster.kiteAt || 0) <= w.time) {
         const away = { x: monster.x + (monster.x - target.x) / Math.max(.1, distance) * 2, y: monster.y + (monster.y - target.y) / Math.max(.1, distance) * 2 };
-        if (G.open(w, away.x, away.y)) { monster.kiteGoal = away; monster.kiteUntil = w.time + .9; monster.kiteAt = w.time + 3; }
+        if (G.open(w, away.x, away.y)) { monster.kiteGoal = away; monster.kiteUntil = w.time + (monster.type === 'husher' ? 1.2 : .9); monster.kiteAt = w.time + (monster.type === 'husher' ? 1.5 : 3); }
       }
       if (monster.kiteUntil > w.time) { G.moveMonster(w, monster, monster.kiteGoal, speed, dt); continue; }
       if (!inRange || !clear) { G.moveMonster(w, monster, target, speed, dt); continue; }
@@ -324,10 +324,17 @@
           G.effect(w, 'snare', target.x, target.y, { duration: 1, color: '#c7a3e6' });
         }
         G.soundEvent?.(w, monster.boss ? 'guardian' : spec.spell ? 'mage' : 'monster', monster);
-        if (G.damage(w, target, G.monsterDamage(w, monster, !!target.w), monster) > 0 && monster.type === 'rattler' && G.alive(target)) G.corrode(w, target);
+        const dealt = G.damage(w, target, G.monsterDamage(w, monster, !!target.w), monster);
+        if (dealt > 0 && monster.type === 'rattler') {
+          for (const friend of w.heroes) if (G.alive(friend) && G.distance(monster, friend) <= G.counterRules.rustRadius && G.clearLine(w, monster, friend)) G.corrode(w, friend);
+          G.effect(w, 'rust', monster.x, monster.y, { radius: G.counterRules.rustRadius, duration: .7, color: '#bd7350' });
+        }
         // A dive exposes the nightwing only where it can touch down. Keep its
         // real position over blocked terrain rather than snapping it ashore.
-        if (spec.flying && G.open(w, monster.x, monster.y)) { monster.grounded = true; monster.groundedUntil = w.time + .55; }
+        if (spec.flying) {
+          monster.dives = (monster.dives || 0) + 1;
+          if (monster.dives % 3 === 0 && G.open(w, monster.x, monster.y)) { monster.grounded = true; monster.groundedUntil = w.time + .2; }
+        }
         if (monster.type === 'husher') for (const friend of heroes) if (friend !== target && G.alive(friend) && G.distance(friend, target) < 1.25 && G.attackLine(w, target, friend)) G.damage(w, friend, G.monsterDamage(w, monster) * .35, monster, 'area');
       }
     }
