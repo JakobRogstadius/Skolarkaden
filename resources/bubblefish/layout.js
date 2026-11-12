@@ -245,7 +245,7 @@ class BubblefishLayout{
       }
     }else if(kind==='current'){
       name='current-channel';const cy=this.preferred(x),direction=id%2?1:-1;
-      add(kind,x,l.top+range/2,30*u,{w:(24+(id%4)*14)*u/(1+variant*.65),h:range,direction,angle:[-.55,.25,.55,-.25][id%4]});bank(x+span,cy-direction*gap/2,-direction);
+      add(kind,x,l.top+range/2,30*u,{w:(90+(id%4)*24)*u,h:range,direction,angle:[-.55,.25,.55,-.25][id%4]});bank(x+span,cy-direction*gap/2,-direction);
     }else if(kind==='bird'){
       name='diving-passage';const cy=this.preferred(x),t=g.travelTime((x-g.fish.x)/(ppm*.65));
       add(kind,x,-65*u,26*u,{vy:Math.max(125*u,(cy+65*u)/Math.max(.3,t)),diveY:Math.min(l.bottom-18*u,cy+50*u)});
@@ -258,7 +258,11 @@ class BubblefishLayout{
   section(kind){
     const g=this.game;this.prune();
     for(let variant=0;variant<3;variant++){
-      const {name,objects}=this.pattern(kind,variant);if(!objects.some(o=>o.kind===kind||kind==='wall'&&o.wall)||!this.reservationClear(objects))continue;
+      const {name,objects}=this.pattern(kind,variant);
+      // Currents share reef speed: non-overlapping bands stay separate, so
+      // their additive forces cannot stack into an uncontrollable barrier.
+      if(objects.some(o=>o.kind==='current'&&g.obstacles.some(other=>!other.dead&&other.kind==='current'&&Math.abs(o.x-other.x)<(o.w+other.w)/2+12*g.unit())))continue;
+      if(!objects.some(o=>o.kind===kind||kind==='wall'&&o.wall)||!this.reservationClear(objects))continue;
       let duration=0;
       for(const o of objects){const factor=g.motionFactor(o);if(factor)duration=Math.max(duration,g.travelTime(Math.max(0,(o.x-g.fish.x+Math.sign(factor)*(o.w||o.r*2))/g.pixelsPerMetre()/factor)));}
       const route=this.trace(g.width,{objects:[...g.obstacles,...objects],duration})[0];if(!route)continue;

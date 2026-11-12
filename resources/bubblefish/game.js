@@ -216,7 +216,7 @@ class BubblefishGame{
     p.dead=true;this.sound(p.kind);this.burst('spark',p.x,p.y,12);
   }
   currentForce(o){
-    const angle=o.angle||0,strength=Math.max(210,this.height*.66)*2.4;
+    const angle=o.angle||0,strength=Math.max(210,this.height*.66)*.38;
     return {x:Math.sin(angle)*strength*o.direction,y:Math.cos(angle)*strength*o.direction};
   }
   incomingWarnings(){
