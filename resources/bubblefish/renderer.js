@@ -18,14 +18,12 @@ function fishArt(c,{x=0,y=0,size=25,time=0,player=false,armor=false,growth=false
   c.beginPath();c.moveTo(-27,0);c.bezierCurveTo(-25,-24,18,-29,32,-5);c.bezierCurveTo(40,12,11,29,-13,16);c.quadraticCurveTo(-23,11,-27,0);c.fillStyle=body;c.fill();
   ellipse(c,5,11,20,7,light);c.globalAlpha*=.5;ellipse(c,-5,-12,17,5,'#fff4d1');c.globalAlpha/= .5;
   if(armor){
-    for(let row=0;row<3;row++)for(let col=0;col<4;col++){
-      const sx=-20+col*9+(row%2?4:0),sy=-11+row*9;
-      c.beginPath();c.moveTo(sx,sy-5);c.quadraticCurveTo(sx+12,sy-6,sx+11,sy+2);c.quadraticCurveTo(sx+7,sy+10,sx,sy+2);c.closePath();
-      c.fillStyle=['#bfd7d1','#85aeb5','#6b94a3'][row];c.fill();c.strokeStyle='#406879';c.lineWidth=1;c.stroke();
-      c.strokeStyle='#e5f5db';c.beginPath();c.moveTo(sx+2,sy-3);c.lineTo(sx+8,sy-3);c.stroke();
-    }
-    c.beginPath();c.moveTo(4,-17);c.quadraticCurveTo(18,-31,33,-12);c.lineTo(29,-10);c.quadraticCurveTo(17,-23,7,-12);c.closePath();c.fillStyle='#aacbce';c.fill();
-    ellipse(c,8,-15,2,2,'#f2d082');
+    // A single steel breastplate with a raised rim and brass rivets.
+    const steel=c.createLinearGradient(-22,-18,10,20);steel.addColorStop(0,'#eff5f6');steel.addColorStop(.45,'#a7b8c8');steel.addColorStop(1,'#53697f');
+    c.beginPath();c.moveTo(-22,-12);c.quadraticCurveTo(-10,-24,8,-16);c.lineTo(12,11);c.quadraticCurveTo(-5,27,-22,10);c.closePath();c.fillStyle=steel;c.fill();c.strokeStyle='#354b61';c.lineWidth=2;c.stroke();
+    c.strokeStyle='#e9f2f6';c.beginPath();c.moveTo(-17,-10);c.quadraticCurveTo(-8,-17,2,-14);c.stroke();
+    c.strokeStyle='#596f83';c.beginPath();c.moveTo(-4,-16);c.lineTo(-2,17);c.stroke();
+    for(const [rx,ry] of [[-19,-8],[5,-12],[-18,9],[5,13]])ellipse(c,rx,ry,1.6,1.6,'#e6be67','#7e6438');
   }
   c.save();c.translate(-1,7);c.rotate(Math.sin(time*14)*.22);
   c.beginPath();c.moveTo(-4,-4);c.quadraticCurveTo(-10,23,7,14);c.quadraticCurveTo(10,9,6,-2);c.fillStyle=armor?'#8daeb1':dark;c.fill();
@@ -43,6 +41,17 @@ function fishArt(c,{x=0,y=0,size=25,time=0,player=false,armor=false,growth=false
     if(growth){path(c,[[25,3],[30,3],[28,8]],'#fff5dc');path(c,[[32,2],[36,2],[34,7]],'#fff5dc');}
   }else{c.strokeStyle='#9d5c43';c.lineWidth=1.5;c.beginPath();c.moveTo(27,8);c.quadraticCurveTo(31,11,34,5);c.stroke();}
   if(player)ellipse(c,17,6,4,2.5,'#f29d71');
+  if(armor){
+    // Domed knight's helmet, visor slit, breathing slots and red crest.
+    c.beginPath();c.moveTo(10,-26);c.bezierCurveTo(-3,-47,-15,-37,-13,-28);c.quadraticCurveTo(-3,-35,10,-20);c.closePath();c.fillStyle='#b73746';c.fill();c.strokeStyle='#752c3e';c.lineWidth=1.5;c.stroke();
+    const steel=c.createLinearGradient(7,-29,34,19);steel.addColorStop(0,'#f1f6f6');steel.addColorStop(.4,'#b6c6d3');steel.addColorStop(1,'#60768d');
+    c.beginPath();c.moveTo(5,-12);c.quadraticCurveTo(5,-34,22,-28);c.quadraticCurveTo(36,-25,37,-11);c.lineTo(38,11);c.lineTo(24,20);c.lineTo(8,12);c.closePath();c.fillStyle=steel;c.fill();c.strokeStyle='#33495e';c.lineWidth=2;c.stroke();
+    path(c,[[11,-10],[34,-10],[35,-3],[12,-3]],'#203a4e');
+    ellipse(c,25,-6.5,3.5,2.5,'#fff5d8');ellipse(c,27,-6.5,1.5,2.3,'#1b3548');
+    c.strokeStyle='#f2f7f7';c.beginPath();c.moveTo(10,-17);c.quadraticCurveTo(15,-26,25,-23);c.stroke();
+    c.strokeStyle='#3f566e';c.lineWidth=2;for(const x of [23,28,33]){c.beginPath();c.moveTo(x,3);c.lineTo(x,10);c.stroke();}
+    ellipse(c,9,-6,2,2,'#edc877','#806b42');
+  }
   c.restore();
 }
 function boostIcon(c,kind,x,y,size=20){
@@ -59,8 +68,10 @@ function boostIcon(c,kind,x,y,size=20){
     c.strokeStyle='#ed8f94';c.lineWidth=8;c.beginPath();c.moveTo(-9,-11);c.lineTo(-9,3);c.bezierCurveTo(-9,17,9,17,9,3);c.lineTo(9,-11);c.stroke();
     c.strokeStyle='#f7ebca';c.lineWidth=8;c.beginPath();c.moveTo(-9,-11);c.lineTo(-9,-5);c.moveTo(9,-11);c.lineTo(9,-5);c.stroke();
   }else if(kind==='senses'){
-    ellipse(c,0,0,12,8,'#f4f5c9');ellipse(c,2,0,4,6,'#366e81');
-    c.strokeStyle='#c2eee0';c.lineWidth=2;for(const r of [15,20]){c.beginPath();c.arc(0,0,r,-.65,.65);c.stroke();}
+    path(c,[[0,-14],[11,10],[-11,10]],'#ffda64','#694a24');
+    c.strokeStyle='#493820';c.lineWidth=3;c.beginPath();c.moveTo(0,-6);c.lineTo(0,1);c.stroke();ellipse(c,0,6,1.7,1.7,'#493820');
+    // The same incoming-arrow shape used at the screen edges.
+    for(const side of [-1,1]){c.save();c.scale(side,1);path(c,[[21,-4],[16,-4],[16,-8],[10,-1],[16,6],[16,2],[21,2]],'#fff4bd','#735b32');c.restore();}
   }else{
     path(c,[[-13,9],[1,-16],[1,-3],[12,-7],[-2,16],[-1,3]],'#fff1a0','#d4a968');
     c.strokeStyle='#b0ece5';c.lineWidth=2;c.beginPath();c.moveTo(-18,-3);c.lineTo(-12,-3);c.moveTo(-21,4);c.lineTo(-15,4);c.stroke();
