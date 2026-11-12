@@ -3,15 +3,17 @@ const assert=require('node:assert/strict');
 const {boot,settle}=require('../../helpers/homework-app.cjs');
 const {load}=require('../../helpers/runtime.cjs');
 function checkPointerControls(game){
-  const rootEvents=new EventTarget(),canvas=new EventTarget();let ready=false,captured=null;
+  const rootEvents=new EventTarget(),canvas=new EventTarget();let ready=false,captured=null,frame;
   Object.assign(canvas,{getContext:()=>({}),setAttribute(){},parentElement:{append(){}},
     getBoundingClientRect:()=>({left:20,top:30,width:ready?game.width:0,height:ready?game.height:0}),
     setPointerCapture:id=>{captured=id;}});
   const SC=load(['bubblefish/renderer'],{Starlight:{isChinese:()=>false},
     document:{createElement:()=>({getContext:()=>({}),setAttribute(){},remove(){}})},
-    ResizeObserver:class{observe(){}disconnect(){}},requestAnimationFrame:()=>1,cancelAnimationFrame(){},
+    ResizeObserver:class{observe(){}disconnect(){}},requestAnimationFrame:fn=>{frame=fn;return 1;},cancelAnimationFrame(){},
     addEventListener:rootEvents.addEventListener.bind(rootEvents),removeEventListener:rootEvents.removeEventListener.bind(rootEvents)});
-  const renderer=new SC.BubblefishRenderer(canvas,game);ready=true;
+  const renderer=new SC.BubblefishRenderer(canvas,game);
+  const update=game.update;let elapsed=0;game.update=dt=>{elapsed+=dt;};frame(1000);frame(1600);
+  assert.equal(elapsed,.6,'slow frames retain all elapsed time instead of capping scroll acceleration');renderer.scoreEvent({type:'resume'});frame(100000);assert.equal(elapsed,.6,'pause time never enters the simulation');game.update=update;ready=true;
   const pointer=(type,pointerType='mouse',pointerId=1,x=500,y=200)=>{
     const e=new Event(type,{cancelable:true});Object.assign(e,{pointerType,pointerId,clientX:x+20,clientY:y+30,button:0,buttons:0});canvas.dispatchEvent(e);
   };

@@ -138,3 +138,20 @@ for(const kind of ['pick','pop','correct','wrong','hit','ball','growth','armor',
   assert(pcm.every(n=>Number.isFinite(n)&&Math.abs(n)<=1));assert(pcm.some(n=>Math.abs(n)>.01));
 }
 console.log('PASS Bubbelfisken: life, matching, collisions, boosts, ink, answer deadlines, staged progression, speed ramp, backward steering, sound and restart.');
+// Currents overcome maximum steering, and warnings describe imminent entries only.
+{
+ const g=fresh();g.questions=[];g.nextQuestion=Infinity;g.active.agility=8;
+ g.fish.x=400;g.fish.y=250;g.moveTo(400,-1000);
+ g.obstacles=[obstacle(g,'current',{x:400,w:600,direction:1,angle:.3})];
+ g.update(.08);assert(g.fish.y>250,'current overpowers cursor even with agile fins');assert(g.fish.x>400,'angled current moves horizontally');
+ g.active.senses=8;g.obstacles=[
+  obstacle(g,'rock',{x:g.width+40,y:200}),
+  obstacle(g,'rock',{x:g.width+2000,y:200}),
+  obstacle(g,'rock',{x:-80,y:200}),
+  obstacle(g,'rock',{x:500,y:200}),
+  obstacle(g,'predator',{x:-80,y:300,baseY:300,speed:-.32,amplitude:0,frequency:1})];
+ const warnings=g.incomingWarnings();assert.equal(warnings.length,2);assert(warnings.some(w=>w.direction==='left'));assert(warnings.some(w=>w.direction==='right'));
+ g.active.armor=8;const urchin=obstacle(g,'urchin');g.collide(urchin);assert(urchin.dead);assert.equal(g.stun,0);
+ g.obstacles=[];const wall=g.layout.pattern('wall',0).objects;
+ assert(wall.length>4&&wall.every(o=>o.kind==='rock'));g.collide(wall[0]);assert(wall[0].dead);assert(!wall[1].dead,'armor breaks individual wall stones');
+}

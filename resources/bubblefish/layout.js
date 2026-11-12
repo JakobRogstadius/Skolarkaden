@@ -50,6 +50,18 @@ class BubblefishLayout{
       const drift=g.fish.vx*(1-Math.exp(-k*T))/k;
       T=g.travelTime(Math.max(0,(xEnd-clamp(x+drift,l.left+g.radius(),l.right-g.radius()))/g.pixelsPerMetre()));
     }
+    // Angled currents change interception time as well as the route's height.
+    if(duration===null&&objects.some(o=>o.kind==='current')){
+      let px=x,vx=g.fish.vx,previous=x;const h=1/240;
+      T=36;
+      for(let t=h;t<=35;t+=h){
+        vx*=Math.exp(-h*11*g.agilityAt(t));px+=vx*h;
+        for(const o of objects)if(o.kind==='current'&&!o.dead&&Math.abs(px-g.projectObstacle(o,t).x)<o.w/2)px+=g.currentForce(o).x*h;
+        px=clamp(px,l.left+g.radius(),l.right-g.radius());
+        const world=px+g.travel(t)*g.pixelsPerMetre();
+        if(world>=xEnd){T=t-h+h*(xEnd-previous)/(world-previous);break;}previous=world;
+      }
+    }
     if(!(T>0)||T>35)return [];
     const base=Math.max(210,g.height*.66),spacing=(high-low)/12;
     const layers=clamp(Math.floor(T/Math.max(.20,spacing/(base*.30))),1,28),dt=T/layers;
@@ -62,15 +74,15 @@ class BubblefishLayout{
       const preferred=this.preferred(x+g.travel(t1)*g.pixelsPerMetre());
       const heights=[...grid,clamp(g.fish.y,low,high),clamp(desired??preferred,low,high),...goals.map(y=>clamp(y,low,high))];
       const frames=[];let D=1,E=0,A=0,B=0,F=0,cap=1;
-      const relative=(g.speed()+g.profile.speed/150*t1)*g.pixelsPerMetre()*1.7+base*1.98+400*g.unit();
-      const steps=Math.max(1,Math.ceil(dt/Math.min(1/60,r*.38/relative))),h=dt/steps;
+      const relative=(g.speed()+g.profile.speed/150*t1)*g.pixelsPerMetre()*1.7+base*4.4+400*g.unit();
+      const steps=Math.max(1,Math.ceil(dt/Math.min(1/60,g.unit()*18*.6/relative))),h=dt/steps;
       for(let j=1;j<=steps;j++){
         const t=t0+j*h,agility=g.agilityAt(t),speed=base*agility,blend=1-Math.exp(-h*11*agility);
         D*=1-blend;E=E*(1-blend)+speed*blend;A+=D*h;B+=E*h;
         coastVx*=1-blend;coastX=clamp(coastX+coastVx*h,l.left+g.radius(),l.right-g.radius());
         const poses=[];let flow=0;
         for(const o of obstacles){const p=g.projectObstacle(o,t);
-          if(o.kind==='current'){if(Math.abs(coastX-p.x)<o.w/2)flow+=o.direction*speed*.34;}
+          if(o.kind==='current'){if(Math.abs(coastX-p.x)<o.w/2){const force=g.currentForce(o);flow+=force.y;coastX=clamp(coastX+force.x*h,l.left+g.radius(),l.right-g.radius());}}
           else if(Math.abs(coastX-p.x)<r*1.3+(o.w||o.r*2)*.7)poses.push({o,...p});
         }
         F+=flow*h;cap=Math.min(cap,.52/agility);
@@ -216,7 +228,11 @@ class BubblefishLayout{
       for(let i=0;i<(variant===2?1:3);i++){const bx=x+i*span*.8,side=(i+id)%2?-1:1;add(kind,bx,this.preferred(bx)+side*(gap/2+15*u),23*u);}
     }else if(kind==='wall'){
       name='offset-gates';
-      for(let i=0;i<(variant===2?1:2);i++){const bx=x+i*span*1.3;add(kind,bx,g.height/2,20*u,{w:40*u,gap,gapY:clamp(this.preferred(bx),l.top+gap/2,l.bottom-gap/2)});}
+      for(let i=0;i<(variant===2?1:2);i++){
+        const bx=x+i*span*1.3,cy=clamp(this.preferred(bx),l.top+gap/2,l.bottom-gap/2),r=30*u;
+        for(const side of [-1,1])for(let y=cy+side*(gap/2+r);side<0?y>-r:y<g.height+r;y+=side*r*1.45)
+          add('rock',bx+Math.sin(y/u)*5*u,y,r,{wall:true});
+      }
     }else if(kind==='predator'){
       name='crossing-patrol';
       for(let i=0;i<(variant===2?1:2);i++){
@@ -229,7 +245,7 @@ class BubblefishLayout{
       }
     }else if(kind==='current'){
       name='current-channel';const cy=this.preferred(x),direction=id%2?1:-1;
-      add(kind,x,l.top+range/2,30*u,{w:80*u,h:range,direction});bank(x+span,cy-direction*gap/2,-direction);
+      add(kind,x,l.top+range/2,30*u,{w:(24+(id%4)*14)*u/(1+variant*.65),h:range,direction,angle:[-.55,.25,.55,-.25][id%4]});bank(x+span,cy-direction*gap/2,-direction);
     }else if(kind==='bird'){
       name='diving-passage';const cy=this.preferred(x),t=g.travelTime((x-g.fish.x)/(ppm*.65));
       add(kind,x,-65*u,26*u,{vy:Math.max(125*u,(cy+65*u)/Math.max(.3,t)),diveY:Math.min(l.bottom-18*u,cy+50*u)});
@@ -242,13 +258,13 @@ class BubblefishLayout{
   section(kind){
     const g=this.game;this.prune();
     for(let variant=0;variant<3;variant++){
-      const {name,objects}=this.pattern(kind,variant);if(!objects.some(o=>o.kind===kind)||!this.reservationClear(objects))continue;
+      const {name,objects}=this.pattern(kind,variant);if(!objects.some(o=>o.kind===kind||kind==='wall'&&o.wall)||!this.reservationClear(objects))continue;
       let duration=0;
       for(const o of objects){const factor=g.motionFactor(o);if(factor)duration=Math.max(duration,g.travelTime(Math.max(0,(o.x-g.fish.x+Math.sign(factor)*(o.w||o.r*2))/g.pixelsPerMetre()/factor)));}
       const route=this.trace(g.width,{objects:[...g.obstacles,...objects],duration})[0];if(!route)continue;
       const section={id:++this.serial,name,kind,at:g.distance,points:this.points(route)};
       for(const o of objects){o.id=++g.sequence;o.section=section.id;g.obstacles.push(o);g.introduced.add(o.kind);}
-      this.sections.push(section);this.sections=this.sections.slice(-4);return true;
+      g.introduced.add(kind);this.sections.push(section);this.sections=this.sections.slice(-4);return true;
     }
     return false;
   }

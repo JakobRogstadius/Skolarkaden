@@ -178,7 +178,7 @@ class BubblefishGame{
       this.life=Math.min(100,this.life+50);this.lowAlarm=0;
       this.collected.push({question:held.item,answer:b.item,age:0,x:this.fish.x,y:this.fish.y,id:this.hits});
       // Keep the achievement pile bounded; total pair count is retained in hits.
-      if(this.collected.length>80)this.collected.shift();
+      if(this.collected.length>400)this.collected.shift();
       this.popAll(this.answers.filter(a=>a!==b));this.answers=[];this.held=null;this.nextAnswer=Infinity;this.nextQuestion=this.distance+5;
       this.effects.push({kind:'reward',x:this.fish.x,y:this.fish.y,age:0,duration:.8,points});
       this.sound('correct');this.emit('hit',{points,target:b});
@@ -203,7 +203,7 @@ class BubblefishGame{
       this.effects.push({...o,kind:'eaten',age:0,duration:.3,fromX:o.x,fromY:o.y});
       this.burst('crumb',o.x,o.y,6);this.sound('gulp');return;
     }
-    if(['rock','wall'].includes(o.kind)&&this.has('armor')){
+    if(['rock','wall','urchin'].includes(o.kind)&&this.has('armor')){
       o.dead=true;this.smash=.4;this.burst('rubble',o.x,this.fish.y,o.kind==='wall'?24:14);this.sound('smash');return;
     }
     if(o.kind==='octopus')this.growInk(o);
@@ -214,6 +214,28 @@ class BubblefishGame{
     if(p.kind==='refill'){this.life=Math.min(100,this.life+25);this.lowAlarm=0;}
     else this.active[p.kind]=boosts[p.kind];
     p.dead=true;this.sound(p.kind);this.burst('spark',p.x,p.y,12);
+  }
+  currentForce(o){
+    const angle=o.angle||0,strength=Math.max(210,this.height*.66)*2.4;
+    return {x:Math.sin(angle)*strength*o.direction,y:Math.cos(angle)*strength*o.direction};
+  }
+  incomingWarnings(){
+    if(!this.has('senses'))return [];
+    const warnings=[];
+    for(const o of this.obstacles){
+      if(o.dead||o.kind==='current')continue;
+      const rx=o.kind==='predator'?o.r*1.5:o.r,ry=o.r;
+      const visible=p=>p.x+rx>=0&&p.x-rx<=this.width&&p.y+ry>=0&&p.y-ry<=this.height;
+      if(visible(o))continue;
+      let entry=null;
+      for(let t=.05;t<=1.25;t+=.05){const p=this.projectObstacle(o,t);if(visible(p)){entry=p;break;}}
+      if(!entry)continue;
+      const direction=o.y+ry<0?'down':o.x+rx<0?'right':'left';
+      const x=direction==='down'?clamp(entry.x,20,this.width-20):direction==='right'?20:this.width-20;
+      const y=direction==='down'?78*this.unit():clamp(entry.y,82*this.unit(),this.height-72*this.unit());
+      if(!warnings.some(w=>w.direction===direction&&Math.hypot(w.x-x,w.y-y)<40*this.unit()))warnings.push({x,y,direction});
+    }
+    return warnings;
   }
   motionFactor(o){return o.kind==='octopus'?.30:o.kind==='predator'?o.speed:o.kind==='bird'?.65:1;}
   velocity(o){return -this.speed()*this.pixelsPerMetre()*this.motionFactor(o);}
@@ -253,7 +275,7 @@ class BubblefishGame{
     for(let remaining=dt;remaining>1e-8&&this.state==='playing';){
       // Use the maximum possible agility and the normal radius so boosts and
       // steering never change the integration schedule or distance/life consumption.
-      const relativeSpeed=this.speed()*this.pixelsPerMetre()*1.7+Math.max(210,this.height*.66)*1.65*1.2;
+      const relativeSpeed=this.speed()*this.pixelsPerMetre()*1.7+Math.max(210,this.height*.66)*4.4;
       const step=Math.min(1/60,this.unit()*18*.6/relativeSpeed,remaining);this.step(step);remaining-=step;
     }
   }
@@ -271,7 +293,7 @@ class BubblefishGame{
     this.fish.x+=this.fish.vx*dt;this.fish.y+=this.fish.vy*dt;
     for(const o of this.obstacles){
       o.age+=dt;Object.assign(o,this.projectObstacle(o,dt,metres,this.clock-dt));
-      if(o.kind==='current'&&!wasStunned&&Math.abs(this.fish.x-o.x)<o.w/2)this.fish.y+=o.direction*speed*.34*dt;
+      if(o.kind==='current'&&!wasStunned&&Math.abs(this.fish.x-o.x)<o.w/2){const flow=this.currentForce(o);this.fish.x+=flow.x*dt;this.fish.y+=flow.y*dt;}
     }
     this.keepInBounds();
     for(const b of [...this.questions,...this.answers])b.x-=pixels;
@@ -312,7 +334,7 @@ class BubblefishGame{
     }
     if(this.distance>=this.nextBalls){this.spawnBalls();this.nextBalls=this.distance+23+this.random()*17;}
     if(this.distance>=this.nextPickup){this.spawnPickup();this.nextPickup=this.distance+65+this.random()*28;}
-    this.warnings=this.has('senses')?this.obstacles.filter(o=>o.kind!=='current'&&(o.x>this.width-35*u||o.x<0||o.y<65*u)).map(o=>({x:clamp(o.x,20,this.width-20),y:clamp(o.y,82*u,this.height-72*u),direction:o.y<65*u?'down':o.x<0?'right':'left'})):[];
+    this.warnings=this.incomingWarnings();
     this.lowAlarm-=dt;if(this.life<20&&this.lowAlarm<=0){this.sound('danger');this.lowAlarm=3;}
     this.refreshScore();
   }
