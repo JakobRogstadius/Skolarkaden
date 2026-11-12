@@ -72,16 +72,17 @@ class BubblefishRenderer{
     this.reduced=!!root.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     this.host=canvas.parentElement||document.getElementById('arena');
     this.inkCanvas=document.createElement('canvas');this.inkCanvas.className='bubblefish-ink';this.inkCanvas.setAttribute('aria-hidden','true');this.host.append(this.inkCanvas);this.inkCtx=this.inkCanvas.getContext('2d');
-    canvas.setAttribute('aria-label','Bubbelfisken. Styr med piltangenter eller håll och dra. Fånga en uppgift och dess rätta svar.');
+    canvas.setAttribute('aria-label','Bubbelfisken. Styr med muspekaren, piltangenter eller dra på skärmen. Fånga en uppgift och dess rätta svar.');
     this.resize=()=>{
       const r=canvas.getBoundingClientRect();if(!r.width||!r.height)return;
       this.dpr=Math.min(root.devicePixelRatio||1,2);canvas.width=this.inkCanvas.width=Math.round(r.width*this.dpr);canvas.height=this.inkCanvas.height=Math.round(r.height*this.dpr);
       game.resize(r.width,r.height);this.makeScenery();this.draw();
     };
     this.observer=new ResizeObserver(this.resize);this.observer.observe(canvas);
-    this.down=e=>{if(e.button!==undefined&&e.button!==0||game.state!=='playing'||this.pointer!==null)return;e.preventDefault();this.pointer=e.pointerId;canvas.setPointerCapture?.(e.pointerId);this.setPointer(e);};
-    this.move=e=>{if(e.pointerId===this.pointer){e.preventDefault();this.setPointer(e);}};
+    this.down=e=>{if(e.button!==undefined&&e.button!==0||game.state!=='playing'||this.pointer!==null)return;e.preventDefault();if(e.pointerType!=='mouse'){this.pointer=e.pointerId;canvas.setPointerCapture?.(e.pointerId);}this.setPointer(e);};
+    this.move=e=>{if(e.pointerId===this.pointer||e.pointerType==='mouse'&&this.pointer===null){e.preventDefault();this.setPointer(e);}};
     this.up=e=>{if(e.pointerId!==this.pointer)return;this.pointer=null;game.release();};
+    this.leave=e=>{if(e.pointerType==='mouse'&&this.pointer===null)game.release();};
     this.keyDown=e=>{
       if(game.state!=='playing'||e.ctrlKey||e.metaKey||e.altKey||/INPUT|TEXTAREA|SELECT/.test(e.target?.tagName||'')||e.target?.closest?.('dialog'))return;
       const key=e.key.toLowerCase();if(!['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].includes(key))return;
@@ -89,7 +90,7 @@ class BubblefishRenderer{
     };
     this.keyUp=e=>{const key=e.key.toLowerCase();if(this.heldKeys.delete(key)){e.preventDefault();this.keyVector();}};
     this.blur=()=>{this.heldKeys.clear();this.pointer=null;game.clearInput();};
-    canvas.addEventListener('pointerdown',this.down);canvas.addEventListener('pointermove',this.move);canvas.addEventListener('pointerup',this.up);canvas.addEventListener('pointercancel',this.up);canvas.addEventListener('lostpointercapture',this.up);
+    canvas.addEventListener('pointerdown',this.down);canvas.addEventListener('pointermove',this.move);canvas.addEventListener('pointerup',this.up);canvas.addEventListener('pointercancel',this.up);canvas.addEventListener('lostpointercapture',this.up);canvas.addEventListener('pointerleave',this.leave);
     root.addEventListener('keydown',this.keyDown);root.addEventListener('keyup',this.keyUp);root.addEventListener('blur',this.blur);
     if(SC.isChinese(game.mode)){
       this.toggle=document.createElement('div');this.toggle.className='bubblefish-language';
@@ -307,7 +308,7 @@ class BubblefishRenderer{
   }
   destroy(){
     this.destroyed=true;cancelAnimationFrame(this.raf);this.observer.disconnect();this.blur();this.game.audio?.destroy();
-    for(const [type,fn] of [['pointerdown',this.down],['pointermove',this.move],['pointerup',this.up],['pointercancel',this.up],['lostpointercapture',this.up]])this.canvas.removeEventListener(type,fn);
+    for(const [type,fn] of [['pointerdown',this.down],['pointermove',this.move],['pointerup',this.up],['pointercancel',this.up],['lostpointercapture',this.up],['pointerleave',this.leave]])this.canvas.removeEventListener(type,fn);
     root.removeEventListener('keydown',this.keyDown);root.removeEventListener('keyup',this.keyUp);root.removeEventListener('blur',this.blur);this.inkCanvas.remove();this.toggle?.remove();
   }
 }
